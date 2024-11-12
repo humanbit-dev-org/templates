@@ -1,0 +1,319 @@
+  //
+ // Test page
+//
+
+// >>> Controllers — START
+@use "../controllers/dynamics" as *; // controllers for mixins and variables
+@use "../controllers/extends" as *; // controller for modules
+// <<<<< Controllers — END
+
+
+.test_partial {
+	// @extend %example_module;
+	// @extend %example_module;
+	// @extend %example_module;
+	// @extend %example_module;
+	// @extend %example_module;
+
+	.ani_wrap {
+		height: 257px;
+		max-width: 575px;
+
+		.ani_outer {
+			display: inline-block;
+			height: 40px;
+			overflow: hidden;
+			transition-duration: .4s;
+			transition-property: opacity;
+			opacity: 0;
+
+			&.top {
+				top: 33px;
+
+				.ani_inner {
+					transform: translate3d(0px, 150%, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg);
+					animation: translate3dTop 1.5s forwards 1.5s;
+
+					@keyframes translate3dTop {
+						from {
+							transform: translate3d(0px, 150%, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg);
+						}
+
+						to {
+							transform: translate3d(0px, 0%, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg);
+						}
+					}
+				}
+			}
+
+			&.middle {
+				top: 100px;
+				left: 43.5%;
+				height: 50px;
+
+				.left {
+					height: calc(135% - 24px);
+					transform: translate3d(250%, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg);
+					animation: translate3dLeft 1.5s forwards 2.5s;
+
+					@keyframes translate3dLeft {
+						from {
+							transform: translate3d(250%, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg);
+						}
+
+						to {
+							transform: translate3d(0%, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg);
+						}
+					}
+				}
+
+				.right {
+					height: 80%;
+					margin-bottom: 22px;
+					margin-left: 10px;
+					transform: translate3d(-250%, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg);
+					animation: translate3dRight 1.5s forwards 2.5s;
+
+					@keyframes translate3dRight {
+						from {
+							transform: translate3d(-250%, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg);
+						}
+
+						to {
+							transform: translate3d(0%, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg);
+						}
+					}
+				}
+			}
+
+			&.bottom {
+				top: 182px;
+
+				.ani_inner {
+					transform: translate3d(0px, -150%, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg);
+					animation: translate3dBottom 1.5s forwards 2s;
+
+					@keyframes translate3dBottom {
+						from {
+							transform: translate3d(0px, -150%, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg);
+						}
+
+						to {
+							transform: translate3d(0px, 0%, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg);
+						}
+					}
+				}
+			}
+		}
+	}
+
+	.ani_init .ani_outer {
+		opacity: 1;
+	}
+}
+
+
+
+/////
+////
+/*/==================== @media ====================/*/// {
+/////////////
+////////////
+		  ////////////////////////
+		 /* @media (max-width) */
+		////////////////////////
+
+		@media (max-width: 1399.98px) {
+
+			.test_partial {
+
+
+
+			}
+
+		}
+
+		@media (max-width: 1199.98px) {
+
+			.test_partial {
+
+
+
+			}
+
+		}
+
+		@media (max-width: 991.98px) {
+
+			.test_partial {
+
+
+
+			}
+
+		}
+
+		@media (max-width: 767.98px) {
+
+			.test_partial {
+
+
+
+			}
+
+		}
+
+		@media (max-width: 575.98px) {
+
+			.test_partial {
+
+
+
+			}
+
+		}
+
+			// -------------- //
+
+		  ////////////////////
+		 /* @media between */
+		////////////////////
+
+		@media (min-width: 576px) and (max-width: 767.98px) {
+
+			.test_partial {
+
+
+
+			}
+
+		}
+
+		@media (min-width: 576px) and (max-width: 991.98px) {
+
+			.test_partial {
+
+
+
+			}
+
+		}
+
+		@media (min-width: 768px) and (max-width: 991.98px) {
+
+			.test_partial {
+
+
+
+			}
+
+		}
+
+		@media (min-width: 992px) and (max-width: 1199.98px) {
+
+			.test_partial {
+
+
+
+			}
+
+		}
+
+		@media (min-width: 1200px) and (max-width: 1399.98px) {
+
+			.test_partial {
+
+
+
+			}
+
+		}
+
+			// ------------------ //
+
+		  ////////////////////////
+		 /* @media (min-width) */
+		////////////////////////
+
+		@media (min-width: 576px) {
+
+			.test_partial {
+
+
+
+			}
+
+		}
+
+		@media (min-width: 768px) {
+
+			.test_partial {
+
+
+
+			}
+
+		}
+
+		@media (min-width: 992px) {
+
+			.test_partial {
+
+
+
+			}
+
+		}
+
+		@media (min-width: 1200px) {
+
+			.test_partial {
+
+
+
+			}
+
+		}
+
+		@media (min-width: 1400px) {
+
+			.test_partial {
+
+
+
+			}
+
+		}
+
+			// ---------------- //
+
+		  //////////////////////
+		 /* mobile landscape */
+		//////////////////////
+
+		@media (max-height: 400px) and (orientation: landscape) {
+
+			.test_partial {
+
+
+
+			}
+
+		}
+
+			// ----------------- //
+
+		  ///////////////////////
+		 /* iPad Pro portrait */
+		///////////////////////
+
+		@media (width: 1024px) and (height: 1366px) {
+
+			.test_partial {
+
+
+
+			}
+
+		}
+ // }

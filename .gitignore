@@ -1,0 +1,62 @@
+/.phpunit.cache
+/node_modules
+/public/build
+/public/fonts
+/public/images
+/public/uploads
+/public/hot
+/public/storage
+/storage/*.key
+/vendor
+.env
+.env.backup
+.env.production
+.phpunit.result.cache
+Homestead.json
+Homestead.yaml
+auth.json
+npm-debug.log
+yarn-error.log
+_ide_helper.php
+.editorconfig
+/.fleet
+/.idea
+/.vscode
+.pnpm-store/
+/frontend/.pnpm-store/
+
+# dependencies
+/frontend/node_modules
+/frontend/.pnp
+/frontend.pnp.js
+
+# testing
+/frontend/coverage
+
+# next.js
+/frontend/.next/
+/frontend/out/
+/frontend/public/
+/frontend/src/pages/
+
+# production
+/frontend/build
+
+# misc
+/frontend.DS_Store
+/frontend*.pem
+
+# debug
+/frontendnpm-debug.log*
+/frontendyarn-debug.log*
+/frontendyarn-error.log*
+
+# env files
+/frontend.env
+/frontend.env.local
+/frontend.env.development.local
+/frontend.env.test.local
+/frontend.env.production.local
+
+# vercel
+/frontend.vercel

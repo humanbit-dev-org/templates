@@ -1,0 +1,40 @@
+{
+	"compilerOptions": {
+		"lib": ["dom", "dom.iterable", "esnext"],
+		"allowJs": true,
+		"skipLibCheck": true,
+		"strict": true,
+		"strictNullChecks": true,
+		"noEmit": true,
+		"esModuleInterop": true,
+		"module": "esnext",
+		"moduleResolution": "bundler", // or "node" if using Node.js
+		"resolveJsonModule": true,
+		"isolatedModules": true,
+		"jsx": "preserve",
+		"incremental": true,
+		"plugins": [
+			{
+				"name": "next"
+			}
+		],
+		"baseUrl": ".",
+		"paths": {
+			"favicon/*": ["public/favicon/*"],
+			"fonts/*": ["public/fonts/*"],
+			"*": ["src/*"],
+			"page/*": ["src/app/*/page"],
+			"components/nav_grow/*": ["src/components/navbars/nav_grow/*"],
+			"components/nav_slide/*": ["src/components/navbars/nav_slide/*"],
+			"bessex/*": ["src/static/bessex/*"],
+			"css/*": ["src/static/css/*"],
+			"js/*": ["src/static/js/*"],
+			"scss/*": ["src/static/scss/*"],
+			"scss/nav_grow/*": ["src/static/scss/partials/navbars/nav_grow/*"],
+			"scss/nav_slide/*": ["src/static/scss/partials/navbars/nav_slide/*"]
+		},
+		"target": "ES2017"
+	},
+	"include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+	"exclude": ["node_modules"]
+}
