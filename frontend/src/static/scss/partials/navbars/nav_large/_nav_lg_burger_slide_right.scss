@@ -1,14 +1,12 @@
-  //
- // Navbar with growing collapse effect towards the upper edge of the viewport
+//
+// Navbar with growing collapse effect towards the upper edge of the viewport
 //
 
 // >>> Controllers — START
 @use "../../../controllers/dynamics" as *; // controllers for mixins and variables
 // <<<<< Controllers — END
 
-
 .nav_partial {
-
 	.nav_lg_burger_slide_right {
 		height: $height_md; // `_variables.scss`
 		position: fixed;
@@ -41,9 +39,9 @@
 		.menu_navbar {
 			z-index: 1;
 
-			.box_center{
-				a{
-					&:hover{
+			.box_center {
+				a {
+					&:hover {
 						color: $color_first;
 						opacity: 1;
 					}
@@ -56,13 +54,17 @@
 					// $viewport-min: 20em, // default value set in `_fluid_type.scss` to enable global configuration
 					// $viewport-max: 100em, // default value set in `_fluid_type.scss` to enable global configuration
 					// >>>>> MOBILE <<<<<
-					$font-size-min: 1rem, // `font-size` on mobile viewport (< 575.98px)
-					$line-height-mobile: 1.5, // `line-height` multiplier on mobile viewport (< 575.98px)
+					$font-size-min: 1rem,
+					// `font-size` on mobile viewport (< 575.98px)
+					$line-height-mobile: 1.5,
+					// `line-height` multiplier on mobile viewport (< 575.98px)
 					// >>>>> DESKTOP <<<<<
-					$font-size-max: 1.125rem, // `font-size` on desktop viewport (> 576px)
-					$line-height-desktop: 1.2, // `line-height` multiplier on desktop viewport (> 576px)
+					$font-size-max: 1.125rem,
+					// `font-size` on desktop viewport (> 576px)
+					$line-height-desktop: 1.2,
+					// `line-height` multiplier on desktop viewport (> 576px)
 					// >>>>> IMPORTANT <<<<<
-					// $important: "!important" // uncomment to add the `!important` flag
+					 // $important: "!important" // uncomment to add the `!important` flag
 				);
 				font-weight: 500;
 				text-transform: uppercase;
@@ -85,7 +87,7 @@
 				min-width: 42.5px;
 
 				.navbar-toggler {
-					transition: .4s ease-out; // Default value (avoid changing).
+					transition: 0.4s ease-out; // Default value (avoid changing).
 
 					&:hover {
 						opacity: 0.8;
@@ -124,7 +126,7 @@
 
 						// Bottom line rotates 45 degrees counter clockwise, in, and down a bit to close the center of the "X" in the center of the <button>.
 						span:nth-child(3) {
-							transform: translate(25%, -50%) rotate(-45deg) ;
+							transform: translate(25%, -50%) rotate(-45deg);
 						}
 					}
 
@@ -140,7 +142,7 @@
 						background-color: $color_white;
 						border-radius: 50rem;
 						opacity: 1;
-						transition: .25s ease-out;
+						transition: 0.25s ease-out;
 						transform-origin: center left;
 
 						// Top line needs a little `padding`.
@@ -152,7 +154,7 @@
 
 						// Top line moves back to initial position and rotates back to 0 degrees.
 						&:nth-child(1) {
-							transform: translate(0%, 0%) rotate(0deg) ;
+							transform: translate(0%, 0%) rotate(0deg);
 						}
 
 						// Middle line goes back to regular color and `opacity`.
@@ -162,7 +164,7 @@
 
 						// Bottom line goes back to initial position and rotates back to 0 degrees.
 						&:nth-child(3) {
-							transform: translate(0%, 0%) rotate(0deg) ;
+							transform: translate(0%, 0%) rotate(0deg);
 						}
 					}
 				}
@@ -191,13 +193,17 @@
 					// $viewport-min: 20em, // default value set in `_fluid_type.scss` to enable global configuration
 					// $viewport-max: 100em, // default value set in `_fluid_type.scss` to enable global configuration
 					// >>>>> MOBILE <<<<<
-					$font-size-min: 0.8rem, // `font-size` on mobile viewport (< 575.98px)
-					$line-height-mobile: 1.5, // `line-height` multiplier on mobile viewport (< 575.98px)
+					$font-size-min: 0.8rem,
+					// `font-size` on mobile viewport (< 575.98px)
+					$line-height-mobile: 1.5,
+					// `line-height` multiplier on mobile viewport (< 575.98px)
 					// >>>>> DESKTOP <<<<<
-					$font-size-max: 1rem, // `font-size` on desktop viewport (> 576px)
-					$line-height-desktop: 1.2, // `line-height` multiplier on desktop viewport (> 576px)
+					$font-size-max: 1rem,
+					// `font-size` on desktop viewport (> 576px)
+					$line-height-desktop: 1.2,
+					// `line-height` multiplier on desktop viewport (> 576px)
 					// >>>>> IMPORTANT <<<<<
-					// $important: "!important" // uncomment to add the `!important` flag
+					 // $important: "!important" // uncomment to add the `!important` flag
 				);
 				font-weight: 400;
 
@@ -231,7 +237,7 @@
 				left: 0;
 				width: calc(100vw - (100vw - 100%)); // Default value (avoid changing).
 				height: calc(100% - $height_md); // `_variables.scss`
-				transition: transform .35s ease; // Default value (avoid changing).
+				transition: transform 0.35s ease; // Default value (avoid changing).
 
 				// Bootstrap's transition class.
 				&.collapsing {
@@ -239,13 +245,13 @@
 					// max-width: 0; // Uncomment line to activate diagonal movement.
 					// max-height: 0; // Uncomment line to activate diagonal movement.
 					transform: translateX(-100%); // Default value (avoid changing).
-					transition: transform .35s ease; // Default value (avoid changing).
+					transition: transform 0.35s ease; // Default value (avoid changing).
 				}
 
 				.collapse_wrapper {
 					min-height: calc(100vh - $height_md); // `_variables.scss`
 					// Transition for `.scrollbar_spacing`.
-					transition: padding-right .35s ease !important; // Default value (avoid changing).
+					transition: padding-right 0.35s ease !important; // Default value (avoid changing).
 
 					.collapse_contents {
 						min-height: calc(100vh - $height_md); // `_variables.scss`
@@ -295,7 +301,7 @@
 
 									&:hover,
 									&:focus {
-										opacity: .8;
+										opacity: 0.8;
 									}
 								}
 							}
@@ -311,13 +317,13 @@
 				max-width: var(--coll_ghost_width); // `_variables.scss`
 				width: 100%;
 				height: auto;
-				transition: transform .35s ease; // Default value (avoid changing).
+				transition: transform 0.35s ease; // Default value (avoid changing).
 
 				// Bootstrap's transition class.
 				&.collapsing {
 					// Animation's point of origin.
 					transform: translateX(100%); // Default value (avoid changing).
-					transition: transform .35s ease; // Default value (avoid changing).
+					transition: transform 0.35s ease; // Default value (avoid changing).
 				}
 
 				.options_wrapper {
@@ -337,7 +343,7 @@
 						}
 
 						.icon_toggler {
-							transition: .35s ease-out; // Default value (avoid changing).
+							transition: 0.35s ease-out; // Default value (avoid changing).
 						}
 					}
 
@@ -348,13 +354,17 @@
 							// $viewport-min: 20em, // default value set in `_fluid_type.scss` to enable global configuration
 							// $viewport-max: 100em, // default value set in `_fluid_type.scss` to enable global configuration
 							// >>>>> MOBILE <<<<<
-							$font-size-min: 0.8rem, // `font-size` on mobile viewport (< 575.98px)
-							$line-height-mobile: 1.5, // `line-height` multiplier on mobile viewport (< 575.98px)
+							$font-size-min: 0.8rem,
+							// `font-size` on mobile viewport (< 575.98px)
+							$line-height-mobile: 1.5,
+							// `line-height` multiplier on mobile viewport (< 575.98px)
 							// >>>>> DESKTOP <<<<<
-							$font-size-max: 0.8rem, // `font-size` on desktop viewport (> 576px)
-							$line-height-desktop: 1.2, // `line-height` multiplier on desktop viewport (> 576px)
+							$font-size-max: 0.8rem,
+							// `font-size` on desktop viewport (> 576px)
+							$line-height-desktop: 1.2,
+							// `line-height` multiplier on desktop viewport (> 576px)
 							// >>>>> IMPORTANT <<<<<
-							// $important: "!important" // uncomment to add the `!important` flag
+							 // $important: "!important" // uncomment to add the `!important` flag
 						);
 						font-weight: 400;
 						color: $color_white;
@@ -386,364 +396,251 @@
 			scrollbar-width: none;
 		}
 	}
-
 }
-
-
 
 /////
 ////
-/*/==================== @media ====================/*/// {
+/*/==================== @media ====================/*/ // {
 /////////////
 ////////////
-		  ////////////////////////
-		 /* @media (max-width) */
-		////////////////////////
+////////////////////////
+/* @media (max-width) */
+////////////////////////
 
-		@media (max-width: 1399.98px) {
+@media (max-width: 1399.98px) {
+	.nav_partial {
+		.nav_lg_burger_slide_right {
+		}
+	}
+}
 
-			.nav_partial {
+@media (max-width: 1199.98px) {
+	.nav_partial {
+		.nav_lg_burger_slide_right {
+		}
+	}
+}
 
-				.nav_lg_burger_slide_right {
+@media (max-width: 991.98px) {
+	.nav_partial {
+		.nav_lg_burger_slide_right {
+			&.nav_extra {
+				height: $max_height_extra; // `_variables.scss`
 
-
-
+				// Navbar's `background` containers.
+				.cont_ghost_bg {
+					height: $max_height_extra; // `_variables.scss`
 				}
 
-			}
+				.navbar-collapse {
+					&.menu_collapse {
+						top: $max_height_extra; // `_variables.scss`
+						height: calc(100% - $max_height_extra); // `_variables.scss`
 
-		}
+						.collapse_wrapper {
+							min-height: calc(100vh - $max_height_extra); // `_variables.scss`
 
-		@media (max-width: 1199.98px) {
-
-			.nav_partial {
-
-				.nav_lg_burger_slide_right {
-
-
-
-				}
-
-			}
-
-		}
-
-		@media (max-width: 991.98px) {
-
-			.nav_partial {
-
-				.nav_lg_burger_slide_right {
-					&.nav_extra {
-						height: $max_height_extra; // `_variables.scss`
-
-						// Navbar's `background` containers.
-						.cont_ghost_bg {
-							height: $max_height_extra; // `_variables.scss`
-						}
-
-						.navbar-collapse {
-							&.menu_collapse {
-								top: $max_height_extra; // `_variables.scss`
-								height: calc(100% - $max_height_extra); // `_variables.scss`
-
-								.collapse_wrapper {
-									min-height: calc(100vh - $max_height_extra); // `_variables.scss`
-
-									.collapse_contents {
-										min-height: calc(100vh - $max_height_extra); // `_variables.scss`
-									}
-								}
-							}
-
-							&.menu_options {
-								top: $max_height_extra; // `_variables.scss`
+							.collapse_contents {
+								min-height: calc(100vh - $max_height_extra); // `_variables.scss`
 							}
 						}
 					}
-				}
 
+					&.menu_options {
+						top: $max_height_extra; // `_variables.scss`
+					}
+				}
+			}
+		}
+	}
+}
+
+@media (max-width: 767.98px) {
+	.nav_partial {
+		.nav_lg_burger_slide_right {
+			height: $max_height_md; // `_variables.scss`
+
+			// Navbar's `background` containers.
+			.cont_ghost_bg {
+				height: $max_height_md; // `_variables.scss`
 			}
 
-		}
+			.menu_navbar {
+				.figure_logo {
+					max-width: 125px;
 
-		@media (max-width: 767.98px) {
-
-			.nav_partial {
-
-				.nav_lg_burger_slide_right {
-					height: $max_height_md; // `_variables.scss`
-
-					// Navbar's `background` containers.
-					.cont_ghost_bg {
-						height: $max_height_md; // `_variables.scss`
+					img {
+						max-height: 30px;
 					}
+				}
 
-					.menu_navbar {
-						.figure_logo {
-							max-width: 125px;
+				.circle_1 {
+					width: 30px;
+					height: 30px;
+				}
+			}
 
-							img {
-								max-height: 30px;
-							}
-						}
+			.navbar-collapse {
+				&.menu_collapse {
+					top: $max_height_md; // `_variables.scss`
+					height: calc(100% - $max_height_md); // `_variables.scss`
+					// background-color: white;
 
-						.circle_1 {
-							width: 30px;
-							height: 30px;
-						}
-					}
+					.collapse_wrapper {
+						min-height: calc(100vh - $max_height_md); // `_variables.scss`
+						background-color: rgba($color_first, 0.3);
 
-					.navbar-collapse {
-						&.menu_collapse {
-							top: $max_height_md; // `_variables.scss`
-							height: calc(100% - $max_height_md); // `_variables.scss`
-							// background-color: white;
-
-							.collapse_wrapper {
-								min-height: calc(100vh - $max_height_md); // `_variables.scss`
-								background-color: rgba($color_first, 0.3);
-
-								.collapse_contents {
-									min-height: calc(50vh - $max_height_md); // `_variables.scss`
-								}
-							}
-						}
-
-						&.menu_options {
-							top: $max_height_md; // `_variables.scss`
+						.collapse_contents {
+							min-height: calc(50vh - $max_height_md); // `_variables.scss`
 						}
 					}
 				}
 
-			}
-
-		}
-
-		@media (max-width: 575.98px) {
-
-			.nav_partial {
-
-				.nav_lg_burger_slide_right {
-
-
-
+				&.menu_options {
+					top: $max_height_md; // `_variables.scss`
 				}
+			}
+		}
+	}
+}
 
+@media (max-width: 575.98px) {
+	.nav_partial {
+		.nav_lg_burger_slide_right {
+		}
+	}
+}
+
+// -------------- //
+
+////////////////////
+/* @media between */
+////////////////////
+
+@media (min-width: 576px) and (max-width: 767.98px) {
+	.nav_partial {
+		.nav_lg_burger_slide_right {
+		}
+	}
+}
+
+@media (min-width: 576px) and (max-width: 991.98px) {
+	.nav_partial {
+		.nav_lg_burger_slide_right {
+		}
+	}
+}
+
+@media (min-width: 768px) and (max-width: 991.98px) {
+	.nav_partial {
+		.nav_lg_burger_slide_right {
+		}
+	}
+}
+
+@media (min-width: 992px) and (max-width: 1199.98px) {
+	.nav_partial {
+		.nav_lg_burger_slide_right {
+		}
+	}
+}
+
+@media (min-width: 1200px) and (max-width: 1399.98px) {
+	.nav_partial {
+		.nav_lg_burger_slide_right {
+		}
+	}
+}
+
+// ------------------ //
+
+////////////////////////
+/* @media (min-width) */
+////////////////////////
+
+@media (min-width: 576px) {
+	.nav_partial {
+		.nav_lg_burger_slide_right {
+		}
+	}
+}
+
+@media (min-width: 768px) {
+	.nav_partial {
+		.nav_lg_burger_slide_right {
+		}
+	}
+}
+
+@media (min-width: 992px) {
+	.nav_partial {
+		.nav_lg_burger_slide_right {
+		}
+	}
+}
+
+@media (min-width: 1200px) {
+	.nav_partial {
+		.nav_lg_burger_slide_right {
+		}
+	}
+}
+
+@media (min-width: 1400px) {
+	.nav_partial {
+		.nav_lg_burger_slide_right {
+		}
+	}
+}
+
+// ---------------- //
+
+//////////////////////
+/* Mobile landscape */
+//////////////////////
+
+@media (max-height: 400px) and (orientation: landscape) {
+	.nav_partial {
+		.nav_lg_burger_slide_right {
+			height: $max_height_xs_landscape; // `_variables.scss`
+
+			// Navbar's `background` containers.
+			.cont_ghost_bg {
+				height: $max_height_xs_landscape; // `_variables.scss`
 			}
 
-		}
-
-			// -------------- //
-
-		  ////////////////////
-		 /* @media between */
-		////////////////////
-
-		@media (min-width: 576px) and (max-width: 767.98px) {
-
-			.nav_partial {
-
-				.nav_lg_burger_slide_right {
-
-
-
-				}
-
-			}
-
-		}
-
-		@media (min-width: 576px) and (max-width: 991.98px) {
-
-			.nav_partial {
-
-				.nav_lg_burger_slide_right {
-
-
-
-				}
-
-			}
-
-		}
-
-		@media (min-width: 768px) and (max-width: 991.98px) {
-
-			.nav_partial {
-
-				.nav_lg_burger_slide_right {
-
-
-
-				}
-
-			}
-
-		}
-
-		@media (min-width: 992px) and (max-width: 1199.98px){
-
-			.nav_partial {
-
-				.nav_lg_burger_slide_right {
-
-
-
-				}
-
-			}
-
-		}
-
-		@media (min-width: 1200px) and (max-width: 1399.98px) {
-
-			.nav_partial {
-
-				.nav_lg_burger_slide_right {
-
-
-
-				}
-
-			}
-
-		}
-
-			// ------------------ //
-
-		  ////////////////////////
-		 /* @media (min-width) */
-		////////////////////////
-
-		@media (min-width: 576px) {
-
-			.nav_partial {
-
-				.nav_lg_burger_slide_right {
-
-
-
-				}
-
-			}
-
-		}
-
-		@media (min-width: 768px) {
-
-			.nav_partial {
-
-				.nav_lg_burger_slide_right {
-
-
-
-				}
-
-			}
-
-		}
-
-		@media (min-width: 992px) {
-
-			.nav_partial {
-
-				.nav_lg_burger_slide_right {
-
-
-
-				}
-
-			}
-
-		}
-
-		@media (min-width: 1200px) {
-
-			.nav_partial {
-
-				.nav_lg_burger_slide_right {
-
-
-
-				}
-
-			}
-
-		}
-
-		@media (min-width: 1400px) {
-
-			.nav_partial {
-
-				.nav_lg_burger_slide_right {
-
-
-
-				}
-
-			}
-
-		}
-
-			// ---------------- //
-
-		  //////////////////////
-		 /* Mobile landscape */
-		//////////////////////
-
-		@media (max-height: 400px) and (orientation: landscape) {
-
-			.nav_partial {
-
-				.nav_lg_burger_slide_right {
-					height: $max_height_xs_landscape; // `_variables.scss`
-
-					// Navbar's `background` containers.
-					.cont_ghost_bg {
-						height: $max_height_xs_landscape; // `_variables.scss`
-					}
-
-					.navbar-collapse {
-						&.menu_collapse {
-							top: $max_height_xs_landscape; // `_variables.scss`
-							height: calc(100% - $max_height_xs_landscape); // `_variables.scss`
-
-							.collapse_wrapper {
-								min-height: calc(100vh - $max_height_xs_landscape); // `_variables.scss`
-
-								.collapse_contents {
-									min-height: calc(100vh - $max_height_xs_landscape); // `_variables.scss`
-								}
-							}
-						}
-
-						&.menu_options {
-							top: $max_height_xs_landscape; // `_variables.scss`
+			.navbar-collapse {
+				&.menu_collapse {
+					top: $max_height_xs_landscape; // `_variables.scss`
+					height: calc(100% - $max_height_xs_landscape); // `_variables.scss`
+
+					.collapse_wrapper {
+						min-height: calc(100vh - $max_height_xs_landscape); // `_variables.scss`
+
+						.collapse_contents {
+							min-height: calc(100vh - $max_height_xs_landscape); // `_variables.scss`
 						}
 					}
 				}
 
-			}
-
-		}
-
-			// ----------------- //
-
-		  ///////////////////////
-		 /* iPad Pro portrait */
-		///////////////////////
-
-		@media (width: 1024px) and (height: 1366px) {
-
-			.nav_partial {
-
-				.nav_lg_burger_slide_right {
-
-
-
+				&.menu_options {
+					top: $max_height_xs_landscape; // `_variables.scss`
 				}
-
 			}
-
 		}
- // }
+	}
+}
+
+// ----------------- //
+
+///////////////////////
+/* iPad Pro portrait */
+///////////////////////
+
+@media (width: 1024px) and (height: 1366px) {
+	.nav_partial {
+		.nav_lg_burger_slide_right {
+		}
+	}
+}
+// }

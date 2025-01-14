@@ -1,17 +1,15 @@
-  //
- // Hero module with HTML5 video (2)
+//
+// Hero module with HTML5 video (2)
 //
 
 // >>> Controllers — START
 @use "../controllers/dynamics" as *; // controllers for mixins and variables
 // <<<<< Controllers — END
 
-
 // Copy, paste and uncomment the following code into the intended SCSS page to style this module:
 // @extend %hero_html5_2_module;
 
 %hero_html5_2_module {
-
 	.hero_html5_2_module {
 		h1,
 		h2,
@@ -62,8 +60,7 @@
 		}
 
 		#video_session_home {
-
-			.gotofarm_button{
+			.gotofarm_button {
 				width: fit-content;
 
 				&:hover {
@@ -75,7 +72,6 @@
 					}
 				}
 			}
-
 		}
 
 		.subscribe_home {
@@ -118,7 +114,7 @@
 			right: 100px;
 			bottom: 1rem;
 			z-index: 10;
-			background-color: #FA7705;
+			background-color: #fa7705;
 			color: white;
 			border-radius: 50%;
 			width: 130px;
@@ -166,210 +162,122 @@
 		}
 	}
 
-
-
-/////
-////
-/*/==================== @media ====================/*/// {
-/////////////////
-////////////////
-			  ////////////////////////
-			 /* @media (max-width) */
-			////////////////////////
-
-			@media (max-width: 1399.98px) {
-
-				.hero_html5_module {
-
-
-
-				}
-
-			}
-
-			@media (max-width: 1199.98px) {
-
-				.hero_html5_module {
-
-
-
-				}
-
-			}
-
-			@media (max-width: 991.98px) {
-
-				.hero_html5_module {
-
-
-
-				}
-
-			}
-
-			@media (max-width: 767.98px) {
-
-				.hero_html5_module {
-
-
-
-				}
-
-			}
-
-			@media (max-width: 575.98px) {
-
-				.hero_html5_module {
-
-
-
-				}
-
-			}
-
-				// -------------- //
-
-			  ////////////////////
-			 /* @media between */
-			////////////////////
-
-			@media (min-width: 576px) and (max-width: 767.98px) {
-
-				.hero_html5_module {
-
-
-
-				}
-
-			}
-
-			@media (min-width: 576px) and (max-width: 991.98px) {
-
-				.hero_html5_module {
-
-
-
-				}
-
-			}
-
-			@media (min-width: 768px) and (max-width: 991.98px) {
-
-				.hero_html5_module {
-
-
-
-				}
-
-			}
-
-			@media (min-width: 992px) and (max-width: 1199.98px) {
-
-				.hero_html5_module {
-
-
-
-				}
-
-			}
-
-			@media (min-width: 1200px) and (max-width: 1399.98px) {
-
-				.hero_html5_module {
-
-
-
-				}
-
-			}
-
-				// ------------------ //
-
-			  ////////////////////////
-			 /* @media (min-width) */
-			////////////////////////
-
-			@media (min-width: 576px) {
-
-				.hero_html5_module {
-
-
-
-				}
-
-			}
-
-			@media (min-width: 768px) {
-
-				.hero_html5_module {
-
-
-
-				}
-
-			}
-
-			@media (min-width: 992px) {
-
-				.hero_html5_module {
-
-
-
-				}
-
-			}
-
-			@media (min-width: 1200px) {
-
-				.hero_html5_module {
-
-
-
-				}
-
-			}
-
-			@media (min-width: 1400px) {
-
-				.hero_html5_module {
-
-
-
-				}
-
-			}
-
-				// ---------------- //
-
-			  //////////////////////
-			 /* mobile landscape */
-			//////////////////////
-
-			@media (max-height: 400px) and (orientation: landscape) {
-
-				.hero_html5_module {
-
-
-
-				}
-
-			}
-
-				// ----------------- //
-
-			  ///////////////////////
-			 /* iPad Pro portrait */
-			///////////////////////
-
-			@media (width: 1024px) and (height: 1366px) {
-
-				.hero_html5_module {
-
-
-
-				}
-
-			}
-  //  }
-
+	/////
+	////
+	/*/==================== @media ====================/*/ // {
+	/////////////////
+	////////////////
+	////////////////////////
+	/* @media (max-width) */
+	////////////////////////
+
+	@media (max-width: 1399.98px) {
+		.hero_html5_module {
+		}
+	}
+
+	@media (max-width: 1199.98px) {
+		.hero_html5_module {
+		}
+	}
+
+	@media (max-width: 991.98px) {
+		.hero_html5_module {
+		}
+	}
+
+	@media (max-width: 767.98px) {
+		.hero_html5_module {
+		}
+	}
+
+	@media (max-width: 575.98px) {
+		.hero_html5_module {
+		}
+	}
+
+	// -------------- //
+
+	////////////////////
+	/* @media between */
+	////////////////////
+
+	@media (min-width: 576px) and (max-width: 767.98px) {
+		.hero_html5_module {
+		}
+	}
+
+	@media (min-width: 576px) and (max-width: 991.98px) {
+		.hero_html5_module {
+		}
+	}
+
+	@media (min-width: 768px) and (max-width: 991.98px) {
+		.hero_html5_module {
+		}
+	}
+
+	@media (min-width: 992px) and (max-width: 1199.98px) {
+		.hero_html5_module {
+		}
+	}
+
+	@media (min-width: 1200px) and (max-width: 1399.98px) {
+		.hero_html5_module {
+		}
+	}
+
+	// ------------------ //
+
+	////////////////////////
+	/* @media (min-width) */
+	////////////////////////
+
+	@media (min-width: 576px) {
+		.hero_html5_module {
+		}
+	}
+
+	@media (min-width: 768px) {
+		.hero_html5_module {
+		}
+	}
+
+	@media (min-width: 992px) {
+		.hero_html5_module {
+		}
+	}
+
+	@media (min-width: 1200px) {
+		.hero_html5_module {
+		}
+	}
+
+	@media (min-width: 1400px) {
+		.hero_html5_module {
+		}
+	}
+
+	// ---------------- //
+
+	//////////////////////
+	/* mobile landscape */
+	//////////////////////
+
+	@media (max-height: 400px) and (orientation: landscape) {
+		.hero_html5_module {
+		}
+	}
+
+	// ----------------- //
+
+	///////////////////////
+	/* iPad Pro portrait */
+	///////////////////////
+
+	@media (width: 1024px) and (height: 1366px) {
+		.hero_html5_module {
+		}
+	}
+	//  }
 }

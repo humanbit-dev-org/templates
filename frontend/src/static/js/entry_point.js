@@ -1,5 +1,5 @@
-  //
- // Exports the JavaScript modules using ES modules
+//
+// Exports the JavaScript modules using ES modules
 //
 
 // >>> Animation — START

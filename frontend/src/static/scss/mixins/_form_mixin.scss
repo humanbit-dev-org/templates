@@ -1,5 +1,5 @@
-  // Bootstrap `<form>` mixin
- //
+// Bootstrap `<form>` mixin
+//
 // Customize `<form>` based on Bootstrap's classes.
 // See https://github.com/g-silveri/humanbit-templates-symphonycms/wiki/Bootstrap%E2%80%90based-form-mixin
 //
@@ -34,16 +34,13 @@
 // 	$transition: <value> // default: all .15s ease-in-out
 // );
 
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /* `<input>`s must contain a placeholder property set (even if left empty [""]) for the proper animation cycle to happen. */
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
 // >>> Controllers — START
 @use "../controllers/functions" as *; // Controller for functions
 // <<<<< Controllers — END
-
 
 //
 // Utilities
@@ -96,7 +93,6 @@
 	background-color: $color;
 }
 // scss-docs-end gradient-bg-mixin
-
 
 //
 // Formula
@@ -170,7 +166,6 @@
 	// If `$label-transform` is null, uses the default value.
 	$label-transform: if($label-transform == null, calc(#{$body-padding-default-x} + #{$border-width}), $label-transform);
 
-
 	//
 	// General transition values
 	//
@@ -225,7 +220,6 @@
 			cursor: progress;
 		}
 	}
-
 
 	//
 	// General form controls (plus a few specific high-level interventions)
@@ -315,7 +309,9 @@
 				padding: $body-padding-default !important;
 				line-height: 1.25 !important;
 				resize: vertical;
-				transition: $transition, height 0s !important;
+				transition:
+					$transition,
+					height 0s !important;
 			}
 		}
 
@@ -323,7 +319,7 @@
 		> .form-control:not([type="file"]),
 		> .form-control-plaintext {
 			// position: relative;
-			padding: .1em $body-padding-default-x 0;
+			padding: 0.1em $body-padding-default-x 0;
 			// line-height: $height-default !important;
 			// Necessary to reset state on `:-webkit-autofill` mouseleave.
 			// transition: $transition, color 0s, background-color 0s, box-shadow 0s !important;
@@ -374,7 +370,7 @@
 		// Style <<BEFORE/AFTER>> transition (necessary because its initial setting is different than that of the `.form-control`).
 		> .form-select {
 			// background-color: $body-bg-color-default;
-			padding-top: .1em;
+			padding-top: 0.1em;
 			padding-bottom: 0;
 			padding-left: $body-padding-default-x;
 			line-height: 1.25;
@@ -408,7 +404,8 @@
 		// Firefox 67 (2019-05-21)–94 (2021-11-02; excluding).
 		> .form-control {
 			&:-moz-autofill, // Fallback selector
-			&:-moz-autofill-preview { // Fallback selector
+			&:-moz-autofill-preview {
+				// Fallback selector
 				filter: none;
 			}
 		}
@@ -469,9 +466,10 @@
 
 		> input.form-control:-webkit-autofill:not([type="file"], :placeholder-shown), // WebKit specific
 		> textarea:-webkit-autofill,
-		> select.form-select:-webkit-autofill { // WebKit specific
-		// > select.form-select:-internal-autofill-selected { // WebKit specific
-		// > input.form-control:-internal-autofill-previewed { // WebKit specific
+		> select.form-select:-webkit-autofill {
+			// WebKit specific
+			// > select.form-select:-internal-autofill-selected { // WebKit specific
+			// > input.form-control:-internal-autofill-previewed { // WebKit specific
 			// transition: box-shadow 0s; // Necessary to reset state.
 			// Necessary to reset state on `:-webkit-autofill` mouseleave.
 			// transition: $transition, color 0s, background-color 0s, box-shadow 0s;
@@ -479,17 +477,17 @@
 
 			&:focus {
 				-webkit-text-fill-color: $body-color-transformed; // WebKit specific
-								//   color: $body-color-transformed;
+				//   color: $body-color-transformed;
 				// background-color:		 $body-bg-color-transformed;
-				box-shadow:				 (inset 0 0 0 30px rgba($body-bg-color-transformed, 1), $box-shadow-focus) !important;
+				box-shadow: (inset 0 0 0 30px rgba($body-bg-color-transformed, 1), $box-shadow-focus) !important;
 			}
 
 			// Style <<DURING>> `:not(:focus)` transition.
 			&:not(:focus) {
 				-webkit-text-fill-color: $body-color-default; // WebKit specific
-								//   color: $body-color-default;
+				//   color: $body-color-default;
 				// background-color:		 $body-bg-color-default;
-				box-shadow:				 inset 0 0 0 30px rgba($body-bg-color-default, 1) !important;
+				box-shadow: inset 0 0 0 30px rgba($body-bg-color-default, 1) !important;
 			}
 		}
 
@@ -513,7 +511,8 @@
 		// 	background-color: gray;
 		// }
 
-		> .form-select:-internal-autofill-selected { // WebKit specific
+		> .form-select:-internal-autofill-selected {
+			// WebKit specific
 			// See https://stackoverflow.com/a/55002367
 			// background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23#{str-slice(inspect($body-color-default), 2)}' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
 
@@ -740,29 +739,52 @@
 			}
 
 			// `* > input[type="date"]`'s pseudo-elements' <<BEFORE/AFTER>> transitioning.
-			&::-webkit-datetime-edit { padding: 0; }
-			&::-webkit-datetime-edit-fields-wrapper { background: $body-bg-color-default; }
-			&::-webkit-datetime-edit-text { color: $body-color-default; padding: 0 0.3em; }
-			&::-webkit-datetime-edit-minute { color: $body-color-default; }
-			&::-webkit-datetime-edit-hour-field { color: $body-color-default; }
-			&::-webkit-datetime-edit-day-field { color: $body-color-default; }
-			&::-webkit-datetime-edit-month-field { color: $body-color-default; }
-			&::-webkit-datetime-edit-year-field { color: $body-color-default; }
-			&::-webkit-inner-spin-button { display: none; }
+			&::-webkit-datetime-edit {
+				padding: 0;
+			}
+			&::-webkit-datetime-edit-fields-wrapper {
+				background: $body-bg-color-default;
+			}
+			&::-webkit-datetime-edit-text {
+				color: $body-color-default;
+				padding: 0 0.3em;
+			}
+			&::-webkit-datetime-edit-minute {
+				color: $body-color-default;
+			}
+			&::-webkit-datetime-edit-hour-field {
+				color: $body-color-default;
+			}
+			&::-webkit-datetime-edit-day-field {
+				color: $body-color-default;
+			}
+			&::-webkit-datetime-edit-month-field {
+				color: $body-color-default;
+			}
+			&::-webkit-datetime-edit-year-field {
+				color: $body-color-default;
+			}
+			&::-webkit-inner-spin-button {
+				display: none;
+			}
 			// The `<input type="date"]>`'s calendar icon is a shadow DOM element whose colors are set through `background-image` and therefore independently unchangeable, which makes it impossible to conform to the project's color palette.
 			&::-webkit-calendar-picker-indicator {
 				// The following solution replaces the system's default icon with a nearly identical SVG and then passes a mixin that automatically creates a filter based on the desired color.
 				background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='15' viewBox='0 0 24 24'><path fill='%23303030' d='M20 3h-1V1h-2v2H7V1H5v2H4c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 18H4V8h16v13z'/></svg>"); // Custom calendar icon SVG
 				@include recolor($body-color-default, 1); // `filter` mixin
-				opacity: .8;
+				opacity: 0.8;
 				cursor: pointer;
 				// transition: $transition; // uncertain about this one
 
 				// `input[type="date"]::-webkit-calendar-picker-indicator` <<DURING>> `:hover` transition.
-				&:hover { opacity: 1; }
+				&:hover {
+					opacity: 1;
+				}
 
 				// `input[type="date"]::-webkit-calendar-picker-indicator` <<DURING>> `:active` transition.
-				&:active { cursor: progress; }
+				&:active {
+					cursor: progress;
+				}
 			}
 
 			// `* > input[type="date"]`'s pseudo-elements' <<DURING>> transition.
@@ -815,7 +837,8 @@
 				border-color: $border-focus-color;
 				border-radius: 50%;
 				// transform: scale(.85) translateX(calc(0% - #{$label-transform} - (#{$label-transform} * (15 / 85)))) translateY(calc(50% + (#{$border-width} / 2) + ((#{$border-width} / 2) * (15 / 85))));
-				transform: scale(.85) translateX(calc(0% - #{$label-transform} - (#{$label-transform} * 0.17647059))) translateY(calc(50% + (#{$border-width} / 2) + ((#{$border-width} / 2) * 0.17647059)));
+				transform: scale(0.85) translateX(calc(0% - #{$label-transform} - (#{$label-transform} * 0.17647059)))
+					translateY(calc(50% + (#{$border-width} / 2) + ((#{$border-width} / 2) * 0.17647059)));
 				transform-origin: 100% 100%;
 				// transform: scale(.85) translateX(calc(0% - #{$label-transform})) translateY(calc(50% + (#{$border-width} / 2)));
 				// transform-origin: calc(100% - #{$label-transform}) calc(100% + (#{$border-width} / 2));
@@ -829,11 +852,34 @@
 
 			// Reset `background-image`.
 			> .form-select {
-			// > ::-webkit-calendar-picker-indicator {
+				// > ::-webkit-calendar-picker-indicator {
 				// background-image: linear-gradient(to right, $border-color 0, $border-color calc(#{$border-width} * (85 / 100)), $body-bg-color-default calc(#{$border-width} * (85 / 100)), $body-bg-color-default);
-				background-image: linear-gradient(to right, $border-color 0, $border-color calc(#{$border-width} * 0.85), $body-bg-color-default calc(#{$border-width} * 0.85), $body-bg-color-default);
+				background-image: linear-gradient(
+					to right,
+					$border-color 0,
+					$border-color calc(#{$border-width} * 0.85),
+					$body-bg-color-default calc(#{$border-width} * 0.85),
+					$body-bg-color-default
+				);
 				// background-size: calc((#{$body-padding-default-x} * 2) + (#{$border-width} * (85 / 100)) + min(calc((#{$label-font-size-transformed} + ((#{strip-unit($label-padding-transformed-y)} * 2) * #{$label-font-size-transformed}) + (#{$border-width} * 2)) * (85 / 100)), calc(#{$height-default} * (85 / 100)))) 100%;
-				background-size: calc((#{$body-padding-default-x} * 2) + (#{$border-width} * 0.85) + min(calc((#{$label-font-size-transformed} + ((#{strip-unit($label-padding-transformed-y)} * 2) * #{$label-font-size-transformed}) + (#{$border-width} * 2)) * 0.85), calc(#{$height-default} * 0.85))) 100%;
+				background-size: calc(
+						(#{$body-padding-default-x} * 2) + (#{$border-width} * 0.85) +
+							min(
+								calc(
+									(
+											#{$label-font-size-transformed} +
+												(
+													(#{strip-unit($label-padding-transformed-y)} * 2) *
+														#{$label-font-size-transformed}
+												) +
+												(#{$border-width} * 2)
+										) *
+										0.85
+								),
+								calc(#{$height-default} * 0.85)
+							)
+					)
+					100%;
 				background-repeat: no-repeat;
 				background-position: right center;
 				background-blend-mode: multiply;
@@ -843,7 +889,7 @@
 
 			// Chevron <<BEFORE/AFTER>> transitioning.
 			&::after {
-				content: '';
+				content: "";
 				position: absolute;
 				right: 0;
 				bottom: calc(#{$height-default} / 2);
@@ -860,7 +906,9 @@
 				// transform: scale(0.85) translateX(calc(((((15% / 2) * 85) / 100) + ((#{$border-width} * 100) / 85)) - ((#{$label-transform} * 100) / 85))) translateY(calc((50% * 100) / 85)) rotate(0deg);
 
 				// transform: scale(0.85) translateX(calc((50% * (15 / 85)) - #{$label-transform} - (#{$label-transform} * (15 / 85)))) translateY(calc(50% * (100 / 85))) rotate(0deg);
-				transform: scale(0.85) translateX(calc((50% * 0.17647059) - #{$label-transform} - (#{$label-transform} * 0.17647059))) translateY(calc(50% * 1.17647059)) rotate(0deg);
+				transform: scale(0.85)
+					translateX(calc((50% * 0.17647059) - #{$label-transform} - (#{$label-transform} * 0.17647059)))
+					translateY(calc(50% * 1.17647059)) rotate(0deg);
 
 				// transform: scale(0.85) translateX(calc(((15% / 2) * (100 / 85)) - #{$label-transform} - (#{$label-transform} * (15 / 85)))) translateY(calc(50% * (100 / 85))) rotate(0deg); atual
 
@@ -870,12 +918,13 @@
 				// transform: scale(0.85) translateX(calc(7.5% - ((1.25rem + 1px) * 100 / 85))) translateY(50%) rotate(0deg); // ESSE AQUI EH O BOM
 			}
 
-
 			&:focus-within {
 				&::after {
 					background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 8'%3e%3cpath fill='%23#{str-slice(inspect($body-color-transformed), 2)}' d='M0.035 8l8-8 8 8z'/%3e%3c/svg%3e");
 					// transform: scale(0.85) translateX(calc(((15% / 2) * (100 / 85)) - #{$label-transform} - (#{$label-transform} * (15 / 85)))) translateY(calc(50% * (100 / 85))) rotate(180deg);
-					transform: scale(0.85) translateX(calc((50% * 0.17647059) - #{$label-transform} - (#{$label-transform} * 0.17647059))) translateY(calc(50% * 1.17647059)) rotate(180deg);
+					transform: scale(0.85)
+						translateX(calc((50% * 0.17647059) - #{$label-transform} - (#{$label-transform} * 0.17647059)))
+						translateY(calc(50% * 1.17647059)) rotate(180deg);
 				}
 			}
 
@@ -890,7 +939,6 @@
 					cursor: progress;
 				}
 			}
-
 
 			// Chevron <<BEFORE/AFTER>> transitioning.
 			// &::after {
@@ -927,7 +975,6 @@
 		}
 	}
 
-
 	//
 	// Floating labels
 	//
@@ -941,7 +988,13 @@
 		> .form-select {
 			~ label {
 				// max-width: calc((100% + ((100% - 85%) * (100 / 85))) - (((#{$body-padding-default-x} * 3) + (#{$border-width} * 2)) * (100 / 85)) - min(calc(1em + (#{$label-padding-transformed-y} * 2) + (#{$border-width} * 2)), #{$height-default}));
-				max-width: calc((100% + ((100% - 85%) * 1.17647059)) - (((#{$body-padding-default-x} * 3) + (#{$border-width} * 2)) * 1.17647059) - min(calc(1em + (#{$label-padding-transformed-y} * 2) + (#{$border-width} * 2)), #{$height-default}));
+				max-width: calc(
+					(100% + ((100% - 85%) * 1.17647059)) -
+						(((#{$body-padding-default-x} * 3) + (#{$border-width} * 2)) * 1.17647059) - min(
+							calc(1em + (#{$label-padding-transformed-y} * 2) + (#{$border-width} * 2)),
+							#{$height-default}
+						)
+				);
 				font-size: $label-font-size-transformed;
 			}
 		}
@@ -970,7 +1023,8 @@
 					border-radius: $radius-transformed;
 					box-shadow: none;
 					// transform: scale(.85) translateX(calc(#{$label-transform} + (#{$label-transform} * (15 / 85)))) translateY(calc((-50% + (#{$border-width} / 2)) + ((#{$border-width} / 2) * (15 / 85))));
-					transform: scale(.85) translateX(calc(#{$label-transform} + (#{$label-transform} * 0.17647059))) translateY(calc((-50% + (#{$border-width} / 2)) + ((#{$border-width} / 2) * 0.17647059)));
+					transform: scale(0.85) translateX(calc(#{$label-transform} + (#{$label-transform} * 0.17647059)))
+						translateY(calc((-50% + (#{$border-width} / 2)) + ((#{$border-width} / 2) * 0.17647059)));
 				}
 			}
 		}
@@ -1008,7 +1062,8 @@
 						border-radius: $radius-transformed;
 						box-shadow: none;
 						// transform: scale(.85) translateX(calc(#{$label-transform} + (#{$label-transform} * (15 / 85)))) translateY(calc((-50% + (#{$border-width} / 2)) + ((#{$border-width} / 2) * (15 / 85))));
-						transform: scale(.85) translateX(calc(#{$label-transform} + (#{$label-transform} * 0.17647059))) translateY(calc((-50% + (#{$border-width} / 2)) + ((#{$border-width} / 2) * 0.17647059)));
+						transform: scale(0.85) translateX(calc(#{$label-transform} + (#{$label-transform} * 0.17647059)))
+							translateY(calc((-50% + (#{$border-width} / 2)) + ((#{$border-width} / 2) * 0.17647059)));
 					}
 				}
 
@@ -1035,7 +1090,8 @@
 				color: transparent;
 			}
 
-			&.label-placeholder { // start w/ `::placeholder` and transformed `<label>`
+			&.label-placeholder {
+				// start w/ `::placeholder` and transformed `<label>`
 				&::placeholder {
 					color: $body-color-default;
 				}
@@ -1064,7 +1120,13 @@
 				// Element <<DURING>> parent's `:focus` transition.
 				~ label {
 					// max-width: calc((100% + ((100% - 85%) * (100 / 85))) - (((#{$body-padding-default-x} * 3) + (#{$border-width} * 2)) * (100 / 85)) - min(calc(1em + (#{$label-padding-transformed-y} * 2) + (#{$border-width} * 2)), #{$height-default}));
-					max-width: calc((100% + ((100% - 85%) * 1.17647059)) - (((#{$body-padding-default-x} * 3) + (#{$border-width} * 2)) * 1.17647059) - min(calc(1em + (#{$label-padding-transformed-y} * 2) + (#{$border-width} * 2)), #{$height-default}));
+					max-width: calc(
+						(100% + ((100% - 85%) * 1.17647059)) -
+							(((#{$body-padding-default-x} * 3) + (#{$border-width} * 2)) * 1.17647059) - min(
+								calc(1em + (#{$label-padding-transformed-y} * 2) + (#{$border-width} * 2)),
+								#{$height-default}
+							)
+					);
 					min-height: 0;
 					padding: $label-padding-transformed;
 					font-size: $label-font-size-transformed;
@@ -1075,7 +1137,8 @@
 					border-radius: $radius-transformed;
 					box-shadow: none;
 					// transform: scale(.85) translateX(calc(#{$label-transform} + (#{$label-transform} * (15 / 85)))) translateY(calc((-50% + (#{$border-width} / 2)) + ((#{$border-width} / 2) * (15 / 85))));
-					transform: scale(.85) translateX(calc(#{$label-transform} + (#{$label-transform} * 0.17647059))) translateY(calc((-50% + (#{$border-width} / 2)) + ((#{$border-width} / 2) * 0.17647059)));
+					transform: scale(0.85) translateX(calc(#{$label-transform} + (#{$label-transform} * 0.17647059)))
+						translateY(calc((-50% + (#{$border-width} / 2)) + ((#{$border-width} / 2) * 0.17647059)));
 				}
 			}
 		}
@@ -1123,14 +1186,15 @@
 				border-radius: $radius-transformed;
 				box-shadow: none;
 				// transform: scale(.85) translateX(calc(#{$label-transform} + (#{$label-transform} * (15 / 85)))) translateY(calc((-50% + (#{$border-width} / 2)) + ((#{$border-width} / 2) * (15 / 85))));
-				transform: scale(.85) translateX(calc(#{$label-transform} + (#{$label-transform} * 0.17647059))) translateY(calc((-50% + (#{$border-width} / 2)) + ((#{$border-width} / 2) * 0.17647059)));
+				transform: scale(0.85) translateX(calc(#{$label-transform} + (#{$label-transform} * 0.17647059)))
+					translateY(calc((-50% + (#{$border-width} / 2)) + ((#{$border-width} / 2) * 0.17647059)));
 			}
 		}
 
 		// Element's individual style (necessary to reset framework's default).
 		> label {
 			min-height: $height-default;
-			padding: .05em $body-padding-default-x 0;
+			padding: 0.05em $body-padding-default-x 0;
 			line-height: calc(#{$height-default} - calc(#{$border-width} * 2));
 			color: $body-color-default;
 			// background-color: $label-bg-color-default;
@@ -1140,7 +1204,6 @@
 			transform-origin: 0 0;
 		}
 	}
-
 
 	//
 	// Check/switch/radio
@@ -1210,7 +1273,8 @@
 
 				// Radio <<BEFORE/AFTER>> the `transition`.
 				&[type="radio"] {
-					background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='2' fill='%23#{str-slice(inspect($body-color-transformed), 2)}'/%3e%3c/svg%3e"), var(--bs-gradient);
+					background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='2' fill='%23#{str-slice(inspect($body-color-transformed), 2)}'/%3e%3c/svg%3e"),
+						var(--bs-gradient);
 				}
 
 				&:focus {
@@ -1229,7 +1293,8 @@
 					}
 
 					&[type="radio"] {
-						background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='2' fill='%23#{str-slice(inspect($body-color-default), 2)}'/%3e%3c/svg%3e"), var(--bs-gradient);
+						background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='2' fill='%23#{str-slice(inspect($body-color-default), 2)}'/%3e%3c/svg%3e"),
+							var(--bs-gradient);
 					}
 
 					// border-color: $border-focus-color !important;
@@ -1249,9 +1314,9 @@
 					// box-shadow: none;
 				}
 
-			// 	&:not(:active) {
+				// 	&:not(:active) {
 
-			// 	}
+				// 	}
 			}
 
 			// Check <<BEFORE>> the `transition` (`:indeterminate` pseudo-class's state).
@@ -1284,15 +1349,15 @@
 				line-height: $height-default;
 				border-radius: $radius-transformed;
 				-webkit-touch-callout: none;
-				  -webkit-user-select: none;
-				   -khtml-user-select: none;
-					 -moz-user-select: none;
-					  -ms-user-select: none;
-						  user-select: none;
+				-webkit-user-select: none;
+				-khtml-user-select: none;
+				-moz-user-select: none;
+				-ms-user-select: none;
+				user-select: none;
 
 				&:active {
 					// border-radius: $check-radius-default;
-					opacity: .8;
+					opacity: 0.8;
 				}
 			}
 		}
@@ -1302,7 +1367,7 @@
 			// Check/switch/radio <<DURING>> the `.form-check:active` state.
 			> .form-check-input[type="checkbox"],
 			> .form-check-input[type="radio"] {
-			// > .form-check-input[type="radio"]:checked:not(:focus) {
+				// > .form-check-input[type="radio"]:checked:not(:focus) {
 				&:checked:not(:focus-within) {
 					background-color: $body-bg-color-transformed;
 					// border-color: $border-focus-color;
@@ -1315,7 +1380,7 @@
 				border-radius: 50%;
 
 				&:checked:not(:focus-within) {
-				// Check/switch <<BEFORE/AFTER>> the `transition`.
+					// Check/switch <<BEFORE/AFTER>> the `transition`.
 					background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'><path fill='none' stroke='%23#{str-slice(inspect($body-color-transformed), 2)}' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='m6 10 3 3 6-6'/></svg>");
 				}
 			}
@@ -1326,12 +1391,12 @@
 
 				// Radio <<BEFORE/AFTER>> the `transition`.
 				&:checked:not(:focus-within) {
-					background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='2' fill='%23#{str-slice(inspect($body-color-transformed), 2)}'/%3e%3c/svg%3e"), var(--bs-gradient);
+					background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='2' fill='%23#{str-slice(inspect($body-color-transformed), 2)}'/%3e%3c/svg%3e"),
+						var(--bs-gradient);
 				}
 			}
 		}
 	}
-
 
 	// Check/switch/radio's `<label>` <<BEFORE/DURING/AFTER>> the `transition`
 	//
@@ -1340,13 +1405,12 @@
 		// See https://stackoverflow.com/questions/826782/how-to-disable-text-selection-highlighting
 		color: $label-color-default;
 		-webkit-touch-callout: none; // iOS Safari
-		  -webkit-user-select: none; // Safari
-		   -khtml-user-select: none; // Konqueror HTML
-			 -moz-user-select: none; // Old versions of Firefox
-			  -ms-user-select: none; // Internet Explorer/Edge
-				  user-select: none; // Non-prefixed version, currently supported by Chrome, Edge, Opera and Firefox
+		-webkit-user-select: none; // Safari
+		-khtml-user-select: none; // Konqueror HTML
+		-moz-user-select: none; // Old versions of Firefox
+		-ms-user-select: none; // Internet Explorer/Edge
+		user-select: none; // Non-prefixed version, currently supported by Chrome, Edge, Opera and Firefox
 	}
-
 
 	// Switch's individual style
 	//
@@ -1376,7 +1440,6 @@
 		}
 	}
 
-
 	// Range
 	//
 	// Style range inputs the same across browsers. Vendor-specific rules for pseudo-elements
@@ -1396,7 +1459,7 @@
 			transition: $transition;
 
 			&:hover:not(:active) {
-				opacity: .5;
+				opacity: 0.5;
 			}
 		}
 
@@ -1413,7 +1476,7 @@
 			transition: $transition;
 
 			&:hover:not(:active) {
-				opacity: .5;
+				opacity: 0.5;
 			}
 		}
 
@@ -1461,8 +1524,16 @@
 
 			// Pseudo-elements must be split across multiple rulesets to have an effect.
 			// No box-shadow() mixin for focus accessibility.
-			&::-webkit-slider-thumb { box-shadow: 0 0 0 1px $border-focus-color, 0 0 0 0.25rem rgba($body-color-transformed, 25%); }
-			&::-moz-range-thumb     { box-shadow: 0 0 0 1px $border-focus-color, 0 0 0 0.25rem rgba($body-color-transformed, 25%); }
+			&::-webkit-slider-thumb {
+				box-shadow:
+					0 0 0 1px $border-focus-color,
+					0 0 0 0.25rem rgba($body-color-transformed, 25%);
+			}
+			&::-moz-range-thumb {
+				box-shadow:
+					0 0 0 1px $border-focus-color,
+					0 0 0 0.25rem rgba($body-color-transformed, 25%);
+			}
 		}
 
 		// `.form-range` (and its pseudo-elements) <<AFTER>> the `:focus` state.
@@ -1482,7 +1553,6 @@
 			}
 		}
 	}
-
 
 	// Animations
 	//
@@ -1541,13 +1611,11 @@
 
 	// }
 
-
 	// Flush accordion items
 	//
 	// Remove borders and border-radius to keep accordion items edge-to-edge.
 
 	.accordion-flush {
-
 		.accordion-button {
 			&:not(.collapsed) {
 				&::after {
@@ -1556,10 +1624,8 @@
 				}
 			}
 		}
-
 	}
 }
-
 
 // See https://stackoverflow.com/a/55002367
 // $stripped-color: str-slice(inspect($color_secondary), 2);

@@ -1,17 +1,15 @@
-  //
- // Page loading animations
+//
+// Page loading animations
 //
 
 // >>> Controllers — START
 @use "../../controllers/dynamics" as *; // controllers for mixins and variables
 // <<<<< Controllers — END
 
-
 // Copy, paste and uncomment the following code into the intended SCSS page to style this module:
 // @extend %fx_load;
 
 %fx_load {
-
 	.fx_load {
 		&::after {
 			content: "";
@@ -29,17 +27,20 @@
 
 			@keyframes fx_load {
 				0% {
-					transform: translate3d(0px, 0%, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg);
+					transform: translate3d(0px, 0%, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg)
+						skew(0deg, 0deg);
 					will-change: transform;
 				}
 
 				99% {
-					transform: translate3d(0px, -100%, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg);
+					transform: translate3d(0px, -100%, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg)
+						skew(0deg, 0deg);
 					will-change: transform;
 				}
 
 				100% {
-					transform: translate3d(0px, 100%, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg);
+					transform: translate3d(0px, 100%, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg)
+						skew(0deg, 0deg);
 					will-change: unset;
 				}
 			}
@@ -55,19 +56,22 @@
 				right: 0%;
 				z-index: 1039;
 				background-color: $color_black;
-				transform: translate3d(0px, 100%, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg);
+				transform: translate3d(0px, 100%, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg)
+					skew(0deg, 0deg);
 				transform-style: preserve-3d;
 				animation: script 1s forwards;
 
 				@keyframes script {
 					0% {
 						background-color: $color_black;
-						transform: translate3d(0px, 100%, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg);
+						transform: translate3d(0px, 100%, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg)
+							skew(0deg, 0deg);
 						will-change: transform;
 					}
 
 					100% {
-						transform: translate3d(0px, 0%, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg);
+						transform: translate3d(0px, 0%, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg)
+							skew(0deg, 0deg);
 						will-change: transform;
 					}
 				}
@@ -75,210 +79,122 @@
 		}
 	}
 
-
-
-/////
-////
-/*/==================== @media ====================/*/// {
-/////////////////
-////////////////
-			  ////////////////////////
-			 /* @media (max-width) */
-			////////////////////////
-
-			@media (max-width: 1399.98px) {
-
-				.fx_load {
-
-
-
-				}
-
-			}
-
-			@media (max-width: 1199.98px) {
-
-				.fx_load {
-
-
-
-				}
-
-			}
-
-			@media (max-width: 991.98px) {
-
-				.fx_load {
-
-
-
-				}
-
-			}
-
-			@media (max-width: 767.98px) {
-
-				.fx_load {
-
-
-
-				}
-
-			}
-
-			@media (max-width: 575.98px) {
-
-				.fx_load {
-
-
-
-				}
-
-			}
-
-				// -------------- //
-
-			  ////////////////////
-			 /* @media between */
-			////////////////////
-
-			@media (min-width: 576px) and (max-width: 767.98px) {
-
-				.fx_load {
-
-
-
-				}
-
-			}
-
-			@media (min-width: 576px) and (max-width: 991.98px) {
-
-				.fx_load {
-
-
-
-				}
-
-			}
-
-			@media (min-width: 768px) and (max-width: 991.98px) {
-
-				.fx_load {
-
-
-
-				}
-
-			}
-
-			@media (min-width: 992px) and (max-width: 1199.98px) {
-
-				.fx_load {
-
-
-
-				}
-
-			}
-
-			@media (min-width: 1200px) and (max-width: 1399.98px) {
-
-				.fx_load {
-
-
-
-				}
-
-			}
-
-				// ------------------ //
-
-			  ////////////////////////
-			 /* @media (min-width) */
-			////////////////////////
-
-			@media (min-width: 576px) {
-
-				.fx_load {
-
-
-
-				}
-
-			}
-
-			@media (min-width: 768px) {
-
-				.fx_load {
-
-
-
-				}
-
-			}
-
-			@media (min-width: 992px) {
-
-				.fx_load {
-
-
-
-				}
-
-			}
-
-			@media (min-width: 1200px) {
-
-				.fx_load {
-
-
-
-				}
-
-			}
-
-			@media (min-width: 1400px) {
-
-				.fx_load {
-
-
-
-				}
-
-			}
-
-				// ---------------- //
-
-			  //////////////////////
-			 /* mobile landscape */
-			//////////////////////
-
-			@media (max-height: 400px) and (orientation: landscape) {
-
-				.fx_load {
-
-
-
-				}
-
-			}
-
-				// ----------------- //
-
-			  ///////////////////////
-			 /* iPad Pro portrait */
-			///////////////////////
-
-			@media (width: 1024px) and (height: 1366px) {
-
-				.fx_load {
-
-
-
-				}
-
-			}
-  //  }
-
+	/////
+	////
+	/*/==================== @media ====================/*/ // {
+	/////////////////
+	////////////////
+	////////////////////////
+	/* @media (max-width) */
+	////////////////////////
+
+	@media (max-width: 1399.98px) {
+		.fx_load {
+		}
+	}
+
+	@media (max-width: 1199.98px) {
+		.fx_load {
+		}
+	}
+
+	@media (max-width: 991.98px) {
+		.fx_load {
+		}
+	}
+
+	@media (max-width: 767.98px) {
+		.fx_load {
+		}
+	}
+
+	@media (max-width: 575.98px) {
+		.fx_load {
+		}
+	}
+
+	// -------------- //
+
+	////////////////////
+	/* @media between */
+	////////////////////
+
+	@media (min-width: 576px) and (max-width: 767.98px) {
+		.fx_load {
+		}
+	}
+
+	@media (min-width: 576px) and (max-width: 991.98px) {
+		.fx_load {
+		}
+	}
+
+	@media (min-width: 768px) and (max-width: 991.98px) {
+		.fx_load {
+		}
+	}
+
+	@media (min-width: 992px) and (max-width: 1199.98px) {
+		.fx_load {
+		}
+	}
+
+	@media (min-width: 1200px) and (max-width: 1399.98px) {
+		.fx_load {
+		}
+	}
+
+	// ------------------ //
+
+	////////////////////////
+	/* @media (min-width) */
+	////////////////////////
+
+	@media (min-width: 576px) {
+		.fx_load {
+		}
+	}
+
+	@media (min-width: 768px) {
+		.fx_load {
+		}
+	}
+
+	@media (min-width: 992px) {
+		.fx_load {
+		}
+	}
+
+	@media (min-width: 1200px) {
+		.fx_load {
+		}
+	}
+
+	@media (min-width: 1400px) {
+		.fx_load {
+		}
+	}
+
+	// ---------------- //
+
+	//////////////////////
+	/* mobile landscape */
+	//////////////////////
+
+	@media (max-height: 400px) and (orientation: landscape) {
+		.fx_load {
+		}
+	}
+
+	// ----------------- //
+
+	///////////////////////
+	/* iPad Pro portrait */
+	///////////////////////
+
+	@media (width: 1024px) and (height: 1366px) {
+		.fx_load {
+		}
+	}
+	//  }
 }

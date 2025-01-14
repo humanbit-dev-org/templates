@@ -1,5 +1,5 @@
-  // Scroll offset mixin (declared globally)
- //
+// Scroll offset mixin (declared globally)
+//
 // Compensate for `fixed` navbar `height`.
 // @include scroll_offset($height_scroll, $height_md, $max_height_extra, $max_height_md, $max_height_xs_landscape);
 //
@@ -9,7 +9,6 @@
 // >>> Controllers — START
 @use "../controllers/functions" as *; // Controller for functions
 // <<<<< Controllers — END
-
 
 @mixin scroll_offset($height-scroll, $height-md, $max-height-extra, $max-height-md, $max-height-xs-landscape) {
 	html {

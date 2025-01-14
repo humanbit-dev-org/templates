@@ -1,12 +1,11 @@
-  //
- // Map page
+//
+// Map page
 //
 
 // >>> Controllers — START
 @use "../controllers/dynamics" as *; // controllers for mixins and variables
 @use "../controllers/extends" as *; // controller for modules
 // <<<<< Controllers — END
-
 
 .map_partial {
 	// @extend %example_module;
@@ -109,7 +108,6 @@
 			&:hover {
 				background-color: $color_second;
 				cursor: pointer;
-
 			}
 		}
 
@@ -146,7 +144,7 @@
 			cursor: col-resize;
 
 			.hover_resize {
-				display: block!important;
+				display: block !important;
 				opacity: 1 !important;
 				transition: opacity 2s ease-in-out;
 			}
@@ -154,7 +152,7 @@
 	}
 
 	.hover_resize {
-		display: none!important;
+		display: none !important;
 		position: absolute;
 		top: -29px;
 		left: 11px;
@@ -192,7 +190,7 @@
 		position: absolute;
 		left: 11px;
 		top: -29px;
-		display: none!important;
+		display: none !important;
 		width: max-content;
 		height: auto;
 		padding: 0.3rem 0.5rem 0.3rem 0.8rem;
@@ -247,7 +245,7 @@
 
 	.leaflet-marker-icon {
 		border-radius: 50%;
-		background-color: #17A7C7 !important;
+		background-color: #17a7c7 !important;
 		border: 1px solid $color_white;
 	}
 
@@ -256,12 +254,10 @@
 	}
 
 	.leaflet-draw-toolbar {
-
 		.leaflet-bar {
 			position: absolute;
 			top: 17rem;
 		}
-
 	}
 
 	.leaflet-draw-draw-polygon.map_tools_selected {
@@ -337,18 +333,23 @@
 
 	h1,
 	.h1 {
-		@include fluid_type( // responsive typography
+		@include fluid_type(
+			// responsive typography
 			// >>>>> VIEWPORT <<<<<
 			// $viewport-min: 20em, // default value set in `_fluid_type.scss` to enable global configuration
 			// $viewport-max: 100em, // default value set in `_fluid_type.scss` to enable global configuration
 			// >>>>> MOBILE <<<<<
-			$font-size-min: 1.8rem, // `font-size` on mobile viewport (< 575.98px)
-			$line-height-mobile: 1.5, // `line-height` multiplier on mobile viewport (< 575.98px)
+			$font-size-min: 1.8rem,
+			// `font-size` on mobile viewport (< 575.98px)
+			$line-height-mobile: 1.5,
+			// `line-height` multiplier on mobile viewport (< 575.98px)
 			// >>>>> DESKTOP <<<<<
-			$font-size-max: 1.8rem, // `font-size` on desktop viewport (> 576px)
-			$line-height-desktop: 1.2, // `line-height` multiplier on desktop viewport (> 576px)
+			$font-size-max: 1.8rem,
+			// `font-size` on desktop viewport (> 576px)
+			$line-height-desktop: 1.2,
+			// `line-height` multiplier on desktop viewport (> 576px)
 			// >>>>> IMPORTANT <<<<<
-			// $important: "!important" // uncomment to add the `!important` flag
+			 // $important: "!important" // uncomment to add the `!important` flag
 		);
 		// line-height: 1.3;
 		font-weight: 300;
@@ -357,18 +358,23 @@
 
 	h2,
 	.h2 {
-		@include fluid_type( // responsive typography
+		@include fluid_type(
+			// responsive typography
 			// >>>>> VIEWPORT <<<<<
 			// $viewport-min: 20em, // default value set in `_fluid_type.scss` to enable global configuration
 			// $viewport-max: 100em, // default value set in `_fluid_type.scss` to enable global configuration
 			// >>>>> MOBILE <<<<<
-			$font-size-min: 1.54rem, // `font-size` on mobile viewport (< 575.98px)
-			$line-height-mobile: 1.5, // `line-height` multiplier on mobile viewport (< 575.98px)
+			$font-size-min: 1.54rem,
+			// `font-size` on mobile viewport (< 575.98px)
+			$line-height-mobile: 1.5,
+			// `line-height` multiplier on mobile viewport (< 575.98px)
 			// >>>>> DESKTOP <<<<<
-			$font-size-max: 1.54rem, // `font-size` on desktop viewport (> 576px)
-			$line-height-desktop: 1.2, // `line-height` multiplier on desktop viewport (> 576px)
+			$font-size-max: 1.54rem,
+			// `font-size` on desktop viewport (> 576px)
+			$line-height-desktop: 1.2,
+			// `line-height` multiplier on desktop viewport (> 576px)
 			// >>>>> IMPORTANT <<<<<
-			// $important: "!important" // uncomment to add the `!important` flag
+			 // $important: "!important" // uncomment to add the `!important` flag
 		);
 		// line-height: 1.3;
 		word-break: break-word;
@@ -376,18 +382,23 @@
 
 	h3,
 	.h3 {
-		@include fluid_type( // responsive typography
+		@include fluid_type(
+			// responsive typography
 			// >>>>> VIEWPORT <<<<<
 			// $viewport-min: 20em, // default value set in `_fluid_type.scss` to enable global configuration
 			// $viewport-max: 100em, // default value set in `_fluid_type.scss` to enable global configuration
 			// >>>>> MOBILE <<<<<
-			$font-size-min: 1.15rem, // `font-size` on mobile viewport (< 575.98px)
-			$line-height-mobile: 1.5, // `line-height` multiplier on mobile viewport (< 575.98px)
+			$font-size-min: 1.15rem,
+			// `font-size` on mobile viewport (< 575.98px)
+			$line-height-mobile: 1.5,
+			// `line-height` multiplier on mobile viewport (< 575.98px)
 			// >>>>> DESKTOP <<<<<
-			$font-size-max: 1.15rem, // `font-size` on desktop viewport (> 576px)
-			$line-height-desktop: 1.2, // `line-height` multiplier on desktop viewport (> 576px)
+			$font-size-max: 1.15rem,
+			// `font-size` on desktop viewport (> 576px)
+			$line-height-desktop: 1.2,
+			// `line-height` multiplier on desktop viewport (> 576px)
 			// >>>>> IMPORTANT <<<<<
-			// $important: "!important" // uncomment to add the `!important` flag
+			 // $important: "!important" // uncomment to add the `!important` flag
 		);
 		// line-height: 1.3;
 		font-weight: 500;
@@ -396,18 +407,23 @@
 
 	h4,
 	.h4 {
-		@include fluid_type( // responsive typography
+		@include fluid_type(
+			// responsive typography
 			// >>>>> VIEWPORT <<<<<
 			// $viewport-min: 20em, // default value set in `_fluid_type.scss` to enable global configuration
 			// $viewport-max: 100em, // default value set in `_fluid_type.scss` to enable global configuration
 			// >>>>> MOBILE <<<<<
-			$font-size-min: 1.15rem, // `font-size` on mobile viewport (< 575.98px)
-			$line-height-mobile: 1.5, // `line-height` multiplier on mobile viewport (< 575.98px)
+			$font-size-min: 1.15rem,
+			// `font-size` on mobile viewport (< 575.98px)
+			$line-height-mobile: 1.5,
+			// `line-height` multiplier on mobile viewport (< 575.98px)
 			// >>>>> DESKTOP <<<<<
-			$font-size-max: 1.15rem, // `font-size` on desktop viewport (> 576px)
-			$line-height-desktop: 1.2, // `line-height` multiplier on desktop viewport (> 576px)
+			$font-size-max: 1.15rem,
+			// `font-size` on desktop viewport (> 576px)
+			$line-height-desktop: 1.2,
+			// `line-height` multiplier on desktop viewport (> 576px)
 			// >>>>> IMPORTANT <<<<<
-			// $important: "!important" // uncomment to add the `!important` flag
+			 // $important: "!important" // uncomment to add the `!important` flag
 		);
 		// line-height: 1.3;
 		font-weight: 500;
@@ -416,18 +432,23 @@
 
 	h5,
 	.h5 {
-		@include fluid_type( // responsive typography
+		@include fluid_type(
+			// responsive typography
 			// >>>>> VIEWPORT <<<<<
 			// $viewport-min: 20em, // default value set in `_fluid_type.scss` to enable global configuration
 			// $viewport-max: 100em, // default value set in `_fluid_type.scss` to enable global configuration
 			// >>>>> MOBILE <<<<<
-			$font-size-min: 1.25rem, // `font-size` on mobile viewport (< 575.98px)
-			$line-height-mobile: 1.5, // `line-height` multiplier on mobile viewport (< 575.98px)
+			$font-size-min: 1.25rem,
+			// `font-size` on mobile viewport (< 575.98px)
+			$line-height-mobile: 1.5,
+			// `line-height` multiplier on mobile viewport (< 575.98px)
 			// >>>>> DESKTOP <<<<<
-			$font-size-max: 1.25rem, // `font-size` on desktop viewport (> 576px)
-			$line-height-desktop: 1.2, // `line-height` multiplier on desktop viewport (> 576px)
+			$font-size-max: 1.25rem,
+			// `font-size` on desktop viewport (> 576px)
+			$line-height-desktop: 1.2,
+			// `line-height` multiplier on desktop viewport (> 576px)
 			// >>>>> IMPORTANT <<<<<
-			// $important: "!important" // uncomment to add the `!important` flag
+			 // $important: "!important" // uncomment to add the `!important` flag
 		);
 		// line-height: 1.3;
 		font-weight: 400;
@@ -436,18 +457,23 @@
 
 	h6,
 	.h6 {
-		@include fluid_type( // responsive typography
+		@include fluid_type(
+			// responsive typography
 			// >>>>> VIEWPORT <<<<<
 			// $viewport-min: 20em, // default value set in `_fluid_type.scss` to enable global configuration
 			// $viewport-max: 100em, // default value set in `_fluid_type.scss` to enable global configuration
 			// >>>>> MOBILE <<<<<
-			$font-size-min: 1rem, // `font-size` on mobile viewport (< 575.98px)
-			$line-height-mobile: 1.5, // `line-height` multiplier on mobile viewport (< 575.98px)
+			$font-size-min: 1rem,
+			// `font-size` on mobile viewport (< 575.98px)
+			$line-height-mobile: 1.5,
+			// `line-height` multiplier on mobile viewport (< 575.98px)
 			// >>>>> DESKTOP <<<<<
-			$font-size-max: 1rem, // `font-size` on desktop viewport (> 576px)
-			$line-height-desktop: 1.2, // `line-height` multiplier on desktop viewport (> 576px)
+			$font-size-max: 1rem,
+			// `font-size` on desktop viewport (> 576px)
+			$line-height-desktop: 1.2,
+			// `line-height` multiplier on desktop viewport (> 576px)
 			// >>>>> IMPORTANT <<<<<
-			// $important: "!important" // uncomment to add the `!important` flag
+			 // $important: "!important" // uncomment to add the `!important` flag
 		);
 		// line-height: 1.3;
 		word-break: break-word;
@@ -455,18 +481,23 @@
 
 	p,
 	.p {
-		@include fluid_type( // responsive typography
+		@include fluid_type(
+			// responsive typography
 			// >>>>> VIEWPORT <<<<<
 			// $viewport-min: 20em, // default value set in `_fluid_type.scss` to enable global configuration
 			// $viewport-max: 100em, // default value set in `_fluid_type.scss` to enable global configuration
 			// >>>>> MOBILE <<<<<
-			$font-size-min: 1rem, // `font-size` on mobile viewport (< 575.98px)
-			$line-height-mobile: 1.5, // `line-height` multiplier on mobile viewport (< 575.98px)
+			$font-size-min: 1rem,
+			// `font-size` on mobile viewport (< 575.98px)
+			$line-height-mobile: 1.5,
+			// `line-height` multiplier on mobile viewport (< 575.98px)
 			// >>>>> DESKTOP <<<<<
-			$font-size-max: 1rem, // `font-size` on desktop viewport (> 576px)
-			$line-height-desktop: 1.2, // `line-height` multiplier on desktop viewport (> 576px)
+			$font-size-max: 1rem,
+			// `font-size` on desktop viewport (> 576px)
+			$line-height-desktop: 1.2,
+			// `line-height` multiplier on desktop viewport (> 576px)
 			// >>>>> IMPORTANT <<<<<
-			// $important: "!important" // uncomment to add the `!important` flag
+			 // $important: "!important" // uncomment to add the `!important` flag
 		);
 		// line-height: 1.3;
 		font-weight: 400;
@@ -474,36 +505,46 @@
 	}
 
 	.big {
-		@include fluid_type( // responsive typography
+		@include fluid_type(
+			// responsive typography
 			// >>>>> VIEWPORT <<<<<
 			// $viewport-min: 20em, // default value set in `_fluid_type.scss` to enable global configuration
 			// $viewport-max: 100em, // default value set in `_fluid_type.scss` to enable global configuration
 			// >>>>> MOBILE <<<<<
-			$font-size-min: 1.8rem, // `font-size` on mobile viewport (< 575.98px)
-			$line-height-mobile: 1.5, // `line-height` multiplier on mobile viewport (< 575.98px)
+			$font-size-min: 1.8rem,
+			// `font-size` on mobile viewport (< 575.98px)
+			$line-height-mobile: 1.5,
+			// `line-height` multiplier on mobile viewport (< 575.98px)
 			// >>>>> DESKTOP <<<<<
-			$font-size-max: 1.8rem, // `font-size` on desktop viewport (> 576px)
-			$line-height-desktop: 1.2, // `line-height` multiplier on desktop viewport (> 576px)
+			$font-size-max: 1.8rem,
+			// `font-size` on desktop viewport (> 576px)
+			$line-height-desktop: 1.2,
+			// `line-height` multiplier on desktop viewport (> 576px)
 			// >>>>> IMPORTANT <<<<<
-			// $important: "!important" // uncomment to add the `!important` flag
+			 // $important: "!important" // uncomment to add the `!important` flag
 		);
 		// line-height: 1.3;
 		font-weight: 300;
 	}
 
 	.medium {
-		@include fluid_type( // responsive typography
+		@include fluid_type(
+			// responsive typography
 			// >>>>> VIEWPORT <<<<<
 			// $viewport-min: 20em, // default value set in `_fluid_type.scss` to enable global configuration
 			// $viewport-max: 100em, // default value set in `_fluid_type.scss` to enable global configuration
 			// >>>>> MOBILE <<<<<
-			$font-size-min: 1.2rem, // `font-size` on mobile viewport (< 575.98px)
-			$line-height-mobile: 1.5, // `line-height` multiplier on mobile viewport (< 575.98px)
+			$font-size-min: 1.2rem,
+			// `font-size` on mobile viewport (< 575.98px)
+			$line-height-mobile: 1.5,
+			// `line-height` multiplier on mobile viewport (< 575.98px)
 			// >>>>> DESKTOP <<<<<
-			$font-size-max: 1.2rem, // `font-size` on desktop viewport (> 576px)
-			$line-height-desktop: 1.2, // `line-height` multiplier on desktop viewport (> 576px)
+			$font-size-max: 1.2rem,
+			// `font-size` on desktop viewport (> 576px)
+			$line-height-desktop: 1.2,
+			// `line-height` multiplier on desktop viewport (> 576px)
 			// >>>>> IMPORTANT <<<<<
-			// $important: "!important" // uncomment to add the `!important` flag
+			 // $important: "!important" // uncomment to add the `!important` flag
 		);
 		// line-height: 1.3;
 		font-weight: 200;
@@ -511,18 +552,23 @@
 
 	small,
 	.small {
-		@include fluid_type( // responsive typography
+		@include fluid_type(
+			// responsive typography
 			// >>>>> VIEWPORT <<<<<
 			// $viewport-min: 20em, // default value set in `_fluid_type.scss` to enable global configuration
 			// $viewport-max: 100em, // default value set in `_fluid_type.scss` to enable global configuration
 			// >>>>> MOBILE <<<<<
-			$font-size-min: 0.8rem, // `font-size` on mobile viewport (< 575.98px)
-			$line-height-mobile: 1.5, // `line-height` multiplier on mobile viewport (< 575.98px)
+			$font-size-min: 0.8rem,
+			// `font-size` on mobile viewport (< 575.98px)
+			$line-height-mobile: 1.5,
+			// `line-height` multiplier on mobile viewport (< 575.98px)
 			// >>>>> DESKTOP <<<<<
-			$font-size-max: 0.8rem, // `font-size` on desktop viewport (> 576px)
-			$line-height-desktop: 1.2, // `line-height` multiplier on desktop viewport (> 576px)
+			$font-size-max: 0.8rem,
+			// `font-size` on desktop viewport (> 576px)
+			$line-height-desktop: 1.2,
+			// `line-height` multiplier on desktop viewport (> 576px)
 			// >>>>> IMPORTANT <<<<<
-			// $important: "!important" // uncomment to add the `!important` flag
+			 // $important: "!important" // uncomment to add the `!important` flag
 		);
 		// line-height: 1.4;
 		font-weight: 200;
@@ -533,18 +579,23 @@
 	select.form-select,
 	input:not([type="checkbox"]):not([type="radio"]),
 	.input {
-		@include fluid_type( // responsive typography
+		@include fluid_type(
+			// responsive typography
 			// >>>>> VIEWPORT <<<<<
 			// $viewport-min: 20em, // default value set in `_fluid_type.scss` to enable global configuration
 			// $viewport-max: 100em, // default value set in `_fluid_type.scss` to enable global configuration
 			// >>>>> MOBILE <<<<<
-			$font-size-min: 1.13rem, // `font-size` on mobile viewport (< 575.98px)
-			$line-height-mobile: 1.5, // `line-height` multiplier on mobile viewport (< 575.98px)
+			$font-size-min: 1.13rem,
+			// `font-size` on mobile viewport (< 575.98px)
+			$line-height-mobile: 1.5,
+			// `line-height` multiplier on mobile viewport (< 575.98px)
 			// >>>>> DESKTOP <<<<<
-			$font-size-max: 1.13rem, // `font-size` on desktop viewport (> 576px)
-			$line-height-desktop: 1.2, // `line-height` multiplier on desktop viewport (> 576px)
+			$font-size-max: 1.13rem,
+			// `font-size` on desktop viewport (> 576px)
+			$line-height-desktop: 1.2,
+			// `line-height` multiplier on desktop viewport (> 576px)
 			// >>>>> IMPORTANT <<<<<
-			// $important: "!important" // uncomment to add the `!important` flag
+			 // $important: "!important" // uncomment to add the `!important` flag
 		);
 		// line-height: 1.3;
 	}
@@ -567,7 +618,7 @@
 	.map_accordion {
 		.accordion-button {
 			&:hover {
-				opacity: .8;
+				opacity: 0.8;
 			}
 
 			&::after {
@@ -587,14 +638,14 @@
 				&::after {
 					background-color: $color_second;
 					border-color: $color_second;
-					transition: .13s ease-in-out;
+					transition: 0.13s ease-in-out;
 				}
 			}
 		}
 
 		.form-check {
 			&:hover {
-				opacity: .8;
+				opacity: 0.8;
 
 				> * {
 					color: $color_second;
@@ -604,7 +655,7 @@
 	}
 
 	input#search_button::placeholder {
-		color: rgba($color_white, .75);
+		color: rgba($color_white, 0.75);
 	}
 
 	.btn_back {
@@ -621,263 +672,177 @@
 	}
 }
 
-
-
 /////
 ////
-/*/==================== @media ====================/*/// {
+/*/==================== @media ====================/*/ // {
 /////////////
 ////////////
-		  ////////////////////////
-		 /* @media (max-width) */
-		////////////////////////
+////////////////////////
+/* @media (max-width) */
+////////////////////////
 
-		@media (max-width: 1399.98px) {
+@media (max-width: 1399.98px) {
+	.map_partial {
+	}
+}
 
-			.map_partial {
+@media (max-width: 1199.98px) {
+	.map_partial {
+	}
+}
 
-
-
+@media (max-width: 991.98px) {
+	.map_partial {
+		.map {
+			.openstreetmap_iframe {
+				height: calc(100vh - 6rem) !important;
 			}
-
 		}
 
-		@media (max-width: 1199.98px) {
-
-			.map_partial {
-
-
-
-			}
-
+		.openstreetmap_iframe {
+			position: relative !important;
+			height: calc(100vh - 6rem) !important;
 		}
 
-		@media (max-width: 991.98px) {
-
-			.map_partial {
-				.map {
-
-					.openstreetmap_iframe {
-						height: calc(100vh - 6rem) !important;
-					}
-
-				}
-
-				.openstreetmap_iframe {
-					position: relative !important;
-					height: calc(100vh - 6rem) !important;
-				}
-
-				.leaflet-bottom {
-					display: none !important;
-				}
-
-				.leaflet-left {
-					right: calc(0vw + 0.5rem);
-				}
-
-				#search_div {
-					right: 3px;
-					bottom: 107px;
-					width: 367px;
-					z-index: 999;
-				}
-
-				.help_map_content {
-					top: 8rem;
-					bottom: auto;
-					left: 2%;
-					width: 96%;
-					margin-right: auto;
-					margin-left: auto;
-					font-weight: 400;
-					background-color: rgba($color_third, 1);
-					border: 1px solid white;
-
-					h3 {
-						width: 87%;
-					}
-
-					.fa-xmark {
-						padding-right: 2%;
-					}
-				}
-			}
-
+		.leaflet-bottom {
+			display: none !important;
 		}
 
-		@media (max-width: 767.98px) {
-
-			.map_partial {
-
-				.container_ghost {
-					height: 5rem;
-				}
-
-			}
-
+		.leaflet-left {
+			right: calc(0vw + 0.5rem);
 		}
 
-		@media (max-width: 575.98px) {
-
-			.map_partial {
-
-				.help_map_container {
-
-					.help_map_content {
-						top: 35px;
-						right: 0;
-						left: 0;
-						width:  100%;
-					}
-
-				}
-
-			}
-
+		#search_div {
+			right: 3px;
+			bottom: 107px;
+			width: 367px;
+			z-index: 999;
 		}
 
-			// -------------- //
+		.help_map_content {
+			top: 8rem;
+			bottom: auto;
+			left: 2%;
+			width: 96%;
+			margin-right: auto;
+			margin-left: auto;
+			font-weight: 400;
+			background-color: rgba($color_third, 1);
+			border: 1px solid white;
 
-		  ////////////////////
-		 /* @media between */
-		////////////////////
-
-		@media (min-width: 576px) and (max-width: 767.98px) {
-
-			.map_partial {
-
-
-
+			h3 {
+				width: 87%;
 			}
 
-		}
-
-		@media (min-width: 576px) and (max-width: 991.98px) {
-
-			.map_partial {
-
-
-
+			.fa-xmark {
+				padding-right: 2%;
 			}
-
 		}
+	}
+}
 
-		@media (min-width: 768px) and (max-width: 991.98px) {
+@media (max-width: 767.98px) {
+	.map_partial {
+		.container_ghost {
+			height: 5rem;
+		}
+	}
+}
 
-			.map_partial {
-
-
-
+@media (max-width: 575.98px) {
+	.map_partial {
+		.help_map_container {
+			.help_map_content {
+				top: 35px;
+				right: 0;
+				left: 0;
+				width: 100%;
 			}
-
 		}
+	}
+}
 
-		@media (min-width: 992px) and (max-width: 1199.98px) {
+// -------------- //
 
-			.map_partial {
+////////////////////
+/* @media between */
+////////////////////
 
+@media (min-width: 576px) and (max-width: 767.98px) {
+	.map_partial {
+	}
+}
 
+@media (min-width: 576px) and (max-width: 991.98px) {
+	.map_partial {
+	}
+}
 
-			}
+@media (min-width: 768px) and (max-width: 991.98px) {
+	.map_partial {
+	}
+}
 
-		}
+@media (min-width: 992px) and (max-width: 1199.98px) {
+	.map_partial {
+	}
+}
 
-		@media (min-width: 1200px) and (max-width: 1399.98px) {
+@media (min-width: 1200px) and (max-width: 1399.98px) {
+	.map_partial {
+	}
+}
 
-			.map_partial {
+// ------------------ //
 
+////////////////////////
+/* @media (min-width) */
+////////////////////////
 
+@media (min-width: 576px) {
+	.map_partial {
+	}
+}
 
-			}
+@media (min-width: 768px) {
+	.map_partial {
+	}
+}
 
-		}
+@media (min-width: 992px) {
+	.map_partial {
+	}
+}
 
-			// ------------------ //
+@media (min-width: 1200px) {
+	.map_partial {
+	}
+}
 
-		  ////////////////////////
-		 /* @media (min-width) */
-		////////////////////////
+@media (min-width: 1400px) {
+	.map_partial {
+	}
+}
 
-		@media (min-width: 576px) {
+// ---------------- //
 
-			.map_partial {
+//////////////////////
+/* mobile landscape */
+//////////////////////
 
+@media (max-height: 400px) and (orientation: landscape) {
+	.map_partial {
+	}
+}
 
+// ----------------- //
 
-			}
+///////////////////////
+/* iPad Pro portrait */
+///////////////////////
 
-		}
-
-		@media (min-width: 768px) {
-
-			.map_partial {
-
-
-
-			}
-
-		}
-
-		@media (min-width: 992px) {
-
-			.map_partial {
-
-
-
-			}
-
-		}
-
-		@media (min-width: 1200px) {
-
-			.map_partial {
-
-
-
-			}
-
-		}
-
-		@media (min-width: 1400px) {
-
-			.map_partial {
-
-
-
-			}
-
-		}
-
-			// ---------------- //
-
-		  //////////////////////
-		 /* mobile landscape */
-		//////////////////////
-
-		@media (max-height: 400px) and (orientation: landscape) {
-
-			.map_partial {
-
-
-
-			}
-
-		}
-
-			// ----------------- //
-
-		  ///////////////////////
-		 /* iPad Pro portrait */
-		///////////////////////
-
-		@media (width: 1024px) and (height: 1366px) {
-
-			.map_partial {
-
-
-
-			}
-
-		}
- // }
+@media (width: 1024px) and (height: 1366px) {
+	.map_partial {
+	}
+}
+// }

@@ -1,17 +1,15 @@
-  //
- // Row module with text and image (2)
+//
+// Row module with text and image (2)
 //
 
 // >>> Controllers — START
 @use "../controllers/dynamics" as *; // controllers for mixins and variables
 // <<<<< Controllers — END
 
-
 // Copy, paste and uncomment the following code into the intended SCSS page to style this module:
 // @extend %txt_img_row_2_module;
 
 %txt_img_row_2_module {
-
 	.txt_img_row_2_module {
 		padding: 0 !important;
 
@@ -33,7 +31,6 @@
 				text-transform: capitalize;
 				color: $color_fourth;
 				font-weight: 600;
-
 			}
 
 			.title_buttons {
@@ -45,7 +42,6 @@
 				width: 100%;
 				margin-bottom: 1rem !important;
 			}
-
 		}
 
 		.txt_img_row_btn {
@@ -107,228 +103,149 @@
 		}
 	}
 
+	/////
+	////
+	/*/==================== @media ====================/*/ // {
+	/////////////////
+	////////////////
+	////////////////////////
+	/* @media (max-width) */
+	////////////////////////
 
+	@media (max-width: 1399.98px) {
+		.txt_img_row_2_module {
+		}
+	}
 
-/////
-////
-/*/==================== @media ====================/*/// {
-/////////////////
-////////////////
-			  ////////////////////////
-			 /* @media (max-width) */
-			////////////////////////
+	@media (max-width: 1199.98px) {
+		.txt_img_row_2_module {
+		}
+	}
 
-			@media (max-width: 1399.98px) {
-
-				.txt_img_row_2_module {
-
-
-
-				}
-
+	@media (max-width: 991.98px) {
+		.txt_img_row_2_module {
+			.space_home_element:nth-child(odd) {
+				padding-right: 0rem;
 			}
 
-			@media (max-width: 1199.98px) {
-
-				.txt_img_row_2_module {
-
-
-
-				}
-
+			.space_home_element:nth-child(even) {
+				padding-left: 0rem;
 			}
 
-			@media (max-width: 991.98px) {
+			.space_home_text {
+				-webkit-box-ordinal-group: 3 !important;
+				-ms-flex-order: 2 !important;
+				order: 2 !important;
+			}
+		}
+	}
 
-				.txt_img_row_2_module {
-					.space_home_element:nth-child(odd) {
-						padding-right: 0rem;
-					}
-
-					.space_home_element:nth-child(even) {
-						padding-left: 0rem;
-					}
-
-					.space_home_text {
-						-webkit-box-ordinal-group: 3 !important;
-						-ms-flex-order: 2 !important;
-						order: 2 !important;
-					}
-				}
-
+	@media (max-width: 767.98px) {
+		.txt_img_row_2_module {
+			.btn_white_orange {
+				width: 100%;
 			}
 
-			@media (max-width: 767.98px) {
+			.space_det_btn {
+				padding-right: 5.5rem;
+			}
+		}
+	}
 
-				.txt_img_row_2_module {
-					.btn_white_orange {
-						width: 100%;
-					}
+	@media (max-width: 575.98px) {
+		.txt_img_row_2_module {
+		}
+	}
 
-					.space_det_btn {
-						padding-right: 5.5rem;
-					}
-				}
+	// -------------- //
 
+	////////////////////
+	/* @media between */
+	////////////////////
+
+	@media (min-width: 576px) and (max-width: 767.98px) {
+		.txt_img_row_2_module {
+		}
+	}
+
+	@media (min-width: 576px) and (max-width: 991.98px) {
+		.txt_img_row_2_module {
+		}
+	}
+
+	@media (min-width: 768px) and (max-width: 991.98px) {
+		.txt_img_row_2_module {
+		}
+	}
+
+	@media (min-width: 992px) and (max-width: 1199.98px) {
+		.txt_img_row_2_module {
+		}
+	}
+
+	@media (min-width: 1200px) and (max-width: 1399.98px) {
+		.txt_img_row_2_module {
+		}
+	}
+
+	// ------------------ //
+
+	////////////////////////
+	/* @media (min-width) */
+	////////////////////////
+
+	@media (min-width: 576px) {
+		.txt_img_row_2_module {
+		}
+	}
+
+	@media (min-width: 768px) {
+		.txt_img_row_2_module {
+		}
+	}
+
+	@media (min-width: 992px) {
+		.txt_img_row_2_module {
+			.space_home_text:nth-child(odd) {
+				text-align: left;
 			}
 
-			@media (max-width: 575.98px) {
-
-				.txt_img_row_2_module {
-
-
-
-				}
-
+			.space_home_text:nth-child(even) {
+				text-align: left;
 			}
-
-				// -------------- //
-
-			  ////////////////////
-			 /* @media between */
-			////////////////////
-
-			@media (min-width: 576px) and (max-width: 767.98px) {
-
-				.txt_img_row_2_module {
-
-
-
-				}
-
-			}
-
-			@media (min-width: 576px) and (max-width: 991.98px) {
-
-				.txt_img_row_2_module {
-
-
-
-				}
-
-			}
-
-			@media (min-width: 768px) and (max-width: 991.98px) {
-
-				.txt_img_row_2_module {
-
-
-
-				}
-
-			}
-
-			@media (min-width: 992px) and (max-width: 1199.98px) {
-
-				.txt_img_row_2_module {
-
-
-
-				}
-
-			}
-
-			@media (min-width: 1200px) and (max-width: 1399.98px) {
-
-				.txt_img_row_2_module {
-
-
-
-				}
-
-			}
-
-				// ------------------ //
-
-			  ////////////////////////
-			 /* @media (min-width) */
-			////////////////////////
-
-			@media (min-width: 576px) {
-
-				.txt_img_row_2_module {
-
-
-
-				}
-
-			}
-
-			@media (min-width: 768px) {
-
-				.txt_img_row_2_module {
-
-
-
-				}
-
-			}
-
-			@media (min-width: 992px) {
-
-				.txt_img_row_2_module {
-					.space_home_text:nth-child(odd) {
-						text-align: left;
-					}
-
-					.space_home_text:nth-child(even) {
-						text-align: left;
-					}
-				}
-
-			}
-
-			@media (min-width: 1200px) {
-
-				.txt_img_row_2_module {
-
-
-
-				}
-
-			}
-
-			@media (min-width: 1400px) {
-
-				.txt_img_row_2_module {
-
-
-
-				}
-
-			}
-
-				// ---------------- //
-
-			  //////////////////////
-			 /* mobile landscape */
-			//////////////////////
-
-			@media (max-height: 400px) and (orientation: landscape) {
-
-				.txt_img_row_2_module {
-
-
-
-				}
-
-			}
-
-				// ----------------- //
-
-			  ///////////////////////
-			 /* iPad Pro portrait */
-			///////////////////////
-
-			@media (width: 1024px) and (height: 1366px) {
-
-				.txt_img_row_2_module {
-
-
-
-				}
-
-			}
-  //  }
-
+		}
+	}
+
+	@media (min-width: 1200px) {
+		.txt_img_row_2_module {
+		}
+	}
+
+	@media (min-width: 1400px) {
+		.txt_img_row_2_module {
+		}
+	}
+
+	// ---------------- //
+
+	//////////////////////
+	/* mobile landscape */
+	//////////////////////
+
+	@media (max-height: 400px) and (orientation: landscape) {
+		.txt_img_row_2_module {
+		}
+	}
+
+	// ----------------- //
+
+	///////////////////////
+	/* iPad Pro portrait */
+	///////////////////////
+
+	@media (width: 1024px) and (height: 1366px) {
+		.txt_img_row_2_module {
+		}
+	}
+	//  }
 }

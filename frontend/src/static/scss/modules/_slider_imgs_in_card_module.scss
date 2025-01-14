@@ -1,17 +1,15 @@
-  //
- // Card slider module
+//
+// Card slider module
 //
 
 // >>> Controllers — START
 @use "../controllers/dynamics" as *; // controllers for mixins and variables
 // <<<<< Controllers — END
 
-
 // Copy, paste and uncomment the following code into the intended SCSS page to style this module:
 // @extend %slider_imgs_in_card_module;
 
 %slider_imgs_in_card_module {
-
 	.slider_imgs_in_card_module {
 		.nomeproductTestata {
 			border-bottom: 2px solid;
@@ -33,10 +31,18 @@
 					opacity: 1 !important;
 
 					.container_product .link_product_container {
-						box-shadow: 0 4px 8px 0 rgb(0 0 0 / 20%), 0 6px 20px 0 rgb(0 0 0 / 19%);
-						box-shadow: 0 4px 18px 0 rgb(0 0 0 / 9%), 0 6px 40px 0 rgb(0 0 0 / 10%);
-						-webkit-box-shadow: 0 4px 18px 0 rgb(0 0 0 / 9%), 0 6px 40px 0 rgb(0 0 0 / 10%);
-						-moz-box-shadow: 0 4px 18px 0 rgb(0 0 0 / 9%), 0 6px 40px 0 rgb(0 0 0 / 10%);
+						box-shadow:
+							0 4px 8px 0 rgb(0 0 0 / 20%),
+							0 6px 20px 0 rgb(0 0 0 / 19%);
+						box-shadow:
+							0 4px 18px 0 rgb(0 0 0 / 9%),
+							0 6px 40px 0 rgb(0 0 0 / 10%);
+						-webkit-box-shadow:
+							0 4px 18px 0 rgb(0 0 0 / 9%),
+							0 6px 40px 0 rgb(0 0 0 / 10%);
+						-moz-box-shadow:
+							0 4px 18px 0 rgb(0 0 0 / 9%),
+							0 6px 40px 0 rgb(0 0 0 / 10%);
 						transition: all 0.5s ease-in-out;
 						-webkit-transition: all 0.5s ease-in-out;
 						-moz-transition: all 0.5s ease-in-out;
@@ -69,7 +75,7 @@
 			.slickdsi-prev,
 			.slickdsi-next {
 				top: 83px;
-				position:absolute;
+				position: absolute;
 				font-size: 0.9rem;
 				cursor: pointer;
 				line-height: 0.5rem;
@@ -109,7 +115,7 @@
 
 			.container_product {
 				// background-color: rgba(0, 51, 102, 0.05);
-				border-radius:20px;
+				border-radius: 20px;
 			}
 
 			.complessi_type {
@@ -120,7 +126,6 @@
 			.caratteristiche {
 				color: $color_fourth;
 			}
-
 		}
 
 		h6 {
@@ -141,10 +146,9 @@
 		}
 
 		.hero_text {
-
 			h6,
 			p {
-			color: $color_second;
+				color: $color_second;
 			}
 		}
 
@@ -188,7 +192,6 @@
 
 		.slick-prev {
 			left: 0;
-
 		}
 		.slick-next {
 			right: 0;
@@ -211,210 +214,122 @@
 		}
 	}
 
-
-
-/////
-////
-/*/==================== @media ====================/*/// {
-/////////////////
-////////////////
-			  ////////////////////////
-			 /* @media (max-width) */
-			////////////////////////
-
-			@media (max-width: 1399.98px) {
-
-				.card_event_home_module {
-
-
-
-				}
-
-			}
-
-			@media (max-width: 1199.98px) {
-
-				.card_event_home_module {
-
-
-
-				}
-
-			}
-
-			@media (max-width: 991.98px) {
-
-				.card_event_home_module {
-
-
-
-				}
-
-			}
-
-			@media (max-width: 767.98px) {
-
-				.card_event_home_module {
-
-
-
-				}
-
-			}
-
-			@media (max-width: 575.98px) {
-
-				.card_event_home_module {
-
-
-
-				}
-
-			}
-
-				// -------------- //
-
-			  ////////////////////
-			 /* @media between */
-			////////////////////
-
-			@media (min-width: 576px) and (max-width: 767.98px) {
-
-				.card_event_home_module {
-
-
-
-				}
-
-			}
-
-			@media (min-width: 576px) and (max-width: 991.98px) {
-
-				.card_event_home_module {
-
-
-
-				}
-
-			}
-
-			@media (min-width: 768px) and (max-width: 991.98px) {
-
-				.card_event_home_module {
-
-
-
-				}
-
-			}
-
-			@media (min-width: 992px) and (max-width: 1199.98px) {
-
-				.card_event_home_module {
-
-
-
-				}
-
-			}
-
-			@media (min-width: 1200px) and (max-width: 1399.98px) {
-
-				.card_event_home_module {
-
-
-
-				}
-
-			}
-
-				// ------------------ //
-
-			  ////////////////////////
-			 /* @media (min-width) */
-			////////////////////////
-
-			@media (min-width: 576px) {
-
-				.card_event_home_module {
-
-
-
-				}
-
-			}
-
-			@media (min-width: 768px) {
-
-				.card_event_home_module {
-
-
-
-				}
-
-			}
-
-			@media (min-width: 992px) {
-
-				.card_event_home_module {
-
-
-
-				}
-
-			}
-
-			@media (min-width: 1200px) {
-
-				.card_event_home_module {
-
-
-
-				}
-
-			}
-
-			@media (min-width: 1400px) {
-
-				.card_event_home_module {
-
-
-
-				}
-
-			}
-
-				// ---------------- //
-
-			  //////////////////////
-			 /* mobile landscape */
-			//////////////////////
-
-			@media (max-height: 400px) and (orientation: landscape) {
-
-				.card_event_home_module {
-
-
-
-				}
-
-			}
-
-				// ----------------- //
-
-			  ///////////////////////
-			 /* iPad Pro portrait */
-			///////////////////////
-
-			@media (width: 1024px) and (height: 1366px) {
-
-				.card_event_home_module {
-
-
-
-				}
-
-			}
-  //  }
-
+	/////
+	////
+	/*/==================== @media ====================/*/ // {
+	/////////////////
+	////////////////
+	////////////////////////
+	/* @media (max-width) */
+	////////////////////////
+
+	@media (max-width: 1399.98px) {
+		.card_event_home_module {
+		}
+	}
+
+	@media (max-width: 1199.98px) {
+		.card_event_home_module {
+		}
+	}
+
+	@media (max-width: 991.98px) {
+		.card_event_home_module {
+		}
+	}
+
+	@media (max-width: 767.98px) {
+		.card_event_home_module {
+		}
+	}
+
+	@media (max-width: 575.98px) {
+		.card_event_home_module {
+		}
+	}
+
+	// -------------- //
+
+	////////////////////
+	/* @media between */
+	////////////////////
+
+	@media (min-width: 576px) and (max-width: 767.98px) {
+		.card_event_home_module {
+		}
+	}
+
+	@media (min-width: 576px) and (max-width: 991.98px) {
+		.card_event_home_module {
+		}
+	}
+
+	@media (min-width: 768px) and (max-width: 991.98px) {
+		.card_event_home_module {
+		}
+	}
+
+	@media (min-width: 992px) and (max-width: 1199.98px) {
+		.card_event_home_module {
+		}
+	}
+
+	@media (min-width: 1200px) and (max-width: 1399.98px) {
+		.card_event_home_module {
+		}
+	}
+
+	// ------------------ //
+
+	////////////////////////
+	/* @media (min-width) */
+	////////////////////////
+
+	@media (min-width: 576px) {
+		.card_event_home_module {
+		}
+	}
+
+	@media (min-width: 768px) {
+		.card_event_home_module {
+		}
+	}
+
+	@media (min-width: 992px) {
+		.card_event_home_module {
+		}
+	}
+
+	@media (min-width: 1200px) {
+		.card_event_home_module {
+		}
+	}
+
+	@media (min-width: 1400px) {
+		.card_event_home_module {
+		}
+	}
+
+	// ---------------- //
+
+	//////////////////////
+	/* mobile landscape */
+	//////////////////////
+
+	@media (max-height: 400px) and (orientation: landscape) {
+		.card_event_home_module {
+		}
+	}
+
+	// ----------------- //
+
+	///////////////////////
+	/* iPad Pro portrait */
+	///////////////////////
+
+	@media (width: 1024px) and (height: 1366px) {
+		.card_event_home_module {
+		}
+	}
+	//  }
 }

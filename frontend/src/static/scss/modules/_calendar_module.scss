@@ -1,26 +1,24 @@
-  //
- // Calendar module (1)
+//
+// Calendar module (1)
 //
 
 // >>> Controllers — START
 @use "../controllers/dynamics" as *; // controllers for mixins and variables
 // <<<<< Controllers — END
 
-
 // Copy, paste and uncomment the following code into the intended SCSS page to style this module:
 // @extend %calendar_module;
 
 %calendar_module {
-
 	.calendar_module,
 	.calendar_row_module {
 		// @include scroll-offset($height: -11vh, $margin: -11vh 0 0, $top: -38vh);
 
 		// form{
-			// .form-floating > .form-control,
-			// .form-floating > .form-select {
-				// height: unset;
-			// }
+		// .form-floating > .form-control,
+		// .form-floating > .form-select {
+		// height: unset;
+		// }
 		// }
 
 		// :focus {
@@ -73,7 +71,6 @@
 			// }
 		}
 
-
 		// .calendar_Filter {
 		//     color: $color_second;
 		//     background-color: $color_white;
@@ -87,210 +84,122 @@
 		// }
 	}
 
-
-
-/////
-////
-/*/==================== @media ====================/*/// {
-/////////////////
-////////////////
-			  ////////////////////////
-			 /* @media (max-width) */
-			////////////////////////
-
-			@media (max-width: 1399.98px) {
-
-				.calendar_module {
-
-
-
-				}
-
-			}
-
-			@media (max-width: 1199.98px) {
-
-				.calendar_module {
-
-
-
-				}
-
-			}
-
-			@media (max-width: 991.98px) {
-
-				.calendar_module {
-
-
-
-				}
-
-			}
-
-			@media (max-width: 767.98px) {
-
-				.calendar_module {
-
-
-
-				}
-
-			}
-
-			@media (max-width: 575.98px) {
-
-				.calendar_module {
-
-
-
-				}
-
-			}
-
-				// -------------- //
-
-			  ////////////////////
-			 /* @media between */
-			////////////////////
-
-			@media (min-width: 576px) and (max-width: 767.98px) {
-
-				.calendar_module {
-
-
-
-				}
-
-			}
-
-			@media (min-width: 576px) and (max-width: 991.98px) {
-
-				.calendar_module {
-
-
-
-				}
-
-			}
-
-			@media (min-width: 768px) and (max-width: 991.98px) {
-
-				.calendar_module {
-
-
-
-				}
-
-			}
-
-			@media (min-width: 992px) and (max-width: 1199.98px) {
-
-				.calendar_module {
-
-
-
-				}
-
-			}
-
-			@media (min-width: 1200px) and (max-width: 1399.98px) {
-
-				.calendar_module {
-
-
-
-				}
-
-			}
-
-				// ------------------ //
-
-			  ////////////////////////
-			 /* @media (min-width) */
-			////////////////////////
-
-			@media (min-width: 576px) {
-
-				.calendar_module {
-
-
-
-				}
-
-			}
-
-			@media (min-width: 768px) {
-
-				.calendar_module {
-
-
-
-				}
-
-			}
-
-			@media (min-width: 992px) {
-
-				.calendar_module {
-
-
-
-				}
-
-			}
-
-			@media (min-width: 1200px) {
-
-				.calendar_module {
-
-
-
-				}
-
-			}
-
-			@media (min-width: 1400px) {
-
-				.calendar_module {
-
-
-
-				}
-
-			}
-
-				// ---------------- //
-
-			  //////////////////////
-			 /* mobile landscape */
-			//////////////////////
-
-			@media (max-height: 400px) and (orientation: landscape) {
-
-				.calendar_module {
-
-
-
-				}
-
-			}
-
-				// ----------------- //
-
-			  ///////////////////////
-			 /* iPad Pro portrait */
-			///////////////////////
-
-			@media (width: 1024px) and (height: 1366px) {
-
-				.calendar_module {
-
-
-
-				}
-
-			}
-  //  }
-
+	/////
+	////
+	/*/==================== @media ====================/*/ // {
+	/////////////////
+	////////////////
+	////////////////////////
+	/* @media (max-width) */
+	////////////////////////
+
+	@media (max-width: 1399.98px) {
+		.calendar_module {
+		}
+	}
+
+	@media (max-width: 1199.98px) {
+		.calendar_module {
+		}
+	}
+
+	@media (max-width: 991.98px) {
+		.calendar_module {
+		}
+	}
+
+	@media (max-width: 767.98px) {
+		.calendar_module {
+		}
+	}
+
+	@media (max-width: 575.98px) {
+		.calendar_module {
+		}
+	}
+
+	// -------------- //
+
+	////////////////////
+	/* @media between */
+	////////////////////
+
+	@media (min-width: 576px) and (max-width: 767.98px) {
+		.calendar_module {
+		}
+	}
+
+	@media (min-width: 576px) and (max-width: 991.98px) {
+		.calendar_module {
+		}
+	}
+
+	@media (min-width: 768px) and (max-width: 991.98px) {
+		.calendar_module {
+		}
+	}
+
+	@media (min-width: 992px) and (max-width: 1199.98px) {
+		.calendar_module {
+		}
+	}
+
+	@media (min-width: 1200px) and (max-width: 1399.98px) {
+		.calendar_module {
+		}
+	}
+
+	// ------------------ //
+
+	////////////////////////
+	/* @media (min-width) */
+	////////////////////////
+
+	@media (min-width: 576px) {
+		.calendar_module {
+		}
+	}
+
+	@media (min-width: 768px) {
+		.calendar_module {
+		}
+	}
+
+	@media (min-width: 992px) {
+		.calendar_module {
+		}
+	}
+
+	@media (min-width: 1200px) {
+		.calendar_module {
+		}
+	}
+
+	@media (min-width: 1400px) {
+		.calendar_module {
+		}
+	}
+
+	// ---------------- //
+
+	//////////////////////
+	/* mobile landscape */
+	//////////////////////
+
+	@media (max-height: 400px) and (orientation: landscape) {
+		.calendar_module {
+		}
+	}
+
+	// ----------------- //
+
+	///////////////////////
+	/* iPad Pro portrait */
+	///////////////////////
+
+	@media (width: 1024px) and (height: 1366px) {
+		.calendar_module {
+		}
+	}
+	//  }
 }

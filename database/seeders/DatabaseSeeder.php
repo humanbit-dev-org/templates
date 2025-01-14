@@ -2,24 +2,34 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Article;
+use App\Models\Institutional;
 use Illuminate\Database\Seeder;
+use PhpParser\Node\Stmt\GroupUse;
+use App\Models\SeoMetaInformation;
+use Database\Seeders\SeoMetaInformationSeeder;
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 class DatabaseSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
-    public function run(): void
-    {
-        $this->call([
-            UserSeeder::class,
-            CategorySeeder::class,
-            EcommerceSeeder::class,
-            GroupSeeder::class,
-            OrderSeeder::class,
-            OrderUserSeeder::class,
-            GroupUserSeeder::class,
-        ]);
-    }
+	/**
+	 * Run the database seeds.
+	 */
+	public function run(): void
+	{
+		$this->call([
+			RoleSeeder::class,
+			UserSeeder::class,
+			CategorySeeder::class,
+			EcommerceSeeder::class,
+			GroupSeeder::class,
+			GroupUserSeeder::class,
+			OrderSeeder::class,
+			OrderUserSeeder::class,
+			ArticleSeeder::class,
+			InstitutionalSeeder::class,
+			TranslateSeeder::class,
+			SeoMetaInformationSeeder::class,
+		]);
+	}
 }

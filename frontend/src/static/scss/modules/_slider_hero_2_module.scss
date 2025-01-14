@@ -1,21 +1,18 @@
-  //
- // Hero slider module (2)
+//
+// Hero slider module (2)
 //
 
 // >>> Controllers — START
 @use "../controllers/dynamics" as *; // controllers for mixins and variables
 // <<<<< Controllers — END
 
-
 // Copy, paste and uncomment the following code into the intended SCSS page to style this module:
 // @extend %slider_hero_2_module;
 
 %slider_hero_2_module {
-
 	.slider_hero_2_module {
 		// slider - no image in
-		.slider_no_img{
-
+		.slider_no_img {
 			.slider_no_img_card {
 				height: 400px;
 				background-color: rgba($color_first, 0.1);
@@ -60,7 +57,7 @@
 			.slickdsi-prev,
 			.slickdsi-next {
 				top: 190px;
-				position:absolute;
+				position: absolute;
 				font-size: 0.9rem;
 				cursor: pointer;
 				line-height: 0.5rem;
@@ -108,7 +105,7 @@
 
 			.container_product {
 				// background-color: rgba(0, 51, 102, 0.05);
-				border-radius:20px;
+				border-radius: 20px;
 			}
 		}
 		// slider  no image out
@@ -141,7 +138,7 @@
 			.slickdsi-prev,
 			.slickdsi-next {
 				top: 83px;
-				position:absolute;
+				position: absolute;
 				font-size: 0.9rem;
 				cursor: pointer;
 				line-height: 0.5rem;
@@ -180,7 +177,7 @@
 			}
 
 			.container_product {
-				border-radius:20px;
+				border-radius: 20px;
 			}
 
 			.complessi_type {
@@ -222,7 +219,7 @@
 			.slickdsi-prev,
 			.slickdsi-next {
 				top: 83px;
-				position:absolute;
+				position: absolute;
 				font-size: 0.9rem;
 				cursor: pointer;
 				line-height: 0.5rem;
@@ -262,7 +259,7 @@
 
 			.container_product {
 				// background-color: rgba(0, 51, 102, 0.05);
-				border-radius:20px;
+				border-radius: 20px;
 			}
 
 			.complessi_type {
@@ -277,210 +274,122 @@
 		// slider img 2 out
 	}
 
-
-
-/////
-////
-/*/==================== @media ====================/*/// {
-/////////////////
-////////////////
-			  ////////////////////////
-			 /* @media (max-width) */
-			////////////////////////
-
-			@media (max-width: 1399.98px) {
-
-				.slider_hero_2_module {
-
-
-
-				}
-
-			}
-
-			@media (max-width: 1199.98px) {
-
-				.slider_hero_2_module {
-
-
-
-				}
-
-			}
-
-			@media (max-width: 991.98px) {
-
-				.slider_hero_2_module {
-
-
-
-				}
-
-			}
-
-			@media (max-width: 767.98px) {
-
-				.slider_hero_2_module {
-
-
-
-				}
-
-			}
-
-			@media (max-width: 575.98px) {
-
-				.slider_hero_2_module {
-
-
-
-				}
-
-			}
-
-				// -------------- //
-
-			  ////////////////////
-			 /* @media between */
-			////////////////////
-
-			@media (min-width: 576px) and (max-width: 767.98px) {
-
-				.slider_hero_2_module {
-
-
-
-				}
-
-			}
-
-			@media (min-width: 576px) and (max-width: 991.98px) {
-
-				.slider_hero_2_module {
-
-
-
-				}
-
-			}
-
-			@media (min-width: 768px) and (max-width: 991.98px) {
-
-				.slider_hero_2_module {
-
-
-
-				}
-
-			}
-
-			@media (min-width: 992px) and (max-width: 1199.98px) {
-
-				.slider_hero_2_module {
-
-
-
-				}
-
-			}
-
-			@media (min-width: 1200px) and (max-width: 1399.98px) {
-
-				.slider_hero_2_module {
-
-
-
-				}
-
-			}
-
-				// ------------------ //
-
-			  ////////////////////////
-			 /* @media (min-width) */
-			////////////////////////
-
-			@media (min-width: 576px) {
-
-				.slider_hero_2_module {
-
-
-
-				}
-
-			}
-
-			@media (min-width: 768px) {
-
-				.slider_hero_2_module {
-
-
-
-				}
-
-			}
-
-			@media (min-width: 992px) {
-
-				.slider_hero_2_module {
-
-
-
-				}
-
-			}
-
-			@media (min-width: 1200px) {
-
-				.slider_hero_2_module {
-
-
-
-				}
-
-			}
-
-			@media (min-width: 1400px) {
-
-				.slider_hero_2_module {
-
-
-
-				}
-
-			}
-
-				// ---------------- //
-
-			  //////////////////////
-			 /* mobile landscape */
-			//////////////////////
-
-			@media (max-height: 400px) and (orientation: landscape) {
-
-				.slider_hero_2_module {
-
-
-
-				}
-
-			}
-
-				// ----------------- //
-
-			  ///////////////////////
-			 /* iPad Pro portrait */
-			///////////////////////
-
-			@media (width: 1024px) and (height: 1366px) {
-
-				.slider_hero_2_module {
-
-
-
-				}
-
-			}
-  //  }
-
+	/////
+	////
+	/*/==================== @media ====================/*/ // {
+	/////////////////
+	////////////////
+	////////////////////////
+	/* @media (max-width) */
+	////////////////////////
+
+	@media (max-width: 1399.98px) {
+		.slider_hero_2_module {
+		}
+	}
+
+	@media (max-width: 1199.98px) {
+		.slider_hero_2_module {
+		}
+	}
+
+	@media (max-width: 991.98px) {
+		.slider_hero_2_module {
+		}
+	}
+
+	@media (max-width: 767.98px) {
+		.slider_hero_2_module {
+		}
+	}
+
+	@media (max-width: 575.98px) {
+		.slider_hero_2_module {
+		}
+	}
+
+	// -------------- //
+
+	////////////////////
+	/* @media between */
+	////////////////////
+
+	@media (min-width: 576px) and (max-width: 767.98px) {
+		.slider_hero_2_module {
+		}
+	}
+
+	@media (min-width: 576px) and (max-width: 991.98px) {
+		.slider_hero_2_module {
+		}
+	}
+
+	@media (min-width: 768px) and (max-width: 991.98px) {
+		.slider_hero_2_module {
+		}
+	}
+
+	@media (min-width: 992px) and (max-width: 1199.98px) {
+		.slider_hero_2_module {
+		}
+	}
+
+	@media (min-width: 1200px) and (max-width: 1399.98px) {
+		.slider_hero_2_module {
+		}
+	}
+
+	// ------------------ //
+
+	////////////////////////
+	/* @media (min-width) */
+	////////////////////////
+
+	@media (min-width: 576px) {
+		.slider_hero_2_module {
+		}
+	}
+
+	@media (min-width: 768px) {
+		.slider_hero_2_module {
+		}
+	}
+
+	@media (min-width: 992px) {
+		.slider_hero_2_module {
+		}
+	}
+
+	@media (min-width: 1200px) {
+		.slider_hero_2_module {
+		}
+	}
+
+	@media (min-width: 1400px) {
+		.slider_hero_2_module {
+		}
+	}
+
+	// ---------------- //
+
+	//////////////////////
+	/* mobile landscape */
+	//////////////////////
+
+	@media (max-height: 400px) and (orientation: landscape) {
+		.slider_hero_2_module {
+		}
+	}
+
+	// ----------------- //
+
+	///////////////////////
+	/* iPad Pro portrait */
+	///////////////////////
+
+	@media (width: 1024px) and (height: 1366px) {
+		.slider_hero_2_module {
+		}
+	}
+	//  }
 }

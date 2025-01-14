@@ -1,3 +1,5 @@
+// import { GlobalScripts } from "components/utilities/MetadataSetup"; // File import statement
+
 "use client";
 
 import { useEffect } from "react";

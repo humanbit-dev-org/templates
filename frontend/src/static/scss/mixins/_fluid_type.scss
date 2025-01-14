@@ -4,7 +4,6 @@
 @use "../controllers/functions" as *; // controllers for functions
 // <<<<< Controllers — END
 
-
 // The equation
 //
 // body {
@@ -21,8 +20,10 @@
 
 @mixin fluid_type(
 	// >>>>> VIEWPORT <<<<<
-	$viewport-min: 20em, // Set global values
-	$viewport-max: 100em, // Set global values
+	$viewport-min: 20em,
+	// Set global values
+	$viewport-max: 100em,
+	// Set global values
 	// >>>>> MOBILE <<<<<
 	$font-size-min: null,
 	$line-height-mobile: null,
@@ -39,57 +40,71 @@
 
 	// @if $u1 == $u2 and $u1 == $u3 and $u1 == $u4 {
 	// 	& {
-			font-size: $font-size-min #{$important};
-			line-height: $line-height-mobile #{$important};
+	font-size: $font-size-min #{$important};
+	line-height: $line-height-mobile #{$important};
 
-			// @if $important {
-			// 	$important: "!important";
-			// } @else {
-			// 	$important: null;
-			// }
+	// @if $important {
+	// 	$important: "!important";
+	// } @else {
+	// 	$important: null;
+	// }
 
-			@media screen and (min-width: $viewport-min) and (max-width: 575.98px) {
-				font-size: calc($line-height-mobile * calc(#{$font-size-min} + #{strip-unit($font-size-max - $font-size-min)} * ((100vw - #{$viewport-min}) / #{strip-unit($viewport-max - $viewport-min)}))) #{$important};
-				line-height: $line-height-mobile #{$important};
-			}
+	@media screen and (min-width: $viewport-min) and (max-width: 575.98px) {
+		font-size: calc(
+				$line-height-mobile *
+					calc(
+						#{$font-size-min} + #{strip-unit($font-size-max - $font-size-min)} *
+							((100vw - #{$viewport-min}) / #{strip-unit($viewport-max - $viewport-min)})
+					)
+			)
+			#{$important};
+		line-height: $line-height-mobile #{$important};
+	}
 
-			@media screen and (min-width: 576px) and (max-width: $viewport-max) {
-				font-size: calc($line-height-desktop * calc(#{$font-size-min} + #{strip-unit($font-size-max - $font-size-min)} * ((100vw - #{$viewport-min}) / #{strip-unit($viewport-max - $viewport-min)}))) #{$important};
-				line-height: $line-height-desktop #{$important};
-			}
+	@media screen and (min-width: 576px) and (max-width: $viewport-max) {
+		font-size: calc(
+				$line-height-desktop *
+					calc(
+						#{$font-size-min} + #{strip-unit($font-size-max - $font-size-min)} *
+							((100vw - #{$viewport-min}) / #{strip-unit($viewport-max - $viewport-min)})
+					)
+			)
+			#{$important};
+		line-height: $line-height-desktop #{$important};
+	}
 
-			@media screen and (min-width: $viewport-max) {
-				font-size: $font-size-max #{$important};
-				line-height: $line-height-desktop #{$important};
-			}
+	@media screen and (min-width: $viewport-max) {
+		font-size: $font-size-max #{$important};
+		line-height: $line-height-desktop #{$important};
+	}
 
-			// @if $important {
-			// 	font-size: $font-size-min !important;
-			// 	line-height: $line-height-mobile !important;
+	// @if $important {
+	// 	font-size: $font-size-min !important;
+	// 	line-height: $line-height-mobile !important;
 
-			// 	@media screen and (min-width: $viewport-min) and (max-width: 575.98px) {
-			// 		font-size: calc($line-height-mobile * calc(#{$font-size-min} + #{strip-unit($font-size-max - $font-size-min)} * ((100vw - #{$viewport-min}) / #{strip-unit($viewport-max - $viewport-min)}))) !important;
-			// 		line-height: $line-height-mobile !important;
-			// 	}
+	// 	@media screen and (min-width: $viewport-min) and (max-width: 575.98px) {
+	// 		font-size: calc($line-height-mobile * calc(#{$font-size-min} + #{strip-unit($font-size-max - $font-size-min)} * ((100vw - #{$viewport-min}) / #{strip-unit($viewport-max - $viewport-min)}))) !important;
+	// 		line-height: $line-height-mobile !important;
+	// 	}
 
-			// 	@media screen and (min-width: 576px) and (max-width: $viewport-max) {
-			// 		font-size: calc($line-height-desktop * calc(#{$font-size-min} + #{strip-unit($font-size-max - $font-size-min)} * ((100vw - #{$viewport-min}) / #{strip-unit($viewport-max - $viewport-min)}))) !important;
-			// 		line-height: $line-height-desktop !important;
-			// 	}
+	// 	@media screen and (min-width: 576px) and (max-width: $viewport-max) {
+	// 		font-size: calc($line-height-desktop * calc(#{$font-size-min} + #{strip-unit($font-size-max - $font-size-min)} * ((100vw - #{$viewport-min}) / #{strip-unit($viewport-max - $viewport-min)}))) !important;
+	// 		line-height: $line-height-desktop !important;
+	// 	}
 
-			// 	@media screen and (min-width: $viewport-max) {
-			// 		font-size: $font-size-max !important;
-			// 		line-height: $line-height-desktop !important;
-			// 	}
-			// }
+	// 	@media screen and (min-width: $viewport-max) {
+	// 		font-size: $font-size-max !important;
+	// 		line-height: $line-height-desktop !important;
+	// 	}
+	// }
 
-			// @if $important {
-			// 	font-size: $font-size !important;
-			// 	line-height: $line-height !important;
-			// } @else {
-			// 	font-size: $font-size;
-			// 	line-height: $line-height;
-			// }
+	// @if $important {
+	// 	font-size: $font-size !important;
+	// 	line-height: $line-height !important;
+	// } @else {
+	// 	font-size: $font-size;
+	// 	line-height: $line-height;
+	// }
 	// 	}
 	// }
 }

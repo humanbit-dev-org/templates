@@ -1,5 +1,5 @@
-  //
- // Documentation page
+//
+// Documentation page
 //
 
 // >>> Controllers — START
@@ -7,10 +7,7 @@
 @use "../controllers/extends" as *; // controller for modules
 // <<<<< Controllers — END
 
-
 .humanbit_docs {
-
-
 	@extend %calendar_module;
 	@extend %calendar_2_module;
 	@extend %card_horiz_module;
@@ -108,208 +105,121 @@
 	}
 }
 
-
-
 /////
 ////
-/*/==================== @media ====================/*/// {
+/*/==================== @media ====================/*/ // {
 /////////////
 ////////////
-		  ////////////////////////
-		 /* @media (max-width) */
-		////////////////////////
-
-		@media (max-width: 1399.98px) {
-
-			.humanbit_docs {
-
-
-
-			}
-
-		}
-
-		@media (max-width: 1199.98px) {
-
-			.humanbit_docs {
-
-
-
-			}
-
-		}
-
-		@media (max-width: 991.98px) {
-
-			.humanbit_docs {
-
-
-
-			}
-
-		}
-
-		@media (max-width: 767.98px) {
-
-			.humanbit_docs {
-
-
-
-			}
-
-		}
-
-		@media (max-width: 575.98px) {
-
-			.humanbit_docs {
-
-
-
-			}
-
-		}
-
-			// -------------- //
-
-		  ////////////////////
-		 /* @media between */
-		////////////////////
-
-		@media (min-width: 576px) and (max-width: 767.98px) {
-
-			.humanbit_docs {
-
-
-
-			}
-
-		}
-
-		@media (min-width: 576px) and (max-width: 991.98px) {
-
-			.humanbit_docs {
-
-
-
-			}
-
-		}
-
-		@media (min-width: 768px) and (max-width: 991.98px) {
-
-			.humanbit_docs {
-
-
-
-			}
-
-		}
-
-		@media (min-width: 992px) and (max-width: 1199.98px) {
-
-			.humanbit_docs {
-
-
-
-			}
-
-		}
-
-		@media (min-width: 1200px) and (max-width: 1399.98px) {
-
-			.humanbit_docs {
-
-
-
-			}
-
-		}
-
-			// ------------------ //
-
-		  ////////////////////////
-		 /* @media (min-width) */
-		////////////////////////
-
-		@media (min-width: 576px) {
-
-			.humanbit_docs {
-
-
-
-			}
-
-		}
-
-		@media (min-width: 768px) {
-
-			.humanbit_docs {
-
-
-
-			}
-
-		}
-
-		@media (min-width: 992px) {
-
-			.humanbit_docs {
-
-
-
-			}
-
-		}
-
-		@media (min-width: 1200px) {
-
-			.humanbit_docs {
-
-
-
-			}
-
-		}
-
-		@media (min-width: 1400px) {
-
-			.humanbit_docs {
-
-
-
-			}
-
-		}
-
-			// ---------------- //
-
-		  //////////////////////
-		 /* mobile landscape */
-		//////////////////////
-
-		@media (max-height: 400px) and (orientation: landscape) {
-
-			.humanbit_docs {
-
-
-
-			}
-
-		}
-
-			// ----------------- //
-
-		  ///////////////////////
-		 /* iPad Pro portrait */
-		///////////////////////
-
-		@media (width: 1024px) and (height: 1366px) {
-
-			.humanbit_docs {
-
-
-
-			}
-
-		}
- // }
+////////////////////////
+/* @media (max-width) */
+////////////////////////
+
+@media (max-width: 1399.98px) {
+	.humanbit_docs {
+	}
+}
+
+@media (max-width: 1199.98px) {
+	.humanbit_docs {
+	}
+}
+
+@media (max-width: 991.98px) {
+	.humanbit_docs {
+	}
+}
+
+@media (max-width: 767.98px) {
+	.humanbit_docs {
+	}
+}
+
+@media (max-width: 575.98px) {
+	.humanbit_docs {
+	}
+}
+
+// -------------- //
+
+////////////////////
+/* @media between */
+////////////////////
+
+@media (min-width: 576px) and (max-width: 767.98px) {
+	.humanbit_docs {
+	}
+}
+
+@media (min-width: 576px) and (max-width: 991.98px) {
+	.humanbit_docs {
+	}
+}
+
+@media (min-width: 768px) and (max-width: 991.98px) {
+	.humanbit_docs {
+	}
+}
+
+@media (min-width: 992px) and (max-width: 1199.98px) {
+	.humanbit_docs {
+	}
+}
+
+@media (min-width: 1200px) and (max-width: 1399.98px) {
+	.humanbit_docs {
+	}
+}
+
+// ------------------ //
+
+////////////////////////
+/* @media (min-width) */
+////////////////////////
+
+@media (min-width: 576px) {
+	.humanbit_docs {
+	}
+}
+
+@media (min-width: 768px) {
+	.humanbit_docs {
+	}
+}
+
+@media (min-width: 992px) {
+	.humanbit_docs {
+	}
+}
+
+@media (min-width: 1200px) {
+	.humanbit_docs {
+	}
+}
+
+@media (min-width: 1400px) {
+	.humanbit_docs {
+	}
+}
+
+// ---------------- //
+
+//////////////////////
+/* mobile landscape */
+//////////////////////
+
+@media (max-height: 400px) and (orientation: landscape) {
+	.humanbit_docs {
+	}
+}
+
+// ----------------- //
+
+///////////////////////
+/* iPad Pro portrait */
+///////////////////////
+
+@media (width: 1024px) and (height: 1366px) {
+	.humanbit_docs {
+	}
+}
+// }

@@ -1,19 +1,15 @@
 <?php
 
+use App\Models\Order;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\GroupController;
-use App\Http\Controllers\GroupDetailController;
+use App\Http\Controllers\ArticleController;
+use App\Http\Controllers\SeoMetaInformationController;
 
-// Route::middleware(['auth:sanctum'])->group(function () {
-//     Route::get('/user', function (Request $request) {
-//         return $request->user();
-//     });
-//     Route::get('/groups', [GroupController::class, 'index']);
-//     Route::get('/group/{id}', [GroupDetailController::class, 'index']);
-//     Route::post('/group/{id}/send-invite', [GroupDetailController::class, 'sendInvite']);
-//     Route::post('/group/{id}/invite', [GroupDetailController::class, 'acceptInvite']);
-//     Route::post('/create-groups', [GroupController::class, 'create']);
-// });
+Route::get("/{lang}/seo", [SeoMetaInformationController::class, "index"]);
 
-Route::get('/data', [GroupController::class, 'index']);
+Route::middleware(["auth:sanctum"])->group(function () {
+	Route::get("/user", function (Request $request) {
+		return response()->json(["user" => $request->user()]);
+	});
+});

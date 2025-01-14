@@ -1,17 +1,15 @@
-  //
- // HTML text editor module
+//
+// HTML text editor module
 //
 
 // >>> Controllers — START
 @use "../controllers/dynamics" as *; // controllers for mixins and variables
 // <<<<< Controllers — END
 
-
 // Copy, paste and uncomment the following code into the intended SCSS page to style this module:
 // @extend %html_text_editor_1_module;
 
 %html_text_editor_1_module {
-
 	// text editor template 1
 	.html_text_editor_1_module {
 		width: 100%;
@@ -44,7 +42,6 @@
 			i {
 				font-weight: 300 !important;
 			}
-
 		}
 
 		.box {
@@ -59,10 +56,9 @@
 				font-weight: 200 !important;
 				background-color: #edf1f7 !important;
 			}
-
 		}
 
-		input[type=number] {
+		input[type="number"] {
 			outline: none;
 			border: none;
 			width: 50px;
@@ -111,14 +107,15 @@
 			color: #5271ff;
 		}
 
-		input[type=color] {
+		input[type="color"] {
 			width: 35px;
 			outline: none;
 			border: none;
 			background: none;
 		}
 
-		textarea, .text_area {
+		textarea,
+		.text_area {
 			background-color: #edf1f7;
 			width: 100%;
 			height: 400px;
@@ -154,7 +151,6 @@
 			border: 1px solid $color_second;
 		}
 
-
 		section {
 			height: 500px;
 		}
@@ -172,7 +168,6 @@
 			i {
 				font-weight: 300 !important;
 			}
-
 		}
 
 		.box {
@@ -183,13 +178,13 @@
 		.first {
 			border-right: 2px solid #40576d33;
 
-			input{
+			input {
 				font-weight: 200 !important;
 				background-color: #edf1f7 !important;
 			}
 		}
 
-		input[type=number] {
+		input[type="number"] {
 			outline: none;
 			border: none;
 			width: 50px;
@@ -233,7 +228,7 @@
 			background-color: #73b1e333;
 		}
 
-		input[type=color] {
+		input[type="color"] {
 			width: 35px;
 			outline: none;
 			border: none;
@@ -313,7 +308,6 @@
 			i {
 				font-weight: 300 !important;
 			}
-
 		}
 
 		.box {
@@ -328,10 +322,9 @@
 				background-color: #edf1f7 !important;
 				font-weight: 200 !important;
 			}
-
 		}
 
-		input[type=number] {
+		input[type="number"] {
 			outline: none;
 			border: none;
 			width: 50px;
@@ -375,7 +368,7 @@
 			color: #5271ff;
 		}
 
-		input[type=color] {
+		input[type="color"] {
 			width: 35px;
 			outline: none;
 			border: none;
@@ -438,7 +431,6 @@
 			padding: 5px;
 		}
 
-
 		section {
 			height: 500px;
 		}
@@ -456,7 +448,6 @@
 			i {
 				font-weight: 300 !important;
 			}
-
 		}
 
 		.box {
@@ -465,16 +456,15 @@
 		}
 
 		.first {
-		    border-right: 2px solid #40576d33;
+			border-right: 2px solid #40576d33;
 
 			input {
 				background-color: #edf1f7 !important;
 				font-weight: 200 !important;
 			}
-
 		}
 
-		input[type=number] {
+		input[type="number"] {
 			outline: none;
 			border: none;
 			width: 50px;
@@ -518,7 +508,7 @@
 			color: #5271ff;
 		}
 
-		input[type=color] {
+		input[type="color"] {
 			width: 35px;
 			outline: none;
 			border: none;
@@ -538,214 +528,127 @@
 		}
 	}
 
+	/////
+	////
+	/*/==================== @media ====================/*/ // {
+	/////////////////
+	////////////////
+	////////////////////////
+	/* @media (max-width) */
+	////////////////////////
 
+	@media (max-width: 1399.98px) {
+		.html_text_editor_1_module {
+		}
+	}
 
-/////
-////
-/*/==================== @media ====================/*/// {
-/////////////////
-////////////////
-			  ////////////////////////
-			 /* @media (max-width) */
-			////////////////////////
+	@media (max-width: 1199.98px) {
+		.html_text_editor_1_module {
+		}
+	}
 
-			@media (max-width: 1399.98px) {
-
-				.html_text_editor_1_module {
-
-
-
+	@media (max-width: 991.98px) {
+		.html_text_editor_1_module {
+			.cont_img {
+				@at-root div.cont_img {
+					height: 390px;
 				}
-
 			}
-
-			@media (max-width: 1199.98px) {
-
-				.html_text_editor_1_module {
-
-
-
-				}
-
-			}
-
-			@media (max-width: 991.98px) {
-
-				.html_text_editor_1_module {
-
-					.cont_img {
-						@at-root div.cont_img {
-							height: 390px;
-						}
-					}
-
-				}
-
-			}
-
-			@media (max-width: 767.98px) {
-
-				.html_text_editor_1_module {
-
-
-
-				}
-
-			}
-
-			@media (max-width: 575.98px) {
-
-				.html_text_editor_1_module {
-
-
-
-				}
-
-			}
-
-				// -------------- //
-
-			  ////////////////////
-			 /* @media between */
-			////////////////////
-
-			@media (min-width: 576px) and (max-width: 767.98px) {
-
-				.html_text_editor_1_module {
-
-
-
-				}
-
-			}
-
-			@media (min-width: 576px) and (max-width: 991.98px) {
-
-				.html_text_editor_1_module {
-
-
-
-				}
-
-			}
-
-			@media (min-width: 768px) and (max-width: 991.98px) {
-
-				.html_text_editor_1_module {
-
-
-
-				}
-
-			}
-
-			@media (min-width: 992px) and (max-width: 1199.98px) {
-
-				.html_text_editor_1_module {
-
-
-
-				}
-
-			}
-
-			@media (min-width: 1200px) and (max-width: 1399.98px) {
-
-				.html_text_editor_1_module {
-
-
-
-				}
-
-			}
-
-				// ------------------ //
-
-			  ////////////////////////
-			 /* @media (min-width) */
-			////////////////////////
-
-			@media (min-width: 576px) {
-
-				.html_text_editor_1_module {
-
-
-
-				}
-
-			}
-
-			@media (min-width: 768px) {
-
-				.html_text_editor_1_module {
-
-
-
-				}
-
-			}
-
-			@media (min-width: 992px) {
-
-				.html_text_editor_1_module {
-
-
-
-				}
-
-			}
-
-			@media (min-width: 1200px) {
-
-				.html_text_editor_1_module {
-
-
-
-				}
-
-			}
-
-			@media (min-width: 1400px) {
-
-				.html_text_editor_1_module {
-
-
-
-				}
-
-			}
-
-				// ---------------- //
-
-			  //////////////////////
-			 /* mobile landscape */
-			//////////////////////
-
-			@media (max-height: 400px) and (orientation: landscape) {
-
-				.html_text_editor_1_module {
-
-
-
-				}
-
-			}
-
-				// ----------------- //
-
-			  ///////////////////////
-			 /* iPad Pro portrait */
-			///////////////////////
-
-			@media (width: 1024px) and (height: 1366px) {
-
-				.html_text_editor_1_module {
-
-
-
-				}
-
-			}
-  //  }
-
+		}
+	}
+
+	@media (max-width: 767.98px) {
+		.html_text_editor_1_module {
+		}
+	}
+
+	@media (max-width: 575.98px) {
+		.html_text_editor_1_module {
+		}
+	}
+
+	// -------------- //
+
+	////////////////////
+	/* @media between */
+	////////////////////
+
+	@media (min-width: 576px) and (max-width: 767.98px) {
+		.html_text_editor_1_module {
+		}
+	}
+
+	@media (min-width: 576px) and (max-width: 991.98px) {
+		.html_text_editor_1_module {
+		}
+	}
+
+	@media (min-width: 768px) and (max-width: 991.98px) {
+		.html_text_editor_1_module {
+		}
+	}
+
+	@media (min-width: 992px) and (max-width: 1199.98px) {
+		.html_text_editor_1_module {
+		}
+	}
+
+	@media (min-width: 1200px) and (max-width: 1399.98px) {
+		.html_text_editor_1_module {
+		}
+	}
+
+	// ------------------ //
+
+	////////////////////////
+	/* @media (min-width) */
+	////////////////////////
+
+	@media (min-width: 576px) {
+		.html_text_editor_1_module {
+		}
+	}
+
+	@media (min-width: 768px) {
+		.html_text_editor_1_module {
+		}
+	}
+
+	@media (min-width: 992px) {
+		.html_text_editor_1_module {
+		}
+	}
+
+	@media (min-width: 1200px) {
+		.html_text_editor_1_module {
+		}
+	}
+
+	@media (min-width: 1400px) {
+		.html_text_editor_1_module {
+		}
+	}
+
+	// ---------------- //
+
+	//////////////////////
+	/* mobile landscape */
+	//////////////////////
+
+	@media (max-height: 400px) and (orientation: landscape) {
+		.html_text_editor_1_module {
+		}
+	}
+
+	// ----------------- //
+
+	///////////////////////
+	/* iPad Pro portrait */
+	///////////////////////
+
+	@media (width: 1024px) and (height: 1366px) {
+		.html_text_editor_1_module {
+		}
+	}
+	//  }
 }

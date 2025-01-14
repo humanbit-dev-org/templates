@@ -1,12 +1,11 @@
-  //
- // Home page
+//
+// Home page
 //
 
 // >>> Controllers — START
 @use "../controllers/dynamics" as *; // controllers for mixins and variables
 @use "../controllers/extends" as *; // controller for modules
 // <<<<< Controllers — END
-
 
 .home_partial {
 	// @extend %calendar_module;
@@ -26,212 +25,123 @@
 	// @extend %txt_img_row_module;
 	// @extend %txt_img_row_2_module;
 	// @extend %txt_img_row_vert_module;
-
-
 }
-
-
 
 /////
 ////
-/*/==================== @media ====================/*/// {
+/*/==================== @media ====================/*/ // {
 /////////////
 ////////////
-		  ////////////////////////
-		 /* @media (max-width) */
-		////////////////////////
-
-		@media (max-width: 1399.98px) {
-
-			.home_partial {
-
-
-
-			}
-
-		}
-
-		@media (max-width: 1199.98px) {
-
-			.home_partial {
-
-
-
-			}
-
-		}
-
-		@media (max-width: 991.98px) {
-
-			.home_partial {
-
-
-
-			}
-
-		}
-
-		@media (max-width: 767.98px) {
-
-			.home_partial {
-
-
-
-			}
-
-		}
-
-		@media (max-width: 575.98px) {
-
-			.home_partial {
-
-
-
-			}
-
-		}
-
-			// -------------- //
-
-		  ////////////////////
-		 /* @media between */
-		////////////////////
-
-		@media (min-width: 576px) and (max-width: 767.98px) {
-
-			.home_partial {
-
-
-
-			}
-
-		}
-
-		@media (min-width: 576px) and (max-width: 991.98px) {
-
-			.home_partial {
-
-
-
-			}
-
-		}
-
-		@media (min-width: 768px) and (max-width: 991.98px) {
-
-			.home_partial {
-
-
-
-			}
-
-		}
-
-		@media (min-width: 992px) and (max-width: 1199.98px) {
-
-			.home_partial {
-
-
-
-			}
-
-		}
-
-		@media (min-width: 1200px) and (max-width: 1399.98px) {
-
-			.home_partial {
-
-
-
-			}
-
-		}
-
-			// ------------------ //
-
-		  ////////////////////////
-		 /* @media (min-width) */
-		////////////////////////
-
-		@media (min-width: 576px) {
-
-			.home_partial {
-
-
-
-			}
-
-		}
-
-		@media (min-width: 768px) {
-
-			.home_partial {
-
-
-
-			}
-
-		}
-
-		@media (min-width: 992px) {
-
-			.home_partial {
-
-
-
-			}
-
-		}
-
-		@media (min-width: 1200px) {
-
-			.home_partial {
-
-
-
-			}
-
-		}
-
-		@media (min-width: 1400px) {
-
-			.home_partial {
-
-
-
-			}
-
-		}
-
-			// ---------------- //
-
-		  //////////////////////
-		 /* mobile landscape */
-		//////////////////////
-
-		@media (max-height: 400px) and (orientation: landscape) {
-
-			.home_partial {
-
-
-
-			}
-
-		}
-
-			// ----------------- //
-
-		  ///////////////////////
-		 /* iPad Pro portrait */
-		///////////////////////
-
-		@media (width: 1024px) and (height: 1366px) {
-
-			.home_partial {
-
-
-
-			}
-
-		}
- // }
+////////////////////////
+/* @media (max-width) */
+////////////////////////
+
+@media (max-width: 1399.98px) {
+	.home_partial {
+	}
+}
+
+@media (max-width: 1199.98px) {
+	.home_partial {
+	}
+}
+
+@media (max-width: 991.98px) {
+	.home_partial {
+	}
+}
+
+@media (max-width: 767.98px) {
+	.home_partial {
+	}
+}
+
+@media (max-width: 575.98px) {
+	.home_partial {
+	}
+}
+
+// -------------- //
+
+////////////////////
+/* @media between */
+////////////////////
+
+@media (min-width: 576px) and (max-width: 767.98px) {
+	.home_partial {
+	}
+}
+
+@media (min-width: 576px) and (max-width: 991.98px) {
+	.home_partial {
+	}
+}
+
+@media (min-width: 768px) and (max-width: 991.98px) {
+	.home_partial {
+	}
+}
+
+@media (min-width: 992px) and (max-width: 1199.98px) {
+	.home_partial {
+	}
+}
+
+@media (min-width: 1200px) and (max-width: 1399.98px) {
+	.home_partial {
+	}
+}
+
+// ------------------ //
+
+////////////////////////
+/* @media (min-width) */
+////////////////////////
+
+@media (min-width: 576px) {
+	.home_partial {
+	}
+}
+
+@media (min-width: 768px) {
+	.home_partial {
+	}
+}
+
+@media (min-width: 992px) {
+	.home_partial {
+	}
+}
+
+@media (min-width: 1200px) {
+	.home_partial {
+	}
+}
+
+@media (min-width: 1400px) {
+	.home_partial {
+	}
+}
+
+// ---------------- //
+
+//////////////////////
+/* mobile landscape */
+//////////////////////
+
+@media (max-height: 400px) and (orientation: landscape) {
+	.home_partial {
+	}
+}
+
+// ----------------- //
+
+///////////////////////
+/* iPad Pro portrait */
+///////////////////////
+
+@media (width: 1024px) and (height: 1366px) {
+	.home_partial {
+	}
+}
+// }

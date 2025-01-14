@@ -1,12 +1,11 @@
-  //
- // Footer page
+//
+// Footer page
 //
 
 // >>> Controllers — START
 @use "../controllers/dynamics" as *; // controllers for mixins and variables
 @use "../controllers/extends" as *; // controller for modules
 // <<<<< Controllers — END
-
 
 .footer_partial {
 	// @extend %example_module;
@@ -29,11 +28,11 @@
 
 		// Add class to icon to create spinning animation.
 		.social_icon_spin {
-			transition: .3s ease-in-out;
+			transition: 0.3s ease-in-out;
 
 			&:hover {
 				cursor: pointer;
-				opacity: .8;
+				opacity: 0.8;
 				transform: rotate(360deg) scale(1.25);
 			}
 		}
@@ -41,7 +40,7 @@
 
 	figure {
 		&:hover {
-			opacity: .8;
+			opacity: 0.8;
 			cursor: pointer;
 		}
 	}
@@ -58,7 +57,7 @@
 			> .form-select {
 				background-color: $bg_color_primary;
 				-webkit-animation-name: autofill-out-primary-nav;
-				-webkit-animation-duration: .15s;
+				-webkit-animation-duration: 0.15s;
 				-webkit-animation-timing-function: ease-in-out;
 				-webkit-animation-fill-mode: both;
 
@@ -66,7 +65,7 @@
 				&:focus {
 					background-color: $bg_color_primary;
 					-webkit-animation-name: autofill-out-secondary-nav;
-					-webkit-animation-duration: .15s;
+					-webkit-animation-duration: 0.15s;
 					-webkit-animation-timing-function: ease-in-out;
 					-webkit-animation-fill-mode: both;
 				}
@@ -83,7 +82,7 @@
 					&:not(:focus) {
 						background-color: $bg_color_primary;
 						-webkit-animation-name: autofill-noPlace_noFocus-primary-nav;
-						-webkit-animation-duration: .15s;
+						-webkit-animation-duration: 0.15s;
 						-webkit-animation-timing-function: ease-in-out;
 						-webkit-animation-fill-mode: both;
 					}
@@ -91,48 +90,52 @@
 			}
 
 			@-webkit-keyframes autofill-in-primary-nav {
-				0%, 100% {
-									//   color: $color_primary-nav;  // WebKit browsers only.
-					-webkit-text-fill-color: $color_white;  // WebKit browsers only.
-					-webkit-box-shadow: inset 0 0 0 30px rgba($bg_color_primary, 1);  // WebKit browsers only.
+				0%,
+				100% {
+					//   color: $color_primary-nav;  // WebKit browsers only.
+					-webkit-text-fill-color: $color_white; // WebKit browsers only.
+					-webkit-box-shadow: inset 0 0 0 30px rgba($bg_color_primary, 1); // WebKit browsers only.
 				}
 			}
 
 			@-webkit-keyframes autofill-in-secondary-nav {
-				0%, 100% {
-									//   color: $color_secondary-nav;  // WebKit browsers only.
-					-webkit-text-fill-color: $color_white;  // WebKit browsers only.
-					-webkit-box-shadow: inset 0 0 0 30px rgba($bg_color_primary, 1);  // WebKit browsers only.
+				0%,
+				100% {
+					//   color: $color_secondary-nav;  // WebKit browsers only.
+					-webkit-text-fill-color: $color_white; // WebKit browsers only.
+					-webkit-box-shadow: inset 0 0 0 30px rgba($bg_color_primary, 1); // WebKit browsers only.
 				}
 			}
 
 			@-webkit-keyframes autofill-noPlace_noFocus-primary-nav {
 				0% {
-									  color: $color_white;  // WebKit browsers only.
+					color: $color_white; // WebKit browsers only.
 					// -webkit-text-fill-color: $color_secondary-nav;  // WebKit browsers only.
-					background-color: $bg_color_primary;  // WebKit browsers only.
+					background-color: $bg_color_primary; // WebKit browsers only.
 				}
 
 				100% {
-									  color: $color_white;  // WebKit browsers only.
+					color: $color_white; // WebKit browsers only.
 					// -webkit-text-fill-color: $color_primary-nav;  // WebKit browsers only.
-					background-color: $bg_color_primary;  // WebKit browsers only.
+					background-color: $bg_color_primary; // WebKit browsers only.
 				}
 			}
 
 			@-webkit-keyframes autofill-out-primary-nav {
-				0%, 100% {
-									  color: $color_white;  // WebKit browsers only.
+				0%,
+				100% {
+					color: $color_white; // WebKit browsers only.
 					// -webkit-text-fill-color: $color_primary-nav;  // WebKit browsers only.
-					background-color: $bg_color_primary;  // WebKit browsers only.
+					background-color: $bg_color_primary; // WebKit browsers only.
 				}
 			}
 
 			@-webkit-keyframes autofill-out-secondary-nav {
-				0%, 100% {
-									  color: $color_white;  // WebKit browsers only.
+				0%,
+				100% {
+					color: $color_white; // WebKit browsers only.
 					// -webkit-text-fill-color: $color_secondary-nav;  // WebKit browsers only.
-					background-color: $bg_color_primary;  // WebKit browsers only.
+					background-color: $bg_color_primary; // WebKit browsers only.
 				}
 			}
 		}
@@ -176,208 +179,121 @@
 	}
 }
 
-
-
 /////
 ////
-/*/==================== @media ====================/*/// {
+/*/==================== @media ====================/*/ // {
 /////////////
 ////////////
-		  ////////////////////////
-		 /* @media (max-width) */
-		////////////////////////
-
-		@media (max-width: 1399.98px) {
-
-			.footer_partial {
-
-
-
-			}
-
-		}
-
-		@media (max-width: 1199.98px) {
-
-			.footer_partial {
-
-
-
-			}
-
-		}
-
-		@media (max-width: 991.98px) {
-
-			.footer_partial {
-
-
-
-			}
-
-		}
-
-		@media (max-width: 767.98px) {
-
-			.footer_partial {
-
-
-
-			}
-
-		}
-
-		@media (max-width: 575.98px) {
-
-			.footer_partial {
-
-
-
-			}
-
-		}
-
-			// -------------- //
-
-		  ////////////////////
-		 /* @media between */
-		////////////////////
-
-		@media (min-width: 576px) and (max-width: 767.98px) {
-
-			.footer_partial {
-
-
-
-			}
-
-		}
-
-		@media (min-width: 576px) and (max-width: 991.98px) {
-
-			.footer_partial {
-
-
-
-			}
-
-		}
-
-		@media (min-width: 768px) and (max-width: 991.98px) {
-
-			.footer_partial {
-
-
-
-			}
-
-		}
-
-		@media (min-width: 992px) and (max-width: 1199.98px) {
-
-			.footer_partial {
-
-
-
-			}
-
-		}
-
-		@media (min-width: 1200px) and (max-width: 1399.98px) {
-
-			.footer_partial {
-
-
-
-			}
-
-		}
-
-			// ------------------ //
-
-		  ////////////////////////
-		 /* @media (min-width) */
-		////////////////////////
-
-		@media (min-width: 576px) {
-
-			.footer_partial {
-
-
-
-			}
-
-		}
-
-		@media (min-width: 768px) {
-
-			.footer_partial {
-
-
-
-			}
-
-		}
-
-		@media (min-width: 992px) {
-
-			.footer_partial {
-
-
-
-			}
-
-		}
-
-		@media (min-width: 1200px) {
-
-			.footer_partial {
-
-
-
-			}
-
-		}
-
-		@media (min-width: 1400px) {
-
-			.footer_partial {
-
-
-
-			}
-
-		}
-
-			// ---------------- //
-
-		  //////////////////////
-		 /* mobile landscape */
-		//////////////////////
-
-		@media (max-height: 400px) and (orientation: landscape) {
-
-			.footer_partial {
-
-
-
-			}
-
-		}
-
-			// ----------------- //
-
-		  ///////////////////////
-		 /* iPad Pro portrait */
-		///////////////////////
-
-		@media (width: 1024px) and (height: 1366px) {
-
-			.footer_partial {
-
-
-
-			}
-
-		}
- // }
+////////////////////////
+/* @media (max-width) */
+////////////////////////
+
+@media (max-width: 1399.98px) {
+	.footer_partial {
+	}
+}
+
+@media (max-width: 1199.98px) {
+	.footer_partial {
+	}
+}
+
+@media (max-width: 991.98px) {
+	.footer_partial {
+	}
+}
+
+@media (max-width: 767.98px) {
+	.footer_partial {
+	}
+}
+
+@media (max-width: 575.98px) {
+	.footer_partial {
+	}
+}
+
+// -------------- //
+
+////////////////////
+/* @media between */
+////////////////////
+
+@media (min-width: 576px) and (max-width: 767.98px) {
+	.footer_partial {
+	}
+}
+
+@media (min-width: 576px) and (max-width: 991.98px) {
+	.footer_partial {
+	}
+}
+
+@media (min-width: 768px) and (max-width: 991.98px) {
+	.footer_partial {
+	}
+}
+
+@media (min-width: 992px) and (max-width: 1199.98px) {
+	.footer_partial {
+	}
+}
+
+@media (min-width: 1200px) and (max-width: 1399.98px) {
+	.footer_partial {
+	}
+}
+
+// ------------------ //
+
+////////////////////////
+/* @media (min-width) */
+////////////////////////
+
+@media (min-width: 576px) {
+	.footer_partial {
+	}
+}
+
+@media (min-width: 768px) {
+	.footer_partial {
+	}
+}
+
+@media (min-width: 992px) {
+	.footer_partial {
+	}
+}
+
+@media (min-width: 1200px) {
+	.footer_partial {
+	}
+}
+
+@media (min-width: 1400px) {
+	.footer_partial {
+	}
+}
+
+// ---------------- //
+
+//////////////////////
+/* mobile landscape */
+//////////////////////
+
+@media (max-height: 400px) and (orientation: landscape) {
+	.footer_partial {
+	}
+}
+
+// ----------------- //
+
+///////////////////////
+/* iPad Pro portrait */
+///////////////////////
+
+@media (width: 1024px) and (height: 1366px) {
+	.footer_partial {
+	}
+}
+// }

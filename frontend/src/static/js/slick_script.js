@@ -8,74 +8,65 @@
 
 // slide hero home
 
-var itemLength = $('.slider_hero_home').attr('data-count') - 1;
+var itemLength = $(".slider_hero_home").attr("data-count") - 1;
 
 console.log(itemLength);
 
-$('.slider_hero_home').slick(
-	{
-		dots: false,
-		infinite: false,
-		speed: 1200,
-		slidesToShow: 1,
-		fade: true,
-		autoplay: true,
-		arrows: true
-		// prevArrow: $('.prev'),
-		// nextArrow: $('.next')
-		// loop: false
-	}
-);
+$(".slider_hero_home").slick({
+	dots: false,
+	infinite: false,
+	speed: 1200,
+	slidesToShow: 1,
+	fade: true,
+	autoplay: true,
+	arrows: true,
+	// prevArrow: $('.prev'),
+	// nextArrow: $('.next')
+	// loop: false
+});
 
 // take off "prev" and "next" text from pre next buttons
 $(".slick-next, .slick-prev").text("");
 
-
-
-
-
-
 // pause slick slider on last img (itemLength)
 
-
-$('.slider_hero_home').on('afterChange', function(event, slick, currentSlide, nextSlide){
+$(".slider_hero_home").on("afterChange", function (event, slick, currentSlide, nextSlide) {
 	if (itemLength === currentSlide) {
-    	$('.slider_hero_home').slick('slickPause');
+		$(".slider_hero_home").slick("slickPause");
 	}
 });
 
-
 // Slide Hero
 function sliderForLarge() {
-	$('.slider-for-large').slick({
+	$(".slider-for-large").slick({
 		slidesToShow: 1,
 		slidesToScroll: 1,
 		arrows: true,
 		dots: true,
 		// fade: true,
 		rtl: true,
-		cssEase: 'ease-in-out',
-		accessibility: true
+		cssEase: "ease-in-out",
+		accessibility: true,
 	});
 }
 
 // Slide Contact
 function sliderFor() {
-	$('.slider-for').each(function (key, item) {
-		let sliderIdName = 'slider' + key;
-		let sliderNavIdName = 'sliderNav' + key;
-		let slickPrevIdName = 'slickPrev' + key;
-		let slickNextIdName = 'slickNext' + key;
+	$(".slider-for").each(function (key, item) {
+		let sliderIdName = "slider" + key;
+		let sliderNavIdName = "sliderNav" + key;
+		let slickPrevIdName = "slickPrev" + key;
+		let slickNextIdName = "slickNext" + key;
 
 		this.id = sliderIdName;
-		$('.slider-nav')[key].id = sliderNavIdName;
-		$('.slick-prev')[key].id = slickPrevIdName;
-		$('.slick-next')[key].id = slickNextIdName;
+		$(".slider-nav")[key].id = sliderNavIdName;
+		$(".slick-prev")[key].id = slickPrevIdName;
+		$(".slick-next")[key].id = slickNextIdName;
 
-		let sliderId = '#' + sliderIdName;
-		let sliderNavId = '#' + sliderNavIdName;
-		let slickPrevId = '#' + slickPrevIdName;
-		let slickNextId = '#' + slickNextIdName;
+		let sliderId = "#" + sliderIdName;
+		let sliderNavId = "#" + sliderNavIdName;
+		let slickPrevId = "#" + slickPrevIdName;
+		let slickNextId = "#" + slickNextIdName;
 
 		$(sliderId).slick({
 			slidesToShow: 1,
@@ -84,18 +75,18 @@ function sliderFor() {
 			dots: false,
 			// fade: true,
 			rtl: true,
-			cssEase: 'ease-in-out',
+			cssEase: "ease-in-out",
 			asNavFor: sliderNavId,
 			prevArrow: slickPrevId,
 			nextArrow: slickNextId,
-			accessibility: true
+			accessibility: true,
 		});
 
 		// script to make slidesToShow dynamic
-		let sliderNav = $('.slider-nav');
-		let maxItems = Math.round(sliderNav.parent('div').width() / 201);
-		if (sliderNav.children('div').length < maxItems) {
-			maxItems = sliderNav.children('div').length - 1;
+		let sliderNav = $(".slider-nav");
+		let maxItems = Math.round(sliderNav.parent("div").width() / 201);
+		if (sliderNav.children("div").length < maxItems) {
+			maxItems = sliderNav.children("div").length - 1;
 		}
 		//////////////////////////////////////
 
@@ -107,11 +98,11 @@ function sliderFor() {
 			arrows: false,
 			dots: false,
 			centerMode: true,
-			centerPadding: '0px',
+			centerPadding: "0px",
 			focusOnSelect: true,
-			cssEase: 'ease-in-out',
+			cssEase: "ease-in-out",
 			variableWidth: true,
-			respondTo: 'min',
+			respondTo: "min",
 			// adaptiveHeight: true,
 
 			// infinite: true,
@@ -122,44 +113,44 @@ function sliderFor() {
 					breakpoint: 1024,
 					settings: {
 						slidesToShow: maxItems,
-							slidesToScroll: 3
-					}
+						slidesToScroll: 3,
+					},
 				},
 
 				{
 					breakpoint: 600,
 					settings: {
 						slidesToShow: maxItems,
-						slidesToScroll: 2
-					}
-				}
-			]
+						slidesToScroll: 2,
+					},
+				},
+			],
 		});
 	});
 }
 
 // Soggiorni Slide
 function sliderForSogg() {
-	$('.slider-for-sogg').each(function (key, item) {
-		let sliderIdName = 'slider' + key;
-		let slickPrevIdName = 'slickPrev' + key;
-		let slickNextIdName = 'slickNext' + key;
+	$(".slider-for-sogg").each(function (key, item) {
+		let sliderIdName = "slider" + key;
+		let slickPrevIdName = "slickPrev" + key;
+		let slickNextIdName = "slickNext" + key;
 
 		this.id = sliderIdName;
-		$('.slick-prev-sogg')[key].id = slickPrevIdName;
-		$('.slick-next-sogg')[key].id = slickNextIdName;
+		$(".slick-prev-sogg")[key].id = slickPrevIdName;
+		$(".slick-next-sogg")[key].id = slickNextIdName;
 
-		let sliderId = '#' + sliderIdName;
-		let slickPrevId = '#' + slickPrevIdName;
-		let slickNextId = '#' + slickNextIdName;
+		let sliderId = "#" + sliderIdName;
+		let slickPrevId = "#" + slickPrevIdName;
+		let slickNextId = "#" + slickNextIdName;
 
-		let numslide=3;
-	if( ($(window).width() <= 768) && ($(window).width() >= 576) ){
-		numslide=2;
-	}
-	if($(window).width() < 576){
-		numslide=1;
-	}
+		let numslide = 3;
+		if ($(window).width() <= 768 && $(window).width() >= 576) {
+			numslide = 2;
+		}
+		if ($(window).width() < 576) {
+			numslide = 1;
+		}
 
 		$(sliderId).slick({
 			slidesToShow: 3,
@@ -168,7 +159,7 @@ function sliderForSogg() {
 			dots: false,
 			// centerMode: true,
 			// centerPadding: '20px',
-			cssEase: 'ease-in-out',
+			cssEase: "ease-in-out",
 			prevArrow: slickPrevId,
 			nextArrow: slickNextId,
 			accessibility: true,
@@ -179,58 +170,59 @@ function sliderForSogg() {
 					settings: {
 						slidesToShow: 1,
 						slidesToScroll: 1,
-					}
-				}
-			]
+					},
+				},
+			],
 		});
 	});
 }
 
 // Slide Selection
 function sliderForHome() {
-
 	// for slider_hero_module, slider_hero_2_module, slider_selection_module_image
 	// define on the html data-slide attributes of div class=slider-for-home how many are visible in the slider, for each of three media (sm, md, lg)
 
-	$('.slider-for-home').each(function () {
-		let numslide=$(this).data("slide-lg");
-		if( ($(window).width() > 768) && ($(window).width() <= 991.98) ){
-			numslide=$(this).data("slide-md");
+	$(".slider-for-home").each(function () {
+		let numslide = $(this).data("slide-lg");
+		if ($(window).width() > 768 && $(window).width() <= 991.98) {
+			numslide = $(this).data("slide-md");
 		}
-		if($(window).width() <= 768){
-			numslide=$(this).data("slide-sm");
+		if ($(window).width() <= 768) {
+			numslide = $(this).data("slide-sm");
 		}
-		$(this).find('.slider').slick({
-			slidesToShow: numslide,
-			slidesToScroll: 1,
-			arrows: true,
-			dots: false,
-			// fade: true,
-			cssEase: 'ease-in-out',
-			// asNavFor: sliderNavId,
-			prevArrow: $(this).find('.slickdsi-prev'),
-			nextArrow: $(this).find('.slickdsi-next'),
-			accessibility: true
-		});
+		$(this)
+			.find(".slider")
+			.slick({
+				slidesToShow: numslide,
+				slidesToScroll: 1,
+				arrows: true,
+				dots: false,
+				// fade: true,
+				cssEase: "ease-in-out",
+				// asNavFor: sliderNavId,
+				prevArrow: $(this).find(".slickdsi-prev"),
+				nextArrow: $(this).find(".slickdsi-next"),
+				accessibility: true,
+			});
 	});
 }
 
 // Slide Dimore
 function sliderForDimo(page) {
-	var div = $('#cards_container_' + page).find('.slider-for-dimore');
+	var div = $("#cards_container_" + page).find(".slider-for-dimore");
 	$(div).each(function () {
-		slider = $(this).find('.slider');
+		slider = $(this).find(".slider");
 		$(slider).slick({
 			slidesToShow: 1,
 			slidesToScroll: 1,
 			arrows: true,
 			dots: false,
 			// fade: true,
-			cssEase: 'ease-in-out',
+			cssEase: "ease-in-out",
 			// asNavFor: sliderNavId,
-			prevArrow: $(this).find('.slick-prev-dimore'),
-			nextArrow: $(this).find('.slick-next-dimore'),
-			accessibility: true
+			prevArrow: $(this).find(".slick-prev-dimore"),
+			nextArrow: $(this).find(".slick-next-dimore"),
+			accessibility: true,
 		});
 	});
 }
@@ -267,8 +259,7 @@ function sliderForDimo(page) {
 // 	});
 // }
 
-
 // lazy load
 $(function () {
-    $('.lazy').lazy();
+	$(".lazy").lazy();
 });

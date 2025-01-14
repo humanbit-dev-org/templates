@@ -1,17 +1,15 @@
-  //
- // Credits module
+//
+// Credits module
 //
 
 // >>> Controllers — START
 @use "../controllers/dynamics" as *; // controllers for mixins and variables
 // <<<<< Controllers — END
 
-
 // Copy, paste and uncomment the following code into the intended SCSS page to style this module:
 // @extend %modal_credits_module;
 
 %modal_credits_module {
-
 	.modal_credits_module {
 		font-size: 10rem;
 
@@ -19,7 +17,7 @@
 			text-align: left;
 			font-size: 1.07rem !important;
 			line-height: 1.4;
-			color: #18263C !important;
+			color: #18263c !important;
 			background-color: rgba(255, 255, 255, 0.9);
 
 			.modal-header {
@@ -43,7 +41,7 @@
 					margin: -0.5rem -0.5rem -0.5rem auto;
 					opacity: 1;
 
-					&:hover{
+					&:hover {
 						opacity: 0.7;
 					}
 				}
@@ -77,7 +75,7 @@
 				height: auto;
 				font-weight: 200;
 				line-height: 18.2px;
-				color: #18263C !important;
+				color: #18263c !important;
 			}
 
 			p {
@@ -88,210 +86,122 @@
 		}
 	}
 
-
-
-/////
-////
-/*/==================== @media ====================/*/// {
-/////////////////
-////////////////
-			  ////////////////////////
-			 /* @media (max-width) */
-			////////////////////////
-
-			@media (max-width: 1399.98px) {
-
-				.modal_credits_module {
-
-
-
-				}
-
-			}
-
-			@media (max-width: 1199.98px) {
-
-				.modal_credits_module {
-
-
-
-				}
-
-			}
-
-			@media (max-width: 991.98px) {
-
-				.modal_credits_module {
-
-
-
-				}
-
-			}
-
-			@media (max-width: 767.98px) {
-
-				.modal_credits_module {
-
-
-
-				}
-
-			}
-
-			@media (max-width: 575.98px) {
-
-				.modal_credits_module {
-
-
-
-				}
-
-			}
-
-				// -------------- //
-
-			  ////////////////////
-			 /* @media between */
-			////////////////////
-
-			@media (min-width: 576px) and (max-width: 767.98px) {
-
-				.modal_credits_module {
-
-
-
-				}
-
-			}
-
-			@media (min-width: 576px) and (max-width: 991.98px) {
-
-				.modal_credits_module {
-
-
-
-				}
-
-			}
-
-			@media (min-width: 768px) and (max-width: 991.98px) {
-
-				.modal_credits_module {
-
-
-
-				}
-
-			}
-
-			@media (min-width: 992px) and (max-width: 1199.98px) {
-
-				.modal_credits_module {
-
-
-
-				}
-
-			}
-
-			@media (min-width: 1200px) and (max-width: 1399.98px) {
-
-				.modal_credits_module {
-
-
-
-				}
-
-			}
-
-				// ------------------ //
-
-			  ////////////////////////
-			 /* @media (min-width) */
-			////////////////////////
-
-			@media (min-width: 576px) {
-
-				.modal_credits_module {
-
-
-
-				}
-
-			}
-
-			@media (min-width: 768px) {
-
-				.modal_credits_module {
-
-
-
-				}
-
-			}
-
-			@media (min-width: 992px) {
-
-				.modal_credits_module {
-
-
-
-				}
-
-			}
-
-			@media (min-width: 1200px) {
-
-				.modal_credits_module {
-
-
-
-				}
-
-			}
-
-			@media (min-width: 1400px) {
-
-				.modal_credits_module {
-
-
-
-				}
-
-			}
-
-				// ---------------- //
-
-			  //////////////////////
-			 /* mobile landscape */
-			//////////////////////
-
-			@media (max-height: 400px) and (orientation: landscape) {
-
-				.modal_credits_module {
-
-
-
-				}
-
-			}
-
-				// ----------------- //
-
-			  ///////////////////////
-			 /* iPad Pro portrait */
-			///////////////////////
-
-			@media (width: 1024px) and (height: 1366px) {
-
-				.modal_credits_module {
-
-
-
-				}
-
-			}
-  //  }
-
+	/////
+	////
+	/*/==================== @media ====================/*/ // {
+	/////////////////
+	////////////////
+	////////////////////////
+	/* @media (max-width) */
+	////////////////////////
+
+	@media (max-width: 1399.98px) {
+		.modal_credits_module {
+		}
+	}
+
+	@media (max-width: 1199.98px) {
+		.modal_credits_module {
+		}
+	}
+
+	@media (max-width: 991.98px) {
+		.modal_credits_module {
+		}
+	}
+
+	@media (max-width: 767.98px) {
+		.modal_credits_module {
+		}
+	}
+
+	@media (max-width: 575.98px) {
+		.modal_credits_module {
+		}
+	}
+
+	// -------------- //
+
+	////////////////////
+	/* @media between */
+	////////////////////
+
+	@media (min-width: 576px) and (max-width: 767.98px) {
+		.modal_credits_module {
+		}
+	}
+
+	@media (min-width: 576px) and (max-width: 991.98px) {
+		.modal_credits_module {
+		}
+	}
+
+	@media (min-width: 768px) and (max-width: 991.98px) {
+		.modal_credits_module {
+		}
+	}
+
+	@media (min-width: 992px) and (max-width: 1199.98px) {
+		.modal_credits_module {
+		}
+	}
+
+	@media (min-width: 1200px) and (max-width: 1399.98px) {
+		.modal_credits_module {
+		}
+	}
+
+	// ------------------ //
+
+	////////////////////////
+	/* @media (min-width) */
+	////////////////////////
+
+	@media (min-width: 576px) {
+		.modal_credits_module {
+		}
+	}
+
+	@media (min-width: 768px) {
+		.modal_credits_module {
+		}
+	}
+
+	@media (min-width: 992px) {
+		.modal_credits_module {
+		}
+	}
+
+	@media (min-width: 1200px) {
+		.modal_credits_module {
+		}
+	}
+
+	@media (min-width: 1400px) {
+		.modal_credits_module {
+		}
+	}
+
+	// ---------------- //
+
+	//////////////////////
+	/* mobile landscape */
+	//////////////////////
+
+	@media (max-height: 400px) and (orientation: landscape) {
+		.modal_credits_module {
+		}
+	}
+
+	// ----------------- //
+
+	///////////////////////
+	/* iPad Pro portrait */
+	///////////////////////
+
+	@media (width: 1024px) and (height: 1366px) {
+		.modal_credits_module {
+		}
+	}
+	//  }
 }

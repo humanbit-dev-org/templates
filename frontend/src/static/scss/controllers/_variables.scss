@@ -1,5 +1,5 @@
-  // Variables controller
- //
+// Variables controller
+//
 // See: https://www.color-name.com
 
 // ------ //
@@ -7,7 +7,7 @@
 // ------ //
 
 // Black (Licorice)
-$color_black: #1A130F;
+$color_black: #1a130f;
 // $color_black: #01012d;
 
 // White
@@ -23,7 +23,7 @@ $color_second: #192946;
 $color_third: #f28f52;
 
 // Kelly Green
-$color_fourth: #69C914;
+$color_fourth: #69c914;
 
 // Tangerine Yellow
 $color_fifth: #ffcc00;
@@ -32,26 +32,25 @@ $color_fifth: #ffcc00;
 $color_sixth: #980539;
 
 // Telemagenta
-$color_seventh: #D12A6A;
+$color_seventh: #d12a6a;
 
 // Battery Charged Blue
-$color_eighth: #15A4DA;
+$color_eighth: #15a4da;
 
 // Blue (Munsell)
 $color_ninth: #008aaa;
 
 // Blue
-$color_tenth: #0000FF;
+$color_tenth: #0000ff;
 
 // Anti-Flash White
-$color_gray_light: #F2F2F2;
+$color_gray_light: #f2f2f2;
 
 // Platinum
-$color_gray_medium: #E6E6E6;
+$color_gray_medium: #e6e6e6;
 
 // Philippine Silver
 $color_gray_dark: #b3b3b3;
-
 
 // >>> Navbar background — START
 :root {
@@ -60,22 +59,21 @@ $color_gray_dark: #b3b3b3;
 }
 // <<<<< Navbar background — END
 
-
 // Social networks. <<IN>> //
 // Facebook
-$color_facebook: #4267B2;
+$color_facebook: #4267b2;
 
 // Twitter
-$color_twitter: #55ACEE;
+$color_twitter: #55acee;
 
 // LinkedIn
-$color_linkedin: #0077B5;
+$color_linkedin: #0077b5;
 
 // Email
-$color_email: #7D7D7D;
+$color_email: #7d7d7d;
 
 // WhatsApp
-$color_whatsapp: #25D366;
+$color_whatsapp: #25d366;
 // Social networks. <<OUT>> //
 
 //
@@ -100,9 +98,8 @@ $color_whatsapp: #25D366;
 }
 // <nav>'s background. <<OUT>> //
 
-
-  //
- // Height (values must be input in rem unit — even if it's zero).
+//
+// Height (values must be input in rem unit — even if it's zero).
 //
 
 // <nav>'s `height` and content's `margin-top`/`top`. <<IN>> //
@@ -118,9 +115,8 @@ $max_height_extra: 9rem; // Extra slot enabled.
 $footer_min_height: 0rem; // Default: 0rem
 // <footer>'s `height`. <<OUT>> //
 
-
-  //
- // <form> @mixin
+//
+// <form> @mixin
 //
 
 // $color_primary: $color_white;
@@ -136,49 +132,46 @@ $footer_min_height: 0rem; // Default: 0rem
 // $radius_transformed: 50rem;
 // $focus_box_shadow: (inset 0 1px 2px rgba(0, 0, 0, .08), 0 0 .15rem rgba($color_third, .6));
 
-
-
 // @include form_mixin - old (Gabri test)(
-	// $height_default: calc(3.5rem + 2px);
-	// $padding_default: 1rem 1.25rem 0.625rem 1.25rem; // (top right bottom left)
-	// $padding_transformed: 0.1rem 1.75rem;
-	// $color_primary: yellow;
-	// $color_secondary: red;
-	// $bg_color_primary: saddlebrown;
-	// $bg_color_secondary: green;
-	// $border: 5px solid blue;
-	// $border_focus_color: red;
-	// $check_radius_default: 0;
-	// $radius_default: 0;
-	// $radius_transformed: 0;
-	// $focus_box_shadow: (inset 0 1px 2px rgba(0, 0, 0, .08), 0 0 1.15rem red);
-	// $transition: all 1.15s ease-in-out;
+// $height_default: calc(3.5rem + 2px);
+// $padding_default: 1rem 1.25rem 0.625rem 1.25rem; // (top right bottom left)
+// $padding_transformed: 0.1rem 1.75rem;
+// $color_primary: yellow;
+// $color_secondary: red;
+// $bg_color_primary: saddlebrown;
+// $bg_color_secondary: green;
+// $border: 5px solid blue;
+// $border_focus_color: red;
+// $check_radius_default: 0;
+// $radius_default: 0;
+// $radius_transformed: 0;
+// $focus_box_shadow: (inset 0 1px 2px rgba(0, 0, 0, .08), 0 0 1.15rem red);
+// $transition: all 1.15s ease-in-out;
 // );
 
 // @include form_mixin - form 1 Monika(
-	// $height-default: 2.5rem; // bEssEx default: 3.5rem
-	// $padding-default: 0.7rem 1.25rem 0.45rem; // bEssEx default: 1rem 1.25rem 0.625rem (top left/right bottom)
-	// $padding-transformed: 0.125rem 1.75rem; // bEssEx default: 0.1rem 1.75rem (`<label>` transformed)
-	// $body-color-default: #0e4c95;
-	// $label-color-default: #0e4c95;
-	// $body-color-transformed: #edf1f7;
-	// $label-color-transformed: #edf1f7;
-	// $body-bg-color-default: #edf1f7;
-	// $label-bg-color-default: #edf1f7;
-	// $body-bg-color-transformed: #0e4c95;
-	// $label-bg-color-transformed: #0e4c95;
-	// $border: 1px solid black;
-	// $border-focus-color: red;
-	// $check-radius-default: 0;
-	// $radius-default: 0;
-	// $radius-transformed: 20px;
-	// $box-shadow-focus: (inset 0 1px 2px rgba(0, 0, 0, .08), 5px 5px 0 #edf1f7);
-	// $transition: all 0.15s ease-in-out;
+// $height-default: 2.5rem; // bEssEx default: 3.5rem
+// $padding-default: 0.7rem 1.25rem 0.45rem; // bEssEx default: 1rem 1.25rem 0.625rem (top left/right bottom)
+// $padding-transformed: 0.125rem 1.75rem; // bEssEx default: 0.1rem 1.75rem (`<label>` transformed)
+// $body-color-default: #0e4c95;
+// $label-color-default: #0e4c95;
+// $body-color-transformed: #edf1f7;
+// $label-color-transformed: #edf1f7;
+// $body-bg-color-default: #edf1f7;
+// $label-bg-color-default: #edf1f7;
+// $body-bg-color-transformed: #0e4c95;
+// $label-bg-color-transformed: #0e4c95;
+// $border: 1px solid black;
+// $border-focus-color: red;
+// $check-radius-default: 0;
+// $radius-default: 0;
+// $radius-transformed: 20px;
+// $box-shadow-focus: (inset 0 1px 2px rgba(0, 0, 0, .08), 5px 5px 0 #edf1f7);
+// $transition: all 0.15s ease-in-out;
 // );
 
-
-  //
- // `font-weight`
+//
+// `font-weight`
 //
 
 // $fw_100: 100; $fw_200: 200; $fw_300: 300; $fw_400: 400; $fw_500: 500; $fw_600: 600; $fw_700: 700; $fw_800: 800; $fw_900: 900;

@@ -1,17 +1,15 @@
-  //
- // Selection slider module
+//
+// Selection slider module
 //
 
 // >>> Controllers — START
 @use "../controllers/dynamics" as *; // controllers for mixins and variables
 // <<<<< Controllers — END
 
-
 // Copy, paste and uncomment the following code into the intended SCSS page to style this module:
 // @extend %slider_selection_module;
 
 %slider_selection_module {
-
 	.slider_selection_module {
 		// slider - no image in
 		.slider_no_img {
@@ -59,7 +57,7 @@
 			.slickdsi-prev,
 			.slickdsi-next {
 				top: 190px;
-				position:absolute;
+				position: absolute;
 				font-size: 0.9rem;
 				cursor: pointer;
 				line-height: 0.5rem;
@@ -75,7 +73,7 @@
 			}
 
 			.slickdsi-prev:hover,
-			.slickdsi-next:hover{
+			.slickdsi-next:hover {
 				background-color: rgba($color_first, 0.6);
 			}
 
@@ -107,7 +105,7 @@
 
 			.container_product {
 				// background-color: rgba(0, 51, 102, 0.05);
-				border-radius:20px;
+				border-radius: 20px;
 			}
 		}
 		// slider  no image out
@@ -140,7 +138,7 @@
 			.slickdsi-prev,
 			.slickdsi-next {
 				top: 83px;
-				position:absolute;
+				position: absolute;
 				font-size: 0.9rem;
 				cursor: pointer;
 				line-height: 0.5rem;
@@ -180,7 +178,7 @@
 
 			.container_product {
 				// background-color: rgba(0, 51, 102, 0.05);
-				border-radius:20px;
+				border-radius: 20px;
 			}
 
 			.complessi_type {
@@ -222,7 +220,7 @@
 			.slickdsi-prev,
 			.slickdsi-next {
 				top: 83px;
-				position:absolute;
+				position: absolute;
 				font-size: 0.9rem;
 				cursor: pointer;
 				line-height: 0.5rem;
@@ -262,7 +260,7 @@
 
 			.container_product {
 				// background-color: rgba(0, 51, 102, 0.05);
-				border-radius:20px;
+				border-radius: 20px;
 			}
 
 			.complessi_type {
@@ -277,210 +275,122 @@
 		// slider img 2 out
 	}
 
-
-
-/////
-////
-/*/==================== @media ====================/*/// {
-/////////////////
-////////////////
-			  ////////////////////////
-			 /* @media (max-width) */
-			////////////////////////
-
-			@media (max-width: 1399.98px) {
-
-				.slider_selection_module {
-
-
-
-				}
-
-			}
-
-			@media (max-width: 1199.98px) {
-
-				.slider_selection_module {
-
-
-
-				}
-
-			}
-
-			@media (max-width: 991.98px) {
-
-				.slider_selection_module {
-
-
-
-				}
-
-			}
-
-			@media (max-width: 767.98px) {
-
-				.slider_selection_module {
-
-
-
-				}
-
-			}
-
-			@media (max-width: 575.98px) {
-
-				.slider_selection_module {
-
-
-
-				}
-
-			}
-
-				// -------------- //
-
-			  ////////////////////
-			 /* @media between */
-			////////////////////
-
-			@media (min-width: 576px) and (max-width: 767.98px) {
-
-				.slider_selection_module {
-
-
-
-				}
-
-			}
-
-			@media (min-width: 576px) and (max-width: 991.98px) {
-
-				.slider_selection_module {
-
-
-
-				}
-
-			}
-
-			@media (min-width: 768px) and (max-width: 991.98px) {
-
-				.slider_selection_module {
-
-
-
-				}
-
-			}
-
-			@media (min-width: 992px) and (max-width: 1199.98px) {
-
-				.slider_selection_module {
-
-
-
-				}
-
-			}
-
-			@media (min-width: 1200px) and (max-width: 1399.98px) {
-
-				.slider_selection_module {
-
-
-
-				}
-
-			}
-
-				// ------------------ //
-
-			  ////////////////////////
-			 /* @media (min-width) */
-			////////////////////////
-
-			@media (min-width: 576px) {
-
-				.slider_selection_module {
-
-
-
-				}
-
-			}
-
-			@media (min-width: 768px) {
-
-				.slider_selection_module {
-
-
-
-				}
-
-			}
-
-			@media (min-width: 992px) {
-
-				.slider_selection_module {
-
-
-
-				}
-
-			}
-
-			@media (min-width: 1200px) {
-
-				.slider_selection_module {
-
-
-
-				}
-
-			}
-
-			@media (min-width: 1400px) {
-
-				.slider_selection_module {
-
-
-
-				}
-
-			}
-
-				// ---------------- //
-
-			  //////////////////////
-			 /* mobile landscape */
-			//////////////////////
-
-			@media (max-height: 400px) and (orientation: landscape) {
-
-				.slider_selection_module {
-
-
-
-				}
-
-			}
-
-				// ----------------- //
-
-			  ///////////////////////
-			 /* iPad Pro portrait */
-			///////////////////////
-
-			@media (width: 1024px) and (height: 1366px) {
-
-				.slider_selection_module {
-
-
-
-				}
-
-			}
-  //  }
-
+	/////
+	////
+	/*/==================== @media ====================/*/ // {
+	/////////////////
+	////////////////
+	////////////////////////
+	/* @media (max-width) */
+	////////////////////////
+
+	@media (max-width: 1399.98px) {
+		.slider_selection_module {
+		}
+	}
+
+	@media (max-width: 1199.98px) {
+		.slider_selection_module {
+		}
+	}
+
+	@media (max-width: 991.98px) {
+		.slider_selection_module {
+		}
+	}
+
+	@media (max-width: 767.98px) {
+		.slider_selection_module {
+		}
+	}
+
+	@media (max-width: 575.98px) {
+		.slider_selection_module {
+		}
+	}
+
+	// -------------- //
+
+	////////////////////
+	/* @media between */
+	////////////////////
+
+	@media (min-width: 576px) and (max-width: 767.98px) {
+		.slider_selection_module {
+		}
+	}
+
+	@media (min-width: 576px) and (max-width: 991.98px) {
+		.slider_selection_module {
+		}
+	}
+
+	@media (min-width: 768px) and (max-width: 991.98px) {
+		.slider_selection_module {
+		}
+	}
+
+	@media (min-width: 992px) and (max-width: 1199.98px) {
+		.slider_selection_module {
+		}
+	}
+
+	@media (min-width: 1200px) and (max-width: 1399.98px) {
+		.slider_selection_module {
+		}
+	}
+
+	// ------------------ //
+
+	////////////////////////
+	/* @media (min-width) */
+	////////////////////////
+
+	@media (min-width: 576px) {
+		.slider_selection_module {
+		}
+	}
+
+	@media (min-width: 768px) {
+		.slider_selection_module {
+		}
+	}
+
+	@media (min-width: 992px) {
+		.slider_selection_module {
+		}
+	}
+
+	@media (min-width: 1200px) {
+		.slider_selection_module {
+		}
+	}
+
+	@media (min-width: 1400px) {
+		.slider_selection_module {
+		}
+	}
+
+	// ---------------- //
+
+	//////////////////////
+	/* mobile landscape */
+	//////////////////////
+
+	@media (max-height: 400px) and (orientation: landscape) {
+		.slider_selection_module {
+		}
+	}
+
+	// ----------------- //
+
+	///////////////////////
+	/* iPad Pro portrait */
+	///////////////////////
+
+	@media (width: 1024px) and (height: 1366px) {
+		.slider_selection_module {
+		}
+	}
+	//  }
 }
