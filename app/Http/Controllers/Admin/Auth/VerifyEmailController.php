@@ -9,6 +9,4 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Prologue\Alerts\Facades\Alert;
 
-class VerifyEmailController extends AuthEmailVerificationRequest
-{
-}
+class VerifyEmailController extends AuthEmailVerificationRequest {}

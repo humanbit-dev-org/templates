@@ -1,0 +1,43 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration {
+	/**
+	 * Run the migrations.
+	 */
+	public function up(): void
+	{
+		Schema::create("orders", function (Blueprint $table) {
+			$table->id();
+			$table->string("name");
+			$table->string("transaction_id")->nullable();
+			$table->float("import")->default(0);
+			$table->string("status");
+			$table->text("description")->nullable();
+
+			$table->dateTime("confirm_date");
+			$table->dateTime("expire_date");
+			$table->dateTime("complete_date")->nullable();
+
+			// Defining foreign keys
+			$table->foreignId("group_id")->constrained("groups")->onDelete("cascade");
+			$table->foreignId("ecommerce_id")->constrained("ecommerce")->onDelete("cascade");
+
+			$table->text("ecommerce_description");
+			$table->string("ecommerce_url");
+
+			$table->timestamps();
+		});
+	}
+
+	/**
+	 * Reverse the migrations.
+	 */
+	public function down(): void
+	{
+		Schema::dropIfExists("orders");
+	}
+};

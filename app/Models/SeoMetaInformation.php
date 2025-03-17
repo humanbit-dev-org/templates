@@ -11,5 +11,10 @@ class SeoMetaInformation extends Model
 	use CrudTrait;
 	use HasFactory;
 
-	protected $fillable = ["it", "en", "image_path", "code"];
+	protected $fillable = ["it", "en", "image_path", "code", "page_id"];
+
+	public function page()
+	{
+		return $this->belongsTo(Page::class);
+	}
 }

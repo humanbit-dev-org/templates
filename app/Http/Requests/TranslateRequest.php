@@ -25,7 +25,8 @@ class TranslateRequest extends FormRequest
 	public function rules()
 	{
 		return [
-			"code" => "required|string|unique:translates,code," . $this->route("id"),
+			"code" => "required|string|",
+			"page_id" => "required|exists:pages,id",
 		];
 	}
 

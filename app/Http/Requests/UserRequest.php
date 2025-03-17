@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Validation\Rules\Password;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UserRequest extends FormRequest
@@ -29,7 +30,9 @@ class UserRequest extends FormRequest
 			"name" => "required",
 			"surname" => "required",
 			"email" => "required|email|max:255|unique:users,email," . $this->route("id"),
-			"password" => $this->route("id") ? "nullable|min:6" : "required|min:6",
+			"password" => $this->route("id")
+				? ["nullable", Password::min(6)->mixedCase()->numbers()->symbols()->uncompromised()]
+				: ["required", Password::min(6)->mixedCase()->numbers()->symbols()->uncompromised()],
 			"backpack_role" => "required",
 			"phone" => "required|unique:users,phone," . $this->route("id"),
 			"address" => "required",

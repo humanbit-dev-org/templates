@@ -12,7 +12,7 @@ class Translate extends Model
 	use CrudTrait;
 	use HasFactory;
 
-	protected $fillable = ["it", "en", "text_it", "text_en", "code", "page"];
+	protected $fillable = ["it", "en", "text_it", "text_en", "code", "page_id"];
 
 	protected static function booted()
 	{
@@ -23,5 +23,10 @@ class Translate extends Model
 		static::deleted(function () {
 			TranslateExportService::exportTranslations();
 		});
+	}
+
+	public function page()
+	{
+		return $this->belongsTo(Page::class);
 	}
 }
