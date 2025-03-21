@@ -20,7 +20,7 @@ return [
 	"persistentTable" => true,
 
 	// show search bar in the top-right corner?
-	"searchableTable" => true,
+	"searchableTable" => false,
 
 	// how much time should the system wait before triggering the search function after the user stops typing?
 	"searchDelay" => 400,

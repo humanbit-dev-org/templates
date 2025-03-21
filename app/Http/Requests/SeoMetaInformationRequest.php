@@ -25,8 +25,9 @@ class SeoMetaInformationRequest extends FormRequest
 	public function rules()
 	{
 		return [
-			"it" => "required",
-			"code" => "required",
+			"code" => "required|string|",
+			"image_path" => "image|mimes:jpeg,png,jpg,gif,webp|max:1500",
+			"page_id" => "nullable|exists:pages,id",
 		];
 	}
 

@@ -41,6 +41,8 @@ return [
 	"styles" => [
 		base_path("vendor/backpack/theme-tabler/resources/assets/css/color-adjustments.css"),
 		base_path("vendor/backpack/theme-tabler/resources/assets/css/colors.css"),
+		base_path("public/static/css/humanbit_custom_1.css"),
+		base_path("public/static/css/colors_humanbit_1.css"),
 	],
 
 	/**
@@ -69,7 +71,7 @@ return [
 		 * When false, the theme will only use the "defaultColorMode" set above.
 		 * In case "defaultColorMode" is null, system is the default.
 		 */
-		"showColorModeSwitcher" => true,
+		"showColorModeSwitcher" => false,
 
 		/**
 		 * Fix the top-header component (present in "vertical_transparent") and the menu when the layout type is set as "horizontal".
@@ -80,7 +82,7 @@ return [
 		/**
 		 * When true, the content area will take the whole screen width.
 		 */
-		"useFluidContainers" => false,
+		"useFluidContainers" => true,
 
 		/**
 		 * When true, the sidebar content for vertical layouts will not scroll with the rest of the content.

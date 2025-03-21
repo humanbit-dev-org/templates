@@ -25,10 +25,8 @@ class AttachmentRequest extends FormRequest
 	public function rules()
 	{
 		return [
-			"title" => "required|min:5|max:255",
-			"file_path" => "mimes:pdf,doc,docx,ppt,pptx,xls,xlsx,csv,zip|max:10240",
-			"article_id" => "nullable|exists:articles,id",
-			"institutional_id" => "nullable|exists:institutionals,id",
+			"title" => "required",
+			"file_path" => "required|mimes:pdf,doc,docx,ppt,pptx,xls,xlsx,csv,zip|max:1000",
 		];
 	}
 

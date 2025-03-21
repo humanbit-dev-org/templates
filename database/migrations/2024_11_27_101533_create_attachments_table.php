@@ -12,14 +12,16 @@ return new class extends Migration {
 	{
 		Schema::create("attachments", function (Blueprint $table) {
 			$table->id();
+
 			$table->string("title");
 			$table->string("description")->nullable();
 			$table->string("file_path")->nullable();
-			$table->unsignedBigInteger("article_id")->nullable();
-			$table->foreign("article_id")->references("id")->on("articles")->onDelete("cascade");
 
-			$table->unsignedBigInteger("institutional_id")->nullable();
-			$table->foreign("institutional_id")->references("id")->on("institutionals")->onDelete("cascade");
+			// $table->foreignId("thought_id")->nullable()->constrained("thoughts")->onDelete("cascade");
+			// $table->foreignId("institutional_id")->nullable()->constrained("institutionals")->onDelete("cascade");
+			// $table->foreignId("chapter_id")->nullable()->constrained("chapters")->onDelete("cascade");
+			// $table->foreignId("president_id")->nullable()->constrained("presidents")->onDelete("cascade");
+
 			$table->timestamps();
 		});
 	}

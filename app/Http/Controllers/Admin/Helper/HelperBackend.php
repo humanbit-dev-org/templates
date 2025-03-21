@@ -10,12 +10,15 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use function Laravel\Prompts\error;
 use App\Http\Controllers\Controller;
+use Backpack\CRUD\app\Library\Widget;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Facades\Request as FacadesRequest;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class HelperBackend extends Controller
 {
@@ -196,6 +199,7 @@ class HelperBackend extends Controller
 	 */
 	public static function setFields(Model $model)
 	{
+		$request = Request::capture();
 		// Get the table name of the model
 		$table = $model->getTable();
 		// Get all the columns of the table
@@ -206,6 +210,9 @@ class HelperBackend extends Controller
 		$methods = array_filter($reflector->getMethods(ReflectionMethod::IS_PUBLIC), function ($method) use ($model) {
 			return $method->class == get_class($model) && $method->getNumberOfParameters() == 0;
 		});
+
+		$queryParams = $request->except("page");
+
 		// Iterate over the columns and create a field for each one
 		foreach ($columns as $column) {
 			// Skip the id, created_at, and updated_at columns
@@ -218,6 +225,7 @@ class HelperBackend extends Controller
 				$field->attributes(["readonly" => "readonly"]);
 				continue;
 			}
+
 			// Get the type of the column
 			$columnType = DB::getSchemaBuilder()->getColumnType($table, $column);
 			// Determine the type of the field based on the type of the column
@@ -227,12 +235,107 @@ class HelperBackend extends Controller
 			if ($fieldType == "break") {
 				continue;
 			}
+
 			// Create a new field
 			$field = CRUD::field($column);
 
 			// Handle specific types of fields
-			self::handleSpecificType($field, $fieldType, $column);
+			self::handleSpecificType($field, $fieldType, $column, $table);
+
+			if (isset($queryParams[$column])) {
+				$field->value($queryParams[$column]);
+			}
 		}
+
+		// === ADD IMAGE PREVIEW IN "UPLOADS" TAB (ONLY IN EDIT MODE) ===
+		$entryId = CRUD::getCurrentEntryId(); // Get the current entry ID (only exists in edit mode)
+		if ($entryId) {
+			$entry = $model->find($entryId);
+			$previewHtml = "";
+
+			// Helper function to get clean file name (removing "media/")
+			function getCleanFileName($filePath)
+			{
+				return str_replace("media/", "", basename($filePath));
+			}
+
+			// Check if an image exists and generate preview
+			if (!empty($entry->image_path)) {
+				$imageUrl = config("app.url") . "/storage/uploads/" . $entry->image_path;
+				$fileName = getCleanFileName($entry->image_path);
+				$previewHtml .=
+					'<div class="media-item">
+									<strong>' .
+					htmlspecialchars($fileName) .
+					'</strong>
+									<a href="' .
+					$imageUrl .
+					'" target="_blank">
+										<img src="' .
+					$imageUrl .
+					'" alt="Image Preview"/>
+									</a>
+								</div>';
+			}
+
+			// Check if a video exists (MP4, WebM, OGV, OGG) and generate preview
+			foreach (
+				["mp4_path" => "mp4", "webm_path" => "webm", "ogv_path" => "ogg", "ogg_path" => "ogg"]
+				as $column => $mimeType
+			) {
+				if (!empty($entry->$column)) {
+					$videoUrl = config("app.url") . "/storage/uploads/" . $entry->$column;
+					$fileName = getCleanFileName($entry->$column);
+
+					$previewHtml .=
+						'<div class="media-item">
+										<strong>' .
+						htmlspecialchars($fileName) .
+						'</strong>
+										<video controls>
+											<source src="' .
+						$videoUrl .
+						'" type="video/' .
+						$mimeType .
+						'">
+											Your browser does not support the video tag.
+										</video>
+									</div>';
+				}
+			}
+
+			// Check if an MP3 file exists and generate preview
+			if (!empty($entry->mp3_path)) {
+				$audioUrl = config("app.url") . "/storage/uploads/" . $entry->mp3_path;
+				$fileName = getCleanFileName($entry->mp3_path);
+
+				$previewHtml .=
+					'<div class="media-item audio-item">
+									<strong>' .
+					htmlspecialchars($fileName) .
+					'</strong>
+									<div class="audio-container">
+										<audio controls>
+											<source src="' .
+					$audioUrl .
+					'" type="audio/mpeg">
+											Your browser does not support the audio tag.
+										</audio>
+									</div>
+								</div>';
+			}
+
+			// Add the preview field in Backpack if any media is found
+			if (!empty($previewHtml)) {
+				CRUD::addField([
+					"name" => "media_preview",
+					"type" => "custom_html",
+					"tab" => "Gallery", // Place inside the "Gallery" tab
+					"value" => '<div class="media-container">' . $previewHtml . "</div>",
+				]);
+			}
+		}
+
 		// Iterate over the methods and create a field for each one
 		foreach ($methods as $method) {
 			// Get the name of the method
@@ -246,7 +349,9 @@ class HelperBackend extends Controller
 			$result = $model->$methodName();
 			// If the result is a BelongsToMany or BelongsTo relation, create a relational field
 			if ($result instanceof BelongsToMany || $result instanceof BelongsTo) {
-				self::createRelationalFields($methodName, $result);
+				self::createRelationalFields($methodName, $result, $table);
+			} elseif ($result instanceof HasMany) {
+				self::createRelation($methodName, $result, $table);
 			}
 		}
 	}
@@ -265,8 +370,10 @@ class HelperBackend extends Controller
 	 * @param Model $model - The model for which fields need to be set.
 	 * @return void
 	 */
+
 	public static function setFieldsView(Model $model)
 	{
+		self::applyFilters($model);
 		// Get the table name and its columns
 		$table = $model->getTable();
 		$columns = Schema::getColumnListing($table);
@@ -275,71 +382,203 @@ class HelperBackend extends Controller
 		$methods = collect((new ReflectionClass($model))->getMethods(ReflectionMethod::IS_PUBLIC))->filter(function (
 			$method
 		) use ($model) {
-			// We only care about methods that are on the model itself and have no parameters
 			return $method->class == get_class($model) && $method->getNumberOfParameters() == 0;
 		});
 
-		// The url of the backend
-		$backendUrl = config("app.url") . "/admin";
-
 		// Loop through each column of the table
 		foreach ($columns as $column) {
+			$projectBaseUrl = config("app.url") . "/admin";
+			// The base project URL (Ensure correct project base path)
 			// Get the type of the column in the database
 			$columnType = DB::getSchemaBuilder()->getColumnType($table, $column);
 
 			// Determine the type of field that should be created
 			$fieldType = self::getFieldType($columnType);
 
-			// If the column is an id, create a link to the related entry's show page
-			if (str_ends_with($column, "_id") && !str_contains($column, "transaction")) {
+			if ($column == "order") {
+				Widget::add()->type("script")->content("static/js/draggable-sort.js");
+				CRUD::addButtonFromView("top", "export_csv", "export_csv", "end");
+				CRUD::addButtonFromView("top", "draggable_button", "draggable_button");
+				CRUD::removeButton("create");
+				CRUD::addButtonFromView("top", "create", "create_filters");
+			}
+
+			// Display a small image or media player instead of a link for media files
+			if (in_array($column, ["image_path", "mp4_path", "webm_path", "ogv_path", "ogg_path", "mp3_path"])) {
+				$projectBaseUrl = config("app.url") . "/storage/uploads";
+
+				CRUD::column($column)
+					->label(ucfirst(str_replace("_path", "", $column))) // Dynamically set label
+					->type("custom_html")
+					->value(function ($entry) use ($column, $projectBaseUrl) {
+						if (!empty($entry->$column)) {
+							$fileUrl = $projectBaseUrl . "/" . $entry->$column; // Correct full URL
+
+							// Handle different file types
+							if ($column === "image_path") {
+								return '<a href="' .
+									$fileUrl .
+									'" target="_blank">
+											<img src="' .
+									$fileUrl .
+									'" alt="Preview" 
+												 style="width: 150px; height: auto; border-radius: 3px;"
+												 loading="lazy"/>
+										</a>';
+							} elseif (in_array($column, ["mp4_path", "webm_path", "ogv_path", "ogg_path"])) {
+								// Define correct MIME type for each video format
+								$mimeTypes = [
+									"mp4_path" => "video/mp4",
+									"webm_path" => "video/webm",
+									"ogv_path" => "video/ogg",
+									"ogg_path" => "video/ogg",
+								];
+
+								return '<div class="video-container" style="width: 150px; height: 100px; background: #333; display: flex; align-items: center; justify-content: center; position: relative; border-radius: 5px;">
+											<button style="position: absolute; width: 40px; height: 40px; background: rgba(255, 255, 255, 0.7); border: none; border-radius: 50%; font-size: 20px; cursor: pointer; z-index: 2;"
+												onclick="this.style.display=\'none\'; 
+														 let video = this.nextElementSibling; 
+														 let container = this.parentElement;
+														 container.style.background=\'transparent\'; 
+														 video.style.display=\'block\'; 
+														 video.play(); 
+														 video.controls = true;">
+												▶
+											</button>
+											<video 
+												style="width: 100%; height: 100%; object-fit: cover; display: none;" 
+												preload="none">
+												<source src="' .
+									$fileUrl .
+									'" type="' .
+									$mimeTypes[$column] .
+									'">
+												Your browser does not support the video tag.
+											</video>
+										</div>';
+							} elseif ($column === "mp3_path") {
+								return '<audio controls style="width: 150px;" preload="none">
+											<source src="' .
+									$fileUrl .
+									'" type="audio/mpeg">
+											Your browser does not support the audio tag.
+										</audio>';
+							}
+						}
+						return "No File";
+					});
+			}
+
+			// Handle normal relationships
+			elseif (str_ends_with($column, "_id") && !str_contains($column, "transaction")) {
 				$relationName = str_replace("_id", "", $column);
+
 				CRUD::column($column)
 					->label(ucfirst($relationName))
 					->type("custom_html")
-					->value(function ($entry) use ($relationName, $backendUrl) {
-						// If the entry has a related entry, create a link to its show page
+					->value(function ($entry) use ($relationName, $projectBaseUrl) {
 						if ($entry->$relationName) {
-							$name =
-								$entry->$relationName->email ?? ($entry->$relationName->name ?? $entry->$relationName->id);
 							$id = $entry->$relationName->id;
+
+							// Determine display text based on available attributes
+							$displayText = match (true) {
+								isset($entry->$relationName->email) => $entry->$relationName->email,
+								isset($entry->$relationName->surname, $entry->$relationName->name) => $entry->$relationName
+									->name .
+									" " .
+									$entry->$relationName->surname,
+								isset($entry->$relationName->author_surname, $entry->$relationName->author_name) => $entry
+									->$relationName->author_name .
+									" " .
+									$entry->$relationName->author_surname,
+								isset($entry->$relationName->title) => $entry->$relationName->title,
+								isset($entry->$relationName->name) => $entry->$relationName->name,
+								default => $id,
+							};
+
 							return '<a target="_blank" href="' .
-								$backendUrl .
+								$projectBaseUrl .
 								"/" .
 								strtolower(class_basename($entry->$relationName)) .
 								"/" .
 								$id .
-								'/show">' .
-								$name .
+								'/edit">' .
+								$displayText .
 								"</a>";
 						}
 					});
 			} else {
 				// Create a normal field for the column
 				$field = CRUD::column($column)->type($fieldType);
-
 				if ($field) {
-					// Handle any specific type of field
 					self::handleSpecificTypeView($field, $column);
 				}
 			}
 		}
 
-		// Loop through each method of the model
-		$methods->each(function ($method) use ($model, $backendUrl) {
+		// Process relationships
+		$methods->each(function ($method) use ($model, $projectBaseUrl) {
 			$methodName = $method->name;
 			if (in_array($methodName, ["sendEmailVerificationNotification"])) {
 				return; // skip this iteration
 			}
 			if (method_exists($model, $methodName)) {
-				// Get the result of calling the method
 				$result = $model->$methodName();
-
-				// If the result is a BelongsToMany or HasMany relation, create a custom_html field
 				if ($result instanceof BelongsToMany || $result instanceof HasMany) {
-					self::createRelationalFieldsView($methodName, $result, $backendUrl);
+					self::createRelationalFieldsView($methodName, $result, $projectBaseUrl);
 				}
 			}
 		});
+
+		CRUD::removeButton("show", "line");
+		CRUD::addButtonFromView("line", "duplicate", "duplicate", "view");
+	}
+
+	public static function applyFilters(Model $model)
+	{
+		$request = Request::capture();
+		$filters = $request->except("page"); // Don't remove the default page, as it is handled separately
+
+		// Add filter for the page_filter
+		if ($pageFilter = $request->get("page_filter")) {
+			CRUD::addClause("where", "page", "=", $pageFilter);
+		}
+
+		foreach ($filters as $key => $value) {
+			// Skip filtering for completely empty values but allow "0"
+			if ($value === "" || is_array($value)) {
+				continue;
+			}
+
+			if (Schema::hasColumn($model->getTable(), $key)) {
+				// Get column type
+				$columnType = Schema::getColumnType($model->getTable(), $key);
+
+				// Check if the column is nullable
+				$table = $model->getTable();
+				$database = env("DB_DATABASE");
+				$isNullable =
+					DB::table("INFORMATION_SCHEMA.COLUMNS")
+						->where("TABLE_SCHEMA", $database)
+						->where("TABLE_NAME", $table)
+						->where("COLUMN_NAME", $key)
+						->value("IS_NULLABLE") === "YES";
+
+				if ($columnType === "boolean" || $columnType === "tinyint") {
+					// Explicitly check for "0" and "1", allowing null if the field is nullable
+					if ($value === "1" || $value === "0") {
+						CRUD::addClause("where", $key, "=", $isNullable && $value === "0" ? null : (int) $value);
+					}
+				} else {
+					// Apply LIKE filter for text-based fields
+					CRUD::addClause("where", $key, "LIKE", "%" . $value . "%");
+				}
+			}
+		}
+
+		CRUD::removeButton("create");
+		CRUD::addButtonFromView("top", "export_csv", "export_csv", "end");
+		CRUD::addButtonFromView("top", "create", "create_filters");
 	}
 
 	/**
@@ -371,6 +610,7 @@ class HelperBackend extends Controller
 				break;
 			// Text columns become textarea fields
 			case "text":
+			case "mediumtext":
 			case "longtext":
 				return "textarea";
 				break;
@@ -435,7 +675,7 @@ class HelperBackend extends Controller
 	 * @param string $column The column name.
 	 * @return void
 	 */
-	public static function handleSpecificType($field, $fieldType, $column)
+	public static function handleSpecificType($field, $fieldType, $column, $table)
 	{
 		if (str_contains($column, "password")) {
 			// If the column name contains the word "password", set the field type to "password"
@@ -446,12 +686,18 @@ class HelperBackend extends Controller
 		} elseif (str_contains($column, "formatted")) {
 			// If the column name contains the word "formatted", set the field type to "summernote"
 			$fieldType = "summernote";
+			$field->type($fieldType);
+			if ($table == "paragraphs") {
+				$field->hint(trans("backpack::crud.hint_add_note"));
+			}
 		} elseif (str_contains($column, "url")) {
 			// If the column name contains the word "url", set the field type to "url"
 			$fieldType = "url";
 		} elseif (str_contains($column, "import")) {
 			// If the column name contains the word "import", add a prefix of "€" to the field
 			$field->prefix("€");
+		} elseif (str_contains($column, "hide_")) {
+			$field->hint(trans("backpack::crud.hint_hide") . str_replace("hide_", "", $column));
 		} elseif (str_contains($column, "percentage")) {
 			// If the column name contains the word "percentage", add a suffix of "%"
 			// to the field and set the min and max attributes to 0 and 100,
@@ -462,8 +708,9 @@ class HelperBackend extends Controller
 			// If the column name contains the word "backpack_role", set the field type
 			// to "radio" and add options for the different roles
 			$fieldType = "radio";
-			$field->options(["admin" => "Admin", "developer" => "Developer", "guest" => "Guest", "user" => "User"]);
-		} elseif (str_contains($column, "status")) {
+			$field->options(["admin" => "Admin"]);
+			$field->default("admin");
+		} elseif (str_contains($column, "status") && $table == "order") {
 			$fieldType = "radio";
 			$field->options([
 				"pending" => "Pending",
@@ -471,38 +718,165 @@ class HelperBackend extends Controller
 				"rejected" => "Rejected",
 				"expired" => "Expired",
 			]);
-		} elseif (str_contains($column, "image_path")) {
-			$fieldType = "upload";
-			$field->upload(true);
-			$field->label("Upload Image");
-			$field->disk("uploads");
-			$field->attributes(["accept" => "image/*"]);
-		} elseif (str_contains($column, "webm_path")) {
-			$fieldType = "upload";
-			$field->upload(true);
-			$field->label("Upload Webm");
-			$field->disk("uploads");
-			$field->attributes(["accept" => "video/webm"]);
-		} elseif (str_contains($column, "mp4_path")) {
-			$fieldType = "upload";
-			$field->upload(true);
-			$field->label("Upload Mp4");
-			$field->disk("uploads");
-			$field->attributes(["accept" => "video/mp4"]);
-		} elseif (str_contains($column, "ogv_path")) {
-			$fieldType = "upload";
-			$field->upload(true);
-			$field->label("Upload Ogv");
-			$field->disk("uploads");
-			$field->attributes(["accept" => "video/ogg"]);
-		} elseif (str_contains($column, "file_path")) {
-			$fieldType = "upload";
-			$field->upload(true);
-			$field->label("Upload File");
-			$field->disk("uploads");
-			$field->attributes(["accept" => "document/*"]);
+		} elseif ($column == "order") {
+			$field->attributes(["step" => 1, "min" => 1, "max" => DB::table($table)->max("order") + 1]); // Ensure the user enters integers only
+			$field->default(DB::table($table)->max("order") + 1);
+		}
+		$uploadFields = [
+			"image_path" => "image/*",
+			"mp4_path" => "video/mp4",
+			"ogv_path" => "video/ogg",
+			"webm_path" => "video/webm",
+			"mp3_path" => "audio/mpeg",
+			"ogg_path" => "video/ogg",
+			"file_path" => "application/pdf",
+		];
+
+		foreach ($uploadFields as $upload => $mime) {
+			if (str_contains($column, $upload)) {
+				$fieldType = "upload";
+				$field->upload(true);
+				$field->label("Upload " . ucfirst(str_replace("_path", "", $upload)));
+				$field->disk("uploads");
+				$field->attributes(["accept" => $mime]);
+			}
+		}
+		if ($column == "mp3_path") {
+			$field->hint(trans("backpack::crud.hint_mp3"));
+		}
+		$tabsAdded = [];
+		if ($table == "media") {
+			$addTabDescription = function ($tab, $title, $description) use (&$tabsAdded) {
+				if (!isset($tabsAdded[$tab])) {
+					CRUD::addField([
+						"name" => "custom_html_" . strtolower(str_replace(" ", "_", $tab)),
+						"type" => "custom_html",
+						"value" =>
+							'
+				<div class="p-3 mb-1 border-warning" style="border-left: 4px solid; background: #f8f9fa; border-radius: 5px;">
+					<h4 class="m-0" style="color: #f76707;">' .
+							$title .
+							'</h4>
+					<p class="mb-0 mt-2" >' .
+							$description .
+							'</p>
+				</div>',
+						"tab" => $tab,
+					]);
+					$tabsAdded[$tab] = true;
+				}
+			};
+			$addTabDescription(
+				"Uploads",
+				trans("backpack::crud.disclaimer_title"),
+				trans("backpack::crud.disclaimer_uploads")
+			);
+			$addTabDescription(
+				"Paragraph",
+				trans("backpack::crud.disclaimer_title"),
+				trans("backpack::crud.disclaimer_paragraph")
+			);
+			$addTabDescription(
+				"Caption",
+				trans("backpack::crud.disclaimer_title"),
+				trans("backpack::crud.disclaimer_caption")
+			);
+			$addTabDescription(
+				"Chapter",
+				trans("backpack::crud.disclaimer_title"),
+				trans("backpack::crud.disclaimer_chapter")
+			);
+			$addTabDescription(
+				"President",
+				trans("backpack::crud.disclaimer_title"),
+				trans("backpack::crud.disclaimer_president")
+			);
+			$addTabDescription(
+				"Thought",
+				trans("backpack::crud.disclaimer_title"),
+				trans("backpack::crud.disclaimer_thought")
+			);
+			$addTabDescription("Hero", trans("backpack::crud.disclaimer_title"), trans("backpack::crud.disclaimer_hero"));
+			$addTabDescription(
+				"Gallery",
+				trans("backpack::crud.disclaimer_title"),
+				trans("backpack::crud.disclaimer_gallery")
+			);
+			switch ($column) {
+				case str_contains($column, "paragraph"):
+				case str_contains($column, "full_width_bb"):
+					if (str_contains($column, "layout")) {
+						$field->label(trans("backpack::crud.paragraph_layout_title") . " Paragraph");
+						$fieldType = "radio";
+						$field->options([
+							"photo_left_overlapping" => trans("backpack::crud.photo_left_overlapping"),
+							"full_width" => trans("backpack::crud.full_width"),
+							"photo_left_not_overlapping" => trans("backpack::crud.photo_left_not_overlapping"),
+							"vertical_left" => trans("backpack::crud.vertical_left"),
+							"vertical_middle" => trans("backpack::crud.vertical_middle"),
+							"vertical" => trans("backpack::crud.vertical"),
+							"horizontal" => trans("backpack::crud.horizontal"),
+						]);
+						$field->hint(trans("backpack::crud.hint_paragraph_layout"));
+					} elseif (str_contains($column, "full_width_bb")) {
+						$field->label("Full Width - Blue background");
+						$field->hint(trans("backpack::crud.hint_bb"));
+					}
+					$field->tab("Paragraph");
+					break;
+				case str_contains($column, "chapter"):
+					$field->tab("Chapter");
+					break;
+				case str_contains($column, "path"):
+					$field->tab("Uploads");
+					break;
+				case $column == "caption":
+					$field->tab("Caption");
+					break;
+				case $column == "caption_layout":
+					$fieldType = "radio";
+					$field->tab("Caption");
+					$field->options(["top" => "Top position", "bottom" => "Bottom position"]);
+					$field->hint(trans("backpack::crud.hint_caption_layout"));
+					break;
+				case str_contains($column, "thought"):
+					$field->tab("Thought");
+					break;
+			}
+		}
+		if ($table == "thoughts") {
+			if (str_contains($column, "page")) {
+				$fieldType = "radio";
+				$field->options([
+					"riflessioni-su-milano" => "Riflessioni su milano",
+					"home" => "Homepage",
+				]);
+				$field->default("riflessioni-su-milano");
+				$field->hint(trans("backpack::crud.hint_thought_page"));
+			}
+		}
+		if ($table == "seo_meta_information") {
+			if (str_contains($column, "code")) {
+				$fieldType = "select_from_array";
+				$field->options([
+					"title" => "title",
+					"description" => "description",
+					"og_url" => "og:url",
+					"og_site_name" => "og:site_name",
+					"og_title" => "og:title",
+					"og_description" => "og:description",
+					"og_image" => "og:image",
+					"og_locale" => "og:locale",
+				]);
+			}
+		}
+		if ($table == "presidents") {
+			if (str_contains($column, "image_path")) {
+				$field->hint(trans("backpack::crud.hint_president_image"));
+			}
 		}
 		// Set the field type to the determined value
+		$field->wrapper(["class" => "form-group col-md-6"]);
 		$field->type($fieldType);
 	}
 
@@ -525,6 +899,10 @@ class HelperBackend extends Controller
 			$field->prefix("€");
 		}
 
+		if ($column === "order") {
+			CRUD::orderBy("order", "asc");
+		}
+
 		// If the column name contains the word "percentage", add a suffix of "%"
 		// to the field. This is used for displaying percentages.
 		if (str_contains($column, "percentage")) {
@@ -541,53 +919,267 @@ class HelperBackend extends Controller
 	 * @param mixed $result The result of the relationship query.
 	 * @return void
 	 */
-	public static function createRelationalFields($methodName, $result)
+	public static function createRelationalFields($methodName, $result, $table)
 	{
+		// Get the related model
+		$relatedModel = $result->getRelated();
+		$relatedModelClass = get_class($relatedModel);
+
+		// Get the correct table name
+		$tableName = $relatedModel->getTable();
+
+		// Ensure the table name exists before checking columns
+		if (!Schema::hasTable($tableName)) {
+			return; // Prevent errors if the table does not exist
+		}
+
+		// Determine the primary attribute dynamically
+		$primaryAttribute = collect([
+			"email",
+			"transaction_id",
+			"import",
+			"name",
+			"title_it",
+			"title",
+			"title_en",
+			"id",
+		])->first(fn($column) => Schema::hasColumn($tableName, $column), "id"); // Default to "id";
+
+		// Handle BelongsToMany relationship
+		if ($result instanceof BelongsToMany) {
+			CRUD::field($methodName)
+				->type("select_multiple")
+				->entity($methodName)
+				->wrapper(["class" => "form-group col-md-6"])
+				->model($relatedModelClass)
+				->attribute($primaryAttribute)
+				->pivot(true);
+		}
+		// Handle BelongsTo relationship
+		elseif ($result instanceof BelongsTo) {
+			// Get the foreign key from the relationship
+			$foreignKey = $result->getForeignKeyName();
+
+			// Check if the foreign key is present in the URL
+			$defaultValue = FacadesRequest::query($foreignKey, null);
+
+			// Create a select field with pre-selected value
+			$field = CRUD::field($methodName . "_id")
+				->type("select_from_array")
+				->model($relatedModelClass)
+				->wrapper(["class" => "form-group col-sm-12"])
+				->options(
+					$relatedModelClass
+						::all()
+						->mapWithKeys(function ($elem) use ($methodName, $primaryAttribute) {
+							switch ($methodName) {
+								case "thought":
+									$displayText =
+										$elem->author_name && $elem->author_surname
+											? $elem->author_name . " " . $elem->author_surname
+											: $elem->id;
+									break;
+								case "president":
+									$displayText =
+										$elem->name && $elem->surname ? $elem->name . " " . $elem->surname : $elem->id;
+									break;
+								default:
+									$displayText = $elem->$primaryAttribute ?: $elem->id;
+							}
+							return [$elem->id => $displayText];
+						})
+						->toArray()
+				)
+				->value($defaultValue); // Pre-fill value from URL if available
+			// Determine the tab dynamically
+			$tabName = null;
+			if ($table == "media") {
+				switch ($methodName) {
+					case "paragraph":
+						$tabName = "Paragraph";
+						break;
+					case "chapter":
+						$tabName = "Chapter";
+						break;
+					case "institutional":
+						$tabName = "Institutional";
+						break;
+					case "page":
+						$tabName = "Hero";
+						break;
+					case "thought":
+						$tabName = "Thought";
+						break;
+					case "president":
+						$tabName = "President";
+						break;
+				}
+			}
+
+			// Assign the tab to the field
+			if ($tabName) {
+				$field->tab($tabName);
+			}
+
+			// Add a preview field with the same tab
+			$previewField = CRUD::field($methodName . "_preview")
+				->type("custom_html")
+				->value(
+					'<a id="' .
+						$methodName .
+						'_preview_link" href="#" class="btn btn-sm btn-link" style="display: none;">
+						<i class="la la-question-circle"></i> ' .
+						trans("backpack::crud.open") .
+						$methodName .
+						' 
+					</a>'
+				)
+				->wrapper(["class" => "form-group col-md-1 z-3"]);
+
+			if ($tabName) {
+				$previewField->tab($tabName);
+			}
+
+			// Include a script to update the preview button dynamically
+			CRUD::addField([
+				"name" => "script_" . $methodName,
+				"type" => "custom_html",
+				"value" =>
+					"<script>
+						document.addEventListener('DOMContentLoaded', function () {
+							const select = document.querySelector('[name=\"" .
+					$methodName .
+					"_id\"]');
+							const previewLink = document.getElementById('" .
+					$methodName .
+					"_preview_link');
+							
+							// Detect if we are in edit mode
+							const isEditMode = " .
+					(CRUD::getCurrentEntryId() ? "true" : "false") .
+					";
+							const basePath = isEditMode ? '../../../admin/' : '../../admin/';
+			
+							if (select && previewLink) {
+								select.addEventListener('change', function () {
+									const selectedId = select.value;
+									if (selectedId) {
+										previewLink.href = basePath + '" .
+					$methodName .
+					"/' + selectedId + '/edit';
+										previewLink.style.display = 'inline-block';
+									} else {
+										previewLink.style.display = 'none';
+									}
+								});
+			
+								const initialSelectedId = select.value;
+								if (initialSelectedId) {
+									previewLink.href = basePath + '" .
+					$methodName .
+					"/' + initialSelectedId + '/edit';
+									previewLink.style.display = 'inline-block';
+								}
+							}
+						});
+					</script>",
+				"wrapper" => ["class" => "form-group col-md-1"],
+				"tab" => $tabName, // Assign the same tab dynamically
+			]);
+		}
+	}
+
+	public static function createRelation($methodName, $result, $table)
+	{
+		// Ensure the relationship is of type HasMany
+		if (!($result instanceof HasMany)) {
+			return;
+		}
+
 		// Get the related model and its class
 		$relatedModel = $result->getRelated();
 		$relatedModelClass = get_class($relatedModel);
 
-		// Get the table name of the related model
-		$tableModel = $relatedModel->getTable();
+		// Get the current entry ID (if it's being edited)
+		$id = CRUD::getCurrentEntryId();
 
-		// Determine the attribute to use based on column availability
-		$attribute = Schema::hasColumn($tableModel, "email")
-			? "email"
-			: (Schema::hasColumn($tableModel, "transaction_id")
-				? "transaction_id"
-				: (Schema::hasColumn($tableModel, "import")
-					? "import"
-					: (Schema::hasColumn($tableModel, "name")
-						? "name"
-						: (Schema::hasColumn($tableModel, "title_italian")
-							? "title_italian"
-							: "id"))));
+		// If no ID exists, we're in create mode, so don't show the button
+		if (!$id) {
+			return;
+		}
 
-		// Check if the result is a BelongsToMany relationship
-		if ($result instanceof BelongsToMany) {
-			// Create a select multiple field for BelongsToMany relationship
-			CRUD::field($methodName)
-				->type("select_multiple")
-				->entity($methodName)
-				->model($relatedModelClass)
-				->attribute($attribute)
-				->pivot(true);
+		$relatedModelBaseName = class_basename($relatedModelClass);
+
+		// Convert it to kebab-case (for URL consistency)
+		$relatedModelUrlSegment = Str::kebab($relatedModelBaseName); // Example: invoice_item → invoice-item
+
+		// Get the foreign key (already correct)
+		$foreignKey = $result->getForeignKeyName();
+
+		// Fetch related records
+		$relatedEntries = $relatedModelClass::where($foreignKey, $id)->get();
+
+		// Build list of related entries
+		$relationList = '<ul style="list-style-type: disc; padding-left: 20px; margin-top: 5px;">';
+		if ($relatedEntries->count() > 0) {
+			foreach ($relatedEntries as $entry) {
+				$entryId = $entry->id;
+				$entryLabel = $entry->name ?? ($entry->title ?? "ID: $entryId"); // Use a meaningful field
+				$relationList .=
+					'<li style="margin-bottom: 4px;">
+									<a href="' .
+					url("admin/{$relatedModelUrlSegment}/" . $entryId . "/edit") .
+					'"  
+									class="relation-link">
+										<i class="la la-file"></i> ' .
+					e($entryLabel) .
+					'
+									</a>
+								</li>';
+			}
+		} else {
+			$relationList .= '<li style="color: #999; font-size: 13px;">No related records found.</li>';
 		}
-		// Check if the result is a BelongsTo relationship
-		elseif ($result instanceof BelongsTo) {
-			// Create a select field for BelongsTo relationship using an array of options
-			CRUD::field($methodName . "_id")
-				->type("select_from_array")
-				->model($relatedModelClass)
-				->options(
-					$relatedModelClass
-						::all()
-						->mapWithKeys(function ($elem) use ($attribute) {
-							return [$elem->id => $elem->$attribute];
-						})
-						->toArray()
-				);
-		}
+		$relationList .= "</ul>";
+
+		// Create a custom HTML field inside the "Associations" tab, with a title, button, and related list
+		CRUD::addField([
+			"name" => $methodName . "_relation_section",
+			"type" => "custom_html",
+			"value" =>
+				'<div style="display: flex; flex-direction: column; align-items: flex-start; gap: 5px;">
+					<h5 style="margin-bottom: 5px; font-weight: bold;">' .
+				ucfirst($methodName) .
+				'</h5>
+					<a href="' .
+				url("admin/{$relatedModelUrlSegment}/create?{$foreignKey}=" . $id) .
+				'" 
+					class="btn btn-sm btn-primary"
+					style="padding: 4px 10px; font-size: 13px;">
+						<i class="la la-plus"></i> ' .
+				trans("backpack::crud.add") .
+				ucfirst($methodName) .
+				'
+					</a>
+					' .
+				$relationList .
+				'
+				</div>
+				<style>
+					.relation-link {
+						text-decoration: none;
+						color: #007bff;
+						font-size: 14px;
+						transition: color 0.2s ease-in-out;
+					}
+					.relation-link:hover {
+						color: #0056b3;
+						text-decoration: underline;
+					}
+				</style>',
+			"wrapper" => ["class" => "form-group col-md-12"],
+			"tab" => trans("backpack::crud.associations"),
+		]);
 	}
 
 	/**
@@ -611,26 +1203,27 @@ class HelperBackend extends Controller
 		$tableModel = $relatedModel->getTable();
 
 		// Determine the attribute to use based on column availability
-		$attribute = Schema::hasColumn($tableModel, "email")
-			? "email"
-			: (Schema::hasColumn($tableModel, "transaction_id")
-				? "import"
-				: (Schema::hasColumn($tableModel, "import")
-					? "import"
-					: (Schema::hasColumn($tableModel, "name")
-						? "name"
-						: (Schema::hasColumn($tableModel, "title_italian")
-							? "title_italian"
-							: "id"))));
+		$primaryAttribute = collect([
+			"email",
+			"transaction_id",
+			"import",
+			"name",
+			"title_it",
+			"title",
+			"title_en",
+			"id",
+		])->first(fn($column) => Schema::hasColumn($tableModel, $column), "id");
 
 		// Create a column for the related model name with links
 		CRUD::column($methodName)
 			->type("custom_html")
 			->entity($methodName)
 			->model($relatedModelClass)
-			->value(function ($entry) use ($formattedRelatedModelName, $methodName, $attribute, $backendUrl) {
+			->value(function ($entry) use ($formattedRelatedModelName, $methodName, $primaryAttribute, $backendUrl) {
 				$links = [];
 				foreach ($entry->$methodName as $elem) {
+					$displayValue = $elem->$primaryAttribute ?: $elem->id; // Ensure fallback to ID if attribute is missing
+
 					$links[] =
 						'<a target="_blank" href="' .
 						$backendUrl .
@@ -638,9 +1231,9 @@ class HelperBackend extends Controller
 						$formattedRelatedModelName .
 						"/" .
 						$elem->id .
-						'/show">' .
-						($attribute == "import" ? "€" : "") .
-						$elem->$attribute .
+						'/edit">' .
+						($primaryAttribute == "import" ? "€" : "") .
+						$displayValue .
 						"</a>";
 				}
 				return implode(", ", $links);
@@ -653,11 +1246,12 @@ class HelperBackend extends Controller
 				->type("custom_html")
 				->entity($methodName)
 				->model($relatedModelClass)
-				->value(function ($entry) use ($methodName, $attribute, $backendUrl) {
+				->value(function ($entry) use ($methodName, $primaryAttribute, $backendUrl) {
 					$pivotTableName = $entry->$methodName()->getTable();
 					$pivotTableName = str_replace("_", "-", $pivotTableName);
 					$links = [];
 					foreach ($entry->$methodName as $elem) {
+						$displayValue = $elem->$primaryAttribute ?: $elem->id; // Ensure fallback to ID if attribute is missing
 						$percentage = $elem->pivot->percentage;
 						$pivotId = $elem->pivot->id;
 						$links[] =
@@ -667,8 +1261,8 @@ class HelperBackend extends Controller
 							$pivotTableName .
 							"/" .
 							$pivotId .
-							'/show">' .
-							$elem->$attribute .
+							'/edit">' .
+							$displayValue .
 							" (" .
 							$percentage .
 							"%)</a>";
@@ -734,5 +1328,19 @@ class HelperBackend extends Controller
 
 		// Return the filtered element
 		return response()->json($elem);
+	}
+
+	public function sort(Request $request, $modelName)
+	{
+		$modelName = ucfirst($modelName);
+		$newOrder = $request->newSortOrder;
+		$newOrderArray = explode(",", $newOrder);
+		$model = "App\\Models\\$modelName";
+		for ($i = 0; $i < count($newOrderArray); $i++) {
+			$note = $model::find($newOrderArray[$i]);
+			$note->order = $i + 1;
+			$note->save();
+		}
+		return redirect()->back();
 	}
 }

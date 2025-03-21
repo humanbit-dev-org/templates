@@ -45,7 +45,7 @@ return [
 	// ----
 
 	// Project name - shown in the window title
-	"project_name" => "AllTogetherPay",
+	"project_name" => "Templates",
 
 	// Content of the HTML meta robots tag to prevent indexing and link following
 	"meta_robots_content" => "noindex, nofollow",
@@ -59,10 +59,14 @@ return [
 	// The string below will be passed through the url() helper.
 	// - default: '' (project root)
 	// - alternative: 'admin' (the admin's dashboard)
-	"home_link" => "",
+	"home_link" => "admin",
 
 	// Menu logo. You can replace this with an <img> tag if you have a logo.
-	"project_logo" => "<b>Back</b>pack",
+	"project_logo" => "<img src='" . env("APP_URL") . "/static/images/logo.png'>",
+
+	"project_logo_color" => "#051269",
+
+	"project_color" => "#EEEEEE",
 
 	// Show / hide breadcrumbs on admin panel pages.
 	"breadcrumbs" => true,
@@ -114,6 +118,7 @@ return [
 
 	// JS files that are loaded in all pages, using Laravel's asset() helper
 	"scripts" => [
+		"static/js/humanbit_custom.js",
 		// 'js/example.js',
 		// 'https://unpkg.com/vue@2.4.4/dist/vue.min.js',
 		// 'https://unpkg.com/react@16/umd/react.production.min.js',

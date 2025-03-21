@@ -16,6 +16,7 @@ return new class extends Migration {
 			$table->string("en")->nullable();
 			$table->string("image_path")->nullable();
 			$table->string("code");
+			$table->foreignId("page_id")->nullable()->constrained("pages")->onDelete("cascade");
 			$table->timestamps();
 		});
 	}

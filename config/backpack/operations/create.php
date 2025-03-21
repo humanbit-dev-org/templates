@@ -23,7 +23,7 @@ return [
 
 	// Where do you want to redirect the user by default, save?
 	// options: save_and_back, save_and_edit, save_and_new
-	"defaultSaveAction" => "save_and_back",
+	"defaultSaveAction" => "save_and_edit",
 
 	// When the user chooses "save and back" or "save and new", show a bubble
 	// for the fact that the default save action has been changed?
@@ -35,7 +35,7 @@ return [
 	// Should we warn the user before leaving the page with unsaved changes?
 	// NOTE: this works by removing all fields from the form data serialization where field name starts with "_" (underscore). Usualy backpack internal attributes.
 	// if you have fields that start with an underscore, you need to change the field name, or this functionality wont detect changes in that field.
-	"warnBeforeLeaving" => false,
+	"warnBeforeLeaving" => true,
 
 	// Before saving the entry, how would you like the request to be stripped?
 	//  - false - use Backpack's default (ONLY save inputs that have fields)

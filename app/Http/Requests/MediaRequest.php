@@ -25,13 +25,13 @@ class MediaRequest extends FormRequest
 	public function rules()
 	{
 		return [
-			"title" => "required|min:5|max:255",
-			"image_path" => "mimes:jpeg,png,jpg,gif|max:2048",
-			"webm_path" => "mimes:webm|max:10240",
-			"mp4_path" => "mimes:mp4|max:10240",
-			"ogv_path" => "mimes:ogg|max:10240",
-			"article_id" => "nullable|exists:articles,id",
-			"institutional_id" => "nullable|exists:institutionals,id",
+			"title" => "required",
+			"image_path" => "nullable|image|mimes:jpeg,png,jpg,gif,webp|max:1500",
+			"webm_path" => "nullable|file|mimes:webm|max:3000",
+			"mp4_path" => "nullable|mimes:mp4|max:3000",
+			"mp3_path" => "nullable|file|mimes:mp3|max:10000",
+			"ogg_path" => "nullable|file|mimes:ogg|max:3000",
+			"ogv_path" => "nullable|file|mimes:ogv,ogm|max:3000",
 		];
 	}
 

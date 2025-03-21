@@ -1,10 +1,14 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ContactController;
 use App\Http\Controllers\Admin\Helper\HelperBackend;
 use App\Http\Controllers\Admin\OrderUserCrudController;
 use App\Http\Controllers\Admin\TranslateCrudController;
 use App\Http\Controllers\Admin\Services\GitHubController;
+use App\Http\Controllers\Admin\Helper\DuplicateController;
+use App\Http\Controllers\Admin\Helper\ExportCsvController;
+use App\Http\Controllers\Admin\Helper\AutocompleteController;
 
 // --------------------------
 // Custom Backpack Routes
@@ -53,15 +57,6 @@ Route::group(
 		"namespace" => "App\Http\Controllers\Admin",
 	],
 	function () {
-		Route::crud("user", "UserCrudController");
-		Route::crud("role", "RoleCrudController");
-		Route::crud("translate", "TranslateCrudController");
-		Route::crud("article", "ArticleCrudController");
-		Route::crud("institutional", "InstitutionalCrudController");
-		Route::crud("seo-meta-information", "SeoMetaInformationCrudController");
-		Route::crud("media", "MediaCrudController");
-		Route::crud("attachment", "AttachmentCrudController");
-
 		//DOCUMENTATION
 		Route::get("documentation", [GitHubController::class, "index"]);
 		Route::get("documentation/{page}", [GitHubController::class, "index"]);
@@ -69,6 +64,31 @@ Route::group(
 		//CUSTOM ROUTES FOR ADVANCED CRUDS
 
 		Route::post("ajax-request/{elemdId}", [HelperBackend::class, "getDataByAjax"]);
+		Route::post("{modelName}/sort", [HelperBackend::class, "sort"]);
+		Route::get("{crud}/{id}/duplicate", [DuplicateController::class, "duplicate"]);
+		Route::get("{crud}/export-csv", [ExportCsvController::class, "exportCrudToCsv"]);
+		Route::get("autocomplete-values", [AutocompleteController::class, "getValues"]);
+
+		Route::post("contact/{id}/{option}", [ContactController::class, "contactOption"]);
+
+		Route::crud("user", "UserCrudController");
+		Route::crud("creator", "UserCrudController");
+		Route::crud("group", "GroupCrudController");
+		Route::crud("group-user", "GroupUserCrudController");
+		Route::crud("category", "CategoryCrudController");
+		Route::crud("order", "OrderCrudController");
+		Route::crud("order-user", "OrderUserCrudController");
+		Route::crud("ecommerce", "EcommerceCrudController");
+		Route::crud("invite", "InviteCrudController");
+		Route::crud("role", "RoleCrudController");
+		Route::crud("translate", "TranslateCrudController");
+		Route::crud("page", "PageCrudController");
+		Route::crud("article", "ArticleCrudController");
+		Route::crud("institutional", "InstitutionalCrudController");
+		Route::crud("seo-meta-information", "SeoMetaInformationCrudController");
+		Route::crud("media", "MediaCrudController");
+		Route::crud("attachment", "AttachmentCrudController");
+		Route::crud("contact", "ContactCrudController");
 	}
 ); // this should be the absolute last line of this file
 

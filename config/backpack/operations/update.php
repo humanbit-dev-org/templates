@@ -23,7 +23,7 @@ return [
 
 	// Where do you want to redirect the user by default, save?
 	// options: save_and_back, save_and_edit, save_and_new
-	"defaultSaveAction" => "save_and_back",
+	"defaultSaveAction" => "save_and_edit",
 
 	// When the user chooses "save and back" or "save and new", show a bubble
 	// for the fact that the default save action has been changed?
@@ -33,10 +33,10 @@ return [
 	"showCancelButton" => true,
 
 	// Should we show the delete button on the edit form?
-	"showDeleteButton" => false,
+	"showDeleteButton" => true,
 
 	// Should we warn a user before leaving the page with unsaved changes?
-	"warnBeforeLeaving" => false,
+	"warnBeforeLeaving" => true,
 
 	// when viewing the update form of an entry in a language that's not translated should Backpack show a notice
 	// that allows the user to fill the form from another language?
