@@ -35,6 +35,5 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# frontend assets and test pages
-/public/
-/src/pages/
+# frontend assets
+/public/fonts/*
