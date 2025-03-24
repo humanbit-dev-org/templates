@@ -1,10 +1,9 @@
 ---
-name: 'Review & Testing #4'
+name: "Review & Testing #4"
 about: Test all components, including frontend and backend.
 title: Review & Testing
 labels: macro area
 assignees: g-silveri
-
 ---
 
 ## General
@@ -14,7 +13,7 @@ assignees: g-silveri
 - [ ] Application layers
 - [ ] Front-end development
 
-***
+---
 
 ## Frontend
 

@@ -4,7 +4,7 @@ export default async function CheckoutPage({ params }) {
 	const { id } = await params;
 
 	try {
-		const host = process.env.NEXT_PUBLIC_BACKEND_URL_SERVER;
+		const host = process.env.NEXT_PUBLIC_ASSETS_URL;
 		const cookiesStore = await cookies();
 		const laravelSession = cookiesStore.get("laravel_session")?.value;
 		const checkoutResponse = await fetch(`${host}/api/checkout/${id}`, {

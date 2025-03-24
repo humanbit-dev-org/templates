@@ -2,8 +2,8 @@
 //
 "use client";
 
-// import Header from "components/templates/react_test_module";
-import { IntlTelInputComponent } from "components/templates/IntlTelInputComponent";
+// import Header from "@/components/templates/react_test_module";
+import { IntlTelInputComponent } from "@/components/blocks/IntlTelInputComponent";
 
 export default function ComponentsPage() {
 	return (

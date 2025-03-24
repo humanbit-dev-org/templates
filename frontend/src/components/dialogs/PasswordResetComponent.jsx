@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import AuthSessionStatus from "hooks/AuthSessionStatus";
 
-const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+const baseUrl = process.env.NEXT_PUBLIC_ADMIN_URL;
 
 async function fetchCsrf() {
 	try {

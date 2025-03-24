@@ -1,10 +1,9 @@
 ---
-name: 'Application Layers #2'
+name: "Application Layers #2"
 about: Implement controllers, routes, pages, and back-end tests.
 title: Application Layers
 labels: macro area
 assignees: andreaborreca
-
 ---
 
 - [ ] Define **Controllers**.

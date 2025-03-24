@@ -1,10 +1,9 @@
 ---
-name: 'Production Deployment #5'
+name: "Production Deployment #5"
 about: Deploy, test live, and configure the domain.
 title: Production Deployment
 labels: macro area
 assignees: csolia
-
 ---
 
 - [ ] Deploy the project from GitHub to the production server.

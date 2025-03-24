@@ -1,0 +1,134 @@
+// File import statement:
+// @use "@/page/boilerplate" as *;
+
+// >>> Controllers — START
+@use "@/scss/controllers/dynamics" as *; // controllers for mixins and variables
+@use "@/scss/controllers/extends" as *; // controller for modules
+// <<<<< Controllers — END
+
+// >>>> Components — START
+// @use "@/<path>/Example" as *;
+// @use "./Example" as *;
+// <<<<<< Components — END
+
+.boilerplate_page {
+}
+
+/////
+////
+/*/==================== @media ====================/*/
+/////////////
+////////////
+////////////////////////
+/* @media (max-width) */
+////////////////////////
+
+@media (max-width: 1399.98px) {
+	.boilerplate_page {
+	}
+}
+
+@media (max-width: 1199.98px) {
+	.boilerplate_page {
+		width: calc(100% - 20px);
+	}
+}
+
+@media (max-width: 991.98px) {
+	.boilerplate_page {
+	}
+}
+
+@media (max-width: 767.98px) {
+	.boilerplate_page {
+	}
+}
+
+@media (max-width: 575.98px) {
+	.boilerplate_page {
+	}
+}
+
+// -------------- //
+
+////////////////////
+/* @media between */
+////////////////////
+
+@media (min-width: 576px) and (max-width: 767.98px) {
+	.boilerplate_page {
+	}
+}
+
+@media (min-width: 576px) and (max-width: 991.98px) {
+	.boilerplate_page {
+	}
+}
+
+@media (min-width: 768px) and (max-width: 991.98px) {
+	.boilerplate_page {
+	}
+}
+
+@media (min-width: 992px) and (max-width: 1199.98px) {
+	.boilerplate_page {
+	}
+}
+
+@media (min-width: 1200px) and (max-width: 1399.98px) {
+	.boilerplate_page {
+	}
+}
+
+// ------------------ //
+
+////////////////////////
+/* @media (min-width) */
+////////////////////////
+
+@media (min-width: 576px) {
+	.boilerplate_page {
+	}
+}
+
+@media (min-width: 768px) {
+	.boilerplate_page {
+	}
+}
+
+@media (min-width: 992px) {
+	.boilerplate_page {
+	}
+}
+
+@media (min-width: 1200px) {
+	.boilerplate_page {
+	}
+}
+
+@media (min-width: 1400px) {
+	.boilerplate_page {
+	}
+}
+
+// ---------------- //
+
+//////////////////////
+/* mobile landscape */
+//////////////////////
+
+@media (max-height: 400px) and (orientation: landscape) {
+	.boilerplate_page {
+	}
+}
+
+// ----------------- //
+
+///////////////////////
+/* iPad Pro portrait */
+///////////////////////
+
+@media (width: 1024px) and (height: 1366px) {
+	.boilerplate_page {
+	}
+}

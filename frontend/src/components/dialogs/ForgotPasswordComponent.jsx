@@ -1,10 +1,10 @@
 "use client";
 
-import { useAuth } from "hooks/auth";
 import { useState } from "react";
-import AuthSessionStatus from "hooks/AuthSessionStatus";
+import AuthSessionStatus from "@/hooks/AuthSessionStatus";
+import { useAuth } from "@/hooks/auth";
 
-const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+const baseUrl = process.env.NEXT_PUBLIC_ADMIN_URL;
 
 async function fetchCsrf() {
 	try {

@@ -1,22 +1,22 @@
 import "server-only";
 
-const dictionaries = {
-	en: () => import("lang/en.json").then((module) => module.default),
-	it: () => import("lang/it.json").then((module) => module.default),
-};
+const SUPPORTED_LOCALES = ["en", "it"];
+
+// Get the static module path
+const getModulePath = (locale) => `lang/${locale}.json`;
 
 export const getDictionary = async (locale) => {
 	// Validate the locale
-	if (!dictionaries[locale]) {
+	if (!SUPPORTED_LOCALES.includes(locale)) {
 		console.error(`Invalid locale: "${locale}". Falling back to default locale: "en".`);
-		locale = "en"; // Fallback to the default locale
+		locale = "en";
 	}
 
-	// Return the appropriate dictionary
 	try {
-		return await dictionaries[locale]();
+		const module = await import(getModulePath(locale));
+		return module.default;
 	} catch (error) {
 		console.error(`Error loading dictionary for locale "${locale}":`, error);
-		return {}; // Return an empty dictionary as a final fallback
+		return {};
 	}
 };

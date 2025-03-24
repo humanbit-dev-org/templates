@@ -10,14 +10,21 @@ class HeroController extends Controller
 {
 	public function index($page)
 	{
-		$page = Page::where("name", $page)->first();
-		$hero = Media::where("page_id", $page->id)->first();
+		$pageRecord = Page::where("name", $page)->first();
+
+		if (!$pageRecord) {
+			return response()->json([], 404);
+		}
+
+		$hero = Media::where("page_id", $pageRecord->id)->first();
+
 		$heroData = [
-			"title" => $page->title,
-			"description" => $page->description,
+			"title" => $pageRecord->title,
+			"description" => $pageRecord->description,
 			"image_path" => $hero->image_path ?? null,
 			"caption" => $hero->caption ?? null,
 		];
+
 		return response()->json($heroData);
 	}
 }

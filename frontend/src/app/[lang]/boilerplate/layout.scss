@@ -1,0 +1,140 @@
+// File import statement:
+// @use "@/layout/boilerplate" as *;
+
+// >>> Controllers — START
+@use "@/scss/controllers/dynamics" as *; // controllers for mixins and variables
+@use "@/scss/controllers/extends" as *; // controller for modules
+// <<<<< Controllers — END
+
+// >>>> Components — START
+// @use "@/<path>/Example" as *;
+// @use "./Example" as *;
+// <<<<<< Components — END
+
+.footer_cont {
+	.obj_1 {
+		z-index: -1;
+	}
+}
+
+.storia_content {
+	.scrollspy_box {
+		&.active {
+			--color_section: #{$color_second};
+
+			.el_label {
+				color: $color_black;
+			}
+		}
+	}
+
+	sup,
+	.color_section,
+	.bg_color_section,
+	audio::-webkit-media-controls-enclosure {
+		--color_section: #{$color_second};
+	}
+
+	.bg_color_gd::after {
+		--bg_color_gd: #{$color_second};
+	}
+}
+
+/////
+////
+/*/==================== @media ====================/*/
+/////////////
+////////////
+////////////////////////
+/* @media (max-width) */
+////////////////////////
+
+@media (max-width: 1399.98px) {
+}
+
+@media (max-width: 1199.98px) {
+	.footer_cont {
+		width: 100%;
+		z-index: 2;
+	}
+
+	.storia_content {
+		width: 100%;
+	}
+}
+
+@media (max-width: 991.98px) {
+}
+
+@media (max-width: 767.98px) {
+}
+
+@media (max-width: 575.98px) {
+}
+
+// -------------- //
+
+////////////////////
+/* @media between */
+////////////////////
+
+@media (min-width: 576px) and (max-width: 767.98px) {
+}
+
+@media (min-width: 576px) and (max-width: 991.98px) {
+}
+
+@media (min-width: 768px) and (max-width: 991.98px) {
+}
+
+@media (min-width: 992px) and (max-width: 1199.98px) {
+}
+
+@media (min-width: 1200px) and (max-width: 1399.98px) {
+}
+
+// ------------------ //
+
+////////////////////////
+/* @media (min-width) */
+////////////////////////
+
+@media (min-width: 576px) {
+}
+
+@media (min-width: 768px) {
+}
+
+@media (min-width: 992px) {
+}
+
+@media (min-width: 1200px) {
+	.footer_cont {
+		width: 15%;
+	}
+
+	.storia_content {
+		width: 80%;
+	}
+}
+
+@media (min-width: 1400px) {
+}
+
+// ---------------- //
+
+//////////////////////
+/* mobile landscape */
+//////////////////////
+
+@media (max-height: 400px) and (orientation: landscape) {
+}
+
+// ----------------- //
+
+///////////////////////
+/* iPad Pro portrait */
+///////////////////////
+
+@media (width: 1024px) and (height: 1366px) {
+}

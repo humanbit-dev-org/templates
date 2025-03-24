@@ -1,12 +1,14 @@
 import { NextResponse } from "next/server";
 
-let locales = ["en", "it"]; // Supported locales
-const defaultLocale = "en"; // Default locale
+const locales = ["it"];
+const defaultLocale = "it";
 
+// Get locale from user's cookie
 function getLocaleFromCookie(request) {
 	return request.cookies.get("locale")?.value;
 }
 
+// Get locale from browser header
 function getLocaleFromHeader(request) {
 	const acceptLanguage = request.headers.get("accept-language");
 	if (acceptLanguage) {
@@ -22,47 +24,54 @@ function getLocaleFromHeader(request) {
 export function middleware(request) {
 	const { pathname, searchParams } = request.nextUrl;
 
-	// Check if the pathname already contains a locale
-	const pathnameHasLocale = locales.some((locale) => pathname.startsWith(`/${locale}/`) || pathname === `/${locale}`);
-
-	// Handle requests for .css.map files to prevent 404 errors
-	if (pathname.endsWith(".css.map")) {
-		return NextResponse.next(); // Simply allow the request to continue (or redirect if needed)
-	}
-
 	// Step 1: Determine the preferred locale
-	let locale = getLocaleFromCookie(request); // Cookie has priority
+	let locale = getLocaleFromCookie(request);
 	if (!locale) {
-		locale = getLocaleFromHeader(request) || defaultLocale; // Fallback to header or default
+		locale = getLocaleFromHeader(request) || defaultLocale;
 	}
 
-	// Step 2: Handle paths with a locale
-	if (pathnameHasLocale) {
-		const matchedLocale = locales.find((locale) => pathname.startsWith(`/${locale}`));
-		if (matchedLocale && matchedLocale !== locale) {
-			// Update the cookie if the locale in the path differs from the cookie value
-			const response = NextResponse.next();
-			response.cookies.set("locale", matchedLocale, { path: "/", maxAge: 60 * 60 * 24 * 30 });
-			return response;
+	// Check if URL contains a supported locale
+	const pathnameHasLocale = locales.some((loc) => pathname.startsWith(`/${loc}/`) || pathname === `/${loc}`);
+
+	// Allow CSS map files to load normally
+	if (pathname.endsWith(".css.map")) {
+		return NextResponse.next();
+	}
+
+	// Redirect "/[locale]/home" to the default home URL "/[locale]"
+	for (const loc of locales) {
+		if (pathname === `/${loc}/home`) {
+			return NextResponse.redirect(new URL(`/${loc}`, request.url));
 		}
 
-		// Proceed normally, ensuring the cookie is set
+		// Internally rewrite "/[locale]" to serve the page from "/[locale]/home"
+		if (pathname === `/${loc}`) {
+			return NextResponse.rewrite(new URL(`/${loc}/home`, request.url));
+		}
+	}
+
+	// Handle URLs with a locale prefix normally
+	if (pathnameHasLocale) {
+		const matchedLocale = locales.find((loc) => pathname.startsWith(`/${loc}`));
 		const response = NextResponse.next();
-		response.cookies.set("locale", locale, { path: "/", maxAge: 60 * 60 * 24 * 30 });
+
+		// Update cookie if locale in URL differs from cookie
+		if (matchedLocale && matchedLocale !== locale) {
+			response.cookies.set("locale", matchedLocale, { path: "/", maxAge: 60 * 60 * 24 * 30 });
+		} else {
+			response.cookies.set("locale", locale, { path: "/", maxAge: 60 * 60 * 24 * 30 });
+		}
 		return response;
 	}
 
-	// Step 3: Handle paths without a locale
+	// Redirect URLs without locale to the localized version
 	const response = NextResponse.redirect(
 		new URL(`/${locale}${pathname}${searchParams ? `?${searchParams}` : ""}`, request.url)
 	);
-	response.cookies.set("locale", locale, { path: "/", maxAge: 60 * 60 * 24 * 30 }); // Set the cookie
+	response.cookies.set("locale", locale, { path: "/", maxAge: 60 * 60 * 24 * 30 });
 	return response;
 }
 
 export const config = {
-	matcher: [
-		// Apply middleware to all paths except those under _next (internal paths), public folder and API routes
-		"/((?!_next|api|favicon|fonts|images|videos).*)",
-	],
+	matcher: ["/((?!_next|api|favicon|fonts|images|videos).*)"],
 };

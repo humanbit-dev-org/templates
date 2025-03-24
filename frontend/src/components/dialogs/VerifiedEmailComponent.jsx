@@ -1,7 +1,7 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { useLocale } from "components/utilities/AuthHelper";
+import { useLocale } from "@/config/AuthHelper";
 
 export function VerifiedEmailComponent() {
 	const { lang, dict } = useLocale();

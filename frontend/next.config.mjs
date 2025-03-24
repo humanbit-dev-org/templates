@@ -1,8 +1,15 @@
+// Node.js path module to work with file and directory paths
 import path from "path";
+// Utility function to convert an ESM import URL (import.meta.url) into a file system path
 import { fileURLToPath } from "url";
 
+// Gives you the absolute file path for the current ES module file
 const __filename = fileURLToPath(import.meta.url);
+// Extracts the directory name from the absolute path
 const __dirname = path.dirname(__filename);
+
+// Parses the environment variable into a URL object so you can access protocol, hostname, etc.
+const url = new URL(process.env.NEXT_PUBLIC_ADMIN_URL);
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -39,13 +46,36 @@ const nextConfig = {
 	},
 
 	images: {
+		deviceSizes: [640, 750, 828, 1080, 1200, 1920, 3840, 5000], // Add larger sizes
+		imageSizes: [16, 32, 48, 64, 96, 128, 256, 384], // Default thumbnails
 		remotePatterns: [
+			// Development
+			{
+				protocol: url.protocol.replace(":", ""),
+				hostname: url.hostname,
+				port: url.port,
+			},
+			// Production
+			{
+				protocol: "https",
+				hostname: process.env.NEXT_PUBLIC_ASSETS_URL,
+			},
+			// External
 			{
 				protocol: "https",
 				hostname: "api.dicebear.com",
 			},
 		],
 		dangerouslyAllowSVG: true, // Allow SVGs to be imported
+	},
+
+	async rewrites() {
+		return [
+			{
+				source: "/lang/:lang",
+				destination: "/frontend/lang/:lang", // Serve from the frontend/lang folder
+			},
+		];
 	},
 };
 

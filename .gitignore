@@ -35,9 +35,6 @@ _ide_helper.php
 
 # next.js
 /frontend/.next/
-/frontend/out/
-/frontend/public/
-/frontend/src/pages/
 
 # production
 /frontend/build

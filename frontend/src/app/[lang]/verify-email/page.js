@@ -1,12 +1,12 @@
 "use client";
 
 // import Button from '@/components/Button'
-import { useAuth } from "hooks/auth";
+import { useAuth } from "@/hooks/auth";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useUser, useLocale } from "components/utilities/AuthHelper";
+import { useLocale, useUser } from "@/config/AuthHelper";
 
-const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+const baseUrl = process.env.NEXT_PUBLIC_ADMIN_URL;
 
 async function fetchCsrf() {
 	try {

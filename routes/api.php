@@ -1,15 +1,20 @@
 <?php
 
 use App\Models\Order;
+use App\Models\Translate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\GroupController;
-use App\Http\Controllers\OrderController;
-use App\Http\Controllers\InviteController;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\EcommerceController;
+use App\Http\Controllers\GroupController;
+use App\Http\Controllers\HeroController;
+use App\Http\Controllers\InstitutionalController;
+use App\Http\Controllers\InviteController;
+use App\Http\Controllers\OrderController;
+use App\Http\Controllers\PageController;
 use App\Http\Controllers\SeoMetaInformationController;
+use App\Http\Controllers\TranslateController;
 
 Route::get("/{lang}/seo", [SeoMetaInformationController::class, "index"]);
 

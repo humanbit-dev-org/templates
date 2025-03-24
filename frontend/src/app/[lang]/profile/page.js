@@ -1,7 +1,7 @@
-import { VerifiedEmailComponent } from "components/dialogs/VerifiedEmailComponent";
+import { VerifiedEmailComponent } from "@/components/dialogs/VerifiedEmailComponent";
 import { cookies } from "next/headers";
 
-const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL_SERVER;
+const baseUrl = process.env.NEXT_PUBLIC_ASSETS_URL;
 
 async function fetchInvites() {
 	try {

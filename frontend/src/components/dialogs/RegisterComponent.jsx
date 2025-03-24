@@ -5,7 +5,7 @@ import { th } from "intl-tel-input/i18n";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
 
-const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+const baseUrl = process.env.NEXT_PUBLIC_ADMIN_URL;
 
 async function fetchCsrf() {
 	try {

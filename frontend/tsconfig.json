@@ -20,19 +20,41 @@
 		],
 		"baseUrl": ".",
 		"paths": {
-			"app/*": ["src/app/[lang]/*"],
-			"page/*": ["src/app/[lang]/*/page"],
-			"components/*": ["src/components/*"],
-			"components/nav_grow/*": ["src/components/navbars/nav_grow/*"],
-			"components/nav_slide/*": ["src/components/navbars/nav_slide/*"],
-			"hooks/*": ["src/hooks/*"],
-			"lib/*": ["src/lib/*"],
-			"bessex/*": ["src/static/bessex/*"],
-			"css/*": ["src/static/css/*"],
-			"js/*": ["src/static/js/*"],
-			"scss/*": ["src/static/scss/*"],
-			"scss/nav_grow/*": ["src/static/scss/partials/navbars/nav_grow/*"],
-			"scss/nav_slide/*": ["src/static/scss/partials/navbars/nav_slide/*"]
+			// ─── Core structure ───────────────────────────────────────────
+			"@/app/*": ["src/app/[lang]/*"],
+			"@/layout/root": ["src/app/[lang]/layout.js"],
+			"@/layout/*": ["src/app/[lang]/*/layout.js"],
+			"@/page/*": ["src/app/[lang]/*/page.js"],
+
+			// ─── Modular components ───────────────────────────────────────
+			"@/components/*": ["src/components/*"],
+			"@/footers/*": ["src/components/footers/*"],
+			"@/navbars/*": [
+				"src/components/navbars/*",
+				"src/components/navbars/nav_grow/*",
+				"src/components/navbars/nav_slide/*"
+			],
+
+			// ─── Other blocks ─────────────────────────────────────────────
+			"@/config/*": ["src/config/*"],
+			"@/hooks/*": ["src/hooks/*"],
+			"@/lib/*": ["src/lib/*"],
+			"@/providers/*": ["src/providers/*"],
+			"@/utils/*": ["src/utils/*"],
+
+			// ─── Static assets ────────────────────────────────────────────
+			"@/assets/*": ["src/assets/*"],
+			"@/bessex/*": ["src/assets/bessex/*"],
+			"@/css/*": ["src/assets/css/*"],
+			"@/js/*": ["src/assets/js/*"],
+			"@/scss/*": ["src/assets/scss/*"],
+
+			// ─── SCSS partials ────────────────────────────────────────────
+			"@/scss/navbars/*": [
+				"src/assets/scss/partials/navbars/*",
+				"src/assets/scss/partials/navbars/nav_grow/*",
+				"src/assets/scss/partials/navbars/nav_slide/*"
+			]
 		},
 		"target": "ES2017"
 	},

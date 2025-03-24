@@ -3,12 +3,13 @@
 	"version": "0.1.0",
 	"private": true,
 	"scripts": {
-		"dev": "concurrently 'cross-env NODE_OPTIONS=\"--inspect\" next dev' 'prettier \"../**/*\" --write --no-editorconfig --config \".prettierrc\" --ignore-unknown --no-error-on-unmatched-pattern --log-level silent --check || true' 'chokidar \"../**/*\" --silent --command \"prettier \\\"{path}\\\" --write --no-editorconfig --config \\\".prettierrc\\\" --ignore-unknown --no-error-on-unmatched-pattern\"' 'sass --watch --quiet src/static/scss/:src/static/css/'",
-		"tev": "concurrently 'cross-env NODE_OPTIONS=\"--inspect\" IS_TURBO=true next dev --turbo' 'prettier \"../**/*\" --write --no-editorconfig --config \".prettierrc\" --ignore-unknown --no-error-on-unmatched-pattern --log-level silent --check || true' 'chokidar \"../**/*\" --silent --command \"prettier \\\"{path}\\\" --write --no-editorconfig --config \\\".prettierrc\\\" --ignore-unknown --no-error-on-unmatched-pattern\"' 'sass --watch --quiet src/static/scss/:src/static/css/'",
+		"dev": "concurrently 'cross-env NODE_OPTIONS=\"--inspect\" next dev' 'prettier \"../**/*\" --write --no-editorconfig --config \".prettierrc\" --ignore-unknown --no-error-on-unmatched-pattern --log-level silent --check || true' 'chokidar \"../**/*\" --silent --command \"prettier \\\"{path}\\\" --write --no-editorconfig --config \\\".prettierrc\\\" --ignore-unknown --no-error-on-unmatched-pattern\"' 'sass --watch --quiet src/assets/scss/:src/assets/css/'",
+		"tev": "concurrently 'cross-env NODE_OPTIONS=\"--inspect\" IS_TURBO=true next dev --turbo' 'prettier \"../**/*\" --write --no-editorconfig --config \".prettierrc\" --ignore-unknown --no-error-on-unmatched-pattern --log-level silent --check || true' 'chokidar \"../**/*\" --silent --command \"prettier \\\"{path}\\\" --write --no-editorconfig --config \\\".prettierrc\\\" --ignore-unknown --no-error-on-unmatched-pattern\"' 'sass --watch --quiet src/assets/scss/:src/assets/css/'",
 		"build": "next build",
 		"start": "next start",
+		"stop": "pkill -9 ^next-server && echo 'Server successfully killed'",
 		"lint": "next lint",
-		"watch": "concurrently 'prettier \"../**/*\" --write --no-editorconfig --config \".prettierrc\" --ignore-unknown --no-error-on-unmatched-pattern --log-level silent --check || true' 'chokidar \"../**/*\" --silent --command \"prettier \\\"{path}\\\" --write --no-editorconfig --config \\\".prettierrc\\\" --ignore-unknown --no-error-on-unmatched-pattern\"' 'sass --watch --quiet src/static/scss/:src/static/css/'"
+		"watch": "concurrently 'next lint || true' 'prettier \"../**/*\" --write --no-editorconfig --config \".prettierrc\" --ignore-unknown --no-error-on-unmatched-pattern --log-level silent --check || true' 'chokidar \"../**/*\" --silent --command \"prettier \\\"{path}\\\" --write --no-editorconfig --config \\\".prettierrc\\\" --ignore-unknown --no-error-on-unmatched-pattern\"' 'sass --watch --quiet src/assets/scss/:src/assets/css/'"
 	},
 	"dependencies": {
 		"@popperjs/core": "^2.11.8",
@@ -17,20 +18,22 @@
 		"bootstrap": "^5.3.3",
 		"clsx": "^2.1.1",
 		"framer-motion": "^12.5.0",
+		"html-react-parser": "^5.2.2",
 		"intl-tel-input": "^25.3.0",
 		"klaro": "^0.7.21",
 		"motion": "^12.5.0",
-		"next": "15.2.3",
+		"next": "^15.2.3",
 		"react": "^19.0.0",
 		"react-dom": "^19.0.0",
 		"sass": "^1.86.0",
-		"sharp": "^0.33.5",
 		"swiper": "^11.2.6",
 		"swr": "^2.3.3",
 		"tailwind-merge": "^3.0.2"
 	},
 	"devDependencies": {
+		"@parcel/watcher": "^2.5.1",
 		"@prettier/plugin-php": "^0.22.4",
+		"@tailwindcss/postcss": "^4.0.15",
 		"@types/node": "^22.13.11",
 		"@types/react": "^19.0.12",
 		"@types/react-dom": "^19.0.4",
@@ -42,7 +45,14 @@
 		"postcss": "^8.5.3",
 		"postcss-reporter": "^7.1.0",
 		"prettier": "^3.5.3",
+		"sharp": "^0.33.5",
 		"tailwindcss": "^4.0.15",
 		"typescript": "^5.8.2"
+	},
+	"pnpm": {
+		"onlyBuiltDependencies": [
+			"@parcel/watcher",
+			"sharp"
+		]
 	}
 }

@@ -1,0 +1,272 @@
+// File import statement:
+// @extend %nav_side_burger_component;
+
+// >>> Controllers — START
+@use "@/scss/controllers/dynamics" as *; // controllers for mixins and variables
+// <<<<< Controllers — END
+
+// >>>> Components — START
+// @use "./NavLogoTop" as *;
+// <<<<<< Components — END
+
+.nav_side_burger_component {
+	.toggler_obj {
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		justify-content: space-between;
+		width: 30px;
+		height: 20px;
+
+		span {
+			position: absolute;
+			display: block;
+			width: 100%;
+			height: 3px;
+			background-color: $color_first;
+			border-radius: 2px;
+			transition: all 0.25s ease;
+
+			&:nth-child(1) {
+				top: 0;
+			}
+
+			&:nth-child(2) {
+				top: 50%;
+				transform: translateY(-50%);
+			}
+
+			&:nth-child(3) {
+				bottom: 0;
+			}
+		}
+
+		&:not(.collapsed) {
+			span:nth-child(1) {
+				transform: rotate(45deg);
+				top: 50%;
+			}
+
+			span:nth-child(2) {
+				opacity: 0;
+			}
+
+			span:nth-child(3) {
+				transform: rotate(-45deg);
+				top: 50%;
+			}
+		}
+	}
+
+	.navbar-collapse {
+		> .group_wrap {
+			width: 80vw;
+			scrollbar-width: none;
+
+			&.obj_home {
+				width: 95vw;
+			}
+
+			.obj_cont {
+				.navbar-nav {
+					.nav-link,
+					.nav-link.active {
+						color: unset;
+					}
+
+					.nav-link {
+						.obj_card {
+							display: none !important;
+							width: 225px;
+							height: 225px;
+							border-radius: 20px;
+							clip-path: border-box;
+
+							.el_img {
+								z-index: -1;
+								width: 100%;
+								height: 100%;
+								object-fit: cover;
+								object-position: center center;
+							}
+
+							.bg_color_gd {
+								&.presidenti::after {
+									--bg_color_gd: #{$color_third};
+								}
+								&.riflessioni::after {
+									--bg_color_gd: #{$color_fourth};
+								}
+								&.storia::after {
+									--bg_color_gd: #{$color_second};
+								}
+							}
+						}
+
+						&:hover {
+							.obj_card {
+								display: inline-block !important;
+							}
+						}
+					}
+				}
+
+				.accordion-button,
+				.accordion-button.collapsed {
+					background-color: $color_first;
+				}
+
+				.accordion-button {
+					&.collapsed {
+						// closed
+						&::after {
+							transform: rotate(-90deg);
+						}
+					}
+
+					&::after {
+						// open
+						background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23ffffff' stroke='%23ffffff' stroke-width='1'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+						transform: rotate(0deg);
+					}
+				}
+			}
+		}
+	}
+}
+
+/////
+////
+/*/==================== @media ====================/*/
+/////////////
+////////////
+////////////////////////
+/* @media (max-width) */
+////////////////////////
+
+@media (max-width: 1399.98px) {
+	.nav_side_burger_component {
+	}
+}
+
+@media (max-width: 1199.98px) {
+	.nav_side_burger_component {
+		.full_height {
+			min-height: $max_height_md; // `_variables.scss`
+		}
+
+		.navbar-collapse {
+			> .group_wrap {
+				width: 100vw;
+				max-height: calc(100vh - $max_height_md);
+			}
+
+			> .group_wrap.obj_home {
+				width: 100vw;
+			}
+		}
+
+		.group_wrap {
+			min-height: inherit;
+		}
+	}
+}
+
+@media (max-width: 991.98px) {
+	.nav_side_burger_component {
+	}
+}
+
+@media (max-width: 767.98px) {
+	.nav_side_burger_component {
+	}
+}
+
+@media (max-width: 575.98px) {
+	.nav_side_burger_component {
+	}
+}
+
+// -------------- //
+
+////////////////////
+/* @media between */
+////////////////////
+
+@media (min-width: 576px) and (max-width: 767.98px) {
+	.nav_side_burger_component {
+	}
+}
+
+@media (min-width: 576px) and (max-width: 991.98px) {
+	.nav_side_burger_component {
+	}
+}
+
+@media (min-width: 768px) and (max-width: 991.98px) {
+	.nav_side_burger_component {
+	}
+}
+
+@media (min-width: 992px) and (max-width: 1199.98px) {
+	.nav_side_burger_component {
+	}
+}
+
+@media (min-width: 1200px) and (max-width: 1399.98px) {
+	.nav_side_burger_component {
+	}
+}
+
+// ------------------ //
+
+////////////////////////
+/* @media (min-width) */
+////////////////////////
+
+@media (min-width: 576px) {
+	.nav_side_burger_component {
+	}
+}
+
+@media (min-width: 768px) {
+	.nav_side_burger_component {
+	}
+}
+
+@media (min-width: 992px) {
+	.nav_side_burger_component {
+	}
+}
+
+@media (min-width: 1200px) {
+	.nav_side_burger_component {
+	}
+}
+
+@media (min-width: 1400px) {
+	.nav_side_burger_component {
+	}
+}
+
+// ---------------- //
+
+//////////////////////
+/* mobile landscape */
+//////////////////////
+
+@media (max-height: 400px) and (orientation: landscape) {
+	.nav_side_burger_component {
+	}
+}
+
+// ----------------- //
+
+///////////////////////
+/* iPad Pro portrait */
+///////////////////////
+
+@media (width: 1024px) and (height: 1366px) {
+	.nav_side_burger_component {
+	}
+}

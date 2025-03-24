@@ -34,9 +34,6 @@ class Page extends Model
 		$projectRoot = base_path();
 		$directoryPath = $projectRoot . "/frontend/src/app/[lang]";
 
-		// Ensure 'home' page exists
-		self::firstOrCreate(["name" => "home"], ["order" => 1]);
-
 		// If directory doesn't exist, stop execution
 		if (!File::exists($directoryPath)) {
 			return;
@@ -45,38 +42,70 @@ class Page extends Model
 		// Get all existing backend page names
 		$existingPages = self::pluck("name")->toArray();
 
-		// Get frontend folders
+		// Get frontend folders, including pages inside group folders
 		$directories = File::directories($directoryPath);
-		$folderNames = array_map("basename", $directories);
+		$allFolders = [];
 
+		foreach ($directories as $dir) {
+			// Get all subdirectories inside this directory
+			$subdirectories = File::directories($dir);
+
+			// Add the folder itself (direct page)
+			$folderName = basename($dir);
+			if (!preg_match("/[\[\]()]/", $folderName)) {
+				$allFolders[] = $folderName;
+			}
+
+			// Add subdirectories (pages inside group folders)
+			foreach ($subdirectories as $subdir) {
+				$subFolderName = basename($subdir);
+				if (!preg_match("/[\[\]()]/", $subFolderName)) {
+					$allFolders[] = $subFolderName;
+				}
+			}
+		}
+
+		// Normalize folder names (convert to lowercase and trim)
 		$folderNames = array_map(function ($folder) {
 			return trim(strtolower($folder));
-		}, $folderNames);
+		}, $allFolders);
 
-		// Ensure 'home' is not removed
-		$folderNames[] = "home";
-
-		// Pages to delete (exist in DB but not in frontend, excluding 'home')
+		// Pages to delete (exist in DB but not in frontend)
 		$pagesToDelete = array_diff($existingPages, $folderNames);
 
 		// Pages to add (exist in frontend but not in DB)
 		$pagesToAdd = array_diff($folderNames, $existingPages);
 
+		// Predefined descriptions and order
+		// $descriptions = [
+		// 	"page-example" => [
+		// 		"description" =>
+		// 			"Lorem, ipsum dolor sit amet consectetur adipisicing elit. Provident atque nam dolorum quod quidem? Enim dolore fugit deleniti a nihil iure possimus facere sapiente molestiae adipisci, blanditiis tenetur. Eum, iusto?",
+		// 		"order" => 1,
+		// 	],
+		// ];
+
 		// Add missing pages
 		foreach ($pagesToAdd as $folderName) {
-			$title = ucfirst(str_replace("-", " ", $folderName));
-			$description = $descriptions[$folderName]["description"] ?? "";
-			$order = $descriptions[$folderName]["order"] ?? self::max("order") + 1;
+			if (!self::where("name", $folderName)->exists()) {
+				$title = ucfirst(str_replace("-", " ", $folderName));
+				$description = $descriptions[$folderName]["description"] ?? "";
+				$order = $descriptions[$folderName]["order"] ?? self::max("order") + 1;
 
-			self::create([
-				"name" => $folderName,
-				"title" => $title,
-				"order" => $order,
-			]);
+				self::create([
+					"name" => $folderName,
+					"title" => $title,
+					// "description" => $description,
+					"order" => $order,
+				]);
+			}
 		}
 
-		// Delete pages that no longer exist in frontend, excluding 'home'
-		self::whereIn("name", $pagesToDelete)->where("name", "!=", "home")->delete();
+		// Delete pages that no longer exist in `frontend`
+		self::whereIn("name", $pagesToDelete)->delete();
+
+		// Clear page-related cache to ensure changes are reflected immediately
+		cache()->forget("pages_list");
 	}
 
 	public function translates()

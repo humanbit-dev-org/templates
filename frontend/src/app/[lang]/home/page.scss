@@ -1,0 +1,226 @@
+// File import statement:
+// @use "@/page/home" as *;
+
+// >>> Controllers — START
+@use "@/scss/controllers/dynamics" as *; // controllers for mixins and variables
+@use "@/scss/controllers/extends" as *; // controller for modules
+// <<<<< Controllers — END
+
+// >>>> Components — START
+// @use "@/navbars/NavLogoTop" as *;
+// @use "@/components/blocks/Contents" as *;
+// @use "@/components/blocks/Heroes" as *;
+// @use "@/components/blocks/SidebarSticky" as *;
+// @use "@/components/blocks/Timelines" as *;
+// <<<<<< Components — END
+
+.home_page {
+	sup,
+	.color_section,
+	.bg_color_section,
+	.el_title {
+		--color_section: #{$color_sixth};
+	}
+
+	.bg_color_gd::after {
+		--bg_color_gd: #{$color_sixth};
+	}
+
+	.content_component {
+		position: relative;
+		max-height: 500px;
+		overflow-y: hidden;
+		transition: max-height 0.3s ease-in-out;
+
+		&.expanded {
+			max-height: none;
+		}
+
+		&:not(.expanded) {
+			.el_body {
+				@include ellipsis_overflow(7);
+			}
+		}
+	}
+
+	.obj_expand {
+		cursor: pointer;
+
+		&:hover {
+			opacity: 0.8;
+			transition: 0.25s ease-in-out;
+		}
+	}
+
+	.timeline_component {
+		z-index: 1;
+
+		.block_cont .scrollspy .scrollspy_box {
+			&:focus {
+				background-color: $color_second;
+
+				.el_label {
+					color: $color_black;
+				}
+			}
+		}
+
+		.scrollspy_bars {
+			&::before {
+				content: unset !important;
+			}
+		}
+	}
+
+	.hero_component {
+		.bg_img_obj {
+			background-position: center top;
+		}
+	}
+}
+
+/////
+////
+/*/==================== @media ====================/*/
+/////////////
+////////////
+////////////////////////
+/* @media (max-width) */
+////////////////////////
+
+@media (max-width: 1399.98px) {
+	.home_page {
+	}
+}
+
+@media (max-width: 1199.98px) {
+	.home_page {
+		.timeline_component.obj_mobile {
+			display: none !important;
+		}
+	}
+}
+
+@media (max-width: 991.98px) {
+	.home_page {
+	}
+}
+
+@media (max-width: 767.98px) {
+	.home_page {
+	}
+}
+
+@media (max-width: 575.98px) {
+	.home_page {
+	}
+}
+
+// -------------- //
+
+////////////////////
+/* @media between */
+////////////////////
+
+@media (min-width: 576px) and (max-width: 767.98px) {
+	.home_page {
+	}
+}
+
+@media (min-width: 576px) and (max-width: 991.98px) {
+	.home_page {
+	}
+}
+
+@media (min-width: 768px) and (max-width: 991.98px) {
+	.home_page {
+	}
+}
+
+@media (min-width: 992px) and (max-width: 1199.98px) {
+	.home_page {
+	}
+}
+
+@media (min-width: 1200px) and (max-width: 1399.98px) {
+	.home_page {
+	}
+}
+
+@media (min-width: 1400px) and (max-width: 1599.98px) {
+	.home_page {
+		.h1 {
+			font-size: 3.1rem;
+		}
+	}
+}
+
+// ------------------ //
+
+////////////////////////
+/* @media (min-width) */
+////////////////////////
+
+@media (min-width: 576px) {
+	.home_page {
+	}
+}
+
+@media (min-width: 768px) {
+	.home_page {
+	}
+}
+
+@media (min-width: 992px) {
+	.home_page {
+	}
+}
+
+@media (min-width: 1200px) {
+	.home_page {
+		width: 95%;
+
+		.hero_component {
+			.bg_img_obj {
+				max-width: 95%;
+			}
+		}
+
+		.timeline_component {
+			&.obj_desktop {
+				top: $height_md !important;
+			}
+		}
+
+		.full_height {
+			min-height: calc(100vh - ($height_md * 2)); //
+		}
+	}
+}
+
+@media (min-width: 1400px) {
+	.home_page {
+	}
+}
+
+// ---------------- //
+
+//////////////////////
+/* mobile landscape */
+//////////////////////
+
+@media (max-height: 400px) and (orientation: landscape) {
+	.home_page {
+	}
+}
+
+// ----------------- //
+
+///////////////////////
+/* iPad Pro portrait */
+///////////////////////
+
+@media (width: 1024px) and (height: 1366px) {
+	.home_page {
+	}
+}
