@@ -14,15 +14,13 @@ class SeoMetaInformationSeeder extends Seeder
 	public function run(): void
 	{
 		SeoMetaInformation::create([
-			"it" => "All Together Pay: l'app che mancava!",
-			"en" => "All Together Pay: the app that was missing!",
+			"it" => "Humanbit templates",
+			"en" => "Humanbit templates",
 			"code" => "title",
 		]);
 		SeoMetaInformation::create([
-			"it" =>
-				"All Together Pay è il servizio che ti permette di suddividere i pagamenti tra gruppi, privati e pubblici, in maniera semplice e senza problemi!",
-			"en" =>
-				"All Together Pay is the service that allows you to split payments among groups, private and public, easily and hassle-free!",
+			"it" => "Humanbit templates description",
+			"en" => "Humanbit templates description",
 			"code" => "description",
 		]);
 	}

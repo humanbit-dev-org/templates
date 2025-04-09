@@ -109,6 +109,6 @@ class UserSeeder extends Seeder
 			"password" => bcrypt("Hum4nb1t666,bis"),
 			"email_verified_at" => now(),
 		]);
-		User::factory()->count(20)->create();
+		User::factory()->count(5)->create();
 	}
 }

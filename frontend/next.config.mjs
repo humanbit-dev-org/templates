@@ -9,7 +9,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Parses the environment variable into a URL object so you can access protocol, hostname, etc.
-const url = new URL(process.env.NEXT_PUBLIC_ADMIN_URL);
+const url = new URL(process.env.NEXT_PUBLIC_BACKEND_URL_CLIENT);
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -36,8 +36,6 @@ const nextConfig = {
 				ignored: /node_modules/, // Ignore node_modules to avoid unnecessary recompilations
 			};
 		} else if (!options.dev && !options.isServer) {
-			// Enable full source maps in production (NOT RECOMMENDED)
-			// config.devtool = 'source-map';
 			// Disable source maps in production
 			config.devtool = false;
 		}
@@ -58,7 +56,7 @@ const nextConfig = {
 			// Production
 			{
 				protocol: "https",
-				hostname: process.env.NEXT_PUBLIC_ASSETS_URL,
+				hostname: process.env.NEXT_PUBLIC_BACKEND_URL_CLIENT,
 			},
 			// External
 			{
@@ -73,7 +71,7 @@ const nextConfig = {
 		return [
 			{
 				source: "/lang/:lang",
-				destination: "/frontend/lang/:lang", // Serve from the frontend/lang folder
+				destination: "/frontend/lang/:lang", // Serve from the `/frontend/lang` folder
 			},
 		];
 	},

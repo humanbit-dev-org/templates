@@ -25,8 +25,8 @@ import "./NavSideBurger.scss";
 // ## ############################################
 // ===============================================
 
-const baseUrl = process.env.NEXT_PUBLIC_ADMIN_URL;
-const mediaPath = `${baseUrl}/storage/uploads`;
+const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL_CLIENT;
+const MEDIA_PATH = `${BASE_URL}/storage/uploads`;
 
 function menuLinks(page, pageIndex, menu) {
 	switch (page.name) {

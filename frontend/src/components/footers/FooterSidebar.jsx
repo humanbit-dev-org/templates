@@ -2,7 +2,7 @@
 "use client"; // marks module for full browser rendering
 
 // File import statements:
-// import { FooterComponent } from "@/components/footers/FooterSidebar";
+// import { FooterComponent } from "@/footers/FooterSidebar";
 
 // 1. Core imports (React & Next.js)
 import { useEffect, useState } from "react";

@@ -1,13 +1,13 @@
 import { VerifiedEmailComponent } from "@/components/dialogs/VerifiedEmailComponent";
 import { cookies } from "next/headers";
 
-const baseUrl = process.env.NEXT_PUBLIC_ASSETS_URL;
+const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL_SERVER;
 
 async function fetchInvites() {
 	try {
 		const cookiesStore = await cookies();
 		const laravelSession = cookiesStore.get("laravel_session")?.value;
-		const invitesResponse = await fetch(`${baseUrl}/api/invites`, {
+		const invitesResponse = await fetch(`${BASE_URL}/api/invites`, {
 			method: "GET",
 			credentials: "include",
 			headers: {

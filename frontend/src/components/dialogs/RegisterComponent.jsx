@@ -1,15 +1,15 @@
 "use client";
 
-import { useAuth } from "hooks/auth";
+import { useAuth } from "@/hooks/auth";
 import { th } from "intl-tel-input/i18n";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
 
-const baseUrl = process.env.NEXT_PUBLIC_ADMIN_URL;
+const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL_CLIENT;
 
 async function fetchCsrf() {
 	try {
-		const fetchPath = baseUrl + "/sanctum/csrf-cookie";
+		const fetchPath = BASE_URL + "/sanctum/csrf-cookie";
 		await fetch(fetchPath, {
 			method: "GET",
 			credentials: "include",
@@ -61,7 +61,7 @@ export function RegisterComponent({ lang }) {
 		setErrors([]);
 
 		const xsrfToken = await fetchCsrf();
-		const fetchPath = baseUrl + "/register";
+		const fetchPath = BASE_URL + "/register";
 
 		const registerRequest = new Request(fetchPath, {
 			method: "POST",

@@ -9,20 +9,21 @@
 import { cookies } from "next/headers";
 
 // PROJECT UTILITIES (metadata | context | translates | cookies)
-import MetadataSetup, { FontsLoader, GlobalScripts } from "@/config/MetadataSetup";
-// import { AuthHelper } from "@/config/AuthHelper";
-import { GlobalProvider } from "@/providers/Globals";
-import { klaroConfig } from "public/js/klaroConfig"; // cookie configuration
-import { KlaroCookieConsent } from "@/config/KlaroCookieConsent"; // cookie handling
+import MetadataSetup, { FontsLoader, GlobalScripts } from "@/config/metadata-setup";
+// import { AuthProvider } from "@/providers/Auth"; // TODO: Keep this here?
+// import { getDictionary } from "@/app/dictionaries"; // TODO: Keep this here?
+import { GlobalProvider } from "@/providers/Global";
+import { klaroConfig } from "@/config/klaro-config"; // cookie configuration
+import { KlaroCookieConsent } from "@/config/klaro-cookie-consent"; // cookie handling
 
 // USER PROMPTS (modals | toasts)
-// import { ForgotPasswordComponent } from "@/components/dialogs/ForgotPasswordComponent";
-// import { PasswordResetComponent } from "@/components/dialogs/PasswordResetComponent";
-// import { RegisterComponent } from "@/components/dialogs/RegisterComponent";
-// import { SignInComponent } from "@/components/dialogs/SignInComponent";
+import { ForgotPasswordComponent } from "@/components/dialogs/ForgotPasswordComponent";
+import { PasswordResetComponent } from "@/components/dialogs/PasswordResetComponent";
+import { RegisterComponent } from "@/components/dialogs/RegisterComponent";
+import { SignInComponent } from "@/components/dialogs/SignInComponent";
 
 // INTERNAL RESOURCES
-import { NavSideBurgerComponent } from "@/components/navbars/NavSideBurger";
+import { NavSideBurgerComponent } from "@/navbars/NavSideBurger";
 import "./layout.scss";
 
 // ===============================================
@@ -30,7 +31,7 @@ import "./layout.scss";
 // ===============================================
 
 // Backend base URL
-const baseUrl = process.env.NEXT_PUBLIC_ASSETS_URL;
+const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL_SERVER;
 
 // Next.js 13's App Router `viewport` object
 //
@@ -50,8 +51,7 @@ export const viewport = {
 // https://nextjs.org/docs/app/api-reference/functions/generate-metadata
 export async function generateMetadata({ params }) {
 	const { lang } = await params;
-	const baseUrl = process.env.NEXT_PUBLIC_ASSETS_URL;
-	const url = `${baseUrl}/api/${lang}/seo`;
+	const url = `${BASE_URL}/api/${lang}/seo`;
 
 	// Pass the fetched data to MetadataSetup
 	return await MetadataSetup(url, lang);
@@ -64,16 +64,10 @@ export async function generateMetadata({ params }) {
 	// };
 }
 
-// ===============================================
-// ## ############################################
-// ===============================================
-
 // Fetches user data from the Laravel API with session credentials
 async function fetchUser(laravelSession) {
 	try {
-		const fetchPath = baseUrl + "/api/user";
-
-		const userResponse = await fetch(fetchPath, {
+		const userResponse = await fetch(`${BASE_URL}/api/user`, {
 			method: "GET",
 			credentials: "include",
 			headers: {
@@ -95,9 +89,14 @@ async function fetchUser(laravelSession) {
 		return await userResponse.json();
 	} catch (error) {
 		console.error("Error fetching user:", error);
+
 		return undefined;
 	}
 }
+
+// ===============================================
+// ## ############################################
+// ===============================================
 
 // Main layout function for wrapping page content with children and dynamic parameters
 export default async function RootLayout({ children, params }) {
@@ -113,36 +112,35 @@ export default async function RootLayout({ children, params }) {
 		.map((font) => font.variable)
 		.join(" ");
 
-	// Load the language dictionary for i18n
-	const dict = await getDictionary(lang);
+	// Fetch translation dictionary based on language
+	// const translates = await getDictionary(lang); // TODO: Keep this here?
 
 	// Fetch user data using the Laravel session
-	const user = await fetchUser(laravelSession);
+	// const userResponseJson = await fetchUser(laravelSession);
 
-	// Fetch menu data from the API
-	const apiUrl = `${baseUrl}/api/pages`;
-	const response = await fetch(apiUrl, {
-		method: "GET",
-		credentials: "include",
-		headers: {
-			"Content-Type": "application/json",
-		},
-	});
-	const menu = await response.json();
+	// Fetch data from the API with language header
+	// const menuResponse = await fetch(`${BASE_URL}/api/pages`, {
+	// 	method: "GET",
+	// 	credentials: "include",
+	// 	headers: {
+	// 		"Content-Type": "application/json",
+	// 	},
+	// });
+	// const menuResponseJson = await menuResponse.json();
 
 	return (
 		<html lang={lang} className={fontClasses}>
 			<body className="bg_color_white fx_load">
 				<GlobalProvider>
-					<div className="root_layout container_structure d-flex flex-wrap container-fluid position-relative position-xl-static">
-						<div className="grid_cont navbar row justify-content-center position-sticky position-xl-relative top-0 order-0 order-xl-2">
-							{/* <NavSideBurgerComponent menu={menu} /> */}
+					<div className="root_layout container_structure container-fluid">
+						<div className="grid_cont navbar row justify-content-center position-sticky">
+							{/* <NavSideBurgerComponent menu={menuResponseJson} /> */}
 						</div>
 
 						{/* USER AND LOCALE CONTEXT (navbar | footer) */}
-						<AuthHelper lang={lang} dict={dict} user={user}>
-							{children}
-						</AuthHelper>
+						{/* <AuthProvider lang={lang} translates={translates} user={userResponseJson}> */}
+						{children}
+						{/* </AuthProvider> */}
 					</div>
 
 					{/* PROJECT UTILITIES (scripts | cookies) */}
@@ -153,7 +151,7 @@ export default async function RootLayout({ children, params }) {
 					<ForgotPasswordComponent lang={lang} />
 					<PasswordResetComponent lang={lang} />
 					<RegisterComponent lang={lang} />
-					<SignInComponent lang={ lang } />
+					<SignInComponent lang={lang} />
 				</GlobalProvider>
 			</body>
 		</html>

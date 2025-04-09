@@ -72,14 +72,6 @@ Route::group(
 		Route::post("contact/{id}/{option}", [ContactController::class, "contactOption"]);
 
 		Route::crud("user", "UserCrudController");
-		Route::crud("creator", "UserCrudController");
-		Route::crud("group", "GroupCrudController");
-		Route::crud("group-user", "GroupUserCrudController");
-		Route::crud("category", "CategoryCrudController");
-		Route::crud("order", "OrderCrudController");
-		Route::crud("order-user", "OrderUserCrudController");
-		Route::crud("ecommerce", "EcommerceCrudController");
-		Route::crud("invite", "InviteCrudController");
 		Route::crud("role", "RoleCrudController");
 		Route::crud("translate", "TranslateCrudController");
 		Route::crud("page", "PageCrudController");

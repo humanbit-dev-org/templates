@@ -4,9 +4,9 @@
 // https://github.com/jackocnr/intl-tel-input/tree/master
 "use client"; // Enable client-side features
 
-import { useState, useEffect } from "react"; // Import necessary modules from React
 import dynamic from "next/dynamic"; // Import dynamic from Next.js for dynamic imports
 import "intl-tel-input/styles"; // Import styles for the `intl-tel-input` component
+import { useState, useEffect } from "react"; // Import necessary modules from React
 
 // Dynamically import `intl-tel-input` with SSR disabled
 const IntlTelInput = dynamic(() => import("intl-tel-input/reactWithUtils"), {

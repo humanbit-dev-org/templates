@@ -1,15 +1,15 @@
 "use client";
 
-import { useAuth } from "hooks/auth";
+import AuthSessionStatus from "@/components/elements/AuthSessionStatus";
+import { useAuth } from "@/hooks/auth";
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import AuthSessionStatus from "hooks/AuthSessionStatus";
 
-const baseUrl = process.env.NEXT_PUBLIC_ADMIN_URL;
+const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL_CLIENT;
 
 async function fetchCsrf() {
 	try {
-		const fetchPath = baseUrl + "/sanctum/csrf-cookie";
+		const fetchPath = BASE_URL + "/sanctum/csrf-cookie";
 
 		await fetch(fetchPath, {
 			method: "GET",
@@ -59,7 +59,7 @@ export function PasswordResetComponent({ lang }) {
 
 		const xsrfToken = await fetchCsrf();
 
-		const fetchPath = baseUrl + "/reset-password";
+		const fetchPath = BASE_URL + "/reset-password";
 
 		const resetPasswordRequest = new Request(fetchPath, {
 			method: "POST",
@@ -88,7 +88,7 @@ export function PasswordResetComponent({ lang }) {
 				setIsSubmitting(false);
 			} else {
 				router.push("/?reset=" + btoa(responseData.status)), setStatus(responseData.status);
-				const fetchPath = baseUrl + "/login";
+				const fetchPath = BASE_URL + "/login";
 
 				const loginRequest = new Request(fetchPath, {
 					method: "POST",

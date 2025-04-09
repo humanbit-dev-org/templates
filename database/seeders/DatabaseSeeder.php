@@ -20,12 +20,6 @@ class DatabaseSeeder extends Seeder
 		$this->call([
 			RoleSeeder::class,
 			UserSeeder::class,
-			CategorySeeder::class,
-			EcommerceSeeder::class,
-			GroupSeeder::class,
-			GroupUserSeeder::class,
-			OrderSeeder::class,
-			OrderUserSeeder::class,
 			ArticleSeeder::class,
 			InstitutionalSeeder::class,
 			TranslateSeeder::class,

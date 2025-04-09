@@ -1,17 +1,17 @@
 "use client";
 
-import { usePathname } from "next/navigation";
-import { useUser, useLocale } from "@/config/AuthHelper";
-import Link from "next/link";
-import { useEffect, useState, useRef } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { motion } from "motion/react";
+import { useEffect, useRef, useState } from "react";
+import { useLocale, useUser } from "@/config/Auth";
+import { usePathname } from "next/navigation";
 
-const baseUrl = process.env.NEXT_PUBLIC_ADMIN_URL;
+const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL_CLIENT;
 
 async function fetchCsrf() {
 	try {
-		const fetchPath = baseUrl + "/sanctum/csrf-cookie";
+		const fetchPath = BASE_URL + "/sanctum/csrf-cookie";
 
 		await fetch(fetchPath, {
 			method: "GET",
@@ -74,7 +74,7 @@ export const NavSlideTop = function ({ ...props }) {
 
 		const xsrfToken = await fetchCsrf();
 
-		const fetchPath = baseUrl + "/logout";
+		const fetchPath = BASE_URL + "/logout";
 
 		const logoutRequest = new Request(fetchPath, {
 			method: "POST",

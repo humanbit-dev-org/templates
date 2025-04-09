@@ -29,11 +29,7 @@
 			// ─── Modular components ───────────────────────────────────────
 			"@/components/*": ["src/components/*"],
 			"@/footers/*": ["src/components/footers/*"],
-			"@/navbars/*": [
-				"src/components/navbars/*",
-				"src/components/navbars/nav_grow/*",
-				"src/components/navbars/nav_slide/*"
-			],
+			"@/navbars/*": ["src/components/navbars/*"],
 
 			// ─── Other blocks ─────────────────────────────────────────────
 			"@/config/*": ["src/config/*"],

@@ -11,19 +11,5 @@ class Contact extends Model
 	use CrudTrait;
 	use HasFactory;
 
-	protected $fillable = [
-		"name",
-		"surname",
-		"email",
-		"phone",
-		"company",
-		"unit_type",
-		"type",
-		"order_time",
-		"message",
-		"url",
-		"status",
-		"lang",
-		"reject_reason",
-	];
+	protected $fillable = ["name", "surname", "email", "phone", "company", "message", "url", "lang"];
 }

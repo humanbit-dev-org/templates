@@ -13,9 +13,9 @@ return new class extends Migration {
 		Schema::create("translates", function (Blueprint $table) {
 			$table->id();
 			$table->string("it")->nullable();
-			// $table->string("en")->nullable();
+			$table->string("en")->nullable();
 			$table->text("text_it")->nullable();
-			// $table->text("text_en")->nullable();
+			$table->text("text_en")->nullable();
 			$table->string("code");
 			$table->foreignId("page_id")->nullable()->constrained("pages")->onDelete("cascade");
 			$table->timestamps();

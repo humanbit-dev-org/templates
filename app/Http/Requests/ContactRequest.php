@@ -50,12 +50,7 @@ class ContactRequest extends FormRequest
 			"company" => "",
 			"url" => "",
 			"message" => "",
-			"order_time" => "",
-			"unit_type" => "",
-			"type" => "",
-			"status" => "",
 			"lang" => "",
-			"reject_reason" => "",
 		];
 	}
 

@@ -2,11 +2,11 @@
 
 namespace App\Models;
 
-use Illuminate\Support\Facades\Log;
 use App\StorableMedia;
-use Illuminate\Database\Eloquent\Model;
 use Backpack\CRUD\app\Models\Traits\CrudTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Log;
 
 class Media extends Model
 {
@@ -21,16 +21,9 @@ class Media extends Model
 		"ogv_path",
 		"webm_path",
 		"mp3_path",
-		"thought_id",
 		"institutional_id",
-		"president_id",
-		"paragraph_id",
-		"chapter_id",
 		"page_id",
-		"paragraph_layout",
-		"full_width_bb",
 		"caption",
-		"caption_layout",
 	];
 
 	public function page()

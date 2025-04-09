@@ -16,6 +16,7 @@
 // 3. Absolute internal (`@/` alias)
 // import DefaultExportModule from "@/<path>/DefaultExports";
 // import { NamedExportModule } from "@/<path>/NamedExports";
+import MetadataSetup from "@/config/metadata-setup";
 
 // 4. Relative internal (same directory)
 import "./layout.scss";
@@ -25,11 +26,11 @@ import "./layout.scss";
 // ===============================================
 
 // Get the base URL for assets from environment variables (publicly exposed)
-const baseUrl = process.env.NEXT_PUBLIC_ASSETS_URL;
+const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL_SERVER;
 
 export async function generateMetadata({ params }) {
 	const { lang } = await params;
-	const url = `${baseUrl}/api/${lang}/la-nostra-storia/seo`;
+	const url = `${BASE_URL}/api/${lang}/<page>/seo`;
 	return await MetadataSetup(url, lang);
 }
 
@@ -37,25 +38,22 @@ export default async function BoilerplateLayout({ children, params }) {
 	// Get the language from route parameters
 	const { lang } = await params;
 
-	// Build the API URL for localized chapters
-	const apiUrl = `${baseUrl}/api/${lang}/chapters`;
-
-	// Fetch the chapters from the API with language header
-	const response = await fetch(apiUrl, {
-		method: "GET",
-		credentials: "include",
-		headers: {
-			"Content-Type": "application/json",
-			"locale": lang,
-		},
-	});
-	const chapters = await response.json();
+	// Fetch data from the API with language header
+	// const dataResponse = await fetch(`${BASE_URL}/api/${lang}/<route>`, {
+	// 	method: "GET",
+	// 	credentials: "include",
+	// 	headers: {
+	// 		"Content-Type": "application/json",
+	// 		"locale": lang,
+	// 	},
+	// });
+	// const dataResponseJson = await dataResponse.json();
 
 	return (
 		<>
 			<div className="boilerplate_layout grid_cont footer order-2 order-xl-0">{/* content */}</div>
 
-			<div className="boilerplate_layout grid_cont content order-1">{/* content */}</div>
+			<div className="boilerplate_layout grid_cont content order-1">{children}</div>
 		</>
 	);
 }

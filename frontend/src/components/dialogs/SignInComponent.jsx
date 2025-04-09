@@ -1,15 +1,15 @@
 "use client";
 
-import { useAuth } from "hooks/auth";
+import AuthSessionStatus from "@/components/elements/AuthSessionStatus";
+import { useAuth } from "@/hooks/auth";
 import { use, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import AuthSessionStatus from "hooks/AuthSessionStatus";
 
-const baseUrl = process.env.NEXT_PUBLIC_ADMIN_URL;
+const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL_CLIENT;
 
 async function fetchCsrf() {
 	try {
-		const fetchPath = baseUrl + "/sanctum/csrf-cookie";
+		const fetchPath = BASE_URL + "/sanctum/csrf-cookie";
 		await fetch(fetchPath, {
 			method: "GET",
 			credentials: "include",
@@ -60,7 +60,7 @@ export function SignInComponent({ lang }) {
 
 		const xsrfToken = await fetchCsrf();
 
-		const fetchPath = baseUrl + "/login";
+		const fetchPath = BASE_URL + "/login";
 
 		const loginRequest = new Request(fetchPath, {
 			method: "POST",

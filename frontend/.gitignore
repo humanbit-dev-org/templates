@@ -37,3 +37,4 @@ next-env.d.ts
 
 # frontend assets
 /public/fonts/*
+/lang/*

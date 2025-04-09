@@ -4,13 +4,13 @@
 import { useAuth } from "@/hooks/auth";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useLocale, useUser } from "@/config/AuthHelper";
+import { useLocale, useUser } from "@/hooks/auth";
 
-const baseUrl = process.env.NEXT_PUBLIC_ADMIN_URL;
+const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL_CLIENT;
 
 async function fetchCsrf() {
 	try {
-		const fetchPath = baseUrl + "/sanctum/csrf-cookie";
+		const fetchPath = BASE_URL + "/sanctum/csrf-cookie";
 
 		await fetch(fetchPath, {
 			method: "GET",
@@ -45,7 +45,7 @@ const Page = () => {
 	const resendEmailVerification = async ({ setStatus }) => {
 		setStatus(null);
 
-		const fetchPath = baseUrl + "/email/verification-notification";
+		const fetchPath = BASE_URL + "/email/verification-notification";
 		const xsrfToken = await fetchCsrf();
 
 		const emailVerificationRequest = new Request(fetchPath, {

@@ -54,31 +54,9 @@ class User extends Authenticatable implements MustVerifyEmail
 		];
 	}
 
-	// Relationship with user-created groups
-	public function createdGroups()
-	{
-		return $this->hasMany(Group::class, "creator_id");
-	}
-
-	// Many-to-many relationship with groups in which the user is a member
-	public function groups()
-	{
-		return $this->belongsToMany(Group::class)->using(GroupUser::class)->withPivot("id", "percentage");
-	}
-
-	public function orders()
-	{
-		return $this->hasMany(OrderUser::class);
-	}
-
 	public function role()
 	{
 		return $this->belongsTo(Role::class);
-	}
-
-	public function ecommerce()
-	{
-		return $this->hasMany(Ecommerce::class);
 	}
 
 	public function sendEmailVerificationNotification()

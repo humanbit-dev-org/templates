@@ -16,14 +16,9 @@ return new class extends Migration {
 			$table->string("surname");
 			$table->string("phone");
 			$table->string("email");
-			$table->integer("order_time")->nullable();
 			$table->string("company")->nullable();
 			$table->string("url")->nullable();
-			$table->string("unit_type")->nullable();
-			$table->string("type")->default("request");
 			$table->mediumText("message")->nullable();
-			$table->string("status")->nullable();
-			$table->string("reject_reason")->nullable();
 			$table->string("lang")->default("en");
 			$table->timestamps();
 		});

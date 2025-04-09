@@ -26,8 +26,8 @@ import "./NavLogoTop.scss";
 // ===============================================
 
 export function NavLogoTopComponent({ menu }) {
-	const baseUrl = process.env.NEXT_PUBLIC_ADMIN_URL;
-	const mediaPath = `${baseUrl}/storage/uploads`;
+	const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL_SERVER;
+	const MEDIA_PATH = `${BASE_URL}/storage/uploads`;
 
 	return (
 		<div className="nav_logo_top_component">

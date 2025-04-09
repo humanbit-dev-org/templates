@@ -1,7 +1,7 @@
 {
-  "name": "Fondazione Assolombarda",
-  "short_name": "Fondazione",
-  "description": "Fondazione Assolombarda",
+  "name": "Humanbit Templates",
+  "short_name": "Templates",
+  "description": "Next.js templates for your web development projects",
   "lang": "it",
   "dir": "ltr",
   "start_url": "/",
