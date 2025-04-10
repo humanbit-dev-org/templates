@@ -4,6 +4,8 @@ namespace App\Console\Commands\Database;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Artisan;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\ArrayInput;
@@ -19,6 +21,7 @@ class MigrateFresh extends Command
 	 */
 	protected $signature = 'migrate:fresh:safe {--p= : Project name to confirm operation in production}
                            {--seed : Seed the database with records}
+                           {--preserve-data : Save database data before dropping tables and restore it after migration}
                            {--drop-views : Drop all views}
                            {--drop-types : Drop all types}
                            {--path=* : The path(s) to the migrations files to be executed}
@@ -201,6 +204,47 @@ class MigrateFresh extends Command
 		}
 		$this->newLine();
 
+		// Check if we need to preserve data
+		$preserveData = $this->option('preserve-data');
+		$dataBackup = [];
+		
+		if ($preserveData) {
+			// No output for backup process - silent operation
+			try {
+				// Get all table names using a more compatible approach
+				$tables = [];
+				$connection = DB::connection();
+				
+				// Get table names directly with a query that works across Laravel versions
+				$tableResults = $connection->select('SHOW TABLES');
+				
+				// Convert result to a simple array of table names
+				foreach ($tableResults as $tableRow) {
+					$tableName = reset($tableRow); // Get first value from the row object (table name)
+					$tables[] = $tableName;
+				}
+				
+				foreach ($tables as $tableName) {
+					// Skip Laravel system tables
+					if (in_array($tableName, ['migrations', 'failed_jobs', 'password_reset_tokens', 'personal_access_tokens'])) {
+						continue;
+					}
+					
+					// Get the table data
+					$data = DB::table($tableName)->get()->toArray();
+					if (!empty($data)) {
+						$dataBackup[$tableName] = $data;
+					}
+				}
+			} catch (\Exception $e) {
+				$this->components->error("Failed to backup table data: " . $e->getMessage());
+				if (!$this->confirm("Continue without data preservation?", false)) {
+					return Command::FAILURE;
+				}
+				$preserveData = false; // Disable data preservation if there was an error
+			}
+		}
+
 		// Prepare the command for direct execution
 		$command = "LARAVEL_MIGRATE_ORIGINAL=true php artisan migrate:fresh";
 		
@@ -247,6 +291,58 @@ class MigrateFresh extends Command
 		
 		if ($exitCode !== 0) {
 			return Command::FAILURE;
+		}
+
+		// Restore data if needed
+		if ($preserveData && !empty($dataBackup)) {
+			$this->output->writeln($this->formatLine("Restoring table data", "RUNNING", "yellow"));
+			
+			try {
+				$startTime = microtime(true);
+				
+				// Disable foreign key checks to avoid insertion order issues
+				DB::statement('SET FOREIGN_KEY_CHECKS=0');
+				
+				foreach ($dataBackup as $tableName => $data) {
+					// Check if table still exists after migration
+					if (!Schema::hasTable($tableName)) {
+						$this->components->warn("Table {$tableName} no longer exists after migration. Data cannot be restored.");
+						continue;
+					}
+					
+					// Get current table structure
+					$columns = Schema::getColumnListing($tableName);
+					
+					foreach ($data as $row) {
+						$rowData = [];
+						
+						// Only include columns that exist in the new schema
+						foreach ((array)$row as $column => $value) {
+							if (in_array($column, $columns)) {
+								$rowData[$column] = $value;
+							}
+						}
+						
+						// Insert data if we have values
+						if (!empty($rowData)) {
+							try {
+								DB::table($tableName)->insert($rowData);
+							} catch (\Exception $e) {
+								$this->components->error("Failed to insert row in {$tableName}: " . $e->getMessage());
+							}
+						}
+					}
+				}
+				
+				// Re-enable foreign key checks
+				DB::statement('SET FOREIGN_KEY_CHECKS=1');
+				
+				$elapsedTime = round((microtime(true) - $startTime) * 1000);
+				$this->output->writeln($this->formatLine("Restoring table data", "DONE", "green", $elapsedTime));
+			} catch (\Exception $e) {
+				$this->output->writeln($this->formatLine("Restoring table data", "FAILED", "red"));
+				$this->components->error("Failed to restore data: " . $e->getMessage());
+			}
 		}
 
 		return Command::SUCCESS;
