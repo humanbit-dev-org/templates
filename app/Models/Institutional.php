@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Backpack\CRUD\app\Models\Traits\CrudTrait;
+use App\StorableMedia;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -10,7 +11,7 @@ class Institutional extends Model
 {
 	use CrudTrait;
 	use HasFactory;
-
+	use StorableMedia;
 	protected $fillable = [
 		"title_italian",
 		"title_english",
@@ -34,8 +35,8 @@ class Institutional extends Model
 		return $this->hasMany(Media::class);
 	}
 
-	public function attachment()
-	{
-		return $this->hasMany(Attachment::class);
-	}
+	// public function attachment()
+	// {
+	// 	return $this->hasMany(Attachment::class);
+	// }
 }
