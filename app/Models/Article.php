@@ -29,13 +29,13 @@ class Article extends Model
 		"strillo",
 	];
 
-	public function media()
-	{
-		return $this->hasMany(Media::class);
-	}
+	// public function media()
+	// {
+	// 	return $this->hasMany(Media::class);
+	// }
 
-	public function attachment()
-	{
-		return $this->hasMany(Attachment::class);
-	}
+	// public function attachment()
+	// {
+	// 	return $this->hasMany(Attachment::class);
+	// }
 }

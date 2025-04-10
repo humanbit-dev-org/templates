@@ -5,15 +5,19 @@ namespace App\Console\Commands\Database;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Artisan;
+use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Input\ArrayInput;
+use Symfony\Component\Console\Output\BufferedOutput;
+use App\Console\Commands\Database\ConfirmStyle;
 
 class MigrateFresh extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'migrate:fresh:safe {--p= : Project name to confirm operation in production}
+	/**
+	 * The name and signature of the console command.
+	 *
+	 * @var string
+	 */
+	protected $signature = 'migrate:fresh:safe {--p= : Project name to confirm operation in production}
                            {--seed : Seed the database with records}
                            {--drop-views : Drop all views}
                            {--drop-types : Drop all types}
@@ -23,122 +27,228 @@ class MigrateFresh extends Command
                            {--database= : The database connection to use}
                            {--force : Force the operation to run when in production}';
 
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Drop all tables and re-run all migrations with additional safety checks in production';
+	/**
+	 * The console command description.
+	 *
+	 * @var string
+	 */
+	protected $description = "Drop all tables and re-run all migrations with additional safety checks in production";
 
-    /**
-     * Execute the console command.
-     */
-    public function handle()
-    {
-        // Check if we are in production environment
-        if (App::environment('production')) {
-            // Get project name from the command option
-            $projectOption = $this->option('p');
-            
-            // Check if project name is provided
-            if (empty($projectOption)) {
-                $this->error('ERROR: Project name is required with the --p option in production environment.');
-                $this->info('Usage: php artisan migrate:fresh:safe --p="project_name"');
-                return Command::FAILURE;
-            }
-            
-            // Get project name from .env
-            $actualProjectName = env('APP_NAME');
-            
-            // Check if project name matches
-            if ($projectOption !== $actualProjectName) {
-                $this->error('ERROR: The provided project name does not match the APP_NAME in your .env file.');
-                $this->line('Provided name: ' . $projectOption);
-                $this->line('Actual name: ' . $actualProjectName);
-                return Command::FAILURE;
-            }
-            
-            // Confirm the action in production environment
-            if (!$this->confirm("WARNING: You are about to RESET THE ENTIRE DATABASE in PRODUCTION environment.\nAll data will be lost! Are you sure you want to continue?")) {
-                $this->info('Operation cancelled.');
-                return Command::SUCCESS;
-            }
-            
-            // Additional warning with 5 second countdown
-            $this->warn('Final warning: The database will be reset in:');
-            for ($i = 5; $i > 0; $i--) {
-                $this->output->write("\r{$i} seconds remaining...");
-                sleep(1);
-            }
-            $this->output->writeln('');
-            
-            if (!$this->confirm('Are you ABSOLUTELY SURE you want to continue?')) {
-                $this->info('Operation cancelled.');
-                return Command::SUCCESS;
-            }
-            
-            // Create a database backup
-            $this->info('Creating database backup before proceeding...');
-            $backupResult = $this->call('db:backup');
-            
-            if ($backupResult !== Command::SUCCESS) {
-                if (!$this->confirm('Database backup failed. Do you want to continue anyway?')) {
-                    $this->info('Operation cancelled.');
-                    return Command::SUCCESS;
-                }
-                $this->warn('Proceeding without backup. This is risky!');
-            }
-        }
-        
-        // Build command parameters
-        $parameters = [];
-        
-        if ($this->option('database')) {
-            $parameters['--database'] = $this->option('database');
-        }
-        
-        if ($this->option('force')) {
-            $parameters['--force'] = true;
-        }
-        
-        if ($this->option('path')) {
-            $parameters['--path'] = $this->option('path');
-        }
-        
-        if ($this->option('realpath')) {
-            $parameters['--realpath'] = true;
-        }
-        
-        if ($this->option('schema-path')) {
-            $parameters['--schema-path'] = $this->option('schema-path');
-        }
-        
-        if ($this->option('seed')) {
-            $parameters['--seed'] = true;
-        }
-        
-        if ($this->option('drop-views')) {
-            $parameters['--drop-views'] = true;
-        }
-        
-        if ($this->option('drop-types')) {
-            $parameters['--drop-types'] = true;
-        }
-        
-        // Execute the actual migrate:fresh command
-        $this->info('Running database migration...');
-        
-        // Use call with the fully qualified class name to avoid recursion
-        putenv('LARAVEL_MIGRATE_ORIGINAL=true');
-        $exitCode = $this->call('Illuminate\Database\Console\Migrations\FreshCommand', $parameters);
-        putenv('LARAVEL_MIGRATE_ORIGINAL=false');
-        
-        if ($exitCode === 0) {
-            $this->info('Database has been successfully reset and migrated.');
-        } else {
-            $this->error('Migration failed with exit code: ' . $exitCode);
-        }
-        
-        return $exitCode;
-    }
+	/**
+	 * Terminal width for formatting output
+	 *
+	 * @var int
+	 */
+	protected $terminalWidth = 144;
+
+	/**
+	 * Get the terminal width dynamically
+	 *
+	 * @return int
+	 */
+	protected function getTerminalWidth()
+	{
+		// If already detected, use the stored value
+		static $width = null;
+		
+		if ($width === null) {
+			// Try to get the width with tput
+			@exec('tput cols 2>/dev/null', $output, $exitCode);
+			if ($exitCode === 0 && !empty($output[0]) && is_numeric($output[0])) {
+				$width = (int) $output[0];
+			} else {
+				// Fallback to the default width if tput is not available
+				$width = $this->terminalWidth;
+			}
+		}
+		
+		return $width;
+	}
+
+	/**
+	 * Format output line with dots and status
+	 *
+	 * @param string $text
+	 * @param string $status
+	 * @param string $statusColor
+	 * @param int|null $durationMs
+	 * @return string
+	 */
+	protected function formatLine($text, $status, $statusColor = 'yellow', $durationMs = null)
+	{
+		// Get the actual terminal width
+		$termWidth = $this->getTerminalWidth();
+		
+		// Add a 2-character offset to avoid reaching the border
+		$termWidth -= 2;
+		
+		// Calculate prefix and suffix length (without formatting)
+		$prefix = "  " . $text . " ";
+		$prefixLength = strlen($prefix);
+		
+		// Calculate suffix length
+		$suffixLength = 0;
+		if ($durationMs !== null) {
+			// Attach "ms" to the numeric value
+			$suffixLength = strlen(" " . $durationMs . "ms " . $status);
+		} else {
+			$suffixLength = strlen(" " . $status);
+		}
+		
+		// Calculate how many dots are needed to reach exactly the end
+		$dotsCount = $termWidth - $prefixLength - $suffixLength;
+		
+		// Generate the output with gray dots
+		if ($durationMs !== null) {
+			return $prefix . "<fg=gray>" . str_repeat(".", $dotsCount) . "</> <fg=gray>" . $durationMs . "ms</> <fg=" . $statusColor . ";options=bold>" . $status . "</>";
+		} else {
+			return $prefix . "<fg=gray>" . str_repeat(".", $dotsCount) . "</> <fg=" . $statusColor . ";options=bold>" . $status . "</>";
+		}
+	}
+
+	/**
+	 * Display the production environment banner
+	 */
+	protected function displayProductionBanner()
+	{
+		// Get the terminal width
+		$termWidth = $this->getTerminalWidth();
+		
+		// Apply an offset of two spaces on left and right
+		$bannerWidth = $termWidth - 4;
+		
+		$this->newLine();
+		$this->output->writeln('  <fg=black;bg=yellow>' . str_repeat(' ', $bannerWidth) . '</>  ');
+		$this->output->writeln('  <fg=black;bg=yellow>' . $this->centerText('APPLICATION IN PRODUCTION.', $bannerWidth) . '</>  ');
+		$this->output->writeln('  <fg=black;bg=yellow>' . str_repeat(' ', $bannerWidth) . '</>  ');
+	}
+	
+	/**
+	 * Center a text within a width
+	 */
+	protected function centerText($text, $width)
+	{
+		$padding = max(0, ($width - strlen($text)) / 2);
+		return str_repeat(' ', floor($padding)) . $text . str_repeat(' ', ceil($padding));
+	}
+
+	/**
+	 * Execute the console command.
+	 */
+	public function handle()
+	{
+		// Check if we are in production environment
+		if (App::environment("production")) {
+			// Get project name from the command option
+			$projectOption = $this->option("p");
+
+			// Check if project name is provided
+			if (empty($projectOption)) {
+				$this->components->error("Project name is required with the --p option in production environment.");
+				$this->components->info('Usage: <fg=green>php artisan migrate:fresh:safe --p="project_name"</>');
+				return Command::FAILURE;
+			}
+
+			// Get project name from .env
+			$actualProjectName = env("APP_NAME");
+
+			// Check if project name matches
+			if ($projectOption !== $actualProjectName) {
+				$this->components->error("The provided project name does not match the APP_NAME in your .env file.");
+				$this->line("Provided name: <fg=red>" . $projectOption . "</>");
+				$this->line("Actual name: <fg=green>" . $actualProjectName . "</>");
+				return Command::FAILURE;
+			}
+
+			// Display production banner (only once at the beginning)
+			$this->displayProductionBanner();
+			
+			// First confirmation request with the new text
+			$confirmStyle = new ConfirmStyle($this->input, $this->output);
+			if (!$confirmStyle->askConfirmation("Are you sure you want to run this command?", false)) {
+				$this->components->warn("Command cancelled.");
+				return Command::SUCCESS;
+			}
+
+			// Additional warning with 5 second countdown
+			$this->newLine();
+			$this->components->warn("Final warning: The database will be reset in:");
+			for ($i = 5; $i > 0; $i--) {
+				$this->output->write("\r{$i} seconds remaining...");
+				sleep(1);
+			}
+			$this->output->writeln("");
+			$this->newLine();
+			
+			// Main warning message moved to the second request
+			$this->components->warn(
+				"You are about to RESET THE ENTIRE DATABASE in PRODUCTION environment. All data will be lost!"
+			);
+			
+			// We use our custom class for interactive confirmation
+			$confirmStyle = new ConfirmStyle($this->input, $this->output);
+			if (!$confirmStyle->askConfirmation("Are you ABSOLUTELY SURE you want to continue?", false)) {
+				$this->components->warn("Command cancelled.");
+				return Command::SUCCESS;
+			}
+		}
+
+		// Create database backup
+		$result = $this->call("db:backup");
+		if ($result !== Command::SUCCESS) {
+			$this->components->error("Failed to create database backup. Migration aborted for safety.");
+			return Command::FAILURE;
+		}
+		$this->newLine();
+
+		// Prepare the command for direct execution
+		$command = "LARAVEL_MIGRATE_ORIGINAL=true php artisan migrate:fresh";
+		
+		// Add --ansi to force colors
+		$command .= " --ansi";
+		
+		// Always add --force to avoid further confirmations
+		$command .= " --force";
+		
+		// Add options from the original command
+		if ($this->option('database')) {
+			$command .= " --database=" . escapeshellarg($this->option('database'));
+		}
+		
+		if ($this->option('path')) {
+			$paths = $this->option('path');
+			foreach ($paths as $path) {
+				$command .= " --path=" . escapeshellarg($path);
+			}
+		}
+		
+		if ($this->option('realpath')) {
+			$command .= " --realpath";
+		}
+		
+		if ($this->option('schema-path')) {
+			$command .= " --schema-path=" . escapeshellarg($this->option('schema-path'));
+		}
+		
+		if ($this->option('seed')) {
+			$command .= " --seed";
+		}
+		
+		if ($this->option('drop-views')) {
+			$command .= " --drop-views";
+		}
+		
+		if ($this->option('drop-types')) {
+			$command .= " --drop-types";
+		}
+		
+		// Execute the command directly, preserving the original output
+		passthru($command, $exitCode);
+		
+		if ($exitCode !== 0) {
+			return Command::FAILURE;
+		}
+
+		return Command::SUCCESS;
+	}
 }
