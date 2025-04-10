@@ -130,7 +130,8 @@ export default async function RootLayout({ children, params }) {
 
 	return (
 		<html lang={lang} className={fontClasses}>
-			<body className="bg_color_white fx_load">
+			{/* <body className="bg_color_white fx_load"> */}
+			<body className="bg_color_white">
 				<GlobalProvider>
 					<div className="root_layout container_structure container-fluid">
 						<div className="grid_cont navbar row justify-content-center position-sticky">

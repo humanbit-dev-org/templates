@@ -19,28 +19,28 @@ const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL_SERVER;
 export default function ComponentsPage() {
 	return (
 		<div className="components_page">
-			<div className="page_cont bg_color_first">
+			<div className="page_cont bg_color_fourth vh-100">
 				<section className="cont_space_1">
 					<div className="cont_mw_1">
 						<main>
-							<IntlTelInputComponent />
+							{/* <IntlTelInputComponent /> */}
 
 							<div className="block_wrap vert_charts text-center d-flex flex-wrap justify-content-center align-items-center mb-5 w-100">
-								<div className="vert_chart mx-2 left" />
+								{/* <div className="vert_chart mx-2 left" /> */}
 
-								<div className="vert_chart mx-2 right fx" />
-								<div className="vert_chart mx-2 right fx cascade" />
-								<div className="vert_chart mx-2 right fx delay" />
-								<div className="vert_chart mx-2 right fx delay" />
-								<div className="vert_chart mx-2 right fx cascade delay" />
-								<div className="vert_chart mx-2 right fx cascade" />
+								{/* <div className="vert_chart mx-2 ready fx" /> */}
+								{/* <div className="vert_chart mx-2 ready fx cascade" /> */}
+								<div className="vert_chart mx-2 ready fx delay" />
+								<div className="vert_chart mx-2 ready fx delay" />
+								{/* <div className="vert_chart mx-2 ready fx cascade delay" /> */}
+								{/* <div className="vert_chart mx-2 ready fx cascade" /> */}
 
-								<div className="vert_chart mx-2 right fx wait" />
-								<div className="vert_chart mx-2 right fx cascade wait" />
-								<div className="vert_chart mx-2 right fx delay wait" />
-								<div className="vert_chart mx-2 right fx delay wait" />
-								<div className="vert_chart mx-2 right fx cascade delay wait" />
-								<div className="vert_chart mx-2 right fx cascade wait" />
+								<div className="vert_chart mx-2 wait fx wait" />
+								<div className="vert_chart mx-2 wait fx cascade wait" />
+								<div className="vert_chart mx-2 wait fx delay wait" />
+								<div className="vert_chart mx-2 wait fx delay wait" />
+								<div className="vert_chart mx-2 wait fx cascade delay wait" />
+								<div className="vert_chart mx-2 wait fx cascade wait" />
 							</div>
 						</main>
 					</div>
