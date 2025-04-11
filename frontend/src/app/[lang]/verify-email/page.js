@@ -4,7 +4,7 @@
 import { useAuth } from "@/hooks/auth";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useLocale, useUser } from "@/hooks/auth";
+import { useLocale } from "@/hooks/auth";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL_CLIENT;
 

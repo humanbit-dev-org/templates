@@ -1,6 +1,6 @@
 "use client";
 
-import { useLocale } from "@/hooks/auth";
+// import { useLocale } from "@/hooks/auth";
 import { useSearchParams } from "next/navigation";
 
 export function VerifiedEmailComponent() {
