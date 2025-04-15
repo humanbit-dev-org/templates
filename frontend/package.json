@@ -3,12 +3,12 @@
 	"version": "1.0.0",
 	"private": true,
 	"scripts": {
-		"dev": "concurrently 'cross-env NODE_OPTIONS=\"--inspect\" next dev' 'prettier \"../**/*\" --write --no-editorconfig --config \".prettierrc\" --ignore-unknown --no-error-on-unmatched-pattern --log-level silent --check || true' 'chokidar \"../**/*\" --silent --command \"prettier \\\"{path}\\\" --write --no-editorconfig --config \\\".prettierrc\\\" --ignore-unknown --no-error-on-unmatched-pattern\"' 'chokidar \"src/utils/**/*.js\" --ignore \"src/utils/__auto.index.js\" --ignore \"src/utils/custom/**\" --initial --silent -c \"node src/config/generate-utils-map.mjs && rollup -c\"' 'sass --watch --style=compressed --quiet src/assets/scss/:src/assets/css/'",
-		"tev": "concurrently 'cross-env NODE_OPTIONS=\"--inspect\" IS_TURBO=true next dev --turbo' 'prettier \"../**/*\" --write --no-editorconfig --config \".prettierrc\" --ignore-unknown --no-error-on-unmatched-pattern --log-level silent --check || true' 'chokidar \"../**/*\" --silent --command \"prettier \\\"{path}\\\" --write --no-editorconfig --config \\\".prettierrc\\\" --ignore-unknown --no-error-on-unmatched-pattern\"' 'chokidar \"src/utils/**/*.js\" --ignore \"src/utils/__auto.index.js\" --ignore \"src/utils/custom/**\" --initial --silent -c \"node src/config/generate-utils-map.mjs && rollup -c\"' 'sass --watch --style=compressed --quiet src/assets/scss/:src/assets/css/'",
+		"dev": "concurrently 'cross-env NODE_OPTIONS=\"--inspect\" next dev' 'prettier \"../**/*\" --write --no-editorconfig --config \".prettierrc\" --ignore-unknown --no-error-on-unmatched-pattern --log-level silent --check || true' 'chokidar \"../**/*\" --silent --command \"prettier \\\"{path}\\\" --write --no-editorconfig --config \\\".prettierrc\\\" --ignore-unknown --no-error-on-unmatched-pattern\"' 'chokidar \"src/utils/**/*.js\" --ignore \"src/utils/manual/**\" --initial --silent --command \"pnpm exec node src/config/manage-globals.mjs\"' 'sass --watch --style=compressed --quiet src/assets/scss/:src/assets/css/'",
+		"tev": "concurrently 'cross-env NODE_OPTIONS=\"--inspect\" IS_TURBO=true next dev --turbo' 'prettier \"../**/*\" --write --no-editorconfig --config \".prettierrc\" --ignore-unknown --no-error-on-unmatched-pattern --log-level silent --check || true' 'chokidar \"../**/*\" --silent --command \"prettier \\\"{path}\\\" --write --no-editorconfig --config \\\".prettierrc\\\" --ignore-unknown --no-error-on-unmatched-pattern\"' 'chokidar \"src/utils/**/*.js\" --ignore \"src/utils/manual/**\" --initial --silent --command \"pnpm exec node src/config/manage-globals.mjs\"' 'sass --watch --style=compressed --quiet src/assets/scss/:src/assets/css/'",
 		"build": "next build",
 		"start": "next start",
 		"stop": "pkill -9 ^next-server && echo 'Server successfully killed'",
-		"watch": "concurrently 'next lint || true' 'prettier \"../**/*\" --write --no-editorconfig --config \".prettierrc\" --ignore-unknown --no-error-on-unmatched-pattern --log-level silent --check || true' 'chokidar \"../**/*\" --silent --command \"prettier \\\"{path}\\\" --write --no-editorconfig --config \\\".prettierrc\\\" --ignore-unknown --no-error-on-unmatched-pattern\"' 'chokidar \"src/utils/**/*.js\" --ignore \"src/utils/__auto.index.js\" --ignore \"src/utils/custom/**\" --initial --silent -c \"node src/config/generate-utils-map.mjs && rollup -c\"' 'sass --watch --style=compressed --quiet src/assets/scss/:src/assets/css/'"
+		"watch": "concurrently 'next lint || true' 'prettier \"../**/*\" --write --no-editorconfig --config \".prettierrc\" --ignore-unknown --no-error-on-unmatched-pattern --log-level silent --check || true' 'chokidar \"../**/*\" --silent --command \"prettier \\\"{path}\\\" --write --no-editorconfig --config \\\".prettierrc\\\" --ignore-unknown --no-error-on-unmatched-pattern\"' 'chokidar \"src/utils/**/*.js\" --ignore \"src/utils/manual/**\" --initial --silent --command \"pnpm exec node src/config/manage-globals.mjs\"' 'sass --watch --style=compressed --quiet src/assets/scss/:src/assets/css/'"
 	},
 	"dependencies": {
 		"@popperjs/core": "^2.11.8",
@@ -35,6 +35,7 @@
 		"@prettier/plugin-php": "^0.22.4",
 		"@rollup/plugin-node-resolve": "^16.0.1",
 		"@rollup/plugin-terser": "^0.4.4",
+		"@rollup/plugin-virtual": "^3.0.2",
 		"@tailwindcss/postcss": "^4.1.3",
 		"@types/node": "^22.14.0",
 		"@types/react": "^19.1.0",

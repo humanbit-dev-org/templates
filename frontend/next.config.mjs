@@ -17,6 +17,15 @@ const nextConfig = {
 		includePaths: ["*"], // Resolve all directories for SCSS
 	},
 
+	// Keep pages in memory longer to speed up Fast Refresh
+	onDemandEntries: {
+		maxInactiveAge: 300_000, // 5 minutes
+		pagesBufferLength: 10, // Max pages cached
+	},
+
+	// Disable React dev double-rendering
+	reactStrictMode: false,
+
 	webpack: (config, options) => {
 		if (options.dev) {
 			// Force SCSS source maps for debugging.
@@ -31,9 +40,20 @@ const nextConfig = {
 
 			// Configure file-watching behavior for faster and optimized rebuilds
 			config.watchOptions = {
-				poll: 1000, // Enable polling, checks for changes every second
-				aggregateTimeout: 300, // Delay rebuild after the first change
-				ignored: /node_modules/, // Ignore node_modules to avoid unnecessary recompilations
+				poll: false, // Use filesystem events instead of polling
+				aggregateTimeout: 1000, // Wait longer before triggering rebuild
+				// Ignore files to avoid unnecessary recompilations
+				ignored: [
+					"**/node_modules/**",
+					"**/.next/**",
+					"**/.git/**",
+					"**/cache/**",
+					"**/public/js/__bundle.globals.js",
+					"**/*.swp",
+					"**/.DS_Store",
+					"**/*.min.js",
+					"**/*.min.css",
+				],
 			};
 		} else if (!options.dev && !options.isServer) {
 			// Disable source maps in production

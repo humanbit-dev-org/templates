@@ -26,14 +26,14 @@ export default function ComponentsPage() {
 							{/* <IntlTelInputComponent /> */}
 
 							<div className="block_wrap vert_charts text-center d-flex flex-wrap justify-content-center align-items-center mb-5 w-100">
-								{/* <div className="vert_chart mx-2 left" /> */}
+								<div className="vert_chart mx-2 left" />
 
-								{/* <div className="vert_chart mx-2 ready fx" /> */}
-								{/* <div className="vert_chart mx-2 ready fx cascade" /> */}
+								<div className="vert_chart mx-2 ready fx" />
+								<div className="vert_chart mx-2 ready fx cascade" />
 								<div className="vert_chart mx-2 ready fx delay" />
 								<div className="vert_chart mx-2 ready fx delay" />
-								{/* <div className="vert_chart mx-2 ready fx cascade delay" /> */}
-								{/* <div className="vert_chart mx-2 ready fx cascade" /> */}
+								<div className="vert_chart mx-2 ready fx cascade delay" />
+								<div className="vert_chart mx-2 ready fx cascade" />
 
 								<div className="vert_chart mx-2 wait fx wait" />
 								<div className="vert_chart mx-2 wait fx cascade wait" />
