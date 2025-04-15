@@ -21,6 +21,8 @@ return new class extends Migration {
 			$table->string("mp3_path")->nullable();
 			$table->string("caption")->nullable();
 			$table->foreignId("page_id")->nullable()->constrained("pages")->onDelete("cascade");
+			$table->foreignId("article_id")->nullable()->constrained("articles")->onDelete("cascade");
+			$table->foreignId("institutional_id")->nullable()->constrained("institutionals")->onDelete("cascade");
 			$table->timestamps();
 		});
 	}
