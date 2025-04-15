@@ -38,6 +38,7 @@ _ide_helper.php
 
 # production
 /frontend/build
+/app/Providers/AppServiceProvider.php
 
 # misc
 /frontend.DS_Store
