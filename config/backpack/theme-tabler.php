@@ -41,8 +41,8 @@ return [
 	"styles" => [
 		base_path("vendor/backpack/theme-tabler/resources/assets/css/color-adjustments.css"),
 		base_path("vendor/backpack/theme-tabler/resources/assets/css/colors.css"),
-		base_path("public/static/css/humanbit_custom_1.css"),
-		base_path("public/static/css/colors_humanbit_1.css"),
+		base_path("public/static/css/humanbit_custom.css"),
+		base_path("public/static/css/colors_humanbit.css"),
 	],
 
 	/**

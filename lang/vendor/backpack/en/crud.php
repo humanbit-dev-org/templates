@@ -263,7 +263,7 @@ return [
 	"disclaimer_chapter" =>
 	"Select an option only if the media image is intended for the background of a Chapter cover (La nostra storia).",
 	"disclaimer_president" =>
-	"Select an option only if the media image is intended for the background of a President cover (La voce dei presidenti). <br> To upload a president’s photo, use the dedicated tab in the <a href='../president' class='text-primary fw-bold'>President</a> section instead.",
+	"Select an option only if the media image is intended for the background of a President cover (La voce dei presidenti). <br> To upload a president's photo, use the dedicated tab in the <a href='../president' class='text-primary fw-bold'>President</a> section instead.",
 	"disclaimer_hero" => "Select an option only if the media image is intended for the hero section of a page.",
 	"disclaimer_uploads" => "You can upload multiple media files at the same time.",
 

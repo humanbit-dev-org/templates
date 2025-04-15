@@ -124,16 +124,19 @@ $(document).ready(function () {
         }
 
         $.ajax({
-            url: "autocomplete-values",  // API URL
+            url: "autocomplete-values",  // Original URL without path modifications
             data: { term: query, column: columnName, table: tableName }, // Pass column + table
             dataType: "json",
             success: function (data) {
                 if (data.length > 0) {
-                    let suggestions = data.map(value => `<div class="autocomplete-item">${value}</div>`).join('');
+                    let suggestions = "";
+                    data.forEach(function(value) {
+                        suggestions += '<div>' + value + '</div>';
+                    });
                     suggestionBox.html(suggestions).show();
 
                     // Click event for selecting a suggestion
-                    $(".autocomplete-item").on("click", function () {
+                    suggestionBox.find("div").on("click", function () {
                         input.val($(this).text());
                         suggestionBox.hide();
                     });
@@ -150,6 +153,9 @@ $(document).ready(function () {
             $(".autocomplete-suggestions").hide();
         }
     });
+
+    // Accordion animation for filters
+    initFilterAccordionAnimations();
 
     $(".radio_layout").on("mouseover", function () {
         var radio = $(this);
@@ -227,7 +233,81 @@ $(document).ready(function () {
             previewBox.remove();
         }, 500);
     });
-    
-    
 });
+
+/**
+ * Initializes accordion animations for filter panels
+ */
+function initFilterAccordionAnimations() {
+    const accordionItems = $('#filtersAccordion .accordion-item');
+    
+    // Skip if no accordion items found
+    if (!accordionItems.length) return;
+    
+    // Function to update the visual state of accordion items
+    function updateAccordionState() {
+        let hasExpandedItem = false;
+        let expandedItem = null;
+        
+        // First, find if any item is expanded
+        accordionItems.each(function() {
+            const button = $(this).find('.accordion-button');
+            if (button.length && !button.hasClass('collapsed')) {
+                hasExpandedItem = true;
+                expandedItem = $(this);
+            }
+        });
+        
+        // Then, apply the appropriate classes based on the state
+        accordionItems.each(function() {
+            if (hasExpandedItem) {
+                if (this === expandedItem[0]) {
+                    $(this).addClass('expanded').removeClass('compressed');
+                } else {
+                    $(this).addClass('compressed').removeClass('expanded');
+                }
+            } else {
+                // If no item is expanded, remove all special classes
+                $(this).removeClass('expanded compressed');
+            }
+        });
+    }
+    
+    // Run once on page load to set initial state
+    updateAccordionState();
+    
+    // Add event listener for Bootstrap's events
+    accordionItems.each(function() {
+        const item = $(this);
+        const collapse = item.find('.accordion-collapse');
+        
+        if (collapse.length) {
+            // When any accordion starts to show
+            collapse.on('show.bs.collapse', function() {
+                // First make all items compressed
+                accordionItems.addClass('compressed').removeClass('expanded');
+                
+                // Then mark this one as expanded
+                item.removeClass('compressed').addClass('expanded');
+            });
+            
+            // When any accordion starts to hide
+            collapse.on('hide.bs.collapse', function() {
+                // If this was the expanded one, reset all items
+                if (item.hasClass('expanded')) {
+                    accordionItems.removeClass('compressed expanded');
+                }
+            });
+            
+            // After transitions complete
+            collapse.on('hidden.bs.collapse shown.bs.collapse', updateAccordionState);
+        }
+    });
+    
+    // Also attach to the buttons directly for immediate feedback
+    $('#filtersAccordion .accordion-button').on('click', function() {
+        // Small delay to allow Bootstrap to update its classes first
+        setTimeout(updateAccordionState, 50);
+    });
+}
 

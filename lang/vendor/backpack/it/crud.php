@@ -194,7 +194,7 @@ return [
 	"Le opzioni <span class='text-primary fw-bold'>BLU</span> riguardano i paragrafi contenuti nei <span class='text-primary fw-bold'>Chapters</span>, <span class='text-primary fw-bold'>Presidents</span> e <span class='text-primary fw-bold'>Institutionals</span>. <br> Le opzioni <span class='text-success fw-bold'>VERDI</span> riguardano i paragrafi contenuti in <span class='text-success fw-bold'>Thoughts Milano & Home</span>.",
 	"hint_president_image" => "Carica la foto del presidente",
 	"hint_mp3" =>
-	"⚠️ L’audio può essere caricato solo nei paragrafi in cui il titolo non è nascosto (campo <strong><code>Hide title</strong></code> disattivato).",
+	"⚠️ L'audio può essere caricato solo nei paragrafi in cui il titolo non è nascosto (campo <strong><code>Hide title</strong></code> disattivato).",
 
 	//PARAGRAPHS LAYOUT
 	"paragraph_layout_title" => "Layout immagine",
@@ -235,17 +235,17 @@ return [
 	//DISCLAIMERS
 	"disclaimer_title" => "<i class='las la-info-circle me-1'></i> Informazione ",
 	"disclaimer_paragraph" =>
-	"Gestisci le opzioni di layout per le immagini dei paragrafi. <br>La scelta del layout è obbligatoria, altrimenti l’immagine non appare. Questi layout valgono solo per i paragrafi e non per gli altri contenuti.",
+	"Gestisci le opzioni di layout per le immagini dei paragrafi. <br>La scelta del layout è obbligatoria, altrimenti l'immagine non appare. Questi layout valgono solo per i paragrafi e non per gli altri contenuti.",
 	"disclaimer_caption" =>
 	"Gestisci il testo della didascalia per le immagini nei paragrafi, nelle hero e nel background delle copertine. <br> Le opzioni di layout sono disponibili solo per le didascalie delle immagini nei paragrafi.",
 	"disclaimer_gallery" => "Fornisce una preview dei file caricati sul media corrente.",
 	"disclaimer_thought" =>
-	"Seleziona un’opzione solo se l'immagine del media è destinata all'autore di un Thought (Riflessione su Milano o Intervento Home).",
+	"Seleziona un'opzione solo se l'immagine del media è destinata all'autore di un Thought (Riflessione su Milano o Intervento Home).",
 	"disclaimer_chapter" =>
-	"Seleziona un’opzione solo se l’immagine del media è destinata al background della copertina di un Chapter (La nostra storia).",
+	"Seleziona un'opzione solo se l'immagine del media è destinata al background della copertina di un Chapter (La nostra storia).",
 	"disclaimer_president" =>
-	"Seleziona un’opzione solo se l’immagine del media è destinata al background della copertina di un President (La voce dei presidenti). <br> Per caricare la foto di un presidente, invece, usa la scheda dedicata nella sezione <a href='../president' class='text-primary fw-bold'>President.</a>",
-	"disclaimer_hero" => "Seleziona un’opzione solo se l’immagine del media è destinata alla hero di una delle pagine",
+	"Seleziona un'opzione solo se l'immagine del media è destinata al background della copertina di un President (La voce dei presidenti). <br> Per caricare la foto di un presidente, invece, usa la scheda dedicata nella sezione <a href='../president' class='text-primary fw-bold'>President.</a>",
+	"disclaimer_hero" => "Seleziona un'opzione solo se l'immagine del media è destinata alla hero di una delle pagine",
 	"disclaimer_uploads" => "Puoi caricare più file multimediali contemporaneamente.",
 
 	// CUSTOM
