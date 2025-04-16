@@ -293,4 +293,7 @@ return [
 	"contact_reject_confirmation_not_title" => "NOT rejected",
 	"contact_accept_confirmation_not_message" => "There's been an error. Your request might not have been accepted.",
 	"contact_reject_confirmation_not_message" => "There's been an error. Your request might not have been rejected.",
+
+	// Warning tooltip for create button when filters are active
+	"warning_creating_with_filters" => "Warning: the new record will have fields pre-filled based on active filters",
 ];

@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\TranslateCrudController;
 use App\Http\Controllers\Admin\Services\GitHubController;
 use App\Http\Controllers\Admin\Helper\DuplicateController;
 use App\Http\Controllers\Admin\Helper\ExportCsvController;
+use App\Http\Controllers\Admin\Helper\ImportCsvController;
 use App\Http\Controllers\Admin\Helper\AutocompleteController;
 
 // --------------------------
@@ -67,6 +68,13 @@ Route::group(
 		Route::post("{modelName}/sort", [HelperBackend::class, "sort"]);
 		Route::get("{crud}/{id}/duplicate", [DuplicateController::class, "duplicate"]);
 		Route::get("{crud}/export-csv", [ExportCsvController::class, "exportCrudToCsv"]);
+
+		// Rotte per l'importazione CSV
+		Route::get("{crud}/import-csv", [ImportCsvController::class, "showImportForm"]);
+		Route::post("{crud}/import-csv/analyze", [ImportCsvController::class, "analyzeUploadedFile"]);
+		Route::post("{crud}/import-csv/process", [ImportCsvController::class, "importCsv"]);
+		Route::get("{crud}/import-csv/status", [ImportCsvController::class, "getImportStatus"]);
+
 		Route::get("autocomplete-values", [AutocompleteController::class, "getValues"]);
 
 		Route::post("contact/{id}/{option}", [ContactController::class, "contactOption"]);

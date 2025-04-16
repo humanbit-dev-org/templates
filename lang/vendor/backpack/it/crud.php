@@ -274,4 +274,7 @@ return [
 	"contact_reject_confirmation_not_title" => "NON rifiutata",
 	"contact_accept_confirmation_not_message" => "C'è stato un errore. La richiesta potrebbe non essere stata accettata.",
 	"contact_reject_confirmation_not_message" => "C'è stato un errore. La richiesta potrebbe non essere stata rifiutata.",
+
+	// Tooltip di avviso per il bottone di creazione con filtri attivi
+	"warning_creating_with_filters" => "Attenzione: il nuovo record avrà i campi precompilati in base ai filtri attivi",
 ];

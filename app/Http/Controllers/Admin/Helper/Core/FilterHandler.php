@@ -97,7 +97,9 @@ class FilterHandler
 	public static function configureButtons()
 	{
 		CRUD::removeButton("create");
-		CRUD::addButtonFromView("top", "export_csv", "export_csv", "end");
+		// CRUD::addButtonFromView("top", "import_csv", "import_csv", "end");
+		// CRUD::addButtonFromView("top", "export_csv", "export_csv", "end");
+		CRUD::addButtonFromView("top", "csv_actions", "csv_actions", "end");
 		CRUD::addButtonFromView("top", "create", "create_filters");
 	}
 
