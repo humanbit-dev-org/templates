@@ -70,26 +70,26 @@ class FilterHandler
 		self::configureButtons();
 	}
 
-    /**
-     * Handles filtering for fields with '_path' in their name
-     *
-     * @param string $key Field name
-     * @param string $value Filter value
-     */
-    private static function handlePathFieldFilter($key, $value)
-    {
-        // For path fields, check if they're empty or not based on checkbox value
-        if ($value === '1') {
-            // Has file (not empty)
-            CRUD::addClause('whereNotNull', $key);
-            CRUD::addClause('where', $key, '!=', '');
-        } elseif ($value === '0') {
-            // No file (empty)
-            CRUD::addClause(function ($query) use ($key) {
-                $query->whereNull($key)->orWhere($key, '');
-            });
-        }
-    }
+	/**
+	 * Handles filtering for fields with '_path' in their name
+	 *
+	 * @param string $key Field name
+	 * @param string $value Filter value
+	 */
+	private static function handlePathFieldFilter($key, $value)
+	{
+		// For path fields, check if they're empty or not based on checkbox value
+		if ($value === "1") {
+			// Has file (not empty)
+			CRUD::addClause("whereNotNull", $key);
+			CRUD::addClause("where", $key, "!=", "");
+		} elseif ($value === "0") {
+			// No file (empty)
+			CRUD::addClause(function ($query) use ($key) {
+				$query->whereNull($key)->orWhere($key, "");
+			});
+		}
+	}
 
 	/**
 	 * Configures buttons and widgets for list view
@@ -135,43 +135,43 @@ class FilterHandler
 			}
 		}
 
-        return redirect()->back();
-    }
+		return redirect()->back();
+	}
 
-    /**
-     * Adds a has/no file filter for path fields
-     *
-     * @param string $fieldName The path field name to filter
-     * @param string $label Custom label for the filter (optional)
-     */
-    public static function addPathFieldFilter($fieldName, $label = null)
-    {
-        if (strpos($fieldName, '_path') === false) {
-            $fieldName .= '_path';
-        }
+	/**
+	 * Adds a has/no file filter for path fields
+	 *
+	 * @param string $fieldName The path field name to filter
+	 * @param string $label Custom label for the filter (optional)
+	 */
+	public static function addPathFieldFilter($fieldName, $label = null)
+	{
+		if (strpos($fieldName, "_path") === false) {
+			$fieldName .= "_path";
+		}
 
-        $filterLabel = $label ?? ucfirst(str_replace(['_path', '_'], ['', ' '], $fieldName));
+		$filterLabel = $label ?? ucfirst(str_replace(["_path", "_"], ["", " "], $fieldName));
 
-        CRUD::addFilter(
-            [
-                'name'  => $fieldName,
-                'type'  => 'simple',
-                'label' => $filterLabel
-            ],
-            [
-                '1' => trans('backpack::filters.with_file'),
-                '0' => trans('backpack::filters.without_file'),
-            ],
-            function ($value) use ($fieldName) {
-                if ($value == 1) {
-                    CRUD::addClause('whereNotNull', $fieldName);
-                    CRUD::addClause('where', $fieldName, '!=', '');
-                } else {
-                    CRUD::addClause(function ($query) use ($fieldName) {
-                        $query->whereNull($fieldName)->orWhere($fieldName, '');
-                    });
-                }
-            }
-        );
-    }
+		CRUD::addFilter(
+			[
+				"name" => $fieldName,
+				"type" => "simple",
+				"label" => $filterLabel,
+			],
+			[
+				"1" => trans("backpack::filters.with_file"),
+				"0" => trans("backpack::filters.without_file"),
+			],
+			function ($value) use ($fieldName) {
+				if ($value == 1) {
+					CRUD::addClause("whereNotNull", $fieldName);
+					CRUD::addClause("where", $fieldName, "!=", "");
+				} else {
+					CRUD::addClause(function ($query) use ($fieldName) {
+						$query->whereNull($fieldName)->orWhere($fieldName, "");
+					});
+				}
+			}
+		);
+	}
 }

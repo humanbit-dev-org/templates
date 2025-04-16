@@ -11,7 +11,7 @@ import { cookies } from "next/headers";
 // PROJECT UTILITIES (metadata | context | translates | cookies)
 import MetadataSetup, { FontsLoader, GlobalScripts } from "@/config/metadata-setup";
 // import { AuthProvider } from "@/providers/Auth"; // TODO: Keep this here?
-// import { getDictionary } from "@/app/dictionaries"; // TODO: Keep this here?
+import { getDictionary } from "@/app/dictionaries"; // TODO: Keep this here?
 import { GlobalProvider } from "@/providers/Global";
 import { klaroConfig } from "@/config/klaro-config"; // cookie configuration
 import { KlaroCookieConsent } from "@/config/klaro-cookie-consent"; // cookie handling
@@ -113,10 +113,10 @@ export default async function RootLayout({ children, params }) {
 		.join(" ");
 
 	// Fetch translation dictionary based on language
-	// const translates = await getDictionary(lang);
+	const translates = await getDictionary(lang);
 
 	// Fetch user data using the Laravel session
-	// const userResponseJson = await fetchUser(laravelSession);
+	const userResponseJson = await fetchUser(laravelSession);
 
 	// Fetch data from the API with language header
 	// const menuResponse = await fetch(`${BASE_URL}/api/pages`, {

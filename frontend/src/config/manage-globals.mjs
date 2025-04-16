@@ -42,7 +42,7 @@ function getVirtualModuleContent() {
 		.join("\n");
 }
 
-console.log("✓ Starting build...");
+console.log("› Bundling global JS...");
 
 const bundle = await rollup({
 	input: "virtual-entry", // Virtual entry module
@@ -62,4 +62,4 @@ await bundle.write({
 	inlineDynamicImports: true, // Prevents code-splitting — forces all content into one file
 });
 
-console.log("✔ Bundle written to /public/js/__bundle.globals.js");
+console.log("✔ JS bundle saved to /public/js/__bundle.globals.js");

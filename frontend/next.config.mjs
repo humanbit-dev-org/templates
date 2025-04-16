@@ -12,6 +12,7 @@ const __dirname = path.dirname(__filename);
 const url = new URL(process.env.NEXT_PUBLIC_BACKEND_URL_CLIENT);
 
 /** @type {import('next').NextConfig} */
+// Webpack configuration (default engine)
 const nextConfig = {
 	sassOptions: {
 		includePaths: ["*"], // Resolve all directories for SCSS
@@ -103,13 +104,16 @@ const nextConfig = {
 	},
 };
 
-// Turbopack configuration for module resolution and custom loaders
+// Turbopack configuration (next-gen engine)
 nextConfig.turbopack = {
-	resolveExtensions: [".tsx", ".ts", ".jsx", ".js", ".json"], // Prioritize these extensions when resolving imports
+	// Match file extensions in import paths
+	resolveExtensions: [".tsx", ".ts", ".jsx", ".js", ".json"],
+
+	// Define custom loaders per file type
 	rules: {
 		"*.svg": {
-			loaders: ["@svgr/webpack"], // Import SVGs as React components
-			as: "*.js", // Optional: force JS output if needed
+			loaders: ["@svgr/webpack"], // Support importing SVGs as React components
+			as: "*.js", // Fallback: treat loader output as JS
 		},
 	},
 };
