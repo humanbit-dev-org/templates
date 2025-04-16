@@ -49,7 +49,7 @@ class MigrateOverride extends Command
 
 		if ($width === null) {
 			// Try to get the width with tput
-			@exec('tput cols 2>/dev/null', $output, $exitCode);
+			@exec("tput cols 2>/dev/null", $output, $exitCode);
 			if ($exitCode === 0 && !empty($output[0]) && is_numeric($output[0])) {
 				$width = (int) $output[0];
 			} else {
@@ -70,7 +70,7 @@ class MigrateOverride extends Command
 	 * @param int|null $durationMs
 	 * @return string
 	 */
-	protected function formatLine($text, $status, $statusColor = 'yellow', $durationMs = null)
+	protected function formatLine($text, $status, $statusColor = "yellow", $durationMs = null)
 	{
 		// Get the actual terminal width
 		$termWidth = $this->getTerminalWidth();
@@ -96,9 +96,25 @@ class MigrateOverride extends Command
 
 		// Generate the output with gray dots
 		if ($durationMs !== null) {
-			return $prefix . "<fg=gray>" . str_repeat(".", $dotsCount) . "</> <fg=gray>" . $durationMs . "ms</> <fg=" . $statusColor . ";options=bold>" . $status . "</>";
+			return $prefix .
+				"<fg=gray>" .
+				str_repeat(".", $dotsCount) .
+				"</> <fg=gray>" .
+				$durationMs .
+				"ms</> <fg=" .
+				$statusColor .
+				";options=bold>" .
+				$status .
+				"</>";
 		} else {
-			return $prefix . "<fg=gray>" . str_repeat(".", $dotsCount) . "</> <fg=" . $statusColor . ";options=bold>" . $status . "</>";
+			return $prefix .
+				"<fg=gray>" .
+				str_repeat(".", $dotsCount) .
+				"</> <fg=" .
+				$statusColor .
+				";options=bold>" .
+				$status .
+				"</>";
 		}
 	}
 
@@ -114,9 +130,11 @@ class MigrateOverride extends Command
 		$bannerWidth = $termWidth - 4;
 
 		$this->newLine();
-		$this->output->writeln('  <fg=black;bg=yellow>' . str_repeat(' ', $bannerWidth) . '</>  ');
-		$this->output->writeln('  <fg=black;bg=yellow>' . $this->centerText('APPLICATION IN PRODUCTION.', $bannerWidth) . '</>  ');
-		$this->output->writeln('  <fg=black;bg=yellow>' . str_repeat(' ', $bannerWidth) . '</>  ');
+		$this->output->writeln("  <fg=black;bg=yellow>" . str_repeat(" ", $bannerWidth) . "</>  ");
+		$this->output->writeln(
+			"  <fg=black;bg=yellow>" . $this->centerText("APPLICATION IN PRODUCTION.", $bannerWidth) . "</>  "
+		);
+		$this->output->writeln("  <fg=black;bg=yellow>" . str_repeat(" ", $bannerWidth) . "</>  ");
 	}
 
 	/**
@@ -125,7 +143,7 @@ class MigrateOverride extends Command
 	protected function centerText($text, $width)
 	{
 		$padding = max(0, ($width - strlen($text)) / 2);
-		return str_repeat(' ', floor($padding)) . $text . str_repeat(' ', ceil($padding));
+		return str_repeat(" ", floor($padding)) . $text . str_repeat(" ", ceil($padding));
 	}
 
 	/**
@@ -166,38 +184,38 @@ class MigrateOverride extends Command
 		$command .= " --force";
 
 		// Add options from the original command
-		if ($this->option('database')) {
-			$command .= " --database=" . escapeshellarg($this->option('database'));
+		if ($this->option("database")) {
+			$command .= " --database=" . escapeshellarg($this->option("database"));
 		}
 
-		if ($this->option('path')) {
-			$paths = $this->option('path');
+		if ($this->option("path")) {
+			$paths = $this->option("path");
 			foreach ($paths as $path) {
 				$command .= " --path=" . escapeshellarg($path);
 			}
 		}
 
-		if ($this->option('realpath')) {
+		if ($this->option("realpath")) {
 			$command .= " --realpath";
 		}
 
-		if ($this->option('schema-path')) {
-			$command .= " --schema-path=" . escapeshellarg($this->option('schema-path'));
+		if ($this->option("schema-path")) {
+			$command .= " --schema-path=" . escapeshellarg($this->option("schema-path"));
 		}
 
-		if ($this->option('pretend')) {
+		if ($this->option("pretend")) {
 			$command .= " --pretend";
 		}
 
-		if ($this->option('seed')) {
+		if ($this->option("seed")) {
 			$command .= " --seed";
 		}
 
-		if ($this->option('step')) {
+		if ($this->option("step")) {
 			$command .= " --step";
 		}
 
-		if ($this->option('isolated')) {
+		if ($this->option("isolated")) {
 			$command .= " --isolated";
 		}
 

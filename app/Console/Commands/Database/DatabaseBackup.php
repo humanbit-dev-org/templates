@@ -39,10 +39,10 @@ class DatabaseBackup extends Command
 	{
 		// If already detected, use the stored value
 		static $width = null;
-		
+
 		if ($width === null) {
 			// Try to get the width with tput
-			@exec('tput cols 2>/dev/null', $output, $exitCode);
+			@exec("tput cols 2>/dev/null", $output, $exitCode);
 			if ($exitCode === 0 && !empty($output[0]) && is_numeric($output[0])) {
 				$width = (int) $output[0];
 			} else {
@@ -50,7 +50,7 @@ class DatabaseBackup extends Command
 				$width = $this->terminalWidth;
 			}
 		}
-		
+
 		return $width;
 	}
 
@@ -63,18 +63,18 @@ class DatabaseBackup extends Command
 	 * @param int|null $durationMs
 	 * @return string
 	 */
-	protected function formatLine($text, $status, $statusColor = 'yellow', $durationMs = null)
+	protected function formatLine($text, $status, $statusColor = "yellow", $durationMs = null)
 	{
 		// Get the actual terminal width
 		$termWidth = $this->getTerminalWidth();
-		
+
 		// Add a 2-character offset to avoid reaching the border
 		$termWidth -= 2;
-		
+
 		// Calculate prefix and suffix length (without formatting)
 		$prefix = "  " . $text . " ";
 		$prefixLength = strlen($prefix);
-		
+
 		// Calculate suffix length
 		$suffixLength = 0;
 		if ($durationMs !== null) {
@@ -83,15 +83,31 @@ class DatabaseBackup extends Command
 		} else {
 			$suffixLength = strlen(" " . $status);
 		}
-		
+
 		// Calculate how many dots are needed to reach exactly the end
 		$dotsCount = $termWidth - $prefixLength - $suffixLength;
-		
+
 		// Generate the output with gray dots
 		if ($durationMs !== null) {
-			return $prefix . "<fg=gray>" . str_repeat(".", $dotsCount) . "</> <fg=gray>" . $durationMs . "ms</> <fg=" . $statusColor . ";options=bold>" . $status . "</>";
+			return $prefix .
+				"<fg=gray>" .
+				str_repeat(".", $dotsCount) .
+				"</> <fg=gray>" .
+				$durationMs .
+				"ms</> <fg=" .
+				$statusColor .
+				";options=bold>" .
+				$status .
+				"</>";
 		} else {
-			return $prefix . "<fg=gray>" . str_repeat(".", $dotsCount) . "</> <fg=" . $statusColor . ";options=bold>" . $status . "</>";
+			return $prefix .
+				"<fg=gray>" .
+				str_repeat(".", $dotsCount) .
+				"</> <fg=" .
+				$statusColor .
+				";options=bold>" .
+				$status .
+				"</>";
 		}
 	}
 
@@ -189,7 +205,7 @@ class DatabaseBackup extends Command
 			$endTime = microtime(true);
 			$duration = round($endTime - $startTime, 2);
 			$this->line($this->formatLine("Cleaning up old backup files", "DONE", "green", $duration));
-			
+
 			if ($deleted > 0) {
 				$this->line("  Deleted {$deleted} old backup files");
 			}
@@ -218,7 +234,7 @@ class DatabaseBackup extends Command
 		$this->line($this->formatLine("Checking mysqldump availability", "RUNNING"));
 		$startTime = microtime(true);
 		exec("which mysqldump", $output, $returnVar);
-		$mysqldumpAvailable = ($returnVar === 0);
+		$mysqldumpAvailable = $returnVar === 0;
 		$endTime = microtime(true);
 		$duration = round($endTime - $startTime, 2);
 		$this->line($this->formatLine("Checking mysqldump availability", "DONE", "green", $duration));
@@ -227,12 +243,12 @@ class DatabaseBackup extends Command
 		if (!$mysqldumpAvailable) {
 			// Try to install mysqldump
 			$installSuccess = false;
-			
+
 			if ($this->isDebianBased()) {
 				$this->line($this->formatLine("Installing MySQL client (Debian/Ubuntu)", "RUNNING"));
 				$startTime = microtime(true);
 				system("apt-get update && apt-get install -y default-mysql-client", $installResult);
-				$installSuccess = ($installResult === 0);
+				$installSuccess = $installResult === 0;
 				$endTime = microtime(true);
 				$duration = round($endTime - $startTime, 2);
 				if ($installSuccess) {
@@ -245,7 +261,7 @@ class DatabaseBackup extends Command
 				$this->line($this->formatLine("Installing MySQL client (RedHat/CentOS)", "RUNNING"));
 				$startTime = microtime(true);
 				system("yum install -y mysql", $installResult);
-				$installSuccess = ($installResult === 0);
+				$installSuccess = $installResult === 0;
 				$endTime = microtime(true);
 				$duration = round($endTime - $startTime, 2);
 				if ($installSuccess) {
@@ -255,7 +271,7 @@ class DatabaseBackup extends Command
 				}
 				$this->newLine();
 			}
-			
+
 			if (!$installSuccess) {
 				return $this->handleMysqlDumpNotAvailable($backupPath);
 			}
@@ -280,7 +296,7 @@ class DatabaseBackup extends Command
 
 		// Execute the backup command
 		$startTime = microtime(true);
-		
+
 		$process = proc_open(
 			$command,
 			[
@@ -375,11 +391,11 @@ class DatabaseBackup extends Command
 			// Connect to database
 			$this->line($this->formatLine("Connecting to database", "RUNNING"));
 			$startTime = microtime(true);
-			
+
 			$pdo = new \PDO("mysql:host={$host};port={$port};dbname={$database};charset=utf8mb4", $username, $password, [
 				\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
 			]);
-			
+
 			$endTime = microtime(true);
 			$duration = round($endTime - $startTime, 2);
 			$this->line($this->formatLine("Connecting to database", "DONE", "green", $duration));
@@ -388,14 +404,14 @@ class DatabaseBackup extends Command
 			// Get all tables
 			$this->line($this->formatLine("Reading database structure", "RUNNING"));
 			$startTime = microtime(true);
-			
+
 			$tables = [];
 			$result = $pdo->query("SHOW TABLES");
 			while ($row = $result->fetch(\PDO::FETCH_NUM)) {
 				$tables[] = $row[0];
 			}
 			$tableCount = count($tables);
-			
+
 			$endTime = microtime(true);
 			$duration = round($endTime - $startTime, 2);
 			$this->line($this->formatLine("Reading database structure", "DONE", "green", $duration));
@@ -408,7 +424,7 @@ class DatabaseBackup extends Command
 			}
 
 			$this->line("Found {$tableCount} tables to backup");
-			
+
 			$output = "-- Backup of database {$database} created via PHP PDO\n";
 			$output .= "-- Generated: " . date("Y-m-d H:i:s") . "\n\n";
 			file_put_contents($backupPath, $output);
@@ -419,7 +435,7 @@ class DatabaseBackup extends Command
 			// Process each table
 			foreach ($tables as $table) {
 				$tableOutput = "";
-				
+
 				// Get create statement
 				$stmt = $pdo->query("SHOW CREATE TABLE `{$table}`");
 				$row = $stmt->fetch(\PDO::FETCH_NUM);
@@ -454,7 +470,7 @@ class DatabaseBackup extends Command
 
 				// Write to file in batches to avoid memory issues
 				file_put_contents($backupPath, $tableOutput, FILE_APPEND);
-				
+
 				$progress->advance();
 			}
 
@@ -476,7 +492,7 @@ class DatabaseBackup extends Command
 
 		// Execute the compression command
 		$command = "gzip -9 -f " . escapeshellarg($backupPath);
-		
+
 		$process = proc_open(
 			$command,
 			[
@@ -497,7 +513,7 @@ class DatabaseBackup extends Command
 		}
 
 		$exitCode = proc_close($process);
-		
+
 		$endTime = microtime(true);
 		$this->line("<fg=gray>Compression completed in </>" . round($endTime - $startTime, 2) . " seconds");
 
@@ -523,7 +539,7 @@ class DatabaseBackup extends Command
 		if ($backupFiles->count() <= $keep) {
 			return 0;
 		}
-		
+
 		$deleted = 0;
 		$backupFiles->slice($keep)->each(function ($file) use (&$deleted) {
 			File::delete($file->getPathname());

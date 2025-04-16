@@ -23,9 +23,9 @@ class AppServiceProvider extends ServiceProvider
 	 */
 	public function boot(): void
 	{
-		$appUrl = env('APP_URL');
+		$appUrl = env("APP_URL");
 		$scheme = parse_url($appUrl, PHP_URL_SCHEME);
-		$frontendUrl = env('FRONTEND_URL');
+		$frontendUrl = env("FRONTEND_URL");
 
 		URL::forceScheme($scheme);
 		URL::forceRootUrl($appUrl);

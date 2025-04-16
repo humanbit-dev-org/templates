@@ -45,7 +45,7 @@ $breadcrumbs = $breadcrumbs ?? $defaultBreadcrumbs;
       @endif
       <div class="col-sm-3">
         <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#filterPanel" aria-expanded="false" aria-controls="filterPanel">
-          <i class="la la-filter me-1"></i> {{ trans('backpack::crud.filters') }}
+          <i class="la la-sliders me-1"></i> {{ trans('backpack::crud.filters') }}
         </button>
       </div>
       <div class="col-sm-9 text-end">
@@ -222,14 +222,14 @@ $breadcrumbs = $breadcrumbs ?? $defaultBreadcrumbs;
               }
               @endphp
               <a href="{{ url()->current() }}?{{ http_build_query(array_merge(request()->except(['page', $key]), ['persistent-table' => '1'])) }}"
-                class="btn btn-filter filter-badge d-flex align-items-center">
-                <i class="la la-times-circle filter-remove-icon me-1"></i>
-                <span><span class="filter-field-name">{{ $label }}</span><span>: {{ $displayValue }}</span></span>
+                class="btn btn-filter">
+                <strong class="filter-field-name">{{ $label }}</strong><span>: {{ $displayValue }}</span>
+                <span class="filter-remove-icon">×</span>
               </a>
               @endforeach
-              <a href="{{ url($crud->route) }}?persistent-table=1" class="btn btn-outline-secondary reset-btn">
+              {{-- <a href="{{ url($crud->route) }}?persistent-table=1" class="btn btn-outline-secondary reset-btn">
                 <i class="la la-times-circle me-1"></i> {{ trans('backpack::crud.reset') }}
-              </a>
+              </a> --}}
             </div>
             @endif
           </div>
@@ -621,6 +621,19 @@ $breadcrumbs = $breadcrumbs ?? $defaultBreadcrumbs;
         });
       });
     });
+    
+    // Verifica se ci sono filtri attivi e aggiungi classe al bottone Aggiungi
+    const hasActiveFilters = Array.from(urlParams.entries()).some(([key, value]) => 
+      key !== 'page' && key !== 'persistent-table' && value !== ''
+    );
+    
+    if (hasActiveFilters) {
+      const createButtons = document.querySelectorAll('.btn[bp-button="create"]');
+      createButtons.forEach(button => {
+        button.classList.add('has-active-filters');
+        button.setAttribute('data-warning-message', '{{ trans('backpack::crud.warning_creating_with_filters') }}');
+      });
+    }
   });
 </script>
 @endsection
