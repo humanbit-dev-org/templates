@@ -46,9 +46,9 @@ return [
 	"details_row_loading_error" => "C'è stato un errore caricando i dettagli. Riprova.",
 	"clone" => "Duplica",
 	"clone_success" =>
-	"<strong>Elemento duplicato</strong><br>Un nuovo elemento è stato creato con le stesse informazioni di questo.",
+		"<strong>Elemento duplicato</strong><br>Un nuovo elemento è stato creato con le stesse informazioni di questo.",
 	"clone_failure" =>
-	"<strong>Duplicazione fallita</strong><br>Il nuovo elemento non può essere creato. Per favore, riprova.",
+		"<strong>Duplicazione fallita</strong><br>Il nuovo elemento non può essere creato. Per favore, riprova.",
 
 	// Confirmation messages and bubbles
 	"delete_confirm" => "Sei sicuro di eliminare questo elemento?",
@@ -184,46 +184,46 @@ return [
 
 	//HINTS
 	"hint_add_note" =>
-	"Per aggiungere una nota, clicca l'icona <i class='note-icon-superscript mx-1' style='font-size:1rem;' title='Superscript'></i>, inserisci il numero e clicca nuovamente l'icona.",
+		"Per aggiungere una nota, clicca l'icona <i class='note-icon-superscript mx-1' style='font-size:1rem;' title='Superscript'></i>, inserisci il numero e clicca nuovamente l'icona.",
 	"hint_hide" => "Abilita questa opzione per nascondere il campo ",
 	"hint_bb" =>
-	"Questa opzione consente di inserire uno sfondo a 100% di colore blu. Abilitando questa opzione, la caption perderà il colore verde e il testo sarà bianco.",
+		"Questa opzione consente di inserire uno sfondo a 100% di colore blu. Abilitando questa opzione, la caption perderà il colore verde e il testo sarà bianco.",
 	"hint_caption_layout" => "Consente di posizionare la caption sopra o sotto.",
 	"hint_thought_page" => "Scegli la pagina dove verrà visualizzato l'intervento.",
 	"hint_paragraph_layout" =>
-	"Le opzioni <span class='text-primary fw-bold'>BLU</span> riguardano i paragrafi contenuti nei <span class='text-primary fw-bold'>Chapters</span>, <span class='text-primary fw-bold'>Presidents</span> e <span class='text-primary fw-bold'>Institutionals</span>. <br> Le opzioni <span class='text-success fw-bold'>VERDI</span> riguardano i paragrafi contenuti in <span class='text-success fw-bold'>Thoughts Milano & Home</span>.",
+		"Le opzioni <span class='text-primary fw-bold'>BLU</span> riguardano i paragrafi contenuti nei <span class='text-primary fw-bold'>Chapters</span>, <span class='text-primary fw-bold'>Presidents</span> e <span class='text-primary fw-bold'>Institutionals</span>. <br> Le opzioni <span class='text-success fw-bold'>VERDI</span> riguardano i paragrafi contenuti in <span class='text-success fw-bold'>Thoughts Milano & Home</span>.",
 	"hint_president_image" => "Carica la foto del presidente",
 	"hint_mp3" =>
-	"⚠️ L'audio può essere caricato solo nei paragrafi in cui il titolo non è nascosto (campo <strong><code>Hide title</strong></code> disattivato).",
+		"⚠️ L'audio può essere caricato solo nei paragrafi in cui il titolo non è nascosto (campo <strong><code>Hide title</strong></code> disattivato).",
 
 	//PARAGRAPHS LAYOUT
 	"paragraph_layout_title" => "Layout immagine",
 	"photo_left_overlapping" =>
-	"<span class='text-primary fw-bold radio_layout' role='button' data-border='primary' data-img='" .
+		"<span class='text-primary fw-bold radio_layout' role='button' data-border='primary' data-img='" .
 		config("app.url") .
 		"/static/images/layouts/photo_left_overlapping.png'>Foto tutta a sinistra, didascalia a destra della foto, parzialmente sovrapposta.</span>",
 	"full_width" =>
-	"<span class='text-primary fw-bold radio_layout' role='button' data-border='primary' data-img='" .
+		"<span class='text-primary fw-bold radio_layout' role='button' data-border='primary' data-img='" .
 		config("app.url") .
 		"/static/images/layouts/full_width.png'>Immagine a tutta larghezza, didascalia a destra della foto, completamente sovrapposta.</span>",
 	"photo_left_not_overlapping" =>
-	"<span class='text-primary fw-bold radio_layout' role='button' data-border='primary' data-img='" .
+		"<span class='text-primary fw-bold radio_layout' role='button' data-border='primary' data-img='" .
 		config("app.url") .
 		"/static/images/layouts/photo_left_not_overlapping.png'>Foto tutta a sinistra, didascalia a destra della foto, non sovrapposta.</span>",
 	"vertical_left" =>
-	"<span class='text-primary fw-bold radio_layout' role='button' data-border='primary' data-img='" .
+		"<span class='text-primary fw-bold radio_layout' role='button' data-border='primary' data-img='" .
 		config("app.url") .
 		"/static/images/layouts/vertical_left.png'>Foto verticale allineata a sinistra del testo, didascalia a destra della foto, parzialmente sovrapposta.</span>",
 	"vertical_middle" =>
-	"<span class='text-primary fw-bold radio_layout' role='button' data-border='primary' data-img='" .
+		"<span class='text-primary fw-bold radio_layout' role='button' data-border='primary' data-img='" .
 		config("app.url") .
 		"/static/images/layouts/vertical_middle.png'>Foto verticale parzialmente a sinistra, didascalia a destra della foto, non sovrapposta.</span> <hr class='my-3'/>",
 	"vertical" =>
-	"<span class='text-success fw-bold radio_layout' role='button' data-border='success' data-img='" .
+		"<span class='text-success fw-bold radio_layout' role='button' data-border='success' data-img='" .
 		config("app.url") .
 		"/static/images/layouts/vertical.png'>Foto verticale allineata al testo, didascalia a destra della foto, completamente sovrapposta.</span>",
 	"horizontal" =>
-	"<span class='text-success fw-bold radio_layout' role='button' data-border='success' data-img='" .
+		"<span class='text-success fw-bold radio_layout' role='button' data-border='success' data-img='" .
 		config("app.url") .
 		"/static/images/layouts/horizontal.png'>Foto orizzontale tutta a sinistra, didascalia a destra della foto, non sovrapposta.</span>",
 
@@ -235,16 +235,16 @@ return [
 	//DISCLAIMERS
 	"disclaimer_title" => "<i class='las la-info-circle me-1'></i> Informazione ",
 	"disclaimer_paragraph" =>
-	"Gestisci le opzioni di layout per le immagini dei paragrafi. <br>La scelta del layout è obbligatoria, altrimenti l'immagine non appare. Questi layout valgono solo per i paragrafi e non per gli altri contenuti.",
+		"Gestisci le opzioni di layout per le immagini dei paragrafi. <br>La scelta del layout è obbligatoria, altrimenti l'immagine non appare. Questi layout valgono solo per i paragrafi e non per gli altri contenuti.",
 	"disclaimer_caption" =>
-	"Gestisci il testo della didascalia per le immagini nei paragrafi, nelle hero e nel background delle copertine. <br> Le opzioni di layout sono disponibili solo per le didascalie delle immagini nei paragrafi.",
+		"Gestisci il testo della didascalia per le immagini nei paragrafi, nelle hero e nel background delle copertine. <br> Le opzioni di layout sono disponibili solo per le didascalie delle immagini nei paragrafi.",
 	"disclaimer_gallery" => "Fornisce una preview dei file caricati sul media corrente.",
 	"disclaimer_thought" =>
-	"Seleziona un'opzione solo se l'immagine del media è destinata all'autore di un Thought (Riflessione su Milano o Intervento Home).",
+		"Seleziona un'opzione solo se l'immagine del media è destinata all'autore di un Thought (Riflessione su Milano o Intervento Home).",
 	"disclaimer_chapter" =>
-	"Seleziona un'opzione solo se l'immagine del media è destinata al background della copertina di un Chapter (La nostra storia).",
+		"Seleziona un'opzione solo se l'immagine del media è destinata al background della copertina di un Chapter (La nostra storia).",
 	"disclaimer_president" =>
-	"Seleziona un'opzione solo se l'immagine del media è destinata al background della copertina di un President (La voce dei presidenti). <br> Per caricare la foto di un presidente, invece, usa la scheda dedicata nella sezione <a href='../president' class='text-primary fw-bold'>President.</a>",
+		"Seleziona un'opzione solo se l'immagine del media è destinata al background della copertina di un President (La voce dei presidenti). <br> Per caricare la foto di un presidente, invece, usa la scheda dedicata nella sezione <a href='../president' class='text-primary fw-bold'>President.</a>",
 	"disclaimer_hero" => "Seleziona un'opzione solo se l'immagine del media è destinata alla hero di una delle pagine",
 	"disclaimer_uploads" => "Puoi caricare più file multimediali contemporaneamente.",
 

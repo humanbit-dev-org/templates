@@ -113,7 +113,7 @@ export default async function RootLayout({ children, params }) {
 		.join(" ");
 
 	// Fetch translation dictionary based on language
-	// const translates = await getDictionary(lang); // TODO: Keep this here?
+	// const translates = await getDictionary(lang);
 
 	// Fetch user data using the Laravel session
 	// const userResponseJson = await fetchUser(laravelSession);

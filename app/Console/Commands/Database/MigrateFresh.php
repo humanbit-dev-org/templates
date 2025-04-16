@@ -56,7 +56,7 @@ class MigrateFresh extends Command
 
 		if ($width === null) {
 			// Try to get the width with tput
-			@exec('tput cols 2>/dev/null', $output, $exitCode);
+			@exec("tput cols 2>/dev/null", $output, $exitCode);
 			if ($exitCode === 0 && !empty($output[0]) && is_numeric($output[0])) {
 				$width = (int) $output[0];
 			} else {
@@ -77,7 +77,7 @@ class MigrateFresh extends Command
 	 * @param int|null $durationMs
 	 * @return string
 	 */
-	protected function formatLine($text, $status, $statusColor = 'yellow', $durationMs = null)
+	protected function formatLine($text, $status, $statusColor = "yellow", $durationMs = null)
 	{
 		// Get the actual terminal width
 		$termWidth = $this->getTerminalWidth();
@@ -103,9 +103,25 @@ class MigrateFresh extends Command
 
 		// Generate the output with gray dots
 		if ($durationMs !== null) {
-			return $prefix . "<fg=gray>" . str_repeat(".", $dotsCount) . "</> <fg=gray>" . $durationMs . "ms</> <fg=" . $statusColor . ";options=bold>" . $status . "</>";
+			return $prefix .
+				"<fg=gray>" .
+				str_repeat(".", $dotsCount) .
+				"</> <fg=gray>" .
+				$durationMs .
+				"ms</> <fg=" .
+				$statusColor .
+				";options=bold>" .
+				$status .
+				"</>";
 		} else {
-			return $prefix . "<fg=gray>" . str_repeat(".", $dotsCount) . "</> <fg=" . $statusColor . ";options=bold>" . $status . "</>";
+			return $prefix .
+				"<fg=gray>" .
+				str_repeat(".", $dotsCount) .
+				"</> <fg=" .
+				$statusColor .
+				";options=bold>" .
+				$status .
+				"</>";
 		}
 	}
 
@@ -121,9 +137,11 @@ class MigrateFresh extends Command
 		$bannerWidth = $termWidth - 4;
 
 		$this->newLine();
-		$this->output->writeln('  <fg=black;bg=yellow>' . str_repeat(' ', $bannerWidth) . '</>  ');
-		$this->output->writeln('  <fg=black;bg=yellow>' . $this->centerText('APPLICATION IN PRODUCTION.', $bannerWidth) . '</>  ');
-		$this->output->writeln('  <fg=black;bg=yellow>' . str_repeat(' ', $bannerWidth) . '</>  ');
+		$this->output->writeln("  <fg=black;bg=yellow>" . str_repeat(" ", $bannerWidth) . "</>  ");
+		$this->output->writeln(
+			"  <fg=black;bg=yellow>" . $this->centerText("APPLICATION IN PRODUCTION.", $bannerWidth) . "</>  "
+		);
+		$this->output->writeln("  <fg=black;bg=yellow>" . str_repeat(" ", $bannerWidth) . "</>  ");
 	}
 
 	/**
@@ -132,7 +150,7 @@ class MigrateFresh extends Command
 	protected function centerText($text, $width)
 	{
 		$padding = max(0, ($width - strlen($text)) / 2);
-		return str_repeat(' ', floor($padding)) . $text . str_repeat(' ', ceil($padding));
+		return str_repeat(" ", floor($padding)) . $text . str_repeat(" ", ceil($padding));
 	}
 
 	/**
@@ -205,7 +223,7 @@ class MigrateFresh extends Command
 		$this->newLine();
 
 		// Check if we need to preserve data
-		$preserveData = $this->option('preserve-data');
+		$preserveData = $this->option("preserve-data");
 		$dataBackup = [];
 
 		if ($preserveData) {
@@ -216,7 +234,7 @@ class MigrateFresh extends Command
 				$connection = DB::connection();
 
 				// Get table names directly with a query that works across Laravel versions
-				$tableResults = $connection->select('SHOW TABLES');
+				$tableResults = $connection->select("SHOW TABLES");
 
 				// Convert result to a simple array of table names
 				foreach ($tableResults as $tableRow) {
@@ -226,7 +244,14 @@ class MigrateFresh extends Command
 
 				foreach ($tables as $tableName) {
 					// Skip Laravel system tables
-					if (in_array($tableName, ['migrations', 'failed_jobs', 'password_reset_tokens', 'personal_access_tokens'])) {
+					if (
+						in_array($tableName, [
+							"migrations",
+							"failed_jobs",
+							"password_reset_tokens",
+							"personal_access_tokens",
+						])
+					) {
 						continue;
 					}
 
@@ -255,34 +280,34 @@ class MigrateFresh extends Command
 		$command .= " --force";
 
 		// Add options from the original command
-		if ($this->option('database')) {
-			$command .= " --database=" . escapeshellarg($this->option('database'));
+		if ($this->option("database")) {
+			$command .= " --database=" . escapeshellarg($this->option("database"));
 		}
 
-		if ($this->option('path')) {
-			$paths = $this->option('path');
+		if ($this->option("path")) {
+			$paths = $this->option("path");
 			foreach ($paths as $path) {
 				$command .= " --path=" . escapeshellarg($path);
 			}
 		}
 
-		if ($this->option('realpath')) {
+		if ($this->option("realpath")) {
 			$command .= " --realpath";
 		}
 
-		if ($this->option('schema-path')) {
-			$command .= " --schema-path=" . escapeshellarg($this->option('schema-path'));
+		if ($this->option("schema-path")) {
+			$command .= " --schema-path=" . escapeshellarg($this->option("schema-path"));
 		}
 
-		if ($this->option('seed')) {
+		if ($this->option("seed")) {
 			$command .= " --seed";
 		}
 
-		if ($this->option('drop-views')) {
+		if ($this->option("drop-views")) {
 			$command .= " --drop-views";
 		}
 
-		if ($this->option('drop-types')) {
+		if ($this->option("drop-types")) {
 			$command .= " --drop-types";
 		}
 
@@ -301,12 +326,14 @@ class MigrateFresh extends Command
 				$startTime = microtime(true);
 
 				// Disable foreign key checks to avoid insertion order issues
-				DB::statement('SET FOREIGN_KEY_CHECKS=0');
+				DB::statement("SET FOREIGN_KEY_CHECKS=0");
 
 				foreach ($dataBackup as $tableName => $data) {
 					// Check if table still exists after migration
 					if (!Schema::hasTable($tableName)) {
-						$this->components->warn("Table {$tableName} no longer exists after migration. Data cannot be restored.");
+						$this->components->warn(
+							"Table {$tableName} no longer exists after migration. Data cannot be restored."
+						);
 						continue;
 					}
 
@@ -317,7 +344,7 @@ class MigrateFresh extends Command
 						$rowData = [];
 
 						// Only include columns that exist in the new schema
-						foreach ((array)$row as $column => $value) {
+						foreach ((array) $row as $column => $value) {
 							if (in_array($column, $columns)) {
 								$rowData[$column] = $value;
 							}
@@ -335,7 +362,7 @@ class MigrateFresh extends Command
 				}
 
 				// Re-enable foreign key checks
-				DB::statement('SET FOREIGN_KEY_CHECKS=1');
+				DB::statement("SET FOREIGN_KEY_CHECKS=1");
 
 				$elapsedTime = round((microtime(true) - $startTime) * 1000);
 				$this->output->writeln($this->formatLine("Restoring table data", "DONE", "green", $elapsedTime));

@@ -28,7 +28,7 @@ use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 /**
  * Helper class that provides methods to configure Backpack CRUD fields
  * based on model properties and relationships.
- * 
+ *
  * The class is structured with logic divided into specialized components
  * for better maintainability and readability.
  */

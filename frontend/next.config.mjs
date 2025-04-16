@@ -40,25 +40,31 @@ const nextConfig = {
 
 			// Configure file-watching behavior for faster and optimized rebuilds
 			config.watchOptions = {
-				poll: false, // Use filesystem events instead of polling
+				poll: false, // Use native file system events (polling causes rebuild loops in this setup)
 				aggregateTimeout: 1000, // Wait longer before triggering rebuild
 				// Ignore files to avoid unnecessary recompilations
 				ignored: [
-					"**/node_modules/**",
-					"**/.next/**",
-					"**/.git/**",
-					"**/cache/**",
-					"**/public/js/__bundle.globals.js",
-					"**/*.swp",
 					"**/.DS_Store",
-					"**/*.min.js",
+					"**/.git/**",
+					"**/.next/**",
+					"**/cache/**",
+					"**/node_modules/**",
 					"**/*.min.css",
+					"**/*.min.js",
+					"**/*.swp",
 				],
 			};
 		} else if (!options.dev && !options.isServer) {
 			// Disable source maps in production
 			config.devtool = false;
 		}
+
+		// Allow importing SVGs as React components
+		config.module.rules.push({
+			test: /\.svg$/,
+			issuer: /\.[jt]sx?$/,
+			use: ["@svgr/webpack"],
+		});
 
 		return config;
 	},
@@ -97,19 +103,15 @@ const nextConfig = {
 	},
 };
 
-if (process.env.IS_TURBO === "true") {
-	nextConfig.experimental = {
-		turbo: {
-			moduleIdStrategy: "deterministic", // Ensures quick rebuilds with hashed numeric IDs
-			resolveExtensions: [".tsx", ".ts", ".jsx", ".js", ".json"], // Minimize unnecessary file lookups
-			rules: {
-				"*.svg": {
-					loaders: ["@svgr/webpack"], // Optimize SVG imports
-					as: "*.js",
-				},
-			},
+// Turbopack configuration for module resolution and custom loaders
+nextConfig.turbopack = {
+	resolveExtensions: [".tsx", ".ts", ".jsx", ".js", ".json"], // Prioritize these extensions when resolving imports
+	rules: {
+		"*.svg": {
+			loaders: ["@svgr/webpack"], // Import SVGs as React components
+			as: "*.js", // Optional: force JS output if needed
 		},
-	};
-}
+	},
+};
 
 export default nextConfig;

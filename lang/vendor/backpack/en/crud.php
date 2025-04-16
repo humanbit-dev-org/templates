@@ -203,46 +203,46 @@ return [
 
 	//HINTS
 	"hint_add_note" =>
-	"To add a note, click on the <i class='note-icon-superscript mx-1' style='font-size:1rem;' title='Superscript'></i> icon, enter the number and click the icon again.",
+		"To add a note, click on the <i class='note-icon-superscript mx-1' style='font-size:1rem;' title='Superscript'></i> icon, enter the number and click the icon again.",
 	"hint_hide" => "Enable this option to hide field ",
 	"hint_bb" =>
-	"This option allows you to insert a 100% blue background color. By enabling this option, the caption will lose the green background, and the text color will be white.",
+		"This option allows you to insert a 100% blue background color. By enabling this option, the caption will lose the green background, and the text color will be white.",
 	"hint_caption_layout" => "Allows caption to be on top or bottom.",
 	"hint_thought_page" => "Choose the page where the thought will be displayed",
 	"hint_paragraph_layout" =>
-	"The <span class='text-primary fw-bold'>BLUE</span> options refer to the paragraphs contained in <span class='text-primary fw-bold'>Chapters</span>, <span class='text-primary fw-bold'>Presidents</span>, and <span class='text-primary fw-bold'>Institutionals</span>. <br> The <span class='text-success fw-bold'>GREEN</span> options refer to the paragraphs contained in <span class='text-success fw-bold'>Thoughts Milano & Home</span>.",
+		"The <span class='text-primary fw-bold'>BLUE</span> options refer to the paragraphs contained in <span class='text-primary fw-bold'>Chapters</span>, <span class='text-primary fw-bold'>Presidents</span>, and <span class='text-primary fw-bold'>Institutionals</span>. <br> The <span class='text-success fw-bold'>GREEN</span> options refer to the paragraphs contained in <span class='text-success fw-bold'>Thoughts Milano & Home</span>.",
 	"hint_president_image" => "Upload the photo of the president",
 	"hint_mp3" =>
-	"⚠️ Audio can only be uploaded to paragraphs where the title is not hidden (the <strong><code>Hide title</code></strong> field is disabled).",
+		"⚠️ Audio can only be uploaded to paragraphs where the title is not hidden (the <strong><code>Hide title</code></strong> field is disabled).",
 
 	// PARAGRAPHS LAYOUT
 	"paragraph_layout_title" => "Image Layout",
 	"photo_left_overlapping" =>
-	"<span class='text-primary fw-bold radio_layout' role='button' data-border='primary' data-border='--tblr-primary' data-img='" .
+		"<span class='text-primary fw-bold radio_layout' role='button' data-border='primary' data-border='--tblr-primary' data-img='" .
 		config("app.url") .
 		"/static/images/layouts/photo_left_overlapping.png'>Photo fully on the left, caption to the right of the photo, partially overlapping.</span>",
 	"full_width" =>
-	"<span class='text-primary fw-bold radio_layout' role='button' data-border='primary' data-border='--tblr-primary' data-img='" .
+		"<span class='text-primary fw-bold radio_layout' role='button' data-border='primary' data-border='--tblr-primary' data-img='" .
 		config("app.url") .
 		"/static/images/layouts/full_width.png'>Full-width image, caption to the right of the photo, fully overlapping.</span>",
 	"photo_left_not_overlapping" =>
-	"<span class='text-primary fw-bold radio_layout' role='button' data-border='primary' data-border='--tblr-primary' data-img='" .
+		"<span class='text-primary fw-bold radio_layout' role='button' data-border='primary' data-border='--tblr-primary' data-img='" .
 		config("app.url") .
 		"/static/images/layouts/photo_left_not_overlapping.png'>Photo fully on the left, caption to the right of the photo, not overlapping.</span>",
 	"vertical_left" =>
-	"<span class='text-primary fw-bold radio_layout' role='button' data-border='primary' data-border='--tblr-primary' data-img='" .
+		"<span class='text-primary fw-bold radio_layout' role='button' data-border='primary' data-border='--tblr-primary' data-img='" .
 		config("app.url") .
 		"/static/images/layouts/vertical_left.png'>Vertical photo aligned to the left of the text, caption to the right of the photo, partially overlapping.</span>",
 	"vertical_middle" =>
-	"<span class='text-primary fw-bold radio_layout' role='button' data-border='primary' data-img='" .
+		"<span class='text-primary fw-bold radio_layout' role='button' data-border='primary' data-img='" .
 		config("app.url") .
 		"/static/images/layouts/vertical_middle.png'>Vertical photo partially on the left, caption to the right of the photo, not overlapping.</span> <hr class='my-3'/>",
 	"vertical" =>
-	"<span class='text-success fw-bold radio_layout' role='button' data-border='success' data-img='" .
+		"<span class='text-success fw-bold radio_layout' role='button' data-border='success' data-img='" .
 		config("app.url") .
 		"/static/images/layouts/vertical.png'>Vertical photo aligned with the text, caption to the right of the photo, fully overlapping.</span>",
 	"horizontal" =>
-	"<span class='text-success fw-bold radio_layout' role='button' data-border='success' data-img='" .
+		"<span class='text-success fw-bold radio_layout' role='button' data-border='success' data-img='" .
 		config("app.url") .
 		"/static/images/layouts/horizontal.png'>Horizontal photo fully on the left, caption to the right of the photo, not overlapping.</span>",
 
@@ -254,16 +254,16 @@ return [
 	// DISCLAIMERS
 	"disclaimer_title" => "<i class='las la-info-circle me-1'></i> Information ",
 	"disclaimer_paragraph" =>
-	"Manage the layout options for paragraph images. <br>The layout selection is mandatory; otherwise, the image will not appear. These layouts apply only to paragraphs and not to other content.",
+		"Manage the layout options for paragraph images. <br>The layout selection is mandatory; otherwise, the image will not appear. These layouts apply only to paragraphs and not to other content.",
 	"disclaimer_caption" =>
-	"Manage the caption text for images in paragraphs, heroes, and cover backgrounds. <br> Layout options are only available for image captions in paragraphs.",
+		"Manage the caption text for images in paragraphs, heroes, and cover backgrounds. <br> Layout options are only available for image captions in paragraphs.",
 	"disclaimer_gallery" => "Provides a preview of the files uploaded to the current media.",
 	"disclaimer_thought" =>
-	"Select an option only if the media image is intended for the author of a Thought (Riflessioni su Milano or Homepage Contribution).",
+		"Select an option only if the media image is intended for the author of a Thought (Riflessioni su Milano or Homepage Contribution).",
 	"disclaimer_chapter" =>
-	"Select an option only if the media image is intended for the background of a Chapter cover (La nostra storia).",
+		"Select an option only if the media image is intended for the background of a Chapter cover (La nostra storia).",
 	"disclaimer_president" =>
-	"Select an option only if the media image is intended for the background of a President cover (La voce dei presidenti). <br> To upload a president's photo, use the dedicated tab in the <a href='../president' class='text-primary fw-bold'>President</a> section instead.",
+		"Select an option only if the media image is intended for the background of a President cover (La voce dei presidenti). <br> To upload a president's photo, use the dedicated tab in the <a href='../president' class='text-primary fw-bold'>President</a> section instead.",
 	"disclaimer_hero" => "Select an option only if the media image is intended for the hero section of a page.",
 	"disclaimer_uploads" => "You can upload multiple media files at the same time.",
 
