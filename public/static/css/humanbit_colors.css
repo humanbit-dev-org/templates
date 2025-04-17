@@ -130,7 +130,6 @@
     --color-btn-outline-secondary-checked-bg: #e4e8ec;
     --color-btn-outline-secondary-checked-text: #333;
     --color-btn-outline-secondary-checked-border: #c1c9d0;
-    --color-btn-filter: #6c757d;
     --color-btn-filter-hover: #d14555;
     --color-accordion-bg: #f8f9fa;
     --color-accordion-button-bg: #f0f0f0;
@@ -145,7 +144,7 @@
     --color-rejected-row-bg: rgba(220, 53, 69, 0.2);
     --color-pulse-effect-start: #bae4f3;
     --color-pulse-effect-middle: #e7eaeb;
-    --color-autocomplete-border: rgba(0,0,0,0.15);
+    --color-autocomplete-border: rgba(0, 0, 0, 0.15);
     --color-autocomplete-item-border: #f0f0f0;
     --color-accordion-item-expanded-bg: #fff;
     --color-accordion-item-compressed-bg: #f8f9fa;
@@ -153,7 +152,6 @@
     --color-media-item-border: #ddd;
     --color-media-item-bg: #f9f9f9;
     --color-media-item-text: #333;
-    --color-tooltip-bg: #6c757d;
 }
 
 [data-bs-theme=dark],
@@ -247,7 +245,6 @@
     --color-btn-outline-secondary-checked-bg: #1e1633;
     --color-btn-outline-secondary-checked-text: #c8d3e1;
     --color-btn-outline-secondary-checked-border: #383243;
-    --color-btn-filter: #383243;
     --color-btn-filter-hover: #862b35;
     --color-accordion-bg: #191530;
     --color-accordion-button-bg: #211d3b;
@@ -270,7 +267,6 @@
     --color-media-item-border: #302b33;
     --color-media-item-bg: #211d3b;
     --color-media-item-text: #c8d3e1;
-    --color-tooltip-bg: #383243;
 }
 
 .breadcrumb a {
@@ -282,19 +278,22 @@
     0% {
         background-color: var(--color-pulse-effect-start);
     }
+
     50% {
         background-color: var(--color-pulse-effect-middle);
     }
+
     100% {
         background-color: var(--color-pulse-effect-start);
     }
 }
 
 @keyframes fadeIn {
-    from { 
+    from {
         opacity: 0;
     }
-    to { 
+
+    to {
         opacity: 1;
     }
 }
