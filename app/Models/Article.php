@@ -31,10 +31,10 @@ class Article extends Model
 		"strillo",
 	];
 
-	// public function media()
-	// {
-	// 	return $this->hasMany(Media::class);
-	// }
+	public function media()
+	{
+		return $this->hasMany(Media::class);
+	}
 
 	// public function attachment()
 	// {
