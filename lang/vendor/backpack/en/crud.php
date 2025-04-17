@@ -296,4 +296,10 @@ return [
 
 	// Warning tooltip for create button when filters are active
 	"warning_creating_with_filters" => "Warning: the new record will have fields pre-filled based on active filters",
+
+	// CSV Actions
+	"csv_actions" => "CSV Actions",
+	"csv_export" => "Export",
+	"csv_import" => "Import",
+	"csv_import_disabled" => "CSV import is not available for the :section section",
 ];

@@ -1,11 +1,11 @@
 @php
-// Lista delle rotte dove disabilitare l'importazione
+// List of routes where import is disabled
 $disableImportFor = ['page'];
 
-// Estrai il nome della rotta corrente dal percorso
+// Extract the current route name from the path
 $currentRoute = str_replace(config('backpack.base.route_prefix', 'admin').'/', '', $crud->route);
 
-// Verifica se l'importazione deve essere disabilitata per questa rotta
+// Check if import should be disabled for this route
 $importDisabled = in_array($currentRoute, $disableImportFor);
 @endphp
 
@@ -14,11 +14,11 @@ $importDisabled = in_array($currentRoute, $disableImportFor);
         <i class="la la-file-csv"></i> CSV
     </button>
 
-    <!-- Popup custom anziché modal -->
+    <!-- Custom popup instead of modal -->
     <div id="csvActionsPopup" class="csv-popup">
         <div class="csv-popup-content">
             <div class="csv-popup-header">
-                <h5>Azioni CSV</h5>
+                <h5>{{ trans('backpack::crud.csv_actions') }}</h5>
                 <button type="button" class="csv-popup-close" onclick="toggleCsvPopup()">
                     <span>&times;</span>
                 </button>
@@ -26,7 +26,7 @@ $importDisabled = in_array($currentRoute, $disableImportFor);
             <div class="csv-popup-body">
                 <div class="csv-buttons">
                     <a href="{{ url($crud->route.'/export-csv') }}" class="btn btn-primary btn-sm">
-                        <i class="la la-file-export me-1"></i> Esporta
+                        <i class="la la-file-export me-1"></i> {{ trans('backpack::crud.csv_export') }}
                     </a>
 
                     @if($importDisabled)
@@ -35,16 +35,16 @@ $importDisabled = in_array($currentRoute, $disableImportFor);
                         data-bs-toggle="tooltip"
                         data-placement="top"
                         data-bs-placement="top"
-                        title="L'importazione CSV non è disponibile per la sezione {{ ucfirst($currentRoute) }}">
+                        title="{{ trans('backpack::crud.csv_import_disabled', ['section' => ucfirst($currentRoute)]) }}">
                         <button class="btn btn-secondary btn-sm disabled-import-btn"
                             disabled
-                            title="L'importazione CSV non è disponibile per la sezione {{ ucfirst($currentRoute) }}">
-                            <i class="la la-file-upload me-1"></i> Importa
+                            title="{{ trans('backpack::crud.csv_import_disabled', ['section' => ucfirst($currentRoute)]) }}">
+                            <i class="la la-file-upload me-1"></i> {{ trans('backpack::crud.csv_import') }}
                         </button>
                     </span>
                     @else
                     <a href="{{ url($crud->route.'/import-csv') }}" class="btn btn-success btn-sm">
-                        <i class="la la-file-upload me-1"></i> Importa
+                        <i class="la la-file-upload me-1"></i> {{ trans('backpack::crud.csv_import') }}
                     </a>
                     @endif
                 </div>
@@ -58,23 +58,23 @@ $importDisabled = in_array($currentRoute, $disableImportFor);
         var popup = document.getElementById('csvActionsPopup');
 
         if (popup.classList.contains('visible')) {
-            // Avvia l'animazione di chiusura
+            // Start closing animation
             popup.classList.add('animate-out');
             popup.classList.remove('animate-in');
 
-            // Rimuovi la classe 'visible' dopo che l'animazione è completata
+            // Remove 'visible' class after animation completes
             setTimeout(function() {
                 popup.classList.remove('visible');
                 popup.classList.remove('animate-out');
                 document.removeEventListener('click', closePopupOnClickOutside);
-            }, 200); // Tempo leggermente più breve per evitare lag
+            }, 200); // Slightly shorter time to avoid lag
         } else {
-            // Mostra il popup e avvia l'animazione di apertura
+            // Show popup and start opening animation
             popup.classList.add('visible');
             popup.classList.add('animate-in');
             popup.classList.remove('animate-out');
 
-            // Aggiungi l'event listener per chiudere quando si clicca fuori
+            // Add event listener to close when clicking outside
             document.addEventListener('click', closePopupOnClickOutside);
         }
     }
@@ -83,29 +83,29 @@ $importDisabled = in_array($currentRoute, $disableImportFor);
         var popup = document.getElementById('csvActionsPopup');
         var button = document.getElementById('csvActionsButton');
 
-        // Se il click non è sul popup o sul bottone, chiudi il popup
+        // If click is not on popup or button, close the popup
         if (!popup.contains(event.target) && !button.contains(event.target)) {
-            // Avvia l'animazione di chiusura
+            // Start closing animation
             popup.classList.add('animate-out');
             popup.classList.remove('animate-in');
 
-            // Rimuovi la classe 'visible' dopo che l'animazione è completata
+            // Remove 'visible' class after animation completes
             setTimeout(function() {
                 popup.classList.remove('visible');
                 popup.classList.remove('animate-out');
                 document.removeEventListener('click', closePopupOnClickOutside);
-            }, 200); // Tempo leggermente più breve per evitare lag
+            }, 200); // Slightly shorter time to avoid lag
         }
     }
 
-    // Inizializza tooltip per Bootstrap 4 e 5
+    // Initialize tooltips for Bootstrap 4 and 5
     document.addEventListener('DOMContentLoaded', function() {
-        // Inizializza per Bootstrap 4
+        // Initialize for Bootstrap 4
         if (typeof $ !== 'undefined' && typeof $.fn !== 'undefined' && typeof $.fn.tooltip === 'function') {
             $('[data-toggle="tooltip"]').tooltip();
         }
 
-        // Inizializza per Bootstrap 5
+        // Initialize for Bootstrap 5
         if (typeof bootstrap !== 'undefined' && typeof bootstrap.Tooltip !== 'undefined') {
             var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
             var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
@@ -114,13 +114,13 @@ $importDisabled = in_array($currentRoute, $disableImportFor);
         }
     });
 
-    // Fallback per tooltip con title attribute nativo
+    // Fallback for tooltips with native title attribute
     document.addEventListener('DOMContentLoaded', function() {
         var disabledButtons = document.querySelectorAll('.disabled-import-btn');
         disabledButtons.forEach(function(button) {
             button.addEventListener('mouseenter', function() {
                 if (!button.getAttribute('data-tooltip-initialized')) {
-                    // Se i tooltip Bootstrap non sono inizializzati, usiamo il title nativo
+                    // If Bootstrap tooltips are not initialized, use the native title
                     button.style.position = 'relative';
                 }
             });

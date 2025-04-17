@@ -189,7 +189,7 @@ return [
 	"hint_bb" =>
 		"Questa opzione consente di inserire uno sfondo a 100% di colore blu. Abilitando questa opzione, la caption perderà il colore verde e il testo sarà bianco.",
 	"hint_caption_layout" => "Consente di posizionare la caption sopra o sotto.",
-	"hint_thought_page" => "Scegli la pagina dove verrà visualizzato l'intervento.",
+	"hint_thought_page" => "Scegli la pagina dove verrà visualizzato l'intervento.",
 	"hint_paragraph_layout" =>
 		"Le opzioni <span class='text-primary fw-bold'>BLU</span> riguardano i paragrafi contenuti nei <span class='text-primary fw-bold'>Chapters</span>, <span class='text-primary fw-bold'>Presidents</span> e <span class='text-primary fw-bold'>Institutionals</span>. <br> Le opzioni <span class='text-success fw-bold'>VERDI</span> riguardano i paragrafi contenuti in <span class='text-success fw-bold'>Thoughts Milano & Home</span>.",
 	"hint_president_image" => "Carica la foto del presidente",
@@ -277,4 +277,10 @@ return [
 
 	// Tooltip di avviso per il bottone di creazione con filtri attivi
 	"warning_creating_with_filters" => "Attenzione: il nuovo record avrà i campi precompilati in base ai filtri attivi",
+
+	// CSV Actions
+	"csv_actions" => "Azioni CSV",
+	"csv_export" => "Esporta",
+	"csv_import" => "Importa",
+	"csv_import_disabled" => "L'import CSV non è disponibile per la sezione :section",
 ];
