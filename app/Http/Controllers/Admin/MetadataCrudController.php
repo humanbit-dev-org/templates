@@ -2,17 +2,17 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Requests\SeoMetaInformationRequest;
+use App\Http\Requests\MetadataRequest;
 use App\Http\Controllers\Admin\Helper\HelperBackend;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 
 /**
- * Class SeoMetaInformationCrudController
+ * Class MetadataCrudController
  * @package App\Http\Controllers\Admin
  * @property-read \Backpack\CRUD\app\Library\CrudPanel\CrudPanel $crud
  */
-class SeoMetaInformationCrudController extends CrudController
+class MetadataCrudController extends CrudController
 {
 	use \Backpack\CRUD\app\Http\Controllers\Operations\ListOperation;
 	use \Backpack\CRUD\app\Http\Controllers\Operations\CreateOperation;
@@ -27,9 +27,9 @@ class SeoMetaInformationCrudController extends CrudController
 	 */
 	public function setup()
 	{
-		CRUD::setModel(\App\Models\SeoMetaInformation::class);
-		CRUD::setRoute(config("backpack.base.route_prefix") . "/seo-meta-information");
-		CRUD::setEntityNameStrings("seo meta information", "seo meta informations");
+		CRUD::setModel(\App\Models\Metadata::class);
+		CRUD::setRoute(config("backpack.base.route_prefix") . "/metadata");
+		CRUD::setEntityNameStrings("metadata", "metadata");
 	}
 
 	/**
@@ -40,7 +40,7 @@ class SeoMetaInformationCrudController extends CrudController
 	 */
 	protected function setupListOperation()
 	{
-		HelperBackend::setFieldsView(new \App\Models\SeoMetaInformation());
+		HelperBackend::setFieldsView(new \App\Models\Metadata());
 
 		/**
 		 * Columns can be defined using the fluent syntax:
@@ -56,8 +56,8 @@ class SeoMetaInformationCrudController extends CrudController
 	 */
 	protected function setupCreateOperation()
 	{
-		CRUD::setValidation(SeoMetaInformationRequest::class);
-		HelperBackend::setFields(new \App\Models\SeoMetaInformation());
+		CRUD::setValidation(MetadataRequest::class);
+		HelperBackend::setFields(new \App\Models\Metadata());
 
 		/**
 		 * Fields can be defined using the fluent syntax:

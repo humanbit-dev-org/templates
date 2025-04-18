@@ -25,7 +25,7 @@ $importDisabled = in_array($currentRoute, $disableImportFor);
             </div>
             <div class="csv-popup-body">
                 <div class="csv-buttons">
-                    <a href="{{ url($crud->route.'/export-csv') }}" class="btn btn-primary btn-sm">
+                    <a href="{{ url($crud->route.'/export-csv') }}" class="btn btn-primary">
                         <i class="la la-file-export me-1"></i> {{ trans('backpack::crud.csv_export') }}
                     </a>
 
@@ -36,14 +36,14 @@ $importDisabled = in_array($currentRoute, $disableImportFor);
                         data-placement="top"
                         data-bs-placement="top"
                         title="{{ trans('backpack::crud.csv_import_disabled', ['section' => ucfirst($currentRoute)]) }}">
-                        <button class="btn btn-secondary btn-sm disabled-import-btn"
+                        <button class="btn btn-primary disabled-import-btn"
                             disabled
                             title="{{ trans('backpack::crud.csv_import_disabled', ['section' => ucfirst($currentRoute)]) }}">
                             <i class="la la-file-upload me-1"></i> {{ trans('backpack::crud.csv_import') }}
                         </button>
                     </span>
                     @else
-                    <a href="{{ url($crud->route.'/import-csv') }}" class="btn btn-success btn-sm">
+                    <a href="{{ url($crud->route.'/import-csv') }}" class="btn btn-primary">
                         <i class="la la-file-upload me-1"></i> {{ trans('backpack::crud.csv_import') }}
                     </a>
                     @endif

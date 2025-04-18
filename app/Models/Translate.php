@@ -29,4 +29,9 @@ class Translate extends Model
 	{
 		return $this->belongsTo(Page::class);
 	}
+
+	public function getDisplayAttribute()
+	{
+		return $this->code;
+	}
 }

@@ -45,7 +45,7 @@ $breadcrumbs = $breadcrumbs ?? $defaultBreadcrumbs;
       @endif
       <div class="col-sm-3">
         <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#filterPanel" aria-expanded="false" aria-controls="filterPanel">
-          <i class="la la-sliders me-1"></i> {{ trans('backpack::crud.filters') }}
+          <i class="la la-sliders"></i> {{ trans('backpack::crud.filters') }}
         </button>
       </div>
       <div class="col-sm-9 text-end">
@@ -185,28 +185,12 @@ $breadcrumbs = $breadcrumbs ?? $defaultBreadcrumbs;
               if(class_exists($relatedModel)) {
               $item = call_user_func([$relatedModel, 'find'], $value);
               if($item) {
-              // Check for most informative fields in priority order
-              if (!empty($item->title_italian)) {
-              $displayValue = $item->title_italian;
-              } elseif (!empty($item->title_english)) {
-              $displayValue = $item->title_english;
-              } elseif (!empty($item->title)) {
-              $displayValue = $item->title;
-              } elseif (!empty($item->name) && !empty($item->surname)) {
-              $displayValue = $item->name . ' ' . $item->surname;
-              } elseif (!empty($item->author_name) && !empty($item->author_surname)) {
-              $displayValue = $item->author_name . ' ' . $item->author_surname;
-              } elseif (!empty($item->firstname) && !empty($item->lastname)) {
-              $displayValue = $item->firstname . ' ' . $item->lastname;
-              } elseif (!empty($item->name)) {
-              $displayValue = $item->name;
-              } elseif (!empty($item->surname)) {
-              $displayValue = $item->surname;
-              } elseif (!empty($item->email)) {
-              $displayValue = $item->email;
-              } elseif (!empty($item->username)) {
-              $displayValue = $item->username;
-              }
+              // Check for getDisplayAttribute method first
+              if(method_exists($item, 'getDisplayAttribute')) {
+                $displayValue = $item->getDisplayAttribute();
+              } else {
+                $displayValue = $item->id;
+                }
               }
               }
               } elseif(($column['type'] ?? '') == 'switch') {
@@ -243,7 +227,7 @@ $breadcrumbs = $breadcrumbs ?? $defaultBreadcrumbs;
               <button class="accordion-button {{ $openTextFilters ? '' : 'collapsed' }}" type="button"
                 data-bs-toggle="collapse" data-bs-target="#textFiltersCollapse"
                 aria-expanded="{{ $openTextFilters ? 'true' : 'false' }}" aria-controls="textFiltersCollapse">
-                <i class="la la-align-left me-1"></i> {{ trans('backpack::filters.text_filters') }}
+                <i class="la la-align-left"></i> {{ trans('backpack::filters.text_filters') }}
                 @if($textFilterCount > 0)
                 <span class="badge bg-primary rounded-pill ms-2">{{ $textFilterCount }}</span>
                 @endif
@@ -282,7 +266,7 @@ $breadcrumbs = $breadcrumbs ?? $defaultBreadcrumbs;
               <button class="accordion-button {{ $openPathFilters ? '' : 'collapsed' }}" type="button"
                 data-bs-toggle="collapse" data-bs-target="#pathFiltersCollapse"
                 aria-expanded="{{ $openPathFilters ? 'true' : 'false' }}" aria-controls="pathFiltersCollapse">
-                <i class="la la-file me-1"></i> {{ trans('backpack::filters.uploaded_files') }}
+                <i class="la la-file"></i> {{ trans('backpack::filters.uploaded_files') }}
                 @if($pathFilterCount > 0)
                 <span class="badge bg-primary rounded-pill ms-2">{{ $pathFilterCount }}</span>
                 @endif
@@ -318,7 +302,7 @@ $breadcrumbs = $breadcrumbs ?? $defaultBreadcrumbs;
               <button class="accordion-button {{ $openBooleanFilters ? '' : 'collapsed' }}" type="button"
                 data-bs-toggle="collapse" data-bs-target="#booleanFiltersCollapse"
                 aria-expanded="{{ $openBooleanFilters ? 'true' : 'false' }}" aria-controls="booleanFiltersCollapse">
-                <i class="la la-check-square me-1"></i> {{ trans('backpack::filters.status') }}
+                <i class="la la-check-square"></i> {{ trans('backpack::filters.status') }}
                 @if($booleanFilterCount > 0)
                 <span class="badge bg-primary rounded-pill ms-2">{{ $booleanFilterCount }}</span>
                 @endif
@@ -362,7 +346,7 @@ $breadcrumbs = $breadcrumbs ?? $defaultBreadcrumbs;
               <button class="accordion-button {{ $openRelationFilters ? '' : 'collapsed' }}" type="button"
                 data-bs-toggle="collapse" data-bs-target="#relationFiltersCollapse"
                 aria-expanded="{{ $openRelationFilters ? 'true' : 'false' }}" aria-controls="relationFiltersCollapse">
-                <i class="la la-link me-1"></i> {{ trans('backpack::filters.relations') }}
+                <i class="la la-link"></i> {{ trans('backpack::filters.relations') }}
                 @if($relationFilterCount > 0)
                 <span class="badge bg-primary rounded-pill ms-2">{{ $relationFilterCount }}</span>
                 @endif
@@ -396,31 +380,12 @@ $breadcrumbs = $breadcrumbs ?? $defaultBreadcrumbs;
                       if (class_exists($relatedModel)) {
                       $collection = call_user_func([$relatedModel, 'all']);
                       $options = $collection->mapWithKeys(function ($item) {
-                      $displayValue = '';
-                      // Check for most informative fields in priority order
-                      if (!empty($item->title_italian)) {
-                      $displayValue = $item->title_italian;
-                      } elseif (!empty($item->title_english)) {
-                      $displayValue = $item->title_english;
-                      } elseif (!empty($item->title)) {
-                      $displayValue = $item->title;
-                      } elseif (!empty($item->name) && !empty($item->surname)) {
-                      $displayValue = $item->name . ' ' . $item->surname;
-                      } elseif (!empty($item->author_name) && !empty($item->author_surname)) {
-                      $displayValue = $item->author_name . ' ' . $item->author_surname;
-                      } elseif (!empty($item->firstname) && !empty($item->lastname)) {
-                      $displayValue = $item->firstname . ' ' . $item->lastname;
-                      } elseif (!empty($item->name)) {
-                      $displayValue = $item->name;
-                      } elseif (!empty($item->surname)) {
-                      $displayValue = $item->surname;
-                      } elseif (!empty($item->email)) {
-                      $displayValue = $item->email;
-                      } elseif (!empty($item->username)) {
-                      $displayValue = $item->username;
+                      // Check for getDisplayAttribute method first
+                      if(method_exists($item, 'getDisplayAttribute')) {
+                        return [$item->id => $item->getDisplayAttribute()];
                       } else {
                       // Fallback to ID if no other field found
-                      $displayValue = 'ID: ' . $item->id;
+                      $displayValue = $item->id;
                       }
 
                       return [$item->id => $displayValue];
@@ -451,7 +416,7 @@ $breadcrumbs = $breadcrumbs ?? $defaultBreadcrumbs;
 
         <div class="d-flex justify-content-end mb-3">
           <button type="submit" class="btn btn-primary">
-            <i class="la la-search me-1"></i> {{ trans('backpack::crud.search') }}
+            <i class="la la-search"></i> {{ trans('backpack::crud.search') }}
           </button>
         </div>
       </form>
@@ -631,7 +596,7 @@ $breadcrumbs = $breadcrumbs ?? $defaultBreadcrumbs;
       const createButtons = document.querySelectorAll('.btn[bp-button="create"]');
       createButtons.forEach(button => {
         button.classList.add('has-active-filters');
-        button.setAttribute('data-warning-message', '{{ trans('backpack::crud.warning_creating_with_filters') }}');
+        button.setAttribute('data-warning-message', "{{ trans('backpack::crud.warning_creating_with_filters') }}");
       });
     }
   });

@@ -36,8 +36,16 @@ class Article extends Model
 		return $this->hasMany(Media::class);
 	}
 
-	// public function attachment()
-	// {
-	// 	return $this->hasMany(Attachment::class);
-	// }
+	public function attachment()
+	{
+		return $this->hasMany(Attachment::class);
+	}
+
+	/**
+	 * Ritorna l'attributo da utilizzare per la visualizzazione nelle liste
+	 */
+	public function getDisplayAttribute()
+	{
+		return $this->title_italian;
+	}
 }

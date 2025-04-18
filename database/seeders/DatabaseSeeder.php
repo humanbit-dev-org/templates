@@ -6,8 +6,8 @@ use App\Models\Article;
 use App\Models\Institutional;
 use Illuminate\Database\Seeder;
 use PhpParser\Node\Stmt\GroupUse;
-use App\Models\SeoMetaInformation;
-use Database\Seeders\SeoMetaInformationSeeder;
+use App\Models\Metadata;
+use Database\Seeders\MetadataSeeder;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 class DatabaseSeeder extends Seeder
@@ -23,7 +23,7 @@ class DatabaseSeeder extends Seeder
 			ArticleSeeder::class,
 			InstitutionalSeeder::class,
 			TranslateSeeder::class,
-			SeoMetaInformationSeeder::class,
+			MetadataSeeder::class,
 		]);
 	}
 }

@@ -28,7 +28,7 @@
 
                     <div class="form-group col-sm-12 mb-4" element="div" bp-field-wrapper="true" bp-field-name="import_instructions" bp-field-type="custom_html" bp-section="crud-field">
                         <div class="p-3 mb-1 alert alert-info" style="border-left: 4px solid; background: #f8f9fa; border-radius: 5px;">
-                            <h4 class="m-0 text-info"><i class="las la-info-circle me-1"></i> {{ trans('backpack::import.import_instructions_title') }}</h4>
+                            <h4 class="m-0 text-info"><i class="las la-info-circle"></i> {{ trans('backpack::import.import_instructions_title') }}</h4>
                             <p class="mt-2">{{ trans('backpack::import.import_instructions_text') }}</p>
                             <ul>
                                 <li>{{ trans('backpack::import.import_instructions_format') }}</li>
@@ -57,15 +57,11 @@
                                 </button>
                             </div>
                         </div>
-                        <small class="form-text text-muted mt-2 csv-requirements">
-                            <i class="la la-info-circle"></i>
-                            {{ trans('backpack::import.file_requirements') }}
-                        </small>
                     </div>
 
                     <div class="form-group mt-4 import-form-actions">
-                        <a href="{{ url($crud_route) }}" class="btn btn-outline-secondary import-cancel-btn">
-                            <i class="la la-times"></i>
+                        <a href="{{ url($crud_route) }}" class="btn btn-outline-secondary text-decoration-none import-cancel-btn">
+                            <i class="la la-ban"></i>
                             {{ trans('backpack::import.cancel') }}
                         </a>
                         <button type="submit" class="btn btn-primary import-submit-btn">
@@ -90,10 +86,10 @@
         const removeButton = document.getElementById('remove-file');
         const uploadArea = document.getElementById('upload-area');
 
-        // Inizialmente nascondi il contenitore del file selezionato
+        // Initially hide the selected file container
         selectedFile.style.display = 'none';
 
-        // Disabilita la propagazione degli eventi per il bottone di rimozione
+        // Disable event propagation for the remove button
         removeButton.addEventListener('pointerdown', function(e) {
             e.preventDefault();
             e.stopPropagation();
@@ -106,38 +102,41 @@
             return false;
         });
 
-        // Gestisci il cambio del file
+        // Handle file change
         fileInput.addEventListener('change', function() {
             if (fileInput.files.length > 0) {
                 showSelectedFile(fileInput.files[0].name);
+            } else {
+                // When the user cancels the file selection, reset the input
+                resetFileInput();
             }
         });
 
-        // Funzione per mostrare il file selezionato
+        // Function to show the selected file
         function showSelectedFile(fileName) {
             fileLabel.textContent = fileName;
 
-            // Ripristina l'opacità al valore originale
+            // Restore the opacity to original value
             selectedFile.style.opacity = '1';
 
-            // Applica subito lo stile compatto
+            // Apply compact style immediately
             uploadArea.classList.add('has-file');
             selectedFile.style.display = 'flex';
             filePlaceholder.style.display = 'none';
         }
 
-        // Funzione per resettare l'input del file
+        // Function to reset the file input
         function resetFileInput() {
             fileInput.value = '';
             fileLabel.textContent = '';
 
-            // Animazione per espandere il box di upload
+            // Animation to expand the upload box
             uploadArea.classList.remove('has-file');
-            // Prima nascondi il file selezionato con fade-out
+            // First hide the selected file with fade-out
             selectedFile.style.opacity = '0';
             setTimeout(() => {
                 selectedFile.style.display = 'none';
-                // Poi mostra il placeholder con fade-in
+                // Then show the placeholder with fade-in
                 filePlaceholder.style.display = 'flex';
                 filePlaceholder.style.opacity = '0';
                 setTimeout(() => {
@@ -146,7 +145,7 @@
             }, 200);
         }
 
-        // Gestisci drag and drop
+        // Handle drag and drop
         const dropArea = document.querySelector('.custom-file-upload');
 
         ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
@@ -180,7 +179,7 @@
             }
         }, false);
 
-        // Ferma la propagazione degli eventi dal contenitore del file selezionato all'input
+        // Stop event propagation from the selected file container to the input
         selectedFile.addEventListener('click', function(e) {
             if (e.target.closest('.btn-remove-file')) {
                 e.preventDefault();
@@ -190,7 +189,7 @@
             }
         });
 
-        // Blocca anche gli eventi mousedown per evitare problemi di focus
+        // Also block mousedown events to avoid focus issues
         selectedFile.addEventListener('mousedown', function(e) {
             if (e.target.closest('.btn-remove-file')) {
                 e.preventDefault();

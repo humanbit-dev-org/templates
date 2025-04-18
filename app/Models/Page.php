@@ -112,4 +112,14 @@ class Page extends Model
 	{
 		return $this->hasMany(Translate::class);
 	}
+
+	public function metadata()
+	{
+		return $this->hasMany(Metadata::class);
+	}
+
+	public function getDisplayAttribute()
+	{
+		return $this->title;
+	}
 }

@@ -319,7 +319,7 @@ jQuery(document).ready(function($) {
 
   @if($crud->getOperationSetting('resetButton') ?? true)
     // create the reset button
-    var crudTableResetButton = '<a href="{{url($crud->route)}}" class="ml-1 ms-1 btn btn-outline-secondary reset-btn d-inline-flex align-items-center" id="crudTable_reset_button"><i class="la la-times-circle me-1"></i> {{ trans('backpack::crud.reset') }}</a>';
+    var crudTableResetButton = '<a href="{{url($crud->route)}}" class="ml-1 ms-1 btn btn-outline-secondary reset-btn d-inline-flex align-items-center" id="crudTable_reset_button"><i class="la la-times-circle"></i> {{ trans('backpack::crud.reset') }}</a>';
 
     $('#datatable_info_stack').append(crudTableResetButton);
 

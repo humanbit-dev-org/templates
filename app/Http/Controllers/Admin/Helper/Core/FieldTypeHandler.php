@@ -129,7 +129,7 @@ class FieldTypeHandler
 		} elseif ($column == "order") {
 			$field->attributes(["step" => 1, "min" => 1, "max" => DB::table($table)->max("order") + 1]);
 			$field->default(DB::table($table)->max("order") + 1);
-		} elseif ($table == "seo_meta_information" && str_contains($column, "code")) {
+		} elseif ($table == "metadata" && str_contains($column, "code")) {
 			$fieldType = "select_from_array";
 			$field->options([
 				"title" => "title",

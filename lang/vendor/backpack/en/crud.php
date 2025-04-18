@@ -30,7 +30,7 @@ return [
 
 	//NAVIGATION
 	"open" => "Open ",
-	"associations" => "Associations",
+	"relations" => "Relations",
 	"add" => "Add ",
 
 	// DISCLAIMERS

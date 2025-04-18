@@ -222,7 +222,7 @@ class MediaHandler
                                 </audio>';
 					}
 				}
-				return "No File";
+				return " - ";
 			});
 	}
 

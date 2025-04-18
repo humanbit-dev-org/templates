@@ -130,7 +130,7 @@ $(document).ready(function () {
             success: function (data) {
                 if (data.length > 0) {
                     let suggestions = "";
-                    data.forEach(function(value) {
+                    data.forEach(function (value) {
                         suggestions += '<div>' + value + '</div>';
                     });
                     suggestionBox.html(suggestions).show();
@@ -161,7 +161,7 @@ $(document).ready(function () {
         var radio = $(this);
         var imgSrc = radio.data("img");
         var borderColor = radio.data("border") === "success" ? "#42ba96" : "#00627C";
-    
+
         // Create the preview box
         var previewBox = $("<div>").addClass("radio-preview")
             .css({
@@ -177,14 +177,14 @@ $(document).ready(function () {
                 "transform": "scale(0.95)",
                 "transition": "opacity 0.5s, transform 0.5s"
             });
-    
+
         // Create the image element and wait for it to load
         var img = $("<img>").attr("src", imgSrc).css("max-width", "300px");
-    
+
         img.on("load", function () {
             previewBox.append(img);
             $("body").append(previewBox);
-    
+
             // Positioning Logic AFTER image is loaded
             var radioOffset = radio.offset();
             var radioWidth = radio.outerWidth();
@@ -193,25 +193,25 @@ $(document).ready(function () {
             var windowWidth = $(window).width();
             var windowHeight = $(window).height();
             var scrollTop = $(window).scrollTop();
-    
+
             var leftPosition = radioOffset.left + radioWidth + 20; // Default right-side positioning
             var topPosition = radioOffset.top - 5;
-    
+
             // Adjust if overflowing right
             if (leftPosition + previewWidth > windowWidth) {
                 leftPosition = radioOffset.left - previewWidth - 20; // Move to the left
             }
-    
+
             // Adjust if overflowing bottom
             if (topPosition + previewHeight > windowHeight + scrollTop) {
                 topPosition = windowHeight + scrollTop - previewHeight - 20; // Move up
             }
-    
+
             previewBox.css({
                 "top": topPosition,
                 "left": leftPosition
             });
-    
+
             // Fade-in effect
             setTimeout(function () {
                 previewBox.css({
@@ -221,7 +221,7 @@ $(document).ready(function () {
             }, 10);
         });
     });
-    
+
     // Keep preview visible while scrolling
     $(document).on("mouseleave", ".radio_layout, .radio-preview", function () {
         var previewBox = $(".radio-preview");
@@ -240,26 +240,26 @@ $(document).ready(function () {
  */
 function initFilterAccordionAnimations() {
     const accordionItems = $('#filtersAccordion .accordion-item');
-    
+
     // Skip if no accordion items found
     if (!accordionItems.length) return;
-    
+
     // Function to update the visual state of accordion items
     function updateAccordionState() {
         let hasExpandedItem = false;
         let expandedItem = null;
-        
+
         // First, find if any item is expanded
-        accordionItems.each(function() {
+        accordionItems.each(function () {
             const button = $(this).find('.accordion-button');
             if (button.length && !button.hasClass('collapsed')) {
                 hasExpandedItem = true;
                 expandedItem = $(this);
             }
         });
-        
+
         // Then, apply the appropriate classes based on the state
-        accordionItems.each(function() {
+        accordionItems.each(function () {
             if (hasExpandedItem) {
                 if (this === expandedItem[0]) {
                     $(this).addClass('expanded').removeClass('compressed');
@@ -272,40 +272,40 @@ function initFilterAccordionAnimations() {
             }
         });
     }
-    
+
     // Run once on page load to set initial state
     updateAccordionState();
-    
+
     // Add event listener for Bootstrap's events
-    accordionItems.each(function() {
+    accordionItems.each(function () {
         const item = $(this);
         const collapse = item.find('.accordion-collapse');
-        
+
         if (collapse.length) {
             // When any accordion starts to show
-            collapse.on('show.bs.collapse', function() {
+            collapse.on('show.bs.collapse', function () {
                 // First make all items compressed
                 accordionItems.addClass('compressed').removeClass('expanded');
-                
+
                 // Then mark this one as expanded
                 item.removeClass('compressed').addClass('expanded');
             });
-            
+
             // When any accordion starts to hide
-            collapse.on('hide.bs.collapse', function() {
+            collapse.on('hide.bs.collapse', function () {
                 // If this was the expanded one, reset all items
                 if (item.hasClass('expanded')) {
                     accordionItems.removeClass('compressed expanded');
                 }
             });
-            
+
             // After transitions complete
             collapse.on('hidden.bs.collapse shown.bs.collapse', updateAccordionState);
         }
     });
-    
+
     // Also attach to the buttons directly for immediate feedback
-    $('#filtersAccordion .accordion-button').on('click', function() {
+    $('#filtersAccordion .accordion-button').on('click', function () {
         // Small delay to allow Bootstrap to update its classes first
         setTimeout(updateAccordionState, 50);
     });

@@ -85,7 +85,7 @@ Route::group(
 		Route::crud("page", "PageCrudController");
 		Route::crud("article", "ArticleCrudController");
 		Route::crud("institutional", "InstitutionalCrudController");
-		Route::crud("seo-meta-information", "SeoMetaInformationCrudController");
+		Route::crud("metadata", "MetadataCrudController");
 		Route::crud("media", "MediaCrudController");
 		Route::crud("attachment", "AttachmentCrudController");
 		Route::crud("contact", "ContactCrudController");

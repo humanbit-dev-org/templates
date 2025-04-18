@@ -2,23 +2,23 @@
 
 namespace Database\Seeders;
 
-use App\Models\SeoMetaInformation;
+use App\Models\Metadata;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
-class SeoMetaInformationSeeder extends Seeder
+class MetadataSeeder extends Seeder
 {
 	/**
 	 * Run the database seeds.
 	 */
 	public function run(): void
 	{
-		SeoMetaInformation::create([
+		Metadata::create([
 			"it" => "Humanbit templates",
 			"en" => "Humanbit templates",
 			"code" => "title",
 		]);
-		SeoMetaInformation::create([
+		Metadata::create([
 			"it" => "Humanbit templates description",
 			"en" => "Humanbit templates description",
 			"code" => "description",
