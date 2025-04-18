@@ -888,3 +888,204 @@ input[type="checkbox"]:checked+label {
 .csv-buttons .btn:not([disabled]):hover {
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
+
+/* Stili per l'importazione CSV */
+.import-card {
+    box-shadow: 0 4px 12px rgba(var(--tblr-primary-rgb), 0.1);
+    border: none;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.import-card:hover {
+    box-shadow: 0 6px 16px rgba(var(--tblr-primary-rgb), 0.15);
+}
+
+.import-form {
+    padding: 1rem 0.5rem;
+}
+
+.import-label {
+    display: flex;
+    align-items: center;
+    font-weight: 600;
+    color: var(--tblr-body-color);
+    margin-bottom: 0.75rem;
+}
+
+.import-label i {
+    margin-right: 0.5rem;
+    color: var(--tblr-primary);
+}
+
+.csv-upload-container {
+    margin-top: 1.5rem;
+}
+
+.custom-file-upload {
+    position: relative;
+    width: 100%;
+    min-height: 150px;
+    border: 2px dashed rgba(var(--tblr-primary-rgb), 0.3);
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    transition: min-height 0.25s ease-out;
+    background-color: rgba(var(--tblr-primary-rgb), 0.03);
+    cursor: pointer;
+}
+
+.custom-file-upload.has-file {
+    min-height: 60px;
+}
+
+.custom-file-upload:hover {
+    border-color: var(--tblr-primary);
+    background-color: rgba(var(--tblr-primary-rgb), 0.05);
+}
+
+.custom-file-upload.highlight {
+    border-color: var(--tblr-primary);
+    background-color: rgba(var(--tblr-primary-rgb), 0.08);
+    box-shadow: 0 0 0 0.25rem rgba(var(--tblr-primary-rgb), 0.15);
+}
+
+.csv-file-input {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+    z-index: 2;
+}
+
+.file-upload-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    text-align: center;
+    color: var(--tblr-muted);
+    width: 100%;
+    height: 100%;
+    transition: opacity 0.2s ease;
+}
+
+.file-upload-placeholder i {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    color: rgba(var(--tblr-primary-rgb), 0.5);
+}
+
+.selected-file {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 1rem;
+    background-color: rgba(var(--tblr-primary-rgb), 0.08);
+    border-radius: 6px;
+    transition: opacity 0.2s ease;
+}
+
+.selected-file i {
+    font-size: 1.5rem;
+    margin-right: 0.75rem;
+    color: var(--tblr-primary);
+}
+
+.selected-file span {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-weight: 500;
+}
+
+.btn-remove-file {
+    background: none;
+    border: none;
+    color: var(--tblr-danger);
+    font-size: 1.25rem;
+    padding: 0.25rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    z-index: 3;
+    /* Assicura che il pulsante sia al di sopra del file input */
+    position: relative;
+}
+
+.btn-remove-file:hover {
+    color: var(--tblr-danger);
+    transform: scale(1.1);
+}
+
+.btn-remove-file::before {
+    content: '';
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    bottom: -10px;
+    left: -10px;
+    z-index: -1;
+}
+
+.csv-requirements {
+    display: flex;
+    align-items: center;
+    margin-top: 0.75rem;
+    color: var(--color-hint);
+}
+
+.csv-requirements i {
+    margin-right: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.import-form-actions {
+    display: flex;
+    justify-content: space-between;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(var(--tblr-primary-rgb), 0.1);
+    margin-top: 2rem;
+}
+
+.import-submit-btn,
+.import-cancel-btn {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 1.25rem;
+    transition: all 0.3s ease;
+}
+
+.import-submit-btn i,
+.import-cancel-btn i {
+    margin-right: 0.5rem;
+}
+
+.import-submit-btn {
+    background-color: var(--tblr-primary);
+    border-color: var(--tblr-primary);
+    box-shadow: 0 2px 5px rgba(var(--tblr-primary-rgb), 0.2);
+}
+
+.import-submit-btn:hover {
+    background-color: rgba(var(--tblr-primary-rgb), 0.9);
+    box-shadow: 0 4px 10px rgba(var(--tblr-primary-rgb), 0.3);
+}
+
+.import-cancel-btn {
+    border-color: rgba(var(--tblr-secondary-rgb), 0.3);
+    color: var(--tblr-body-color);
+}
+
+.import-cancel-btn:hover {
+    background-color: rgba(var(--tblr-secondary-rgb), 0.1);
+    border-color: rgba(var(--tblr-secondary-rgb), 0.5);
+    color: var(--tblr-body-color);
+}

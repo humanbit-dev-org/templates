@@ -34,7 +34,7 @@ return [
 	"add" => "Add ",
 
 	// DISCLAIMERS
-	"disclaimer_title" => "<i class='las la-info-circle me-1'></i> Information ",
+	"disclaimer_title" => "<i class='las la-info-circle me-1'></i> Informations ",
 	"disclaimer_gallery" => "Provides a preview of the files uploaded to the current media.",
 	"disclaimer_hero" => "Select an option only if the media image is intended for the hero section of a page.",
 	"disclaimer_uploads" => "You can upload multiple media files at the same time.",

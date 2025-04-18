@@ -81,6 +81,17 @@ class ImportCsvController extends Controller
 
 		$handle = fopen($csvPath, "r");
 		$csvHeaders = fgetcsv($handle, 0, $delimiter);
+
+		// Legge le prime 5 righe per l'anteprima
+		$csvPreview = [];
+		$previewLimit = 5;
+		$previewCount = 0;
+
+		while (($row = fgetcsv($handle, 0, $delimiter)) !== false && $previewCount < $previewLimit) {
+			$csvPreview[] = $row;
+			$previewCount++;
+		}
+
 		fclose($handle);
 
 		// Se c'è una sola intestazione e contiene più campi concatenati, prova a suddividerla
@@ -111,6 +122,7 @@ class ImportCsvController extends Controller
 			"modelClass" => $modelClass,
 			"crud_route" => config("backpack.base.route_prefix", "admin") . "/" . $crud,
 			"delimiter" => $delimiter,
+			"csvPreview" => $csvPreview,
 		]);
 	}
 
