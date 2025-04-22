@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { motion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
-import { useLocale, useUser } from "@/config/Auth";
+import { useLocale, useUser } from "@/hooks/auth";
 import { usePathname } from "next/navigation";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL_CLIENT;
@@ -27,7 +27,7 @@ async function fetchCsrf() {
 	}
 }
 
-export const NavSlideTop = function ({ ...props }) {
+export const NavSlideTopComponent = function ({ ...props }) {
 	const collapseRef = useRef(null);
 	const [loading, setLoading] = useState(true);
 	const pathName = usePathname();

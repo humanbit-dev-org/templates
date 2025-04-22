@@ -16,7 +16,7 @@ import { useEffect, useState } from "react";
 
 // 3. Absolute internal (`@/` alias)
 import { NavLogoTopComponent } from "@/navbars/NavLogoTop";
-import { usePathInfoCSR } from "@/hooks/pathInfoCSR";
+import { usePathInfo } from "@/hooks/pathInfo";
 
 // 4. Relative internal (same directory)
 import "./NavSideBurger.scss";
@@ -217,7 +217,7 @@ export function useToggleOverflow(isCollapsed) {
 
 export function NavSideBurgerComponent({ menu }) {
 	// Get structured path info from the current URL
-	const { pathname, page, id, slug } = usePathInfoCSR();
+	const { pathname, page, id, slug } = usePathInfo();
 
 	const [isCollapsed, setIsCollapsed] = useState(true);
 	useToggleOverflow(isCollapsed);

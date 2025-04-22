@@ -9,7 +9,7 @@ import { createContext, useContext, useState } from "react";
 // 2. External third-party libraries
 
 // 3. Absolute internal imports (from `@/` alias)
-import { usePathInfoCSR } from "@/hooks/pathInfoCSR";
+import { usePathInfo } from "@/hooks/pathInfo";
 
 // 4. Relative internal imports (from the same directory)
 
@@ -27,7 +27,7 @@ export function ClientProvider({ children }) {
 		// setGlobalState,
 		// apiData,
 		// setApiData,
-		...usePathInfoCSR(), // Get structured path info from the current URL
+		...usePathInfo(), // Get structured path info from the current URL
 	};
 
 	return <ClientContext.Provider value={values}>{children}</ClientContext.Provider>;

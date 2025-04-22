@@ -1,12 +1,12 @@
 // File import statements:
-// import { usePathInfoCSR } from "@/hooks/CSRPathInfo";
+// import { usePathInfo } from "@/hooks/pathInfo";
 
 "use client";
 
 import { usePathname } from "next/navigation";
 
 // Extracts structured path info (pathname, page, id, slug) from the current URL on the client
-export function usePathInfoCSR() {
+export function usePathInfo() {
 	const pathname = usePathname() || "";
 
 	// Break the pathname into segments

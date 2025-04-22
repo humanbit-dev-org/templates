@@ -105,6 +105,7 @@ export function SignInComponent({ lang }) {
 	return (
 		<>
 			<div
+				data-bs-backdrop="static"
 				className="modal_full modal fade"
 				id="signInModal"
 				tabIndex="-1"

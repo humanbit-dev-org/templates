@@ -2,10 +2,11 @@
 
 // File import statements:
 // import ComponentsPage from "@/page/components";
+import Link from "next/link";
 
 // import Header from "@/components/templates/react_test_module";
 import { IntlTelInputComponent } from "@/components/blocks/IntlTelInput";
-
+import { BoilerplateComponent } from "@/components/blocks/Boilerplate";
 // 4. Relative internal (same directory)
 import "./page.scss";
 
@@ -24,6 +25,8 @@ export default function ComponentsPage() {
 					<div className="cont_mw_1">
 						<main>
 							{/* <IntlTelInputComponent /> */}
+							<Link href="/">Home</Link>
+							<BoilerplateComponent />
 
 							<div className="block_wrap vert_charts text-center d-flex flex-wrap justify-content-center align-items-center mb-5 w-100">
 								<div className="vert_chart mx-2 left" />

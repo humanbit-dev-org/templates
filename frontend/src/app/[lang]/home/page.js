@@ -5,6 +5,7 @@
 
 // 1. Core imports (React & Next.js)
 // import React, { createContext, useCallback, useContext, useEffect, useMemo, useReducer, useRef, useState } from "react";
+import Link from "next/link";
 
 // 2. External imports (third-party libraries)
 // import axios from "axios";
@@ -19,7 +20,7 @@ import * as constants from "@/config/constants";
 // import { NamedExportModule } from "@/<path>/NamedExport";
 import { getDictionary } from "@/app/dictionaries";
 import { TranslateProvider } from "@/providers/Translate";
-
+import { BoilerplateComponent } from "@/components/blocks/Boilerplate";
 // 4. Relative internal (same directory)
 import "./page.scss";
 
@@ -55,6 +56,8 @@ export default async function HomePage({ params }) {
 					<section className="cont_space_1">
 						<div className="cont_mw_1">
 							{/* <NamedExportModule idModule="nameModulePage" dataModule={dataModule} /> */}
+							<Link href="/components">Components</Link>
+							<BoilerplateComponent />
 						</div>
 					</section>
 				</div>

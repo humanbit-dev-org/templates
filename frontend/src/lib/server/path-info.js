@@ -1,8 +1,8 @@
 // File import statements:
-// import { getPathInfoSSR } from "@/lib/server/path-info-ssr";
+// import { getPathInfo } from "@/lib/server/path-info";
 
 // Extracts structured path info (pathname, page, id, slug) from the current URL on the server
-export async function getPathInfoSSR() {
+export async function getPathInfo() {
 	const headersList = await import("next/headers").then((m) => m.headers());
 	const pathname = headersList.get("x-pathname");
 

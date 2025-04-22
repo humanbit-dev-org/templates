@@ -11,10 +11,10 @@ import { cookies } from "next/headers";
 // PROJECT UTILITIES (metadata | context | translates | cookies)
 import * as constants from "@/config/constants";
 import MetadataSetup, { FontsLoader, GlobalScripts } from "@/config/metadata-setup";
-// import { AuthProvider } from "@/providers/Auth"; // TODO: Keep this here?
+import { AuthProvider } from "@/providers/Auth"; // TODO: Keep this here?
 import { getDictionary } from "@/app/dictionaries"; // TODO: Keep this here?
 import { getServer } from "@/lib/server";
-import { ClientProvider } from "@/providers/Client";
+import { ClientProvider, useClient } from "@/providers/Client";
 import { klaroConfig } from "@/config/klaro-config"; // cookie configuration
 import { KlaroCookieConsent } from "@/config/klaro-cookie-consent"; // cookie handling
 
@@ -26,6 +26,7 @@ import { SignInComponent } from "@/components/dialogs/SignInComponent";
 
 // INTERNAL RESOURCES
 import { NavSideBurgerComponent } from "@/navbars/NavSideBurger";
+// import { NavSlideTopComponent } from "@/navbars/NavSlideTop";
 import "./globals.scss";
 import "./layout.scss";
 
@@ -68,7 +69,7 @@ export async function generateMetadata({ params }) {
 		},
 	});
 
-	const metadataJson = await metadataResponse.json();
+	const metadataJson = (await metadataResponse.json()) || null;
 	// Pass the fetched data to MetadataSetup
 	return await MetadataSetup(metadataJson, lang);
 
@@ -135,7 +136,8 @@ export default async function RootLayout({ children, params }) {
 	const translates = await getDictionary(lang);
 
 	// Fetch user data using the Laravel session
-	const userResponseJson = await fetchUser(laravelSession);
+	// const userResponseJson = await fetchUser(laravelSession);
+	// console.log(userResponseJson);
 
 	// Fetch data from the API with language header
 	// const menuResponse = await fetch(`${BASE_URL}/api/pages`, {
@@ -147,33 +149,46 @@ export default async function RootLayout({ children, params }) {
 	// });
 	// const menuResponseJson = await menuResponse.json();
 
+	console.log(`RootLayout`);
+
 	return (
 		<html lang={lang} className={fontClasses}>
 			{/* <body className="bg_color_white fx_load"> */}
 			<body className="bg_color_white">
-				<ClientProvider>
+				<ClientProvider lang={lang} dict={translates}>
+					{/* <AuthProvider lang={lang} translates={translates} user={userResponseJson}> */}
 					<div className="root_layout container_structure container-fluid">
 						<div className="grid_cont navbar row justify-content-center position-sticky">
 							{/* <NavSideBurgerComponent menu={menuResponseJson} /> */}
+							{/* <NavSlideTopComponent /> */}
+
+							<button
+								type="button"
+								className="btn btn-primary"
+								data-bs-toggle="modal"
+								data-bs-target="#signInModal">
+								Launch static backdrop modal
+							</button>
 						</div>
 
-						{ssr.page === "home" && (
-							<>
-								<div>You're on the home SSR.</div>
-								<BoilerplateComponent />
-							</>
-						)}
-						{ssr.page === "components" && (
-							<>
-								<div>You're on the components SSR.</div>
-								<BoilerplateComponent />
-							</>
-						)}
+						{/* <BoilerplateComponent /> */}
+
+						{/* {ssr.page === "home" && (
+								<>
+									<div>You're on the home SSR.</div>
+									<BoilerplateComponent />
+								</>
+							)}
+							{ssr.page === "components" && (
+								<>
+									<div>You're on the components SSR.</div>
+									<BoilerplateComponent />
+								</>
+							)} */}
 
 						{/* USER AND LOCALE CONTEXT (navbar | footer) */}
-						{/* <AuthProvider lang={lang} translates={translates} user={userResponseJson}> */}
+
 						{children}
-						{/* </AuthProvider> */}
 					</div>
 
 					{/* PROJECT UTILITIES (scripts | cookies) */}
@@ -185,6 +200,7 @@ export default async function RootLayout({ children, params }) {
 					<PasswordResetComponent lang={lang} />
 					<RegisterComponent lang={lang} />
 					<SignInComponent lang={lang} />
+					{/* </AuthProvider> */}
 				</ClientProvider>
 			</body>
 		</html>

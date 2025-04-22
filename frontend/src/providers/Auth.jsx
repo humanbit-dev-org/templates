@@ -14,7 +14,7 @@ export const AuthProvider = function ({ children, lang, dict, user }) {
 		<>
 			<LocaleContext.Provider value={{ lang, dict }}>
 				<UserContext.Provider value={{ user }}>
-					<NavSlideTop logo={logo} />
+					{/* <NavSlideTop logo={logo} /> */}
 
 					<div className="cont_structure container-fluid">
 						{children}
@@ -31,7 +31,7 @@ export const AuthProvider = function ({ children, lang, dict, user }) {
 
 					{/* Footer template */}
 					{/* <FooterComponent /> */}
-					<FooterSimple logo={logo} />
+					{/* <FooterSimple logo={logo} /> */}
 				</UserContext.Provider>
 			</LocaleContext.Provider>
 		</>
