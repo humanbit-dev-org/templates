@@ -6,9 +6,9 @@ export { GlobalScripts } from "@/config/global-scripts";
 import { FaviconGenerator } from "@/config/favicon-generator";
 import SeoManager from "@/config/seo-manager";
 
-export default async function MetadataSetup(currentPage, urlLan) {
+export default async function MetadataSetup(metadataJson, lang) {
 	// Dynamically fetch SEO metadata
-	const dynamicSeo = await SeoManager(currentPage, urlLan);
+	const dynamicSeo = await SeoManager(metadataJson, lang);
 
 	return {
 		...FaviconGenerator, // Structures favicon metadata

@@ -56,10 +56,21 @@ export const viewport = {
 // https://nextjs.org/docs/app/api-reference/functions/generate-metadata
 export async function generateMetadata({ params }) {
 	const { lang } = await params;
-	const url = `${BASE_URL}/api/${lang}/seo`;
+	const ssr = await getServer();
+	const url = `${BASE_URL}/api/${lang}/${ssr.page}/seo`;
 
+	const metadataResponse = await fetch(url, {
+		method: "GET",
+		credentials: "include",
+		headers: {
+			"Content-Type": "application/json",
+			"locale": lang,
+		},
+	});
+
+	const metadataJson = await metadataResponse.json();
 	// Pass the fetched data to MetadataSetup
-	return await MetadataSetup(url, lang);
+	return await MetadataSetup(metadataJson, lang);
 
 	// Call MetadataSetup
 	// const metadataSetup = await MetadataSetup(data.pageSlug || currentPage, lang);

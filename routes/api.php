@@ -9,7 +9,6 @@ use App\Http\Controllers\ContactController;
 use App\Http\Controllers\MetadataController;
 // use App\Http\Controllers\TranslateController;
 
-Route::get("/{lang}/seo", [MetadataController::class, "index"]);
 Route::get("/{lang}/{page}/seo", [MetadataController::class, "index"]);
 
 Route::middleware(["auth:sanctum"])->group(function () {

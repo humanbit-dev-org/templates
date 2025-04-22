@@ -27,7 +27,7 @@ class MetadataRequest extends FormRequest
 		return [
 			"code" => "required|string|",
 			"image_path" => "image|mimes:jpeg,png,jpg,gif,webp|max:1500",
-			"page_id" => "nullable|exists:pages,id",
+			"page_id" => "required|exists:pages,id",
 		];
 	}
 
