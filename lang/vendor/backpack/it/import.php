@@ -55,4 +55,10 @@ return [
 	"exact_match" => "Corrispondenza esatta",
 	"similar_match" => "Corrispondenza simile",
 	"no_match" => "Nessuna corrispondenza",
+	
+	// Required fields
+	"required_field" => "Obbligatorio",
+	"required_fields_missing" => "Campi obbligatori mancanti",
+	"required_fields_message" => "I seguenti campi sono obbligatori ma non sono stati mappati con nessuna colonna CSV:",
+	"required_fields_tooltip" => "Seleziona le colonne CSV per tutti i campi obbligatori per continuare",
 ];

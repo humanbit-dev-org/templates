@@ -128,11 +128,14 @@
                                     </td>
                                     <td class="align-middle table-column">
                                         <span class="fw-medium">{{ $column }}</span>
+                                        @if(in_array($column, $requiredColumns))
+                                            <span class="badge bg-danger-subtle text-danger-emphasis required-field-badge">{{ trans('backpack::import.required_field') }}</span>
+                                        @endif
                                     </td>
                                     <td>
                                         <div class="d-flex align-items-center position-relative">
                                             <span class="mapping-type-indicator" data-column="{{ $column }}"></span>
-                                            <select name="column_mapping_reverse[{{ $column }}]" class="form-select field-mapping-select csv-field-select">
+                                            <select name="column_mapping_reverse[{{ $column }}]" class="form-select field-mapping-select csv-field-select @if(in_array($column, $requiredColumns)) required-field-select @endif">
                                                 <option value="">{{ trans('backpack::import.do_not_import') }}</option>
                                                 <optgroup label="{{ trans('backpack::import.csv_column') }}">
                                                     @foreach($csvHeaders as $index => $header)
@@ -1505,6 +1508,79 @@
             collapseButton.addEventListener('shown.bs.collapse', function() {
                 setTimeout(makeAllTruncatedElementsClickable, 300);
             });
+        });
+
+        // Funzione per validare i campi obbligatori e aggiornare lo stato del bottone di submit
+        function validateRequiredFields() {
+            let requiredFields = document.querySelectorAll('.required-field-select');
+            let missingRequiredFields = [];
+            let isValid = true;
+            
+            requiredFields.forEach(function(field) {
+                if (!field.value) {
+                    field.classList.add('is-invalid');
+                    
+                    // Otteniamo il nome del campo dalla riga di mappatura
+                    let fieldName = field.closest('tr').querySelector('.table-column .fw-medium').textContent.trim();
+                    missingRequiredFields.push(fieldName);
+                    isValid = false;
+                } else {
+                    field.classList.remove('is-invalid');
+                }
+            });
+            
+            // Aggiorniamo lo stato del bottone di submit
+            const submitButton = document.getElementById('start-import');
+            if (!isValid) {
+                submitButton.classList.add('disabled-import-btn');
+                submitButton.disabled = true;
+                // Aggiungiamo un tooltip al bottone
+                submitButton.setAttribute('data-bs-toggle', 'tooltip');
+                submitButton.setAttribute('data-bs-placement', 'top');
+                submitButton.setAttribute('title', '{{ trans('backpack::import.required_fields_tooltip') }}');
+            } else {
+                submitButton.classList.remove('disabled-import-btn');
+                submitButton.disabled = false;
+                submitButton.removeAttribute('data-bs-toggle');
+                submitButton.removeAttribute('title');
+            }
+            
+            return { isValid, missingRequiredFields };
+        }
+        
+        // Verifica dei campi obbligatori prima dell'invio del form
+        document.getElementById('import-mapping-form').addEventListener('submit', function(e) {
+            const validation = validateRequiredFields();
+            
+            if (!validation.isValid) {
+                e.preventDefault();
+                Swal.fire({
+                    icon: 'error',
+                    title: '{{ trans('backpack::import.required_fields_missing') }}',
+                    html: '{{ trans('backpack::import.required_fields_message') }}<br><br><ul><li>' + validation.missingRequiredFields.join('</li><li>') + '</li></ul>',
+                    confirmButtonText: '{{ trans('backpack::crud.ok') }}',
+                    confirmButtonColor: '#d33'
+                });
+                return false;
+            }
+            
+            return true;
+        });
+        
+        // Aggiungiamo l'evento change a tutti i campi select per rivalidare
+        document.querySelectorAll('.required-field-select').forEach(select => {
+            select.addEventListener('change', validateRequiredFields);
+        });
+        
+        // Validazione iniziale al caricamento della pagina
+        document.addEventListener('DOMContentLoaded', function() {
+            // Inizializziamo i tooltip
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+            
+            validateRequiredFields();
         });
     });
 </script>
