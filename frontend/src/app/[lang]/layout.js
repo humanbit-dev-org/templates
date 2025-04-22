@@ -81,36 +81,6 @@ export async function generateMetadata({ params }) {
 	// };
 }
 
-// Fetches user data from the Laravel API with session credentials
-async function fetchUser(laravelSession) {
-	try {
-		const userResponse = await fetch(`${BASE_URL}/api/user`, {
-			method: "GET",
-			credentials: "include",
-			headers: {
-				"Accept": "application/json",
-				"Referer": process.env.APP_URL,
-				"X-Requested-With": "XMLHttpRequest",
-				"Content-Type": "application/json",
-				"cookie": "laravel_session=" + laravelSession,
-			},
-		});
-
-		if (!userResponse.ok) {
-			if (userResponse.status === 401) {
-				return undefined;
-			}
-			console.error(`User fetch failed with status: ${userResponse.statusText}`);
-		}
-
-		return await userResponse.json();
-	} catch (error) {
-		console.error("Error fetching user:", error);
-
-		return undefined;
-	}
-}
-
 // ===============================================
 // ## ############################################
 // ===============================================
@@ -123,10 +93,6 @@ export default async function RootLayout({ children, params }) {
 	// Get structured path info from the current URL
 	const ssr = await getServer();
 
-	// Get cookies and extract the Laravel session ID
-	const cookiesStore = await cookies();
-	const laravelSession = cookiesStore.get("laravel_session")?.value;
-
 	// Dynamically gather all font variables from the font loader
 	const fontClasses = Object.values(FontsLoader)
 		.map((font) => font.variable)
@@ -135,8 +101,21 @@ export default async function RootLayout({ children, params }) {
 	// Fetch translation dictionary based on language
 	const translates = await getDictionary(lang);
 
-	// Fetch user data using the Laravel session
-	// const userResponseJson = await fetchUser(laravelSession);
+	// Get cookies and extract the Laravel session ID to make a request to the protected sanctum API route
+	// const cookiesStore = await cookies();
+	// const laravelSession = cookiesStore.get("laravel_session")?.value;
+	// const userResponse = await fetch(`${BASE_URL}/api/user`, {
+	// 	method: "GET",
+	// 	credentials: "include",
+	// 	headers: {
+	// 		"Accept": "application/json",
+	// 		"Referer": process.env.APP_URL,
+	// 		"X-Requested-With": "XMLHttpRequest",
+	// 		"Content-Type": "application/json",
+	// 		"cookie": "laravel_session=" + laravelSession,
+	// 	},
+	// });
+	// const userResponseJson = await userResponse.json();
 	// console.log(userResponseJson);
 
 	// Fetch data from the API with language header
