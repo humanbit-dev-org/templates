@@ -14,6 +14,7 @@
 // import { signIn, signOut, useSession } from "next-auth/react";
 
 // 3. Absolute internal (`@/` alias)
+import * as constants from "@/config/constants";
 // import DefaultExportModule from "@/<path>/DefaultExport";
 // import { NamedExportModule } from "@/<path>/NamedExport";
 import { getDictionary } from "@/app/dictionaries";
@@ -27,7 +28,7 @@ import "./page.scss";
 // ===============================================
 
 // Get the base URL for assets from environment variables (publicly exposed)
-const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL_SERVER;
+// const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL_SERVER;
 
 export default async function HomePage({ params }) {
 	// Get the language from route parameters

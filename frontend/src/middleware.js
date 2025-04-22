@@ -17,7 +17,7 @@ function getLocaleFromHeader(request) {
 	return match?.find((code) => locales.includes(code)) || null;
 }
 
-// Extract locale from URL path (if supported)
+// Extract locale from URL path (must be the first segment)
 function extractLocaleFromPath(pathname) {
 	const match = pathname.match(/^\/([a-z]{2})(\/|$)/);
 	const code = match?.[1];
@@ -38,25 +38,34 @@ export function middleware(request) {
 		return NextResponse.next();
 	}
 
-	// Redirect `/[locale]/home` → `/[locale]`
+	// Redirect `/[locale]/home` to `/[locale]` to handle `/home` route
 	if (pathLocale && pathname === `/${pathLocale}/home`) {
 		return NextResponse.redirect(new URL(`/${pathLocale}`, request.url));
 	}
 
-	// Rewrite `/[locale]` → `/[locale]/home`
+	// Rewrite `/[locale]` as `/[locale]/home` for default entry point
 	if (pathLocale && pathname === `/${pathLocale}`) {
-		return NextResponse.rewrite(new URL(`/${pathLocale}/home`, request.url));
+		const response = NextResponse.rewrite(new URL(`/${pathLocale}/home`, request.url));
+
+		// Set custom header with rewritten pathname
+		response.headers.set("x-pathname", `/${pathLocale}/home`);
+
+		return response;
 	}
 
-	// Locale is present in path → update cookie and proceed
+	// Locale is present in path → update cookie and continue
 	if (pathLocale) {
 		const response = NextResponse.next();
+
+		// Set custom header with current pathname
+		response.headers.set("x-pathname", pathname);
 
 		// Update cookie if locale in path differs from stored value
 		response.cookies.set("locale", pathLocale, {
 			path: "/",
 			maxAge: 60 * 60 * 24 * 30,
 		});
+
 		return response;
 	}
 
@@ -70,6 +79,7 @@ export function middleware(request) {
 		path: "/",
 		maxAge: 60 * 60 * 24 * 30,
 	});
+
 	return response;
 }
 

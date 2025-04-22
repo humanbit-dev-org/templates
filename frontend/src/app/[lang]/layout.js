@@ -9,10 +9,12 @@
 import { cookies } from "next/headers";
 
 // PROJECT UTILITIES (metadata | context | translates | cookies)
+import * as constants from "@/config/constants";
 import MetadataSetup, { FontsLoader, GlobalScripts } from "@/config/metadata-setup";
 // import { AuthProvider } from "@/providers/Auth"; // TODO: Keep this here?
 import { getDictionary } from "@/app/dictionaries"; // TODO: Keep this here?
-import { GlobalProvider } from "@/providers/Global";
+import { getServer } from "@/lib/server";
+import { ClientProvider } from "@/providers/Client";
 import { klaroConfig } from "@/config/klaro-config"; // cookie configuration
 import { KlaroCookieConsent } from "@/config/klaro-cookie-consent"; // cookie handling
 
@@ -24,7 +26,10 @@ import { SignInComponent } from "@/components/dialogs/SignInComponent";
 
 // INTERNAL RESOURCES
 import { NavSideBurgerComponent } from "@/navbars/NavSideBurger";
+import "./globals.scss";
 import "./layout.scss";
+
+import { BoilerplateComponent } from "@/components/blocks/Boilerplate";
 
 // ===============================================
 // ## ############################################
@@ -100,8 +105,11 @@ async function fetchUser(laravelSession) {
 
 // Main layout function for wrapping page content with children and dynamic parameters
 export default async function RootLayout({ children, params }) {
-	// Get the language from params (likely from the URL)
+	// Get the language from route params
 	const { lang } = (await params) || {};
+
+	// Get structured path info from the current URL
+	const ssr = await getServer();
 
 	// Get cookies and extract the Laravel session ID
 	const cookiesStore = await cookies();
@@ -132,11 +140,24 @@ export default async function RootLayout({ children, params }) {
 		<html lang={lang} className={fontClasses}>
 			{/* <body className="bg_color_white fx_load"> */}
 			<body className="bg_color_white">
-				<GlobalProvider>
+				<ClientProvider>
 					<div className="root_layout container_structure container-fluid">
 						<div className="grid_cont navbar row justify-content-center position-sticky">
 							{/* <NavSideBurgerComponent menu={menuResponseJson} /> */}
 						</div>
+
+						{ssr.page === "home" && (
+							<>
+								<div>You're on the home SSR.</div>
+								<BoilerplateComponent />
+							</>
+						)}
+						{ssr.page === "components" && (
+							<>
+								<div>You're on the components SSR.</div>
+								<BoilerplateComponent />
+							</>
+						)}
 
 						{/* USER AND LOCALE CONTEXT (navbar | footer) */}
 						{/* <AuthProvider lang={lang} translates={translates} user={userResponseJson}> */}
@@ -153,7 +174,7 @@ export default async function RootLayout({ children, params }) {
 					<PasswordResetComponent lang={lang} />
 					<RegisterComponent lang={lang} />
 					<SignInComponent lang={lang} />
-				</GlobalProvider>
+				</ClientProvider>
 			</body>
 		</html>
 	);

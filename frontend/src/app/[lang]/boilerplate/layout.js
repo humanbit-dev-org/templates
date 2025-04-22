@@ -14,9 +14,10 @@
 // import { signIn, signOut, useSession } from "next-auth/react";
 
 // 3. Absolute internal (`@/` alias)
+import * as constants from "@/config/constants";
+import MetadataSetup from "@/config/metadata-setup";
 // import DefaultExportModule from "@/<path>/DefaultExports";
 // import { NamedExportModule } from "@/<path>/NamedExports";
-import MetadataSetup from "@/config/metadata-setup";
 
 // 4. Relative internal (same directory)
 import "./layout.scss";

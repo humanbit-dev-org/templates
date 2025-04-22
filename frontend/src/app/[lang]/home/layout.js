@@ -28,11 +28,11 @@ import "./layout.scss";
 // Get the base URL for assets from environment variables (publicly exposed)
 const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL_SERVER;
 
-export async function generateMetadata({ params }) {
-	const { lang } = await params;
-	const url = `${BASE_URL}/api/${lang}/home/seo`;
-	return await MetadataSetup(url, lang);
-}
+// export async function generateMetadata({ params }) {
+// 	const { lang } = await params;
+// 	const url = `${BASE_URL}/api/${lang}/home/seo`;
+// 	return await MetadataSetup(url, lang);
+// }
 
 export default async function HomeLayout({ children, params }) {
 	// Get the language from route parameters

@@ -16,7 +16,7 @@ import { useEffect, useState } from "react";
 
 // 3. Absolute internal (`@/` alias)
 import { NavLogoTopComponent } from "@/navbars/NavLogoTop";
-import { useCurrentPathname } from "@/hooks/currentPathname";
+import { usePathInfoCSR } from "@/hooks/pathInfoCSR";
 
 // 4. Relative internal (same directory)
 import "./NavSideBurger.scss";
@@ -216,7 +216,8 @@ export function useToggleOverflow(isCollapsed) {
 }
 
 export function NavSideBurgerComponent({ menu }) {
-	const currentPathname = useCurrentPathname();
+	// Get structured path info from the current URL
+	const { pathname, page, id, slug } = usePathInfoCSR();
 
 	const [isCollapsed, setIsCollapsed] = useState(true);
 	useToggleOverflow(isCollapsed);
@@ -251,8 +252,7 @@ export function NavSideBurgerComponent({ menu }) {
 							<div
 								className="navbar-collapse bg_color_first position-absolute top-100 top-xl-0 end-0 end-xl-100 collapse"
 								id="navbarToggler">
-								<div
-									className={`group_wrap vh-100 overflow-y-auto ${currentPathname.Home ? "obj_home" : ""}`}>
+								<div className={`group_wrap vh-100 overflow-y-auto ${page === "home" ? "obj_home" : ""}`}>
 									<div className="cont_space_1 pb-10 pb-xl-6">
 										<div className="cont_mw_1">
 											<div className="obj_cont_wrap mb-6">

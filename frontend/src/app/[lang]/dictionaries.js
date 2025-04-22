@@ -2,7 +2,7 @@ import "server-only";
 import fs from "fs";
 import path from "path";
 
-const SUPPORTED_LOCALES = ["en", "it"];
+const SUPPORTED_LOCALES = ["it"];
 
 // Build the path to the locale file based on the selected language
 const getFilePath = (locale) => path.join(process.cwd(), "lang", `${locale}.json`);
