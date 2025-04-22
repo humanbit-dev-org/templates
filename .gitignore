@@ -17,8 +17,6 @@ Homestead.yaml
 auth.json
 npm-debug.log
 yarn-error.log
-_ide_helper.php
-.editorconfig
 /.fleet
 /.idea
 /.vscode
