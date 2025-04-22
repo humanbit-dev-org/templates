@@ -55,7 +55,7 @@ return [
 	"exact_match" => "Corrispondenza esatta",
 	"similar_match" => "Corrispondenza simile",
 	"no_match" => "Nessuna corrispondenza",
-	
+
 	// Required fields
 	"required_field" => "Obbligatorio",
 	"required_fields_missing" => "Campi obbligatori mancanti",

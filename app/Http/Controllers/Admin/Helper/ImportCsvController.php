@@ -61,7 +61,7 @@ class ImportCsvController extends Controller
 		$model = new $modelClass();
 		$table = $model->getTable();
 		$database = config("database.connections.mysql.database");
-		
+
 		$requiredColumns = DB::table("INFORMATION_SCHEMA.COLUMNS")
 			->where("TABLE_SCHEMA", $database)
 			->where("TABLE_NAME", $table)
@@ -70,7 +70,7 @@ class ImportCsvController extends Controller
 			->where("COLUMN_DEFAULT", null) // Solo campi senza default
 			->pluck("COLUMN_NAME")
 			->toArray();
-			
+
 		return $requiredColumns;
 	}
 
@@ -125,7 +125,7 @@ class ImportCsvController extends Controller
 
 		// Ottiene le colonne della tabella
 		$tableColumns = $this->getTableColumns($modelClass);
-		
+
 		// Ottiene le colonne obbligatorie (non nullable)
 		$requiredColumns = $this->getRequiredColumns($modelClass);
 
