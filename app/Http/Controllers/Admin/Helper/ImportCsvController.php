@@ -51,6 +51,30 @@ class ImportCsvController extends Controller
 	}
 
 	/**
+	 * Ottiene le colonne non nullable della tabella dal modello
+	 *
+	 * @param string $modelClass
+	 * @return array
+	 */
+	private function getRequiredColumns($modelClass)
+	{
+		$model = new $modelClass();
+		$table = $model->getTable();
+		$database = config("database.connections.mysql.database");
+		
+		$requiredColumns = DB::table("INFORMATION_SCHEMA.COLUMNS")
+			->where("TABLE_SCHEMA", $database)
+			->where("TABLE_NAME", $table)
+			->where("IS_NULLABLE", "NO")
+			->where("COLUMN_NAME", "!=", "id") // Escludiamo l'ID che viene generato automaticamente
+			->where("COLUMN_DEFAULT", null) // Solo campi senza default
+			->pluck("COLUMN_NAME")
+			->toArray();
+			
+		return $requiredColumns;
+	}
+
+	/**
 	 * Analizza il file CSV caricato e mostra l'interfaccia di mappatura
 	 *
 	 * @param Request $request
@@ -81,6 +105,17 @@ class ImportCsvController extends Controller
 
 		$handle = fopen($csvPath, "r");
 		$csvHeaders = fgetcsv($handle, 0, $delimiter);
+
+		// Legge le prime 5 righe per l'anteprima
+		$csvPreview = [];
+		$previewLimit = 5;
+		$previewCount = 0;
+
+		while (($row = fgetcsv($handle, 0, $delimiter)) !== false && $previewCount < $previewLimit) {
+			$csvPreview[] = $row;
+			$previewCount++;
+		}
+
 		fclose($handle);
 
 		// Se c'è una sola intestazione e contiene più campi concatenati, prova a suddividerla
@@ -90,6 +125,9 @@ class ImportCsvController extends Controller
 
 		// Ottiene le colonne della tabella
 		$tableColumns = $this->getTableColumns($modelClass);
+		
+		// Ottiene le colonne obbligatorie (non nullable)
+		$requiredColumns = $this->getRequiredColumns($modelClass);
 
 		// Prova a mappare automaticamente le colonne in base al nome
 		$columnMapping = [];
@@ -106,11 +144,13 @@ class ImportCsvController extends Controller
 			"crud" => $crud,
 			"csvHeaders" => $csvHeaders,
 			"tableColumns" => $tableColumns,
+			"requiredColumns" => $requiredColumns,
 			"columnMapping" => $columnMapping,
 			"filePath" => $filePath,
 			"modelClass" => $modelClass,
 			"crud_route" => config("backpack.base.route_prefix", "admin") . "/" . $crud,
 			"delimiter" => $delimiter,
+			"csvPreview" => $csvPreview,
 		]);
 	}
 

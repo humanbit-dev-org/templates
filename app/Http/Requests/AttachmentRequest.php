@@ -26,7 +26,7 @@ class AttachmentRequest extends FormRequest
 	{
 		return [
 			"title" => "required",
-			"file_path" => "required|mimes:pdf,doc,docx,ppt,pptx,xls,xlsx,csv,zip|max:1000",
+			"file_path" => "nullable|mimes:pdf,doc,docx,ppt,pptx,xls,xlsx,csv,zip|max:1000",
 		];
 	}
 

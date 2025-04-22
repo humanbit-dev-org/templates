@@ -4,12 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\Page;
 use Illuminate\Http\Request;
-use App\Models\SeoMetaInformation;
+use App\Models\Metadata;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
 
-class SeoMetaInformationController extends Controller
+class MetadataController extends Controller
 {
 	public function index($lang, $page = null)
 	{
@@ -26,7 +26,7 @@ class SeoMetaInformationController extends Controller
 		}
 
 		// Fetch SEO data with proper column selection
-		$query = SeoMetaInformation::select([$lang, "code", "image_path"]);
+		$query = Metadata::select([$lang, "code", "image_path"]);
 
 		if ($page_id) {
 			$query->where("page_id", $page_id);

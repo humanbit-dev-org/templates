@@ -37,16 +37,9 @@ class RelationHandler
 		}
 
 		// Determine primary attribute dynamically
-		$primaryAttribute = collect([
-			"email",
-			"transaction_id",
-			"import",
-			"name",
-			"title_italian",
-			"title",
-			"title_english",
-			"id",
-		])->first(fn($column) => Schema::hasColumn($tableName, $column), "id"); // Default to "id";
+		$primaryAttribute = method_exists($relatedModel, "getDisplayAttribute")
+			? $relatedModel->getDisplayAttribute()
+			: $relatedModel->id;
 
 		// Handle BelongsToMany relation
 		if ($result instanceof BelongsToMany) {
@@ -74,8 +67,10 @@ class RelationHandler
 				->options(
 					$relatedModelClass
 						::all()
-						->mapWithKeys(function ($elem) use ($methodName, $primaryAttribute) {
-							$displayText = $elem->$primaryAttribute ?: $elem->id;
+						->mapWithKeys(function ($elem) use ($methodName) {
+							$displayText = method_exists($elem, "getDisplayAttribute")
+								? $elem->getDisplayAttribute()
+								: $elem->id;
 							return [$elem->id => $displayText];
 						})
 						->toArray()
@@ -103,14 +98,14 @@ class RelationHandler
 				->value(
 					'<a id="' .
 						$methodName .
-						'_preview_link" href="#" class="btn btn-sm btn-link" style="display: none;">
-                        <i class="la la-question-circle"></i> ' .
+						'_preview_link" href="#" class="small text-capitalize" style="display: none;">
+                        <i class="la la-link"></i> ' .
 						trans("backpack::crud.open") .
 						$methodName .
 						' 
                     </a>'
 				)
-				->wrapper(["class" => "form-group col-md-1 z-3"]);
+				->wrapper(["class" => "form-group col-12 z-3"]);
 
 			if ($tabName) {
 				$previewField->tab($tabName);
@@ -159,7 +154,7 @@ class RelationHandler
                             }
                         });
                     </script>",
-				"wrapper" => ["class" => "form-group col-md-1"],
+				"wrapper" => ["class" => ""],
 				"tab" => $tabName, // Assign same tab dynamically
 			]);
 		}
@@ -206,8 +201,9 @@ class RelationHandler
 		$relatedEntries = $relatedModelClass::where($foreignKey, $id)->get();
 
 		// Build related items list
-		$relationList = '<ul style="list-style-type: disc; padding-left: 20px; margin-top: 5px;">';
+		$relationList = "";
 		if ($relatedEntries->count() > 0) {
+			$relationList .= '<ul style="list-style-type: disc; padding-left: 20px; margin-top: 5px;">';
 			foreach ($relatedEntries as $entry) {
 				$entryId = $entry->id;
 				$entryLabel = $entry->name ?? ($entry->title ?? "ID: $entryId"); // Use meaningful field
@@ -215,20 +211,19 @@ class RelationHandler
 					'<li style="margin-bottom: 4px;">
                                     <a href="' .
 					url("admin/{$relatedModelUrlSegment}/" . $entryId . "/edit") .
-					'"  
-                                    class="relation-link">
-                                        <i class="la la-file"></i> ' .
+					'" >
+                                        <i class="la la-link"></i> ' .
 					e($entryLabel) .
 					'
                                     </a>
                                 </li>';
 			}
 		} else {
-			$relationList .= '<li style="color: #999; font-size: 13px;">No related records found.</li>';
+			$relationList .= '<span style="color: #999; font-size: 13px;">' . trans("backpack::crud.infoEmpty") . "</span>";
 		}
 		$relationList .= "</ul>";
 
-		// Create custom HTML field in "Associations" tab, with title, button and list of related items
+		// Create custom HTML field in "Relations" tab, with title, button and list of related items
 		CRUD::addField([
 			"name" => $methodName . "_relation_section",
 			"type" => "custom_html",
@@ -240,8 +235,7 @@ class RelationHandler
                     <a href="' .
 				url("admin/{$relatedModelUrlSegment}/create?{$foreignKey}=" . $id) .
 				'" 
-                    class="btn btn-sm btn-primary"
-                    style="padding: 4px 10px; font-size: 13px;">
+                    class="btn btn-primary reset-btn align-items-center" style="font-size: 0.75rem;padding-top: 0.125rem !important;padding-bottom: 0.125rem !important;padding-left: 0.25rem !important;padding-right: 0.25rem !important;">
                         <i class="la la-plus"></i> ' .
 				trans("backpack::crud.add") .
 				ucfirst($methodName) .
@@ -264,7 +258,7 @@ class RelationHandler
                     }
                 </style>',
 			"wrapper" => ["class" => "form-group col-md-12"],
-			"tab" => trans("backpack::crud.associations"),
+			"tab" => trans("backpack::crud.relations"),
 		]);
 	}
 
@@ -287,28 +281,14 @@ class RelationHandler
 		$relatedModelClass = get_class($relatedModel);
 		$tableModel = $relatedModel->getTable();
 
-		// Determine attribute to use based on column availability
-		$primaryAttribute = collect([
-			"email",
-			"transaction_id",
-			"import",
-			"name",
-			"title_it",
-			"title",
-			"title_en",
-			"id",
-		])->first(fn($column) => Schema::hasColumn($tableModel, $column), "id");
-
 		// Create column for related model name with links
 		CRUD::column($methodName)
 			->type("custom_html")
 			->entity($methodName)
 			->model($relatedModelClass)
-			->value(function ($entry) use ($formattedRelatedModelName, $methodName, $primaryAttribute, $backendUrl) {
+			->value(function ($entry) use ($formattedRelatedModelName, $methodName, $backendUrl) {
 				$links = [];
 				foreach ($entry->$methodName as $elem) {
-					$displayValue = $elem->$primaryAttribute ?: $elem->id; // Ensure fallback to ID if attribute missing
-
 					$links[] =
 						'<a target="_blank" href="' .
 						$backendUrl .
@@ -317,8 +297,7 @@ class RelationHandler
 						"/" .
 						$elem->id .
 						'/edit">' .
-						($primaryAttribute == "import" ? "€" : "") .
-						$displayValue .
+						(method_exists($elem, "getDisplayAttribute") ? $elem->getDisplayAttribute() : $elem->id) .
 						"</a>";
 				}
 				return implode(", ", $links);
@@ -331,13 +310,11 @@ class RelationHandler
 				->type("custom_html")
 				->entity($methodName)
 				->model($relatedModelClass)
-				->value(function ($entry) use ($methodName, $primaryAttribute, $backendUrl) {
+				->value(function ($entry) use ($methodName, $backendUrl) {
 					$pivotTableName = $entry->$methodName()->getTable();
 					$pivotTableName = str_replace("_", "-", $pivotTableName);
 					$links = [];
 					foreach ($entry->$methodName as $elem) {
-						$displayValue = $elem->$primaryAttribute ?: $elem->id; // Ensure fallback to ID if attribute missing
-						$percentage = $elem->pivot->percentage;
 						$pivotId = $elem->pivot->id;
 						$links[] =
 							'<a target="_blank" href="' .
@@ -347,10 +324,8 @@ class RelationHandler
 							"/" .
 							$pivotId .
 							'/edit">' .
-							$displayValue .
-							" (" .
-							$percentage .
-							"%)</a>";
+							(method_exists($elem, "getDisplayAttribute") ? $elem->getDisplayAttribute() : $elem->id) .
+							"</a>";
 					}
 					return implode(", ", $links);
 				});
@@ -375,20 +350,9 @@ class RelationHandler
 				if ($entry->$relationName) {
 					$id = $entry->$relationName->id;
 
-					// Determine display text based on available attributes
-					$displayText = match (true) {
-						isset($entry->$relationName->email) => $entry->$relationName->email,
-						isset($entry->$relationName->surname, $entry->$relationName->name) => $entry->$relationName->name .
-							" " .
-							$entry->$relationName->surname,
-						isset($entry->$relationName->author_surname, $entry->$relationName->author_name) => $entry
-							->$relationName->author_name .
-							" " .
-							$entry->$relationName->author_surname,
-						isset($entry->$relationName->title) => $entry->$relationName->title,
-						isset($entry->$relationName->name) => $entry->$relationName->name,
-						default => $id,
-					};
+					$displayText = method_exists($entry->$relationName, "getDisplayAttribute")
+						? $entry->$relationName->getDisplayAttribute()
+						: $id;
 
 					return '<a target="_blank" href="' .
 						$projectBaseUrl .

@@ -10,7 +10,7 @@ return new class extends Migration {
 	 */
 	public function up(): void
 	{
-		Schema::create("seo_meta_information", function (Blueprint $table) {
+		Schema::create("metadata", function (Blueprint $table) {
 			$table->id();
 			$table->string("it");
 			$table->string("en")->nullable();
@@ -26,6 +26,6 @@ return new class extends Migration {
 	 */
 	public function down(): void
 	{
-		Schema::dropIfExists("seo_meta_information");
+		Schema::dropIfExists("metadata");
 	}
 };

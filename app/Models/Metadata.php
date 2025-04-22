@@ -6,7 +6,7 @@ use Backpack\CRUD\app\Models\Traits\CrudTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class SeoMetaInformation extends Model
+class Metadata extends Model
 {
 	use CrudTrait;
 	use HasFactory;
@@ -16,5 +16,10 @@ class SeoMetaInformation extends Model
 	public function page()
 	{
 		return $this->belongsTo(Page::class);
+	}
+
+	public function getDisplayAttribute()
+	{
+		return $this->code;
 	}
 }

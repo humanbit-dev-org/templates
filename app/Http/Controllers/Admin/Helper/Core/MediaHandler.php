@@ -44,10 +44,6 @@ class MediaHandler
 				$field->disk("uploads");
 				$field->attributes(["accept" => $mime]);
 
-				if ($column == "mp3_path") {
-					$field->hint(trans("backpack::crud.hint_mp3"));
-				}
-
 				return true;
 			}
 		}
@@ -226,7 +222,7 @@ class MediaHandler
                                 </audio>';
 					}
 				}
-				return "No File";
+				return " - ";
 			});
 	}
 
@@ -251,7 +247,7 @@ class MediaHandler
 					"name" => "custom_html_" . strtolower(str_replace(" ", "_", $tab)),
 					"type" => "custom_html",
 					"value" =>
-						'<div class="p-3 mb-1 border-info" style="border-left: 4px solid; background: #f8f9fa; border-radius: 5px;">
+						'<div class="p-3 mb-1 alert alert-info" style="border-left: 4px solid; background: #f8f9fa; border-radius: 5px;">
                         <h4 class="m-0 text-info">' .
 						$title .
 						'</h4>
@@ -267,7 +263,6 @@ class MediaHandler
 
 		// Add descriptions to various tabs
 		$addTabDescription("Uploads", trans("backpack::crud.disclaimer_title"), trans("backpack::crud.disclaimer_uploads"));
-		$addTabDescription("Caption", trans("backpack::crud.disclaimer_title"), trans("backpack::crud.disclaimer_caption"));
 		$addTabDescription("Hero", trans("backpack::crud.disclaimer_title"), trans("backpack::crud.disclaimer_hero"));
 		$addTabDescription("Gallery", trans("backpack::crud.disclaimer_title"), trans("backpack::crud.disclaimer_gallery"));
 	}

@@ -4,16 +4,14 @@
 
 @if (backpack_auth()->user()->getAttribute('backpack_role') != 'guest')
 <x-backpack::menu-separator title="Content" />
-<x-backpack::menu-dropdown title="Articles" icon="la la-newspaper">
-    <x-backpack::menu-dropdown-item title="Articles" icon="la la-copy" :link="backpack_url('article')" />
-    <x-backpack::menu-dropdown-item title="Institutionals" icon="la la-paste" :link="backpack_url('institutional')" />
-</x-backpack::menu-dropdown>
+<x-backpack::menu-item title="Articles" icon="la la-copy" :link="backpack_url('article')" />
+<x-backpack::menu-item title="Institutionals" icon="la la-paste" :link="backpack_url('institutional')" />
 
 <x-backpack::menu-separator title="Utilities" />
 <x-backpack::menu-item title="Contacts" icon="la la-envelope" :link="backpack_url('contact')" />
 <x-backpack::menu-item title="Media" icon="la la-photo-video" :link="backpack_url('media')" />
 <x-backpack::menu-item title="Attachments" icon="la la-paperclip" :link="backpack_url('attachment')" />
-<x-backpack::menu-item title="Seo meta information" icon="la la-sitemap" :link="backpack_url('seo-meta-information')" />
+<x-backpack::menu-item title="Metadata" icon="la la-sitemap" :link="backpack_url('metadata')" />
 <x-backpack::menu-item title="Translates" icon="la la-language" :link="backpack_url('translate')" />
 
 <x-backpack::menu-separator title="Admin" />

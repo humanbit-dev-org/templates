@@ -59,14 +59,24 @@ class User extends Authenticatable implements MustVerifyEmail
 		return $this->belongsTo(Role::class);
 	}
 
+	// public function sendEmailVerificationNotification()
+	// {
+	// 	if ($this->backpack_role == "user") {
+	// 		// Send a custom notification for admin users
+	// 		$this->notify(new VerifyEmailCustom());
+	// 	} else {
+	// 		// Use the default notification for regular users
+	// 		$this->notify(new \Illuminate\Auth\Notifications\VerifyEmail());
+	// 	}
+	// }
+
 	public function sendEmailVerificationNotification()
 	{
-		if ($this->backpack_role == "user") {
-			// Send a custom notification for admin users
-			$this->notify(new VerifyEmailCustom());
-		} else {
-			// Use the default notification for regular users
-			$this->notify(new \Illuminate\Auth\Notifications\VerifyEmail());
-		}
+		$this->notify(new \Illuminate\Auth\Notifications\VerifyEmail());
+	}
+
+	public function getDisplayAttribute()
+	{
+		return $this->name . " " . $this->surname;
 	}
 }

@@ -16,6 +16,8 @@ return new class extends Migration {
 			$table->string("title");
 			$table->string("description")->nullable();
 			$table->string("file_path")->nullable();
+			$table->foreignId("article_id")->nullable()->constrained("articles")->onDelete("cascade");
+			$table->foreignId("institutional_id")->nullable()->constrained("institutionals")->onDelete("cascade");
 
 			$table->timestamps();
 		});

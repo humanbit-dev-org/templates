@@ -32,12 +32,12 @@ nav {
 }
 
 #saveActions .btn-group,
-#saveActions .btn-secondary {
+#saveActions .btn-outline-secondary {
     float: right !important;
 }
 
 #saveActions .btn-group {
-    margin-left: 1rem;
+    margin-left: 0.25rem;
 }
 
 #saveActions .btn-danger {
@@ -285,7 +285,7 @@ nav {
     transform: translateY(-2px);
     box-shadow: 0 4px 8px rgba(var(--tblr-primary-rgb), 0.15);
     z-index: 5;
-    border-color: rgba(0,0,0,0.2);
+    border-color: rgba(0, 0, 0, 0.2);
     background-color: var(--color-accordion-item-expanded-bg);
 }
 
@@ -298,7 +298,8 @@ nav {
 }
 
 /* Label dei filtri in maiuscoletto */
-.filter-label, .filter-field-name {
+.filter-label,
+.filter-field-name {
     font-variant: all-small-caps;
     letter-spacing: 0.03em;
     text-transform: lowercase;
@@ -311,7 +312,7 @@ nav {
 }
 
 /* Valore del filtro più piccolo */
-a.filter-badge span span.filter-field-name + span {
+a.filter-badge span span.filter-field-name+span {
     font-size: 0.72rem;
     margin-left: -1px;
     color: var(--color-filter-badge-text);
@@ -324,7 +325,8 @@ a.filter-badge {
     align-items: center !important;
     padding: 0.25rem 0.5rem !important;
     font-size: 0.75rem !important;
-    background-color: var(--color-filter-badge-bg) !important;
+    background-color: var(--tblr-bg-surface-dark) !important;
+    opacity: 0.9 !important;
     border: 1.5px solid var(--color-filter-badge-border) !important;
     text-decoration: none !important;
     color: var(--color-filter-badge-text) !important;
@@ -393,7 +395,12 @@ a.btn-outline-secondary.reset-btn i {
 }
 
 /* Restore standard button sizes */
-.btn-primary, .btn-secondary, .btn-success, .btn-danger, .btn-warning, .btn-info {
+.btn-primary,
+.btn-secondary,
+.btn-success,
+.btn-danger,
+.btn-warning,
+.btn-info {
     padding: 0.4375rem 1rem;
     font-size: 0.875rem;
     display: inline-flex;
@@ -468,14 +475,14 @@ a.btn-outline-secondary.reset-btn i {
 }
 
 /* Correggo lo stile per i checkbox e switch che non devono cambiare colore */
-.btn-check:checked + .btn-outline-secondary,
-.btn-check:checked + .btn-outline-success,
-.btn-check:checked + .btn-outline-danger {
+.btn-check:checked+.btn-outline-secondary,
+.btn-check:checked+.btn-outline-success,
+.btn-check:checked+.btn-outline-danger {
     font-weight: normal !important;
     color: inherit !important;
 }
 
-.form-check-input:checked + .form-check-label {
+.form-check-input:checked+.form-check-label {
     font-weight: normal !important;
     color: inherit !important;
 }
@@ -579,7 +586,8 @@ tr.rejected {
 
 /* Filter badge button (identical to reset) */
 .btn-filter {
-    background-color: var(--color-btn-filter) !important;
+    background-color: var(--tblr-bg-surface-dark) !important;
+    opacity: 0.9 !important;
     border-radius: 16px !important;
     color: var(--color-white) !important;
     transition: all 0.2s ease !important;
@@ -602,7 +610,7 @@ tr.rejected {
 .btn-filter:active {
     background-color: var(--color-btn-filter-hover) !important;
     color: var(--color-white) !important;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2) !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important;
 }
 
 .btn-filter .filter-field-name {
@@ -647,11 +655,11 @@ tr.rejected {
 }
 
 /* Stile JavaScript da aggiungere per rendere attivo i filtri valorizzati */
-input[name][value]:not([value=""]) + label,
-input[name][value]:not([value=""]) ~ label,
-select[name]:has(option[selected]:not([value=""])) + label,
-select[name]:has(option[selected]:not([value=""])) ~ label,
-input[type="checkbox"]:checked + label {
+input[name][value]:not([value=""])+label,
+input[name][value]:not([value=""])~label,
+select[name]:has(option[selected]:not([value=""]))+label,
+select[name]:has(option[selected]:not([value=""]))~label,
+input[type="checkbox"]:checked+label {
     /* Rimuovo i cambiamenti di stile per evitare problemi */
 }
 
@@ -674,7 +682,7 @@ input[type="checkbox"]:checked + label {
 }
 
 /* Stile per i bottoni checked */
-.btn-check:checked + .btn-outline-secondary {
+.btn-check:checked+.btn-outline-secondary {
     background-color: var(--color-btn-outline-secondary-checked-bg) !important;
     color: var(--color-btn-outline-secondary-checked-text) !important;
     border-color: var(--color-btn-outline-secondary-checked-border) !important;
@@ -682,7 +690,7 @@ input[type="checkbox"]:checked + label {
     font-weight: normal !important;
 }
 
-.btn-check:checked + .btn-outline-success {
+.btn-check:checked+.btn-outline-success {
     background-color: var(--tblr-success) !important;
     border-color: var(--tblr-success) !important;
     color: var(--color-white) !important;
@@ -690,7 +698,7 @@ input[type="checkbox"]:checked + label {
     font-weight: normal !important;
 }
 
-.btn-check:checked + .btn-outline-danger {
+.btn-check:checked+.btn-outline-danger {
     background-color: var(--tblr-danger) !important;
     border-color: var(--tblr-danger) !important;
     color: var(--color-white) !important;
@@ -728,7 +736,8 @@ input[type="checkbox"]:checked + label {
     right: 0;
     transform: translateX(0);
     padding: 8px 12px;
-    background-color: var(--color-tooltip-bg);
+    background-color: var(--tblr-bg-surface-dark);
+    opacity: 0.9 !important;
     color: var(--color-white);
     border-radius: 4px;
     font-size: 0.75rem;
@@ -748,7 +757,8 @@ input[type="checkbox"]:checked + label {
     transform: translateX(0);
     border-width: 5px;
     border-style: solid;
-    border-color: transparent transparent var(--color-tooltip-bg) transparent;
+    border-color: transparent transparent var(--tblr-bg-surface-dark) transparent;
+    opacity: 0.9 !important;
     z-index: 1001;
     animation: fadeIn 0.3s ease;
 }

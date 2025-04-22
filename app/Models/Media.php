@@ -41,4 +41,9 @@ class Media extends Model
 	{
 		return $this->belongsTo(Institutional::class);
 	}
+
+	public function getDisplayAttribute()
+	{
+		return $this->title;
+	}
 }
