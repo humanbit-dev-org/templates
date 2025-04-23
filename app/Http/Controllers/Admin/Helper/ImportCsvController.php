@@ -201,6 +201,7 @@ class ImportCsvController extends Controller
 			"column_mapping" => "required|array",
 			"unique_field" => "nullable|string",
 			"delimiter" => "required|string",
+			"import_behavior" => "nullable|string|in:update_insert,update_only",
 		]);
 
 		$modelClass = "App\\Models\\" . Str::studly($crud);
@@ -215,6 +216,7 @@ class ImportCsvController extends Controller
 		$columnMapping = $request->column_mapping;
 		$uniqueField = $request->unique_field;
 		$delimiter = $request->delimiter;
+		$importBehavior = $request->import_behavior ?? "update_insert"; // Default to update_insert if not provided
 
 		// Crea un backup della tabella
 		$backupFile = $this->createTableBackup($tableName);
@@ -259,13 +261,22 @@ class ImportCsvController extends Controller
 					$existingRecord = $modelClass::where($uniqueField, $rowData[$uniqueField])->first();
 
 					if ($existingRecord) {
+						// Update the existing record
 						$existingRecord->update($rowData);
 						$updatedRows++;
 					} else {
-						$modelClass::create($rowData);
-						$createdRows++;
+						// Check if we should insert new records
+						if ($importBehavior === "update_only") {
+							// Skip insertion for update_only mode
+							$skippedRows++;
+						} else {
+							// Create new record in update_insert mode
+							$modelClass::create($rowData);
+							$createdRows++;
+						}
 					}
 				} else {
+					// No unique field specified, always insert
 					$modelClass::create($rowData);
 					$createdRows++;
 				}

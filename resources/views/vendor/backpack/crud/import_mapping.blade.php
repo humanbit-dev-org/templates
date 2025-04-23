@@ -61,6 +61,9 @@
                                 </tbody>
                             </table>
                         </div>
+                        <div class="small text-muted p-2">
+                            <i class="la la-info-circle"></i> {{ trans('backpack::import.csv_preview_note') }}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -82,6 +85,27 @@
                         @endforeach
                     </optgroup>
                 </select>
+                
+                <!-- Import Behavior Options -->
+                <div id="import-behavior-options" class="mt-3 pt-3 border-top" style="display: none;">
+                    <p class="mb-2 text-muted"><i class="la la-info-circle"></i> {{ trans('backpack::import.select_import_behavior') }}</p>
+                    <div class="import-behavior-radios">
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="radio" name="import_behavior" id="behavior-update-insert" value="update_insert" checked>
+                            <label class="form-check-label" for="behavior-update-insert">
+                                <i class="la la-plus-circle text-primary"></i> {{ trans('backpack::import.update_and_insert') }}
+                                <small class="d-block text-muted">{{ trans('backpack::import.update_and_insert_description') }}</small>
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="import_behavior" id="behavior-update-only" value="update_only">
+                            <label class="form-check-label" for="behavior-update-only">
+                                <i class="la la-sync text-primary"></i> {{ trans('backpack::import.update_only') }}
+                                <small class="d-block text-muted">{{ trans('backpack::import.update_only_description') }}</small>
+                            </label>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -727,90 +751,71 @@
         // Variable to track the original form
         const uniqueField = document.getElementById('unique_field');
         const importMappingForm = document.getElementById('import-mapping-form');
-
-        // Initial setting of select fields to exact matching fields (if they exist)
-        function setInitialExactMatches() {
-            // Get all mapping rows
-            const tableColumns = Array.from(document.querySelectorAll('.mapping-row')).map(row => {
-                return {
-                    element: row,
-                    column: row.getAttribute('data-table-column'),
-                    select: row.querySelector('.csv-field-select'),
-                    indicator: row.querySelector('.mapping-type-indicator')
-                };
-            });
-
-            // Get all CSV headers
-            const csvHeaders = Array.from(document.querySelectorAll('.csv-option')).map(option => {
-                return {
-                    index: option.value,
-                    header: option.getAttribute('data-csv-header')
-                };
-            });
-
-            // For each table column, look for an exact match
-            tableColumns.forEach(tableCol => {
-                const exactMatch = csvHeaders.find(csv =>
-                    csv.header.toLowerCase() === tableCol.column.toLowerCase());
-
-                // If there's an exact match, set the select value
-                if (exactMatch) {
-                    tableCol.select.value = exactMatch.index;
-                    tableCol.select.classList.add('mapping-match-exact');
-
-                    // Also add the visual indicator
-                    if (tableCol.indicator) {
-                        tableCol.indicator.innerHTML = "<i class='la la-check'></i>{{ trans('backpack::import.exact_match') }}";
-                        tableCol.indicator.className = 'mapping-type-indicator mapping-type-exact';
-                        tableCol.indicator.classList.add('show');
-
-                        // Hide after 3 seconds but keep visible on hover
-                        setTimeout(() => {
-                            tableCol.indicator.classList.add('hide-after-delay');
-                            tableCol.indicator.classList.remove('show');
-                        }, 3000);
-                    }
-                }
-            });
-        }
-
-        // Run the function at page startup
-        setTimeout(setInitialExactMatches, 500);
-
-        // Highlight the corresponding field when a value is selected in the unique_field field
-        if (uniqueField) {
-            uniqueField.addEventListener('change', function() {
-                // Add focus effect to the unique_field field
-                this.classList.add('unique-field-focus');
+        
+        // Handle uniqueField changes
+        document.querySelector('#unique_field').addEventListener('change', function(e) {
+            const uniqueFieldValue = e.target.value;
+            
+            // Handle showing/hiding behavior options
+            const behaviorOptions = document.getElementById('import-behavior-options');
+            if (uniqueFieldValue) {
+                // Highlight this field in the table
+                highlightUniqueField(uniqueFieldValue);
+                
+                // Show behavior options with animation
+                behaviorOptions.style.display = 'block';
+                behaviorOptions.style.opacity = '0';
+                
+                // Fade in the behavior options
                 setTimeout(() => {
-                    this.classList.remove('unique-field-focus');
-                }, 2000);
-
-                // Remove any previous highlights
-                document.querySelectorAll('.fw-medium.highlighted-field').forEach(element => {
-                    element.classList.remove('highlighted-field');
-                });
-
-                // Get the selected value
-                const selectedField = this.value;
-
-                if (selectedField) {
-                    // Find the row in the table that corresponds to the selected field
-                    const matchingRow = document.querySelector(`.mapping-row[data-table-column="${selectedField}"]`);
-                    if (matchingRow) {
-                        // Highlight only the column name text
-                        const textElement = matchingRow.querySelector('.table-column .fw-medium');
-                        if (textElement) {
-                            textElement.classList.add('highlighted-field');
-                            // Scroll the view to show the highlighted text
-                            textElement.scrollIntoView({
-                                behavior: 'smooth',
-                                block: 'center'
-                            });
-                        }
+                    behaviorOptions.style.opacity = '1';
+                    
+                    // Scroll to and highlight the radio buttons with zoom effect
+                    const radioContainer = document.querySelector('.import-behavior-radios');
+                    
+                    if (radioContainer) {
+                        // Scroll to radio buttons
+                        radioContainer.scrollIntoView({ 
+                            behavior: 'smooth', 
+                            block: 'center' 
+                        });
+                        
+                        // Apply zoom effect to entire option containers
+                        const radioOptions = radioContainer.querySelectorAll('.form-check');
+                        radioOptions.forEach(option => {
+                            option.style.transition = 'transform 0.5s ease';
+                            option.style.transform = 'scale(1.009)';
+                            
+                            // Return to normal size after animation
+                            setTimeout(() => {
+                                option.style.transform = 'scale(1)';
+                            }, 500);
+                        });
                     }
-                }
+                }, 100);
+            } else {
+                // Hide behavior options if no unique field is selected
+                behaviorOptions.style.display = 'none';
+                
+                // Remove highlights
+                document.querySelectorAll('.mapping-row').forEach(row => {
+                    row.classList.remove('unique-field-selected');
+                });
+            }
+        });
+
+        // Function to highlight the unique field in the table
+        function highlightUniqueField(fieldName) {
+            // Remove existing highlights
+            document.querySelectorAll('.mapping-row').forEach(row => {
+                row.classList.remove('unique-field-selected');
             });
+            
+            // Add highlight to the selected field
+            const selectedRow = document.querySelector(`.mapping-row[data-table-column="${fieldName}"]`);
+            if (selectedRow) {
+                selectedRow.classList.add('unique-field-selected');
+            }
         }
 
         // Handle the unique_field field that has been moved outside the form
@@ -825,6 +830,16 @@
                 hiddenInput.name = 'unique_field';
                 hiddenInput.value = uniqueField.value;
                 this.appendChild(hiddenInput);
+                
+                // Add the import behavior value to the form data
+                const selectedBehavior = document.querySelector('input[name="import_behavior"]:checked');
+                if (selectedBehavior) {
+                    const behaviorInput = document.createElement('input');
+                    behaviorInput.type = 'hidden';
+                    behaviorInput.name = 'import_behavior';
+                    behaviorInput.value = selectedBehavior.value;
+                    this.appendChild(behaviorInput);
+                }
 
                 // Convert the reverse mapping to the original mapping expected by the backend
                 const reverseMapping = {};
@@ -936,6 +951,99 @@
             });
         }
 
+        // Initial setting of select fields to exact matching fields (if they exist)
+        function setInitialExactMatches() {
+            // Get all mapping rows
+            const tableColumns = Array.from(document.querySelectorAll('.mapping-row')).map(row => {
+                return {
+                    element: row,
+                    column: row.getAttribute('data-table-column'),
+                    select: row.querySelector('.csv-field-select'),
+                    indicator: row.querySelector('.mapping-type-indicator'),
+                    isRequired: row.querySelector('.csv-field-select.required-field-select') !== null
+                };
+            });
+
+            // Get all CSV headers
+            const csvHeaders = Array.from(document.querySelectorAll('.csv-option')).map(option => {
+                return {
+                    index: option.value,
+                    header: option.getAttribute('data-csv-header')
+                };
+            });
+
+            // For each table column, look for an exact match
+            tableColumns.forEach(tableCol => {
+                const exactMatch = csvHeaders.find(csv =>
+                    csv.header.toLowerCase() === tableCol.column.toLowerCase());
+
+                // If there's an exact match, set the select value
+                if (exactMatch) {
+                    tableCol.select.value = exactMatch.index;
+                    tableCol.select.classList.add('mapping-match-exact');
+                    
+                    // If this is a required field, make sure to remove the invalid state
+                    if (tableCol.isRequired) {
+                        tableCol.select.classList.remove('is-invalid');
+                        tableCol.element.classList.remove('has-invalid-field');
+                    }
+
+                    // Also add the visual indicator
+                    if (tableCol.indicator) {
+                        tableCol.indicator.innerHTML = "<i class='la la-check'></i>{{ trans('backpack::import.exact_match') }}";
+                        tableCol.indicator.className = 'mapping-type-indicator mapping-type-exact';
+                        tableCol.indicator.classList.add('show');
+
+                        // Hide after 3 seconds but keep visible on hover
+                        setTimeout(() => {
+                            tableCol.indicator.classList.add('hide-after-delay');
+                            tableCol.indicator.classList.remove('show');
+                        }, 3000);
+                    }
+                } else if (tableCol.isRequired) {
+                    // If it's a required field with no match, mark it as invalid
+                    tableCol.select.classList.add('is-invalid');
+                    tableCol.element.classList.add('has-invalid-field');
+                }
+            });
+            
+            // After setting all matches, run validation to update button state
+            validateRequiredFields();
+        }
+
+        // Run the function at page startup
+        setTimeout(setInitialExactMatches, 500);
+
+        // Highlight the unique field selected in the mapping table
+        function highlightUniqueFieldInTable() {
+            // Remove existing highlighting
+            document.querySelectorAll('.mapping-row.unique-field-row').forEach(row => {
+                row.classList.remove('unique-field-row');
+            });
+
+            // Get the selected value in the unique_field field
+            const uniqueFieldSelect = document.getElementById('unique_field');
+            if (!uniqueFieldSelect || !uniqueFieldSelect.value) return;
+
+            // Find the corresponding row in the mapping table
+            const mappingRow = document.querySelector(`.mapping-row[data-table-column="${uniqueFieldSelect.value}"]`);
+            if (mappingRow) {
+                // Highlight the row
+                mappingRow.classList.add('unique-field-row');
+                
+                // No scroll here - we scroll to the radio buttons instead
+            }
+        }
+
+        // Listen for changes in the unique_field select
+        const uniqueFieldSelect = document.getElementById('unique_field');
+        if (uniqueFieldSelect) {
+            uniqueFieldSelect.addEventListener('change', highlightUniqueFieldInTable);
+
+            // Also check at the beginning if there is already a selected value
+            setTimeout(highlightUniqueFieldInTable, 500);
+        }
+        
         // Function to monitor import status
         function monitorImportProgress(importId) {
             const statusUrl = "{{ url($crud_route.'/import-csv/status') }}";
@@ -1088,6 +1196,18 @@
             }
         }
 
+        document.querySelector('#csvPreviewAccordion .accordion-button').addEventListener('click', function() {
+            // Small delay to ensure the content is visible
+            setTimeout(makeAllTruncatedElementsClickable, 300);
+        });
+
+        // Re-run the truncated text detection when a collapse type element is opened
+        document.querySelectorAll('[data-bs-toggle="collapse"]').forEach(collapseButton => {
+            collapseButton.addEventListener('shown.bs.collapse', function() {
+                setTimeout(makeAllTruncatedElementsClickable, 300);
+            });
+        });
+        
         // Auto-Map functionality
         const autoMapBtn = document.getElementById('auto-map-btn');
         const autoMapOverlay = document.getElementById('auto-map-overlay');
@@ -1138,6 +1258,17 @@
                             element: tableCol.select,
                             type: 'exact'
                         });
+                        
+                        // Check if this is a required field
+                        const isRequired = tableCol.select.classList.contains('required-field-select');
+                        if (isRequired) {
+                            tableCol.select.classList.remove('is-invalid');
+                            const row = tableCol.select.closest('.mapping-row');
+                            if (row) {
+                                row.classList.remove('has-invalid-field');
+                            }
+                        }
+                        
                         // Add this CSV column to the exactly mapped ones
                         exactlyMappedCsvIndices.add(matchIndex);
                     }
@@ -1152,182 +1283,130 @@
 
                     // Step 2: Look for matches with similarity score
                     const similarityScores = csvHeaders
-                        // Filter out CSV columns already exactly mapped, unless they are identical to this one
-                        .filter(csv => !exactlyMappedCsvIndices.has(csv.index) ||
+                        .filter(csv => !exactlyMappedCsvIndices.has(csv.index) || 
                             csv.header.toLowerCase() === tableCol.column.toLowerCase())
                         .map(csv => {
                             // Normalize column names
                             const tableColName = tableCol.column.toLowerCase();
                             const csvHeaderName = csv.header.toLowerCase();
-
-                            // Create an object for detailed scores (for debugging)
-                            const scoreDetails = {
-                                initial: 0,
-                                partMatching: 0,
-                                prefixMatching: 0,
-                                suffixMatching: 0,
-                                languageMatching: 0,
-                                penalties: 0,
+                            
+                            // Translation pairs (both ways)
+                            const translationPairs = {
+                                'abstract': ['sommario', 'riassunto', 'estratto'],
+                                'author': ['autore', 'autori', 'scrittore'],
+                                'title': ['titolo'],
+                                'subtitle': ['sottotitolo'],
+                                'description': ['descrizione'],
+                                'italian': ['italiano', 'ita', 'it'],
+                                'english': ['inglese', 'eng', 'en'],
+                                'name': ['nome'],
+                                'category': ['categoria'],
+                                'tag': ['tag', 'etichetta'],
+                                'image': ['immagine', 'img'],
+                                'content': ['contenuto'],
+                                'body': ['corpo', 'testo'],
+                                'date': ['data'],
+                                'status': ['stato'],
+                                'active': ['attivo'],
+                                'published': ['pubblicato'],
+                                'slug': ['slug', 'permalink'],
+                                'url': ['url', 'link'],
+                                'meta': ['meta'],
+                            };
+                            
+                            // Create object for scoring
+                            const score = {
+                                stringDistance: 0,
+                                translation: 0,
+                                partMatch: 0,
                                 total: 0
                             };
-
-                            // Complete map of language abbreviations
-                            const languageMap = {
-                                'en': 'english',
-                                'eng': 'english',
-                                'english': 'english',
-                                'it': 'italian',
-                                'ita': 'italian',
-                                'italian': 'italian',
-                                'italiano': 'italian',
-                                'fr': 'french',
-                                'fra': 'french',
-                                'french': 'french',
-                                'es': 'spanish',
-                                'esp': 'spanish',
-                                'spa': 'spanish',
-                                'spanish': 'spanish',
-                                'de': 'german',
-                                'deu': 'german',
-                                'ger': 'german',
-                                'german': 'german'
-                            };
-
-                            // Split column names into parts
+                            
+                            // Calculate string similarity (Levenshtein)
+                            function levenshteinDistance(a, b) {
+                                if (!a || !b) return Math.max(a ? a.length : 0, b ? b.length : 0);
+                                
+                                const matrix = [];
+                                for (let i = 0; i <= b.length; i++) matrix[i] = [i];
+                                for (let j = 0; j <= a.length; j++) matrix[0][j] = j;
+                                
+                                for (let i = 1; i <= b.length; i++) {
+                                    for (let j = 1; j <= a.length; j++) {
+                                        const cost = a[j-1] === b[i-1] ? 0 : 1;
+                                        matrix[i][j] = Math.min(
+                                            matrix[i-1][j] + 1,
+                                            matrix[i][j-1] + 1,
+                                            matrix[i-1][j-1] + cost
+                                        );
+                                    }
+                                }
+                                
+                                return matrix[b.length][a.length];
+                            }
+                            
+                            function similarity(a, b) {
+                                if (!a || !b) return 0;
+                                const maxLen = Math.max(a.length, b.length);
+                                if (maxLen === 0) return 100;
+                                return (1 - levenshteinDistance(a, b) / maxLen) * 100;
+                            }
+                            
+                            // Check overall string similarity for typos
+                            const fullSimilarity = similarity(tableColName, csvHeaderName);
+                            if (fullSimilarity > 85) score.stringDistance = 40;
+                            else if (fullSimilarity > 75) score.stringDistance = 25;
+                            
+                            // Split into parts
                             const tableParts = tableColName.split(/[_\s-]|(?=[A-Z])/).filter(p => p.length >= 2);
                             const csvParts = csvHeaderName.split(/[_\s-]|(?=[A-Z])/).filter(p => p.length >= 2);
-
-                            // STEP 1: Check if both contain language abbr. and if they match
-                            let tableLanguage = null;
-                            let csvLanguage = null;
-
-                            // Correctly recognize language codes only when isolated or in key positions
-                            const isValidLanguagePart = (part, parts, index) => {
-                                // If it's a part isolated by dash or underscore, it's probably a language code
-                                if (parts.length > 1 && (index === 0 || index === parts.length - 1)) {
-                                    return true;
-                                }
-
-                                // For 2-character abbreviations, be more cautious
-                                if (part.length <= 2) {
-                                    // Check if the original name contains "_en" or "en_" or similar
-                                    const originalName = index === 0 ? tableColName : csvHeaderName;
-                                    return originalName.includes(`_${part}`) ||
-                                        originalName.includes(`${part}_`) ||
-                                        originalName.endsWith(`_${part}`);
-                                }
-
-                                // For longer abbreviations like "eng", "ita", etc. we're less restrictive
-                                return true;
-                            };
-
-                            // Check the last part for language suffix (more common)
-                            if (tableParts.length > 0 && csvParts.length > 0) {
-                                const tableLastIndex = tableParts.length - 1;
-                                const csvLastIndex = csvParts.length - 1;
-                                const tableLastPart = tableParts[tableLastIndex];
-                                const csvLastPart = csvParts[csvLastIndex];
-
-                                if (languageMap[tableLastPart] && isValidLanguagePart(tableLastPart, tableParts, tableLastIndex)) {
-                                    tableLanguage = languageMap[tableLastPart];
-                                }
-
-                                if (languageMap[csvLastPart] && isValidLanguagePart(csvLastPart, csvParts, csvLastIndex)) {
-                                    csvLanguage = languageMap[csvLastPart];
-                                }
-                            }
-
-                            // If not found in suffix, search anywhere with validation
-                            if (!tableLanguage) {
-                                for (let i = 0; i < tableParts.length; i++) {
-                                    const part = tableParts[i];
-                                    if (languageMap[part] && isValidLanguagePart(part, tableParts, i)) {
-                                        tableLanguage = languageMap[part];
-                                        break;
+                            
+                            // Check for translations
+                            for (const tablePart of tableParts) {
+                                for (const [eng, translations] of Object.entries(translationPairs)) {
+                                    // Check if table part is English and CSV has translation
+                                    if (tablePart === eng) {
+                                        for (const csvPart of csvParts) {
+                                            if (translations.includes(csvPart)) {
+                                                score.translation += 15;
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    
+                                    // Check if table part is translation and CSV has English
+                                    if (translations.includes(tablePart)) {
+                                        for (const csvPart of csvParts) {
+                                            if (csvPart === eng) {
+                                                score.translation += 15;
+                                                break;
+                                            }
+                                        }
                                     }
                                 }
                             }
-
-                            if (!csvLanguage) {
-                                for (let i = 0; i < csvParts.length; i++) {
-                                    const part = csvParts[i];
-                                    if (languageMap[part] && isValidLanguagePart(part, csvParts, i)) {
-                                        csvLanguage = languageMap[part];
-                                        break;
-                                    }
+                            
+                            // Check part matching
+                            for (const tablePart of tableParts) {
+                                // Exact part match
+                                if (csvParts.includes(tablePart)) {
+                                    score.partMatch += 5;
+                                    continue;
+                                }
+                                
+                                // Part similarity
+                                for (const csvPart of csvParts) {
+                                    const partSimilarity = similarity(tablePart, csvPart);
+                                    if (partSimilarity > 85) score.partMatch += 4;
+                                    else if (partSimilarity > 75) score.partMatch += 2;
                                 }
                             }
-
-                            // Calculate language score
-                            // 1. Both columns have language and match: VERY high score
-                            if (tableLanguage && csvLanguage && tableLanguage === csvLanguage) {
-                                scoreDetails.languageMatching = 20; // High score for language match
-                            }
-                            // 2. Both columns have language but do NOT match: penalty
-                            else if (tableLanguage && csvLanguage && tableLanguage !== csvLanguage) {
-                                scoreDetails.penalties -= 30; // Severe penalty if different languages
-                            }
-                            // 3. Only one column has language: no score/penalty
-
-                            // STEP 2: Check part matching (excluding language parts)
-                            // Filter language parts more precisely
-                            const tableNonLangParts = tableParts.filter((part, index) =>
-                                !(languageMap[part] && isValidLanguagePart(part, tableParts, index)));
-                            const csvNonLangParts = csvParts.filter((part, index) =>
-                                !(languageMap[part] && isValidLanguagePart(part, csvParts, index)));
-
-                            // If a non-language part matches exactly
-                            for (const tablePart of tableNonLangParts) {
-                                if (csvNonLangParts.includes(tablePart)) {
-                                    scoreDetails.partMatching += 5 + Math.min(2, tablePart.length / 2);
-                                }
-
-                                // Matching the beginning part of a word
-                                for (const csvPart of csvNonLangParts) {
-                                    if (csvPart.startsWith(tablePart) || tablePart.startsWith(csvPart)) {
-                                        scoreDetails.partMatching += 3;
-                                    }
-                                }
-                            }
-
-                            // STEP 3: Check if prefixes (initial parts) match
-                            if (tableNonLangParts.length > 0 && csvNonLangParts.length > 0) {
-                                if (tableNonLangParts[0] === csvNonLangParts[0]) {
-                                    scoreDetails.prefixMatching = 10; // High boost for first part match
-                                }
-                            }
-
-                            // STEP 4: Check other common patterns
-                            // If first and last (non-language) parts match but different length
-                            if (tableNonLangParts.length >= 2 && csvNonLangParts.length >= 2) {
-                                const tableFirstNonLang = tableNonLangParts[0];
-                                const tableLastNonLang = tableNonLangParts[tableNonLangParts.length - 1];
-                                const csvFirstNonLang = csvNonLangParts[0];
-                                const csvLastNonLang = csvNonLangParts[csvNonLangParts.length - 1];
-
-                                if (tableFirstNonLang === csvFirstNonLang &&
-                                    tableLastNonLang === csvLastNonLang) {
-                                    scoreDetails.partMatching += 8;
-                                }
-                            }
-
-                            // Penalize more if number of non-language parts is very different
-                            const nonLangPartsDiff = Math.abs(tableNonLangParts.length - csvNonLangParts.length);
-                            if (nonLangPartsDiff > 1) {
-                                scoreDetails.penalties -= nonLangPartsDiff * 2;
-                            }
-
+                            
                             // Calculate total score
-                            scoreDetails.total = scoreDetails.initial +
-                                scoreDetails.partMatching +
-                                scoreDetails.prefixMatching +
-                                scoreDetails.suffixMatching +
-                                scoreDetails.languageMatching +
-                                scoreDetails.penalties;
-
+                            score.total = score.stringDistance + score.translation + score.partMatch;
+                            
                             return {
                                 csv,
-                                score: scoreDetails.total
+                                score: score.total
                             };
                         });
 
@@ -1404,9 +1483,12 @@
                                 }
                             }
                         });
-
+                        
                         // Reinitialize tooltips for truncated elements
                         setTimeout(makeAllTruncatedElementsClickable, 100);
+                        
+                        // Validate all fields to update button state
+                        validateRequiredFields();
                     }, 50); // A small delay to make sure the overlay is gone
                 }, 2000);
             }, 1000);
@@ -1430,111 +1512,36 @@
             });
         });
 
-        // Highlight the unique field selected in the mapping table
-        function highlightUniqueFieldInTable() {
-            // Remove existing highlighting
-            document.querySelectorAll('.mapping-row.unique-field-row').forEach(row => {
-                row.classList.remove('unique-field-row');
-            });
-
-            // Get the selected value in the unique_field field
-            const uniqueFieldSelect = document.getElementById('unique_field');
-            if (!uniqueFieldSelect || !uniqueFieldSelect.value) return;
-
-            // Find the corresponding row in the mapping table
-            const mappingRow = document.querySelector(`.mapping-row[data-table-column="${uniqueFieldSelect.value}"]`);
-            if (mappingRow) {
-                // Highlight the row
-                mappingRow.classList.add('unique-field-row');
-
-                // Ensure the row is visible (optional)
-                setTimeout(() => {
-                    mappingRow.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'center'
-                    });
-                }, 100);
-            }
-        }
-
-        // Listen for changes in the unique_field select
-        const uniqueFieldSelect = document.getElementById('unique_field');
-        if (uniqueFieldSelect) {
-            uniqueFieldSelect.addEventListener('change', highlightUniqueFieldInTable);
-
-            // Also check at the beginning if there is already a selected value
-            setTimeout(highlightUniqueFieldInTable, 500);
-        }
-
-        setTimeout(function() {
-            setInitialExactMatches();
-            $(document).on('change', '#unique_field', function() {
-                // Add focus effect to the unique_field field
-                $(this).addClass('unique-field-focus');
-                setTimeout(() => {
-                    $(this).removeClass('unique-field-focus');
-                }, 2000);
-
-                // Remove previous highlighting
-                $('.fw-medium.highlighted-field').removeClass('highlighted-field');
-
-                // Get the selected value
-                let selectedValue = $(this).val();
-
-                if (selectedValue) {
-                    // Find the corresponding mapping row
-                    let targetRow = $(`.mapping-row[data-table-column='${selectedValue}']`);
-
-                    // Highlight only the column text instead of the entire cell
-                    if (targetRow.length) {
-                        targetRow.find('.table-column .fw-medium').addClass('highlighted-field');
-
-                        // Scroll the view to the highlighted text
-                        $('html, body').animate({
-                            scrollTop: targetRow.find('.table-column .fw-medium').offset().top - 200
-                        }, 500);
-                    }
-                }
-            });
-        }, 500);
-
-        document.querySelector('#csvPreviewAccordion .accordion-button').addEventListener('click', function() {
-            // Small delay to ensure the content is visible
-            setTimeout(makeAllTruncatedElementsClickable, 300);
-        });
-
-        // Re-run the truncated text detection when a collapse type element is opened
-        document.querySelectorAll('[data-bs-toggle="collapse"]').forEach(collapseButton => {
-            collapseButton.addEventListener('shown.bs.collapse', function() {
-                setTimeout(makeAllTruncatedElementsClickable, 300);
-            });
-        });
-
-        // Funzione per validare i campi obbligatori e aggiornare lo stato del bottone di submit
+        // Function to validate required fields and update the status of the submit button
         function validateRequiredFields() {
             let requiredFields = document.querySelectorAll('.required-field-select');
             let missingRequiredFields = [];
             let isValid = true;
             
             requiredFields.forEach(function(field) {
+                const row = field.closest('.mapping-row');
+                
+                // Field is invalid only when "Do not import" is selected (empty value)
                 if (!field.value) {
                     field.classList.add('is-invalid');
+                    row.classList.add('has-invalid-field');
                     
-                    // Otteniamo il nome del campo dalla riga di mappatura
-                    let fieldName = field.closest('tr').querySelector('.table-column .fw-medium').textContent.trim();
+                    // Get the field name from the mapping row
+                    let fieldName = row.querySelector('.table-column .fw-medium').textContent.trim();
                     missingRequiredFields.push(fieldName);
                     isValid = false;
                 } else {
                     field.classList.remove('is-invalid');
+                    row.classList.remove('has-invalid-field');
                 }
             });
             
-            // Aggiorniamo lo stato del bottone di submit
+            // Update the submit button status
             const submitButton = document.getElementById('start-import');
             if (!isValid) {
                 submitButton.classList.add('disabled-import-btn');
                 submitButton.disabled = true;
-                // Aggiungiamo un tooltip al bottone
+                // Add a tooltip to the button
                 submitButton.setAttribute('data-bs-toggle', 'tooltip');
                 submitButton.setAttribute('data-bs-placement', 'top');
                 submitButton.setAttribute('title', '{{ trans('backpack::import.required_fields_tooltip') }}');
@@ -1548,7 +1555,28 @@
             return { isValid, missingRequiredFields };
         }
         
-        // Verifica dei campi obbligatori prima dell'invio del form
+        // Add event listener to each required field to validate on change
+        document.querySelectorAll('.required-field-select').forEach(select => {
+            select.addEventListener('change', function() {
+                const row = this.closest('.mapping-row');
+                
+                // Remove the invalid styling when a valid option is selected
+                if (this.value) {
+                    this.classList.remove('is-invalid');
+                    row.classList.remove('has-invalid-field');
+                } else {
+                    this.classList.add('is-invalid');
+                    row.classList.add('has-invalid-field');
+                }
+                
+                validateRequiredFields();
+            });
+            
+            // Trigger the change event to initialize the validation state
+            select.dispatchEvent(new Event('change'));
+        });
+        
+        // Verify required fields before form submission
         document.getElementById('import-mapping-form').addEventListener('submit', function(e) {
             const validation = validateRequiredFields();
             
@@ -1566,21 +1594,14 @@
             
             return true;
         });
-        
-        // Aggiungiamo l'evento change a tutti i campi select per rivalidare
-        document.querySelectorAll('.required-field-select').forEach(select => {
-            select.addEventListener('change', validateRequiredFields);
-        });
-        
-        // Validazione iniziale al caricamento della pagina
+
+        // Initialize tooltips on page load
         document.addEventListener('DOMContentLoaded', function() {
-            // Inizializziamo i tooltip
+            // Initialize tooltips
             var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
             var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
                 return new bootstrap.Tooltip(tooltipTriggerEl);
             });
-            
-            validateRequiredFields();
         });
     });
 </script>

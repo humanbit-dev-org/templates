@@ -908,16 +908,6 @@
     opacity: 0.5;
 }
 
-.disabled-import-btn::before {
-    content: '\f071';
-    font-family: 'Line Awesome Free';
-    font-weight: 900;
-    position: absolute;
-    right: 10px;
-    font-size: 0.9rem;
-    animation: warning-pulse 2s infinite;
-}
-
 @keyframes warning-pulse {
     0%, 100% {
         opacity: 0.5;
@@ -1167,18 +1157,20 @@
     vertical-align: middle;
 }
 
+/* Stile base per i campi obbligatori - sottile bordo sinistro rosso */
 .required-field-select {
-    border-color: rgba(var(--tblr-danger-rgb), 0.4);
-    background-color: rgba(var(--tblr-danger-rgb), 0.02);
+    border-left: 3px solid rgba(var(--tblr-danger-rgb), 0.4);
 }
 
 .required-field-select:focus {
-    border-color: var(--tblr-danger);
-    box-shadow: 0 0 0 0.25rem rgba(var(--tblr-danger-rgb), 0.15);
+    border-color: var(--tblr-primary);
+    box-shadow: 0 0 0 0.25rem rgba(var(--tblr-primary-rgb), 0.15);
 }
 
+/* Stile per i campi obbligatori quando sono invalidi */
 .required-field-select.is-invalid {
     border-color: var(--tblr-danger);
+    border-left: 3px solid var(--tblr-danger);
     box-shadow: 0 0 0 0.25rem rgba(var(--tblr-danger-rgb), 0.25);
     background-color: rgba(var(--tblr-danger-rgb), 0.05);
     animation: pulse-error 2s ease-in-out;
@@ -1193,14 +1185,100 @@
     }
 }
 
-.mapping-row:has(.required-field-select) {
-    background-color: rgba(var(--tblr-danger-rgb), 0.02);
-}
-
-.mapping-row:has(.required-field-select):hover {
-    background-color: rgba(var(--tblr-danger-rgb), 0.05);
-}
-
-.mapping-row:has(.required-field-select.is-invalid) {
+/* Stile per le righe con campi obbligatori invalidi */
+.mapping-row.has-invalid-field {
     background-color: rgba(var(--tblr-danger-rgb), 0.08);
+}
+
+.mapping-row.has-invalid-field:hover {
+    background-color: rgba(var(--tblr-danger-rgb), 0.12);
+}
+
+/* Import behavior options styles */
+#import-behavior-options {
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+#import-behavior-options.fade-in {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.import-behavior-radios .form-check {
+    padding-left: 2rem;
+    border-radius: 6px;
+    padding: 10px 10px 10px 35px;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+}
+
+.import-behavior-radios .form-check:hover {
+    background-color: rgba(var(--tblr-primary-rgb), 0.03);
+}
+
+.import-behavior-radios .form-check-input {
+    margin-top: 0.3rem;
+}
+
+.import-behavior-radios .form-check-label {
+    display: block;
+    cursor: pointer;
+    font-weight: normal;
+    color: var(--tblr-body-color);
+}
+
+.import-behavior-radios .form-check-label small {
+    font-weight: normal;
+    margin-top: 3px;
+    display: block;
+    color: var(--tblr-secondary);
+}
+
+/* Style for selected radio option */
+.import-behavior-radios .form-check-input:checked ~ .form-check-label {
+    color: var(--tblr-primary);
+    font-weight: 600 !important;
+}
+
+.import-behavior-radios .form-check-input:checked ~ .form-check-label i {
+    animation: behavior-icon-pulse 1s ease;
+}
+
+/* Background highlight for selected option */
+.import-behavior-radios .form-check:has(.form-check-input:checked) {
+    background-color: rgba(var(--tblr-primary-rgb), 0.05);
+    border-color: rgba(var(--tblr-primary-rgb), 0.2);
+    box-shadow: 0 0 0 1px rgba(var(--tblr-primary-rgb), 0.1);
+}
+
+.import-behavior-radios .form-check-input:checked ~ .form-check-label small {
+    color: var(--tblr-body-color);
+}
+
+@keyframes behavior-icon-pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.4);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Flash effect for radio buttons to draw attention */
+.flash-highlight {
+    animation: flash-animation 1.5s ease;
+}
+
+@keyframes flash-animation {
+    0%, 100% {
+        background-color: transparent;
+    }
+    20%, 80% {
+        background-color: rgba(var(--tblr-primary-rgb), 0.15);
+    }
 }

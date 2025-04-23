@@ -28,10 +28,19 @@ return [
 	"no_unique_field" => "None - Always insert new records",
 	"start_import" => "Start Import",
 	"csv_preview" => "CSV Preview",
+	"csv_preview_note" =>
+		"Note: The preview shows only the first 5 rows and is meant to ensure you selected the correct file.",
 	"no_preview_data" => "No preview data available",
 	"auto_map" => "Auto Mapping",
 	"mapping_in_progress" => "Automatic mapping in progress...",
 	"full_text_unavailable" => "Full text unavailable",
+
+	// Import Behavior
+	"select_import_behavior" => "Select import behavior when a unique field is used:",
+	"update_and_insert" => "Update and Insert",
+	"update_and_insert_description" => "Update existing records and insert new ones",
+	"update_only" => "Update Only",
+	"update_only_description" => "Only update existing records, skip new ones",
 
 	// Import Progress
 	"import_in_progress" => "Import in progress...",
@@ -54,4 +63,10 @@ return [
 	"exact_match" => "Exact match",
 	"similar_match" => "Similar match",
 	"no_match" => "No match found",
+
+	// Required fields
+	"required_field" => "Required",
+	"required_fields_missing" => "Required fields missing",
+	"required_fields_message" => "The following required fields are not mapped to any CSV column:",
+	"required_fields_tooltip" => "Select CSV columns for all required fields to continue",
 ];
