@@ -29,7 +29,7 @@ return [
 	"start_import" => "Start Import",
 	"csv_preview" => "CSV Preview",
 	"csv_preview_note" =>
-		"Note: The preview shows only the first 5 rows and is meant to ensure you selected the correct file.",
+		"Note: The preview shows only the first 100 rows and is meant to ensure you selected the correct file.",
 	"no_preview_data" => "No preview data available",
 	"auto_map" => "Auto Mapping",
 	"mapping_in_progress" => "Automatic mapping in progress...",
@@ -69,4 +69,13 @@ return [
 	"required_fields_missing" => "Required fields missing",
 	"required_fields_message" => "The following required fields are not mapped to any CSV column:",
 	"required_fields_tooltip" => "Select CSV columns for all required fields to continue",
+
+	// Operation log messages
+	"operation_log_title" => "Import Operations Log",
+	"row_processing" => "Processing row #:row",
+	"record_inserted" => "New record inserted (ID: :id)",
+	"record_updated" => "Record updated (ID: :id)",
+	"record_skipped" => "Record skipped",
+	"update_only_reason" => "because 'Update Only' mode is active",
+	"processing_value" => "Processing value ':value' for field ':field'",
 ];

@@ -20,8 +20,8 @@
                     </button>
                 </h2>
                 <div id="csvPreviewCollapse" class="accordion-collapse collapse" data-bs-parent="#csvPreviewAccordion">
-                    <div class="accordion-body p-0">
-                        <div class="csv-preview-container" style="max-height: 300px; overflow-y: auto;">
+                    <div class="accordion-body preview-csv-body p-0">
+                        <div class="csv-preview-container">
                             <table class="table table-sm table-striped mb-0">
                                 <thead>
                                     <tr>
@@ -93,7 +93,7 @@
                         <div class="form-check mb-2">
                             <input class="form-check-input" type="radio" name="import_behavior" id="behavior-update-insert" value="update_insert" checked>
                             <label class="form-check-label" for="behavior-update-insert">
-                                <i class="la la-plus-circle text-primary"></i> {{ trans('backpack::import.update_and_insert') }}
+                                <i class="la la-plus-circle text-success"></i> {{ trans('backpack::import.update_and_insert') }}
                                 <small class="d-block text-muted">{{ trans('backpack::import.update_and_insert_description') }}</small>
                             </label>
                         </div>
@@ -240,6 +240,38 @@
                                 </div>
                             </div>
                         </div>
+                        
+                        <!-- Log operazioni in tempo reale -->
+                        <div class="mt-4">
+                            <h5 class="text-primary mb-3">
+                                <i class="la la-terminal me-2"></i>
+                                {{ trans('backpack::import.operation_log_title') }}
+                            </h5>
+                            
+                            <!-- Box operazione corrente -->
+                            <div id="current-operation-box" class="border rounded bg-light p-3 mb-3">
+                                <div class="d-flex align-items-center">
+                                    <div class="flex-shrink-0">
+                                        <i id="current-op-icon" class="la la-info-circle fs-2 text-primary"></i>
+                                    </div>
+                                    <div class="flex-grow-1 ms-3">
+                                        <h6 class="mb-1 text-dark">
+                                            <span id="current-op-title">{{ trans('backpack::import.import_in_progress') }}</span>
+                                        </h6>
+                                        <p id="current-op-details" class="mb-0 text-muted">
+                                            <span id="operation-text">{{ trans('backpack::import.import_in_progress') }}</span>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Log storico compatto -->
+                            <div class="border rounded bg-white p-2" style="max-height: 150px; overflow-y: auto;">
+                                <div id="operation-log" class="small">
+                                    <div class="text-muted">{{ trans('backpack::import.import_in_progress') }}</div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -361,12 +393,8 @@
         <div class="star"></div>
         <div class="star"></div>
         <div class="star"></div>
-        <div class="star"></div>
-        <div class="star"></div>
-        <div class="star"></div>
-        <div class="star"></div>
-        <div class="star"></div>
-        <div class="star"></div>
+        <div class="tiny-star"></div>
+        <div class="tiny-star"></div>
         <div class="tiny-star"></div>
         <div class="tiny-star"></div>
         <div class="tiny-star"></div>
@@ -387,29 +415,12 @@
 @endsection
 
 @push('after_scripts')
-<style>
-    /* Style for highlighting the backup alert */
-    .alert-highlight {
-        animation: highlight-pulse 1.5s ease-in-out;
-    }
-    
-    @keyframes highlight-pulse {
-        0% { box-shadow: 0 0 0 0 rgba(0, 123, 255, 0.5); }
-        70% { box-shadow: 0 0 0 10px rgba(0, 123, 255, 0); }
-        100% { box-shadow: 0 0 0 0 rgba(0, 123, 255, 0); }
-    }
-    
-    /* Style improvements for backup filename */
-    #backup-filename, #error-backup-filename {
-        font-weight: bold;
-        background-color: rgba(0, 0, 0, 0.05);
-        padding: 2px 5px;
-        border-radius: 3px;
-        display: inline-block;
-    }
-</style>
+
 <script>
     $(document).ready(function() {
+        // Set per tenere traccia degli ID di operazione già visualizzati
+        const processedOperationIds = new Set();
+        
         // Handling tooltips for truncated texts
         const contentTooltip = document.getElementById('contentTooltip');
         let activeTooltipElement = null;
@@ -883,47 +894,136 @@
                     data: formData,
                     processData: false,
                     contentType: false,
+                    xhr: function() {
+                        var xhr = new XMLHttpRequest();
+                        
+                        // Gestisci gli aggiornamenti di progresso in tempo reale
+                        xhr.onprogress = function(e) {
+                            if (e.currentTarget.responseText) {
+                                try {
+                                    // Dividi la risposta in oggetti JSON singoli
+                                    const jsonStrings = e.currentTarget.responseText.replace(/}{/g, '}|{').split('|');
+                                    
+                                    // Prendiamo l'ultimo oggetto JSON completo
+                                    let lastValidJson = null;
+                                    
+                                    // Tentiamo di analizzare ogni stringa JSON separata
+                                    for (let i = 0; i < jsonStrings.length; i++) {
+                                        try {
+                                            const jsonObj = JSON.parse(jsonStrings[i]);
+                                            lastValidJson = jsonObj;
+                                            
+                                            // Se questo è l'oggetto finale di successo o errore
+                                            if (jsonObj.status === 'success' || jsonObj.status === 'error') {
+                                                break;
+                                            }
+                                        } catch (jsonError) {
+                                            // Ignora i JSON non validi o incompleti
+                                            console.log('JSON incompleto o non valido:', jsonStrings[i]);
+                                        }
+                                    }
+                                    
+                                    if (lastValidJson) {
+                                        // Aggiorna l'interfaccia con l'ultimo stato valido
+                                        if (lastValidJson.status === 'processing') {
+                                            // Aggiorna la barra di progresso
+                                            const progressPercentage = lastValidJson.progress || 0;
+                                            $('.progress-bar').css('width', progressPercentage + '%');
+                                            $('#progress-text').text(progressPercentage + '%');
+                                            
+                                            // Aggiorna le statistiche in tempo reale
+                                            $('#total-rows').text(lastValidJson.total || 0);
+                                            $('#created-rows').text(lastValidJson.created || 0);
+                                            $('#updated-rows').text(lastValidJson.updated || 0);
+                                            $('#skipped-rows').text(lastValidJson.skipped || 0);
+                                            
+                                            // Aggiorna i log di operazione se ci sono informazioni sull'operazione corrente
+                                            if (lastValidJson.current_operation) {
+                                                const op = lastValidJson.current_operation;
+                                                
+                                                // Aggiorniamo sempre il log per ogni operazione, anche se non viene inviato
+                                                // un aggiornamento completo di progresso
+                                                updateOperationLog(op);
+                                            }
+                                            
+                                            // Se ci sono operazioni in batch, mostriamole tutte
+                                            if (lastValidJson.operations && Array.isArray(lastValidJson.operations)) {
+                                                lastValidJson.operations.forEach(op => {
+                                                    updateOperationLog(op);
+                                                });
+                                            }
+                                        } 
+                                        else if (lastValidJson.status === 'success') {
+                                            // L'importazione è completa, mostra i risultati
+                                            // Hide import elements
+                                            $('#csvPreviewAccordion').hide();
+                                            $('.unique-field-card').hide();
+                                            $('#auto-map-btn').hide();
+                                            $('.card-header').hide();
+                                            $('.import-card').find('h3').hide();
+                                            $('.import-card .card-header').hide();
+                                            $('#import-mapping-form').hide();
+                                            $('#import-progress').hide();
+                                            $('#import-results').show();
+                                            
+                                            // Copiamo il log delle operazioni nella sezione dei risultati
+                                            // Aggiungiamo una sezione per mostrare il log delle operazioni anche nella schermata dei risultati
+                                            if (!$('#result-operation-log-container').length) {
+                                                $('#result-stats').after(`
+                                                    <div class="mt-4" id="result-operation-log-container">
+                                                        <h5 class="text-primary mb-3">
+                                                            <i class="la la-terminal me-2"></i>
+                                                            {{ trans('backpack::import.operation_log_title') }}
+                                                        </h5>
+                                                        <div class="border rounded bg-white p-2" style="max-height: 200px; overflow-y: auto;">
+                                                            <div id="result-operation-log" class="small">
+                                                                ${$('#operation-log').html()}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                `);
+                                            }
+                                            
+                                            // Aggiorna le statistiche finali
+                                            $('#result-total-rows').text(lastValidJson.total || 0);
+                                            $('#result-created-rows').text(lastValidJson.created || 0);
+                                            $('#result-updated-rows').text(lastValidJson.updated || 0);
+                                            $('#result-skipped-rows').text(lastValidJson.skipped || 0);
+                                        }
+                                        else if (lastValidJson.status === 'error') {
+                                            // Mostra l'errore con dettagli tecnici
+                                            showImportError(lastValidJson.message || "{{ trans('backpack::import.import_error') }}", lastValidJson);
+                                        }
+                                    }
+                                } catch (e) {
+                                    console.error('Errore durante l\'elaborazione degli aggiornamenti:', e);
+                                }
+                            }
+                        };
+                        
+                        return xhr;
+                    },
                     success: function(response) {
-                        // If the response is a success, start monitoring the import status
-                        if (response.success) {
-                            monitorImportProgress(response.import_id);
-                        } else if (response.status === 'success') {
-                            // If we have a response with "success" status but without the "success" flag
-                            // it means the import is already completed
-                            // Hide import elements
-                            $('#csvPreviewAccordion').hide();
-                            $('.unique-field-card').hide();
-                            $('#auto-map-btn').hide(); // Correct: use ID instead of class
-                            $('.card-header').hide(); // Hide the card header completely
-                            $('.import-card').find('h3').hide(); // Hide the "Column Mapping" title
-                            $('.import-card .card-header').hide(); // Hide the card header
-                            $('#import-mapping-form').hide();
-                            $('#import-progress').hide();
-                            $('#import-results').show();
-
-                            // Update final statistics with the received data
-                            $('#result-total-rows').text(response.total || 0);
-                            $('#result-created-rows').text(response.created || 0);
-                            $('#result-updated-rows').text(response.updated || 0);
-                            $('#result-skipped-rows').text(response.skipped || 0);
-
-                            // Try all possible backup filename keys and log everything
-                            console.log('Complete data object:', response);
-                            
-                            // Update the backup message to show only directory, not filename
-                            $('#backup-filename').closest('.alert').find('span').html(
-                                '{{ trans("backpack::import.backup_created") }} <code>/storage/app/import-backups/</code>'
-                            );
-                            
-                            // Make backup container visible with a highlight effect
-                            $('#backup-filename').closest('.alert').addClass('alert-highlight');
-                            setTimeout(() => {
-                                $('#backup-filename').closest('.alert').removeClass('alert-highlight');
-                            }, 2000);
-
-                        } else {
-                            // Show error with complete response details
-                            showImportError(response.message || "{{ trans('backpack::import.import_error') }}", response);
+                        // Questa parte viene eseguita solo se la risposta è un JSON valido singolo
+                        // Poiché stiamo usando l'approccio di streaming, gran parte della logica
+                        // è stata spostata nell'handler "onprogress" qui sopra
+                        console.log('Importazione completata con successo');
+                        
+                        // Assicuriamoci che il log delle operazioni sia copiato nei risultati
+                        if (!$('#result-operation-log-container').length) {
+                            $('#result-stats').after(`
+                                <div class="mt-4" id="result-operation-log-container">
+                                    <h5 class="text-primary mb-3">
+                                        <i class="la la-terminal me-2"></i>
+                                        {{ trans('backpack::import.operation_log_title') }}
+                                    </h5>
+                                    <div class="border rounded bg-white p-2" style="max-height: 200px; overflow-y: auto;">
+                                        <div id="result-operation-log" class="small">
+                                            ${$('#operation-log').html()}
+                                        </div>
+                                    </div>
+                                </div>
+                            `);
                         }
                     },
                     error: function(xhr) {
@@ -937,14 +1037,35 @@
                         try {
                             // Try to parse the JSON response
                             if (xhr.responseText) {
-                                errorDetails.parsedResponse = JSON.parse(xhr.responseText);
+                                const jsonStrings = xhr.responseText.replace(/}{/g, '}|{').split('|');
+                                let lastValidJson = null;
+                                
+                                // Analizza l'ultimo JSON valido
+                                for (let i = 0; i < jsonStrings.length; i++) {
+                                    try {
+                                        const jsonObj = JSON.parse(jsonStrings[i]);
+                                        lastValidJson = jsonObj;
+                                    } catch (e) {
+                                        // Ignora gli oggetti JSON non validi
+                                    }
+                                }
+                                
+                                if (lastValidJson) {
+                                    errorDetails.parsedResponse = lastValidJson;
+                                    
+                                    if (lastValidJson.status === 'error') {
+                                        // Se abbiamo già un errore strutturato, mostralo direttamente
+                                        showImportError(lastValidJson.message || "{{ trans('backpack::import.import_error') }}", lastValidJson);
+                                        return;
+                                    }
+                                }
                             }
                         } catch (e) {
                             // If it's not JSON, use the raw text
                             errorDetails.parseError = e.message;
                         }
 
-                        // Error handling with details
+                        // Mostra l'errore con i dettagli disponibili
                         showImportError(xhr.responseJSON?.message || "{{ trans('backpack::import.import_error') }}", errorDetails);
                     }
                 });
@@ -1020,6 +1141,11 @@
             document.querySelectorAll('.mapping-row.unique-field-row').forEach(row => {
                 row.classList.remove('unique-field-row');
             });
+            
+            // Rimuoviamo la classe highlighted-field da tutti gli elementi prima
+            document.querySelectorAll('.fw-medium.highlighted-field').forEach(el => {
+                el.classList.remove('highlighted-field');
+            });
 
             // Get the selected value in the unique_field field
             const uniqueFieldSelect = document.getElementById('unique_field');
@@ -1031,14 +1157,31 @@
                 // Highlight the row
                 mappingRow.classList.add('unique-field-row');
                 
-                // No scroll here - we scroll to the radio buttons instead
+                // Troviamo l'elemento che contiene il nome della colonna
+                const columnNameEl = mappingRow.querySelector('.table-column .fw-medium');
+                if (columnNameEl) {
+                    // Aggiungiamo la classe highlighted-field che mostra l'icona chiave e l'animazione pulse
+                    columnNameEl.classList.add('highlighted-field');
+                }
+                
+                // Effettuiamo lo scroll alle radio button di import behavior
+                const behaviorOptions = document.getElementById('import-behavior-options');
+                if (behaviorOptions) {
+                    // Facciamo lo scroll con un leggero ritardo per lasciare il tempo di applicare gli stili
+                    setTimeout(() => {
+                        behaviorOptions.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }, 100);
+                }
             }
         }
 
         // Listen for changes in the unique_field select
         const uniqueFieldSelect = document.getElementById('unique_field');
         if (uniqueFieldSelect) {
-            uniqueFieldSelect.addEventListener('change', highlightUniqueFieldInTable);
+            uniqueFieldSelect.addEventListener('change', function() {
+                // Aggiorniamo l'evidenziazione della riga nella tabella
+                highlightUniqueFieldInTable();
+            });
 
             // Also check at the beginning if there is already a selected value
             setTimeout(highlightUniqueFieldInTable, 500);
@@ -1544,7 +1687,7 @@
                 // Add a tooltip to the button
                 submitButton.setAttribute('data-bs-toggle', 'tooltip');
                 submitButton.setAttribute('data-bs-placement', 'top');
-                submitButton.setAttribute('title', '{{ trans('backpack::import.required_fields_tooltip') }}');
+                submitButton.setAttribute('title', "{{ trans('backpack::import.required_fields_tooltip') }}");
             } else {
                 submitButton.classList.remove('disabled-import-btn');
                 submitButton.disabled = false;
@@ -1584,9 +1727,9 @@
                 e.preventDefault();
                 Swal.fire({
                     icon: 'error',
-                    title: '{{ trans('backpack::import.required_fields_missing') }}',
-                    html: '{{ trans('backpack::import.required_fields_message') }}<br><br><ul><li>' + validation.missingRequiredFields.join('</li><li>') + '</li></ul>',
-                    confirmButtonText: '{{ trans('backpack::crud.ok') }}',
+                    title: "{{ trans('backpack::import.required_fields_missing') }}",
+                    html: "{{ trans('backpack::import.required_fields_message') }}<br><br><ul><li>" + validation.missingRequiredFields.join('</li><li>') + '</li></ul>',
+                    confirmButtonText: "{{ trans('backpack::crud.ok') }}",
                     confirmButtonColor: '#d33'
                 });
                 return false;
@@ -1603,6 +1746,93 @@
                 return new bootstrap.Tooltip(tooltipTriggerEl);
             });
         });
+
+        // Funzione per aggiornare il log delle operazioni
+        function updateOperationLog(op) {
+            // Crea un ID univoco per questa operazione in base a tipo e ID
+            const operationUniqueId = op.action + '_' + (op.id || '') + '_row' + op.row;
+            
+            // Verifica se questa operazione è già stata registrata
+            if (processedOperationIds.has(operationUniqueId)) {
+                return; // Ignora operazioni duplicate
+            }
+            
+            // Registra questa operazione come elaborata
+            processedOperationIds.add(operationUniqueId);
+            
+            let logMessage = '';
+            let operationTitle = '';
+            let operationDetails = '';
+            let opIcon = 'la-info-circle';
+            let logClass = '';
+            let iconClass = 'text-primary';
+            
+            // Costruisci messaggio per il log compatto
+            logMessage = `<div class="log-entry py-1 border-bottom" data-op-id="${operationUniqueId}">
+                <span class="text-muted me-1">${new Date().toLocaleTimeString('it-IT', {hour: '2-digit', minute:'2-digit', second:'2-digit'})}</span>`;
+            
+            // Imposta titolo, dettagli e icona in base all'azione
+            if (op.action === 'insert') {
+                logClass = 'text-success';
+                iconClass = 'text-success';
+                opIcon = 'la-plus-circle';
+                operationTitle = "{{ trans('backpack::import.record_inserted') }}".replace(':id', op.id);
+                
+                if (op.field && op.value) {
+                    operationDetails = "{{ trans('backpack::import.processing_value') }}"
+                        .replace(':value', op.value)
+                        .replace(':field', op.field);
+                }
+                
+                logMessage += `<span class="${logClass}"><i class="la la-plus-circle me-1"></i> ${operationTitle}</span>`;
+            } 
+            else if (op.action === 'update') {
+                logClass = 'text-primary';
+                iconClass = 'text-primary';
+                opIcon = 'la-sync';
+                operationTitle = "{{ trans('backpack::import.record_updated') }}".replace(':id', op.id);
+                
+                if (op.field && op.value) {
+                    operationDetails = "{{ trans('backpack::import.processing_value') }}"
+                        .replace(':value', op.value)
+                        .replace(':field', op.field);
+                }
+                
+                logMessage += `<span class="${logClass}"><i class="la la-sync me-1"></i> ${operationTitle}</span>`;
+            } 
+            else if (op.action === 'skip') {
+                logClass = 'text-warning';
+                iconClass = 'text-warning';
+                opIcon = 'la-ban';
+                operationTitle = "{{ trans('backpack::import.record_skipped') }}";
+                
+                if (op.reason === 'update_only_mode') {
+                    operationDetails = "{{ trans('backpack::import.update_only_reason') }}";
+                }
+                
+                logMessage += `<span class="${logClass}"><i class="la la-ban me-1"></i> ${operationTitle}</span>`;
+            }
+            
+            // Aggiungi informazioni sulla riga al messaggio di log
+            const rowText = "{{ trans('backpack::import.row_processing') }}".replace(':row', op.row);
+            logMessage += ` <span class="text-muted">- ${rowText}</span>`;
+            logMessage += `</div>`;
+            
+            // Aggiorna il box dell'operazione corrente
+            $('#current-op-icon').removeClass().addClass(`la ${opIcon} fs-2 ${iconClass}`);
+            $('#current-op-title').html(operationTitle);
+            $('#current-op-details').html(operationDetails);
+            
+            // Aggiungi la voce di log e scorri automaticamente in basso
+            const logElement = $('#operation-log');
+            logElement.prepend(logMessage); // Prepend per avere le voci più recenti in alto
+            
+            // Aggiungi effetto pulse
+            const currentOpBox = $('#current-operation-box');
+            currentOpBox.removeClass('pulse-animation');
+            void currentOpBox[0].offsetWidth; // Trigger reflow
+            currentOpBox.addClass('pulse-animation');
+        }
     });
 </script>
 @endpush

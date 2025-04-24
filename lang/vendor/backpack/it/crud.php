@@ -19,6 +19,7 @@ return [
 	"lengthMenu" => "_MENU_ record per pagina",
 
 	//DUPLICATE
+	"duplicate" => "Duplica",
 	"duplicate_confirm" => "Sei sicuro di voler duplicare questo elemento?",
 	"duplicate_confirmation_title" => "Elemento duplicato",
 	"duplicate_confirmation_message" => "L'elemento è stato duplicato con successo.",

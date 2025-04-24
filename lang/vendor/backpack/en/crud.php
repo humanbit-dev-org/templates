@@ -19,6 +19,7 @@ return [
 	"lengthMenu" => "_MENU_ entries per page",
 
 	//DUPLICATE
+	"duplicate" => "Duplicate",
 	"duplicate_confirm" => "Are you sure you want to duplicate this item?",
 	"duplicate_confirmation_title" => "Item Duplicated",
 	"duplicate_confirmation_message" => "The item has been duplicated successfully.",
