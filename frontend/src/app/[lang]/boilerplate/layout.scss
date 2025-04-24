@@ -1,15 +1,9 @@
-// File import statement:
-// @use "@/layout/boilerplate" as *;
+// @use "@/layout/boilerplate" as *; // File import statement
 
 // >>> Controllers — START
 @use "@/scss/controllers/dynamics" as *; // controllers for mixins and variables
 @use "@/scss/controllers/extends" as *; // controller for modules
 // <<<<< Controllers — END
-
-// >>>> Components — START
-// @use "@/<path>/Example" as *;
-// @use "./Example" as *;
-// <<<<<< Components — END
 
 .footer_cont {
 	.obj_1 {
@@ -42,7 +36,7 @@
 
 /////
 ////
-/*/==================== @media ====================/*/
+/*/ ==================== @media ==================== /*/
 /////////////
 ////////////
 ////////////////////////

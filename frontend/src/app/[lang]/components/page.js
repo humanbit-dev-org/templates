@@ -1,23 +1,35 @@
 // Server-Side Rendering (React generates HTML before hydration)
+//
+// import ComponentsPage from "@/page/components"; // File import statement
 
-// File import statements:
-// import ComponentsPage from "@/page/components";
-import Link from "next/link";
-
-// import Header from "@/components/templates/react_test_module";
-import { IntlTelInputComponent } from "@/components/blocks/IntlTelInput";
-import { BoilerplateComponent } from "@/components/blocks/Boilerplate";
-// 4. Relative internal (same directory)
+import * as constants from "@/config/constants"; // Global constants used throughout the app for API access
+import { getDictionary } from "@/app/dictionaries"; // Fetch translation dictionary based on language
+import { IntlTelInputComponent } from "@/components/blocks/IntlTelInput"; // International Telephone Input
+import { TranslateProvider } from "@/providers/Translate"; // Provides translation context and hook access for `lang` and `translates`
 import "./page.scss";
 
 // ===============================================
 // ## ############################################
 // ===============================================
 
-// Get the base URL for assets from environment variables (publicly exposed)
-const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL_SERVER;
+export default async function ComponentsPage({ params }) {
+	// Get the language from route parameters
+	const { lang } = await params;
 
-export default function ComponentsPage() {
+	// Fetch translation dictionary based on language
+	const translates = await getDictionary(lang);
+
+	// Fetch data from the API with language header
+	// const heroResponse = await fetch(`${constants.BASE_URL}/api/${lang}/components/<section>`, {
+	// 	method: "GET",
+	// 	credentials: "include",
+	// 	headers: {
+	// 		"Content-Type": "application/json",
+	// 		"locale": lang,
+	// 	},
+	// });
+	// const heroResponseJson = await heroResponse.json();
+
 	return (
 		<div className="components_page">
 			<div className="page_cont bg_color_fourth vh-100">
@@ -25,8 +37,6 @@ export default function ComponentsPage() {
 					<div className="cont_mw_1">
 						<main>
 							{/* <IntlTelInputComponent /> */}
-							<Link href="/">Home</Link>
-							<BoilerplateComponent />
 
 							<div className="block_wrap vert_charts text-center d-flex flex-wrap justify-content-center align-items-center mb-5 w-100">
 								<div className="vert_chart mx-2 left" />

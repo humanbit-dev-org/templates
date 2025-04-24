@@ -1,15 +1,9 @@
-// File import statement:
-// @use "@/layout/root" as *;
+// @use "@/layout/root" as *; // File import statement
 
 // >>> Controllers — START
 @use "@/scss/controllers/dynamics" as *; // controllers for mixins and variables
 @use "@/scss/controllers/extends" as *; // controller for modules
 // <<<<< Controllers — END
-
-// >>>> Components — START
-// @use "@/footers/FooterSidebar" as *;
-// @use "@/navbars/NavSideBurger" as *;
-// <<<<<< Components — END
 
 .nav_cont {
 	z-index: 2001;
@@ -33,8 +27,6 @@
 }
 
 sup {
-	// padding: 2px 6px;
-	// font-family: ui-monospace;
 	font-style: normal;
 	font-weight: 300;
 	letter-spacing: 0;
@@ -42,17 +34,13 @@ sup {
 	background-color: var(--color_section, $color_first);
 	border-radius: 50rem;
 
-	// top: -0.7em !important;
 	display: inline-flex;
 	justify-content: center;
 	align-items: center;
 	line-height: 1 !important;
-	// width: 10px;
 	width: 14px;
-	// height: 10px;
 	height: 14px;
 	padding: 8px;
-	// font-size: 50% !important;
 
 	&:hover {
 		box-shadow: 0px 4px 4px 0px rgba($color_black, 0.25);
@@ -62,7 +50,7 @@ sup {
 
 /////
 ////
-/*/==================== @media ====================/*/ //
+/*/ ==================== @media ==================== /*/
 /////////////
 ////////////
 ////////////////////////
@@ -78,7 +66,6 @@ sup {
 	}
 
 	.space_wrap {
-		// margin-bottom: 115px;
 		margin-bottom: calc(115px + $max_height_md);
 	}
 

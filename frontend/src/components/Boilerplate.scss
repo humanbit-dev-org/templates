@@ -1,39 +1,10 @@
-// @use "@/page/components" as *; // File import statement
+// @use "@/components/<subfolder>/Example" as *; // File import statement
 
 // >>> Controllers — START
 @use "@/scss/controllers/dynamics" as *; // controllers for mixins and variables
-@use "@/scss/controllers/extends" as *; // controller for modules
 // <<<<< Controllers — END
 
-.components_page {
-	.vert_charts {
-		height: 400px;
-
-		.vert_chart {
-			width: 84px;
-			height: 100%;
-			border-top-left-radius: 50rem;
-			border-top-right-radius: 50rem;
-			transition: 0.75s ease-in-out;
-
-			&.ready,
-			&.wait {
-				height: 50px;
-
-				&.triggered {
-					height: 400px;
-				}
-			}
-
-			&.ready {
-				background-color: $color_white;
-			}
-
-			&.wait {
-				background-color: $color_first;
-			}
-		}
-	}
+.boilerplate_component {
 }
 
 /////
@@ -46,27 +17,27 @@
 ////////////////////////
 
 @media (max-width: 1399.98px) {
-	.components_page {
+	.boilerplate_component {
 	}
 }
 
 @media (max-width: 1199.98px) {
-	.components_page {
+	.boilerplate_component {
 	}
 }
 
 @media (max-width: 991.98px) {
-	.components_page {
+	.boilerplate_component {
 	}
 }
 
 @media (max-width: 767.98px) {
-	.components_page {
+	.boilerplate_component {
 	}
 }
 
 @media (max-width: 575.98px) {
-	.components_page {
+	.boilerplate_component {
 	}
 }
 
@@ -77,27 +48,27 @@
 ////////////////////
 
 @media (min-width: 576px) and (max-width: 767.98px) {
-	.components_page {
+	.boilerplate_component {
 	}
 }
 
 @media (min-width: 576px) and (max-width: 991.98px) {
-	.components_page {
+	.boilerplate_component {
 	}
 }
 
 @media (min-width: 768px) and (max-width: 991.98px) {
-	.components_page {
+	.boilerplate_component {
 	}
 }
 
 @media (min-width: 992px) and (max-width: 1199.98px) {
-	.components_page {
+	.boilerplate_component {
 	}
 }
 
 @media (min-width: 1200px) and (max-width: 1399.98px) {
-	.components_page {
+	.boilerplate_component {
 	}
 }
 
@@ -108,27 +79,27 @@
 ////////////////////////
 
 @media (min-width: 576px) {
-	.components_page {
+	.boilerplate_component {
 	}
 }
 
 @media (min-width: 768px) {
-	.components_page {
+	.boilerplate_component {
 	}
 }
 
 @media (min-width: 992px) {
-	.components_page {
+	.boilerplate_component {
 	}
 }
 
 @media (min-width: 1200px) {
-	.components_page {
+	.boilerplate_component {
 	}
 }
 
 @media (min-width: 1400px) {
-	.components_page {
+	.boilerplate_component {
 	}
 }
 
@@ -139,7 +110,7 @@
 //////////////////////
 
 @media (max-height: 400px) and (orientation: landscape) {
-	.components_page {
+	.boilerplate_component {
 	}
 }
 
@@ -150,6 +121,6 @@
 ///////////////////////
 
 @media (width: 1024px) and (height: 1366px) {
-	.components_page {
+	.boilerplate_component {
 	}
 }

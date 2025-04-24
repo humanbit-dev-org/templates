@@ -1,13 +1,8 @@
-// File import statements:
-// import { TranslateProvider } from "@/providers/Translate";
-
+// import { TranslateProvider } from "@/providers/Translate"; // File import statement
+//
 "use client";
 
-// 1. React & Next.js core imports
 import { createContext, useContext } from "react";
-// 2. External third-party libraries
-// 3. Absolute internal imports (from `@/` alias)
-// 4. Relative internal imports (from the same directory)
 
 const TranslateContext = createContext();
 

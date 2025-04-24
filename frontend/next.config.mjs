@@ -27,6 +27,9 @@ const nextConfig = {
 	// Disable React dev double-rendering
 	reactStrictMode: false,
 
+	// Disable Next.js Dev Tools overlay
+	devIndicators: false,
+
 	webpack: (config, options) => {
 		if (options.dev) {
 			// Force SCSS source maps for debugging.

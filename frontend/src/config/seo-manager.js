@@ -1,5 +1,9 @@
 // import SeoManager from "@/components/utilities/metadata-setup"; // File import statement
 
+// ===============================================
+// ## ############################################
+// ===============================================
+
 export default async function SeoManager(metadataJson, lang) {
 	return {
 		title: metadataJson.find((item) => item.code === "title")

@@ -1,9 +1,8 @@
-// Server-Side Rendering (React generates HTML before hydration)
-
 // GENERAL ENTRY POINT
+
+// Server-Side Rendering (React generates HTML before hydration)
 //
-// File import statements:
-// import RootLayout from "@/layout/root";
+// import RootLayout from "@/layout/root"; // File import statement
 
 // EXTERNAL DEPENDENCIES
 import { cookies } from "next/headers";
@@ -11,10 +10,9 @@ import { cookies } from "next/headers";
 // PROJECT UTILITIES (metadata | context | translates | cookies)
 import * as constants from "@/config/constants";
 import MetadataSetup, { FontsLoader, GlobalScripts } from "@/config/metadata-setup";
-import { AuthProvider } from "@/providers/Auth"; // TODO: Keep this here?
+import { ClientProvider } from "@/providers/Client";
 import { getDictionary } from "@/app/dictionaries"; // TODO: Keep this here?
 import { getServer } from "@/lib/server";
-import { ClientProvider, useClient } from "@/providers/Client";
 import { klaroConfig } from "@/config/klaro-config"; // cookie configuration
 import { KlaroCookieConsent } from "@/config/klaro-cookie-consent"; // cookie handling
 
@@ -30,14 +28,9 @@ import { NavSideBurgerComponent } from "@/navbars/NavSideBurger";
 import "./globals.scss";
 import "./layout.scss";
 
-import { BoilerplateComponent } from "@/components/blocks/Boilerplate";
-
 // ===============================================
 // ## ############################################
 // ===============================================
-
-// Backend base URL
-const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL_SERVER;
 
 // Next.js 13's App Router `viewport` object
 //
@@ -56,9 +49,9 @@ export const viewport = {
 //
 // https://nextjs.org/docs/app/api-reference/functions/generate-metadata
 export async function generateMetadata({ params }) {
-	const { lang } = await params;
-	const ssr = await getServer();
-	const url = `${BASE_URL}/api/${lang}/${ssr.page}/seo`;
+	const ssr = await getServer(); // Get server-side context
+	const { lang } = await params; // Get language from route params
+	const url = `${constants.BASE_URL}/api/${lang}/${ssr.page}/seo`; // Construct the URL for the SEO metadata API
 
 	const metadataResponse = await fetch(url, {
 		method: "GET",
@@ -69,16 +62,10 @@ export async function generateMetadata({ params }) {
 		},
 	});
 
-	const metadataJson = (await metadataResponse.json()) || null;
-	// Pass the fetched data to MetadataSetup
+	const metadataJson = (await metadataResponse.json()) || null; // Parse the JSON response
+
+	// Pass the fetched data to `MetadataSetup`
 	return await MetadataSetup(metadataJson, lang);
-
-	// Call MetadataSetup
-	// const metadataSetup = await MetadataSetup(data.pageSlug || currentPage, lang);
-
-	// return {
-	// 	...metadataSetup,
-	// };
 }
 
 // ===============================================
@@ -90,9 +77,6 @@ export default async function RootLayout({ children, params }) {
 	// Get the language from route params
 	const { lang } = (await params) || {};
 
-	// Get structured path info from the current URL
-	const ssr = await getServer();
-
 	// Dynamically gather all font variables from the font loader
 	const fontClasses = Object.values(FontsLoader)
 		.map((font) => font.variable)
@@ -101,71 +85,51 @@ export default async function RootLayout({ children, params }) {
 	// Fetch translation dictionary based on language
 	const translates = await getDictionary(lang);
 
-	// Get cookies and extract the Laravel session ID to make a request to the protected sanctum API route
+	// // Get cookies from the request
 	// const cookiesStore = await cookies();
+
+	// // Extract the Laravel session ID
 	// const laravelSession = cookiesStore.get("laravel_session")?.value;
-	// const userResponse = await fetch(`${BASE_URL}/api/user`, {
+
+	// // Fetch authenticated user data from Laravel Sanctum API
+	// const userResponse = await fetch(`${constants.BASE_URL}/api/user`, {
 	// 	method: "GET",
 	// 	credentials: "include",
 	// 	headers: {
 	// 		"Accept": "application/json",
-	// 		"Referer": process.env.APP_URL,
-	// 		"X-Requested-With": "XMLHttpRequest",
 	// 		"Content-Type": "application/json",
+	// 		"X-Requested-With": "XMLHttpRequest",
+	// 		"Referer": process.env.APP_URL,
 	// 		"cookie": "laravel_session=" + laravelSession,
 	// 	},
 	// });
-	// const userResponseJson = await userResponse.json();
-	// console.log(userResponseJson);
 
-	// Fetch data from the API with language header
-	// const menuResponse = await fetch(`${BASE_URL}/api/pages`, {
+	// // Parse user data response
+	// const userResponseJson = await userResponse.json();
+
+	// // Fetch menu/page data from the API
+	// const menuResponse = await fetch(`${constants.BASE_URL}/api/pages`, {
 	// 	method: "GET",
 	// 	credentials: "include",
 	// 	headers: {
 	// 		"Content-Type": "application/json",
 	// 	},
 	// });
-	// const menuResponseJson = await menuResponse.json();
 
-	console.log(`RootLayout`);
+	// // Parse menu data response
+	// const menuResponseJson = await menuResponse.json();
 
 	return (
 		<html lang={lang} className={fontClasses}>
 			{/* <body className="bg_color_white fx_load"> */}
 			<body className="bg_color_white">
+				{/* USER AND LOCALE CONTEXT (navbar | footer) */}
 				<ClientProvider lang={lang} dict={translates}>
-					{/* <AuthProvider lang={lang} translates={translates} user={userResponseJson}> */}
 					<div className="root_layout container_structure container-fluid">
 						<div className="grid_cont navbar row justify-content-center position-sticky">
 							{/* <NavSideBurgerComponent menu={menuResponseJson} /> */}
 							{/* <NavSlideTopComponent /> */}
-
-							<button
-								type="button"
-								className="btn btn-primary"
-								data-bs-toggle="modal"
-								data-bs-target="#signInModal">
-								Launch static backdrop modal
-							</button>
 						</div>
-
-						{/* <BoilerplateComponent /> */}
-
-						{/* {ssr.page === "home" && (
-								<>
-									<div>You're on the home SSR.</div>
-									<BoilerplateComponent />
-								</>
-							)}
-							{ssr.page === "components" && (
-								<>
-									<div>You're on the components SSR.</div>
-									<BoilerplateComponent />
-								</>
-							)} */}
-
-						{/* USER AND LOCALE CONTEXT (navbar | footer) */}
 
 						{children}
 					</div>
@@ -179,7 +143,6 @@ export default async function RootLayout({ children, params }) {
 					<PasswordResetComponent lang={lang} />
 					<RegisterComponent lang={lang} />
 					<SignInComponent lang={lang} />
-					{/* </AuthProvider> */}
 				</ClientProvider>
 			</body>
 		</html>

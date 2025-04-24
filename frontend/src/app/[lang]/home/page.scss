@@ -1,18 +1,9 @@
-// File import statement:
-// @use "@/page/home" as *;
+// @use "@/page/home" as *; // File import statement
 
 // >>> Controllers — START
 @use "@/scss/controllers/dynamics" as *; // controllers for mixins and variables
 @use "@/scss/controllers/extends" as *; // controller for modules
 // <<<<< Controllers — END
-
-// >>>> Components — START
-// @use "@/navbars/NavLogoTop" as *;
-// @use "@/components/blocks/Content" as *;
-// @use "@/components/blocks/Hero" as *;
-// @use "@/components/blocks/SidebarSticky" as *;
-// @use "@/components/blocks/Timeline" as *;
-// <<<<<< Components — END
 
 .home_page {
 	sup,
@@ -81,7 +72,7 @@
 
 /////
 ////
-/*/==================== @media ====================/*/
+/*/ ==================== @media ==================== /*/
 /////////////
 ////////////
 ////////////////////////

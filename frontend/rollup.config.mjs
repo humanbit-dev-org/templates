@@ -1,19 +1,19 @@
-// This config is no longer used in the current setup, as builds are now handled by `manage-globals.mjs`
-// Retained for manual use or fallback purposes
-
-// Bundles all utility scripts into a single file at `/public/js/__bundle.globals.js` using an in-memory virtual entry
-// The output is a single IIFE that attaches all exports to `window`
+// Bundles all utility scripts into a global IIFE using Rollup's JS API and a virtual entry
 
 // Node.js built-ins
 import fs from "fs";
 import path from "path";
+
+// Rollup API
+import { rollup } from "rollup";
 
 // Rollup plugins
 import nodeResolve from "@rollup/plugin-node-resolve";
 import terser from "@rollup/plugin-terser";
 import virtual from "@rollup/plugin-virtual";
 
-const utilsPath = path.resolve("src/utils"); // Absolute path to the folder containing utility scripts
+const utilsPath = path.resolve("src/utils"); // Path to source utility scripts
+const outputFile = path.resolve("public/js/__bundle.globals.js"); // Destination path for the generated bundle
 
 // Recursively collect `.js` files from `src/utils` (excluding `manual`)
 function getAllJsFiles(dir) {
@@ -28,7 +28,7 @@ function getAllJsFiles(dir) {
 	});
 }
 
-// Build a virtual module (no temp files) that imports everything and attaches to `window` via `Object.assign()`
+// Build a virtual module (string in memory) containing utilities and attach it to `window` via `Object.assign()`
 function getVirtualModuleContent() {
 	const files = getAllJsFiles(utilsPath).sort(); // `sort()` ensures consistent order
 
@@ -41,20 +41,36 @@ function getVirtualModuleContent() {
 		.join("\n");
 }
 
-// Main Rollup export used to define the bundling behavior
-export default {
-	input: "virtual-entry", // Virtual entry module
-	output: {
-		file: "public/js/__bundle.globals.js", // Output file for the final bundle
-		format: "iife", // Immediately-invoked function expression — attaches exports to window
-		inlineDynamicImports: true, // Prevents code-splitting — forces all content into one file
-	},
+// Log the start of the bundling process
+console.log("› Bundling global JS...");
+
+// Define the bundling behavior
+const bundle = await rollup({
+	input: "virtual-entry", // Virtual entry module name
 	plugins: [
 		virtual({
-			"virtual-entry": getVirtualModuleContent(), // In-memory module content
+			"virtual-entry": getVirtualModuleContent(), // Virtual module content generated in memory
 		}),
-		nodeResolve(), // Resolve imports from node_modules if needed
+		nodeResolve(), // Resolve imports from `node_modules` if needed
 		terser(), // Minify output for production use
 	],
-	treeshake: false, // Keep all exports even if unused — ensures globals aren't stripped out
-};
+	treeshake: false, // Keep all exports, even if unused (ensures global access)
+});
+
+// Generate the final bundled output in memory
+const { output } = await bundle.generate({
+	format: "iife", // IIFE (Immediately Invoked Function Expression) that attaches exports to window
+	inlineDynamicImports: true, // Disable code-splitting to bundle everything into a single file
+});
+
+// Read existing bundle from disk (if any)
+const existing = fs.existsSync(outputFile) ? fs.readFileSync(outputFile, "utf8") : null;
+const generated = output[0]?.code ?? "";
+
+// Write the bundle only if content has changed
+if (generated && generated !== existing) {
+	fs.writeFileSync(outputFile, generated); // Output file for the final bundle
+	console.log("› JS bundle saved!"); // Log the completion of the bundling process
+} else {
+	console.log("› Skipped: bundle unchanged."); // Log if no changes were made to the bundle
+}

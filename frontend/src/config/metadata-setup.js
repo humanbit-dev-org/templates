@@ -2,16 +2,20 @@
 
 export * as FontsLoader from "@/config/fonts-loader";
 export * as StylesheetsImporter from "@/config/stylesheets-importer";
-export { GlobalScripts } from "@/config/global-scripts";
-import { FaviconGenerator } from "@/config/favicon-generator";
 import SeoManager from "@/config/seo-manager";
+import { FaviconGenerator } from "@/config/favicon-generator";
+export { GlobalScripts } from "@/config/global-scripts";
+
+// ===============================================
+// ## ############################################
+// ===============================================
 
 export default async function MetadataSetup(metadataJson, lang) {
 	// Dynamically fetch SEO metadata
 	const dynamicSeo = await SeoManager(metadataJson, lang);
 
 	return {
-		...FaviconGenerator, // Structures favicon metadata
-		...dynamicSeo, // Handles SEO metadata
+		...FaviconGenerator, // Structure favicon metadata
+		...dynamicSeo, // Handle SEO metadata
 	};
 }

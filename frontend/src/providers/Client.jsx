@@ -1,93 +1,93 @@
-// File import statements:
-// import { ClientProvider } from "@/providers/Client";
+// import { ClientProvider } from "@/providers/Client"; // File import statement
+//
+"use client"; // marks module for full browser execution
 
-"use client";
-
-// 1. React & Next.js core imports
-import { createContext, useContext, useState, useEffect } from "react";
-
-// 2. External third-party libraries
-
-// 3. Absolute internal imports (from `@/` alias)
+import { createContext, useContext, useEffect, useState } from "react";
+import * as constants from "@/config/constants";
 import { usePathInfo } from "@/hooks/pathInfo";
 
-// 4. Relative internal imports (from the same directory)
-
-const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL_CLIENT;
+// ===============================================
+// ## ############################################
+// ===============================================
 
 // Create the context
 const ClientContext = createContext();
 
+// Fetch the current authenticated user from the Laravel API (with XSRF protection)
 async function fetchUser(lang) {
 	try {
-		// Get the XSRF token from the cookie
+		// Extract the XSRF token from browser cookies
 		const xsrfToken = document.cookie
 			.split("; ")
 			.find((row) => row.startsWith("XSRF-TOKEN"))
 			?.split("=")[1];
 
-		// If the XSRF token is missing, return undefined
+		// If no token is found, log a warning and return early
 		if (!xsrfToken) {
 			console.warn("XSRF token is missing");
 			return undefined;
 		}
 
-		// Fetch user data from the Laravel API with session credentials
-		const userResponse = await fetch(`${BASE_URL}/api/user`, {
+		// Make a secure request to the Laravel API to get the current user credentials
+		const userResponse = await fetch(`${constants.BASE_URL}/api/user`, {
 			method: "GET",
-			credentials: "include",
 			headers: {
 				"Accept": "application/json",
 				"Referer": process.env.APP_URL,
 				"X-Requested-With": "XMLHttpRequest",
 				"Content-Type": "application/json",
-				"X-XSRF-TOKEN": xsrfToken,
-				"locale": lang,
+				"X-XSRF-TOKEN": xsrfToken, // Pass XSRF token for CSRF protection
+				"locale": lang, // Pass user locale
 			},
+			credentials: "include", // Include cookies/session data
 		});
 
-		// If the user data fetch fails, return undefined
+		// Handle failed response (unauthenticated or other errors)
 		if (!userResponse.ok) {
 			if (userResponse.status === 401) {
-				return undefined;
+				return undefined; // Not logged in
 			}
 			console.error(`User fetch failed with status: ${userResponse.statusText}`);
 			return undefined;
 		}
 
-		// Parse the user data from the response
+		// Parse and return the user object from the response
 		const responseData = await userResponse.json();
 		return responseData.user;
 	} catch (error) {
+		// Handle unexpected fetch or parsing errors
 		console.error("Error fetching user:", error);
 		return undefined;
 	}
 }
 
-// Provides global client-only values to child components
+// Provide client-only values to the current component
 export function ClientProvider({ children, lang }) {
 	// Example states (adjust as needed)
 	// const [globalState, setGlobalState] = useState({});
 	// const [apiData, setApiData] = useState(null);
 
-	const [user, setUser] = useState(null);
-	const pathInfo = usePathInfo();
+	const pathInfo = usePathInfo(); // Extract path info on the client
+	const [user, setUser] = useState(null); // Store the current user
 
 	useEffect(() => {
+		// Fetch and store the current user when the path changes
 		const fetchUserFunction = async () => {
 			const user = await fetchUser(lang);
 			setUser(user);
 		};
+
 		fetchUserFunction();
-	}, [pathInfo.pathname]);
+	}, [pathInfo.pathname]); // Re-run if pathname changes
+	// TODO: Try `document.cookie.split("; ").find((row) => row.startsWith("XSRF-TOKEN"))?.split("=")[1]`
 
 	const values = {
 		// globalState,
 		// setGlobalState,
 		// apiData,
 		// setApiData,
-		user,
 		...usePathInfo(), // Get structured path info from the current URL
+		user, // Include user in context
 	};
 
 	return <ClientContext.Provider value={values}>{children}</ClientContext.Provider>;

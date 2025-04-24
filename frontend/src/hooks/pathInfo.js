@@ -1,9 +1,12 @@
-// File import statements:
-// import { usePathInfo } from "@/hooks/pathInfo";
-
-"use client";
+// import { usePathInfo } from "@/hooks/pathInfo"; // File import statement
+//
+"use client"; // marks module for full browser execution
 
 import { usePathname } from "next/navigation";
+
+// ===============================================
+// ## ############################################
+// ===============================================
 
 // Extracts structured path info (pathname, page, id, slug) from the current URL on the client
 export function usePathInfo() {
