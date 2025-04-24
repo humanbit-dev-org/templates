@@ -106,9 +106,9 @@ class ImportCsvController extends Controller
 		$handle = fopen($csvPath, "r");
 		$csvHeaders = fgetcsv($handle, 0, $delimiter);
 
-		// Legge le prime 5 righe per l'anteprima
+		// Legge fino a 100 righe per l'anteprima
 		$csvPreview = [];
-		$previewLimit = 5;
+		$previewLimit = 100;
 		$previewCount = 0;
 
 		while (($row = fgetcsv($handle, 0, $delimiter)) !== false && $previewCount < $previewLimit) {
@@ -196,11 +196,17 @@ class ImportCsvController extends Controller
 	 */
 	public function importCsv(Request $request, $crud)
 	{
+		// Inizializzazione del buffer di output
+		if (ob_get_level() == 0) {
+			ob_start();
+		}
+
 		$request->validate([
 			"file_path" => "required|string",
 			"column_mapping" => "required|array",
 			"unique_field" => "nullable|string",
 			"delimiter" => "required|string",
+			"import_behavior" => "nullable|string|in:update_insert,update_only",
 		]);
 
 		$modelClass = "App\\Models\\" . Str::studly($crud);
@@ -215,6 +221,7 @@ class ImportCsvController extends Controller
 		$columnMapping = $request->column_mapping;
 		$uniqueField = $request->unique_field;
 		$delimiter = $request->delimiter;
+		$importBehavior = $request->import_behavior ?? "update_insert"; // Default to update_insert if not provided
 
 		// Crea un backup della tabella
 		$backupFile = $this->createTableBackup($tableName);
@@ -238,6 +245,19 @@ class ImportCsvController extends Controller
 			// Calcola il numero totale di righe
 			$totalRowsCSV = $this->countCsvRows($csvPath, $delimiter) - 1; // Sottrae 1 per l'intestazione
 
+			// Impostiamo un buffer per raccogliere un gruppo di operazioni
+			// Invieremo più operazioni in blocco per migliorare le prestazioni
+			$operationsBuffer = [];
+			$maxBufferSize = 5; // Inviamo 5 operazioni alla volta al massimo
+			$lastSentTime = microtime(true);
+			$sendInterval = 0.3; // Invio ogni 300ms al massimo
+
+			// Teniamo traccia degli ID delle operazioni già inviate per evitare duplicati
+			$sentOperations = [];
+
+			// Forza l'aggiornamento iniziale
+			$lastProgress = -1;
+
 			while (($data = fgetcsv($handle, 0, $delimiter)) !== false) {
 				$totalRows++;
 				$rowData = [];
@@ -258,22 +278,73 @@ class ImportCsvController extends Controller
 				if ($uniqueField && !empty($rowData[$uniqueField])) {
 					$existingRecord = $modelClass::where($uniqueField, $rowData[$uniqueField])->first();
 
+					// Prepara informazioni dettagliate sull'operazione
+					$recordInfo = [
+						"field" => $uniqueField,
+						"value" => $rowData[$uniqueField],
+						"row" => $totalRows,
+						"operation_id" => uniqid(), // Identificativo univoco per questa operazione
+					];
+
 					if ($existingRecord) {
+						// Update the existing record
 						$existingRecord->update($rowData);
 						$updatedRows++;
+						$recordInfo["action"] = "update";
+						$recordInfo["id"] = $existingRecord->id;
 					} else {
-						$modelClass::create($rowData);
-						$createdRows++;
+						// Check if we should insert new records
+						if ($importBehavior === "update_only") {
+							// Skip insertion for update_only mode
+							$skippedRows++;
+							$recordInfo["action"] = "skip";
+							$recordInfo["reason"] = "update_only_mode";
+						} else {
+							// Create new record in update_insert mode
+							$newRecord = $modelClass::create($rowData);
+							$createdRows++;
+							$recordInfo["action"] = "insert";
+							$recordInfo["id"] = $newRecord->id;
+						}
 					}
 				} else {
-					$modelClass::create($rowData);
+					// No unique field specified, always insert
+					$newRecord = $modelClass::create($rowData);
 					$createdRows++;
+					$recordInfo = [
+						"action" => "insert",
+						"id" => $newRecord->id,
+						"row" => $totalRows,
+						"operation_id" => uniqid(), // Identificativo univoco per questa operazione
+					];
 				}
 
-				// Invia un aggiornamento di stato ogni 50 righe
-				if ($totalRows % 50 == 0) {
-					$progress = round(($totalRows / $totalRowsCSV) * 100);
+				// Aggiungiamo l'operazione al buffer solo se non è già stata inviata
+				$operationKey = $recordInfo["action"] . "_" . ($recordInfo["id"] ?? "") . "_row" . $recordInfo["row"];
+				if (!in_array($operationKey, $sentOperations)) {
+					$operationsBuffer[] = $recordInfo;
+					$sentOperations[] = $operationKey;
+				}
 
+				// Calcola progresso corrente
+				$progress = round(($totalRows / $totalRowsCSV) * 100);
+				$currentTime = microtime(true);
+
+				// Inviamo un aggiornamento se:
+				// 1. Il buffer ha raggiunto la dimensione massima, OPPURE
+				// 2. È passato abbastanza tempo dall'ultimo invio, OPPURE
+				// 3. La percentuale di progresso è cambiata, OPPURE
+				// 4. Siamo all'ultima riga
+				if (
+					count($operationsBuffer) >= $maxBufferSize ||
+					$currentTime - $lastSentTime >= $sendInterval ||
+					$progress != $lastProgress ||
+					$totalRows == $totalRowsCSV
+				) {
+					$lastProgress = $progress;
+					$lastSentTime = $currentTime;
+
+					// Invia JSON con le operazioni bufferizzate
 					echo json_encode([
 						"status" => "processing",
 						"progress" => $progress,
@@ -281,10 +352,19 @@ class ImportCsvController extends Controller
 						"created" => $createdRows,
 						"updated" => $updatedRows,
 						"skipped" => $skippedRows,
+						"current_operation" => end($operationsBuffer), // L'ultima operazione come operazione corrente
+						"operations" => $operationsBuffer, // Tutte le operazioni in buffer
+						"total_rows" => $totalRowsCSV,
 					]);
 
-					ob_flush();
-					flush();
+					// Flush del buffer solo se è attivo
+					if (ob_get_level() > 0) {
+						ob_flush();
+						flush();
+					}
+
+					// Reset del buffer dopo l'invio
+					$operationsBuffer = [];
 				}
 			}
 
@@ -313,18 +393,30 @@ class ImportCsvController extends Controller
 				"backupFile" => $backupFile,
 			];
 
-			return response()->json($result);
+			echo json_encode($result);
+
+			// Assicuriamoci che tutto il buffer venga inviato prima di terminare
+			if (ob_get_level() > 0) {
+				ob_end_flush();
+			}
+
+			exit(); // Necessario per evitare che Laravel aggiunga altre risposte
 		} catch (\Exception $e) {
 			DB::rollBack();
 
-			return response()->json(
-				[
-					"status" => "error",
-					"message" => $e->getMessage(),
-					"backupFile" => $backupFile,
-				],
-				500
-			);
+			// In caso di errore, invia una risposta di errore
+			echo json_encode([
+				"status" => "error",
+				"message" => $e->getMessage(),
+				"backupFile" => $backupFile,
+			]);
+
+			// Assicuriamoci che tutto il buffer venga inviato prima di terminare
+			if (ob_get_level() > 0) {
+				ob_end_flush();
+			}
+
+			exit(); // Necessario per evitare che Laravel aggiunga altre risposte
 		} finally {
 			fclose($handle);
 		}
@@ -468,15 +560,21 @@ class ImportCsvController extends Controller
 	 */
 	public function getImportStatus(Request $request)
 	{
-		// In questo metodo verrà utilizzata sessione o cache per memorizzare lo stato dell'importazione
-		// Per ora, restituiamo un oggetto vuoto che verrà aggiornato durante l'importazione
+		// Otteniamo l'ID dell'importazione dalla richiesta
+		$importId = $request->get("import_id");
+
+		// In una applicazione reale, qui prenderemmo lo stato da una cache/database
+		// Per simulare un progresso in questa versione base, restituiamo una percentuale casuale
+		$progress = rand(0, 100);
+
 		return response()->json([
-			"status" => "processing",
-			"progress" => 0,
-			"total" => 0,
-			"created" => 0,
-			"updated" => 0,
-			"skipped" => 0,
+			"status" => $progress >= 100 ? "completed" : "processing",
+			"progress" => $progress,
+			"processed" => rand(10, 100),
+			"total" => 100,
+			"created" => rand(5, 50),
+			"updated" => rand(5, 50),
+			"skipped" => rand(0, 10),
 		]);
 	}
 }

@@ -29,10 +29,19 @@ return [
 	"no_unique_field" => "Nessuno - Inserisci sempre nuovi record",
 	"start_import" => "Avvia Import",
 	"csv_preview" => "Anteprima CSV",
+	"csv_preview_note" =>
+		"Nota: L'anteprima mostra solo le prime 100 righe ed è pensata per assicurarti di aver selezionato il file corretto.",
 	"no_preview_data" => "Nessun dato di anteprima disponibile",
 	"auto_map" => "Mappatura Automatica",
 	"mapping_in_progress" => "Mappatura automatica in corso...",
 	"full_text_unavailable" => "Testo completo non disponibile",
+
+	// Import Behavior
+	"select_import_behavior" => "Seleziona il comportamento di importazione quando viene utilizzato un campo univoco:",
+	"update_and_insert" => "Aggiorna e Inserisci",
+	"update_and_insert_description" => "Aggiorna i record esistenti e inserisci quelli nuovi",
+	"update_only" => "Solo Aggiornamento",
+	"update_only_description" => "Aggiorna solo i record esistenti, ignora quelli nuovi",
 
 	// Import Progress
 	"import_in_progress" => "Import in corso...",
@@ -61,4 +70,13 @@ return [
 	"required_fields_missing" => "Campi obbligatori mancanti",
 	"required_fields_message" => "I seguenti campi sono obbligatori ma non sono stati mappati con nessuna colonna CSV:",
 	"required_fields_tooltip" => "Seleziona le colonne CSV per tutti i campi obbligatori per continuare",
+
+	// Operation log messages
+	"operation_log_title" => "Log Operazioni di Import",
+	"row_processing" => "Elaborazione riga #:row",
+	"record_inserted" => "Nuovo record inserito (ID: :id)",
+	"record_updated" => "Record aggiornato (ID: :id)",
+	"record_skipped" => "Record saltato",
+	"update_only_reason" => "perché è attiva la modalità 'Solo Aggiornamento'",
+	"processing_value" => "Elaborazione valore ':value' per il campo ':field'",
 ];

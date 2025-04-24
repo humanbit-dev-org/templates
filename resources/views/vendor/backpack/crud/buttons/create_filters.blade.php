@@ -14,7 +14,7 @@
 @endphp
 
 @if ($crud->hasAccess('create'))
-    <a href="{{ $createUrl }}" class="btn btn-primary {{ $hasActiveFilters ? 'has-active-filters' : '' }} text-capitalize" bp-button="create" data-style="zoom-in" data-active-filters="{{ $hasActiveFilters ? 'true' : 'false' }}">
-        <i class="la la-plus"></i> <span>{{ trans('backpack::crud.add') }} {{ $crud->entity_name }}</span>
+    <a href="{{ $createUrl }}" class="btn btn-primary {{ $hasActiveFilters ? 'has-active-filters' : '' }}" bp-button="create" data-style="zoom-in" data-active-filters="{{ $hasActiveFilters ? 'true' : 'false' }}">
+        <i class="la la-plus"></i> <span>{{ trans('backpack::crud.add') }} <span class="text-capitalize">{{ $crud->entity_name }}</span></span>
     </a>
 @endif

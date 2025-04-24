@@ -16,7 +16,3 @@ Route::middleware(["auth:sanctum"])->group(function () {
 		return response()->json(["user" => $request->user()]);
 	});
 });
-
-Route::get("/{lang}/about-us", [ArticleController::class, "index"]);
-
-Route::post("/contacts/corporate", [ContactController::class, "store"]);

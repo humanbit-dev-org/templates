@@ -1,5 +1,7 @@
 .csv-preview-container {
     border-bottom: 1px solid rgba(var(--tblr-primary-rgb), 0.1);
+    max-height: 300px;
+    overflow-y: scroll;
 }
 
 .csv-preview-container thead {
@@ -908,16 +910,6 @@
     opacity: 0.5;
 }
 
-.disabled-import-btn::before {
-    content: '\f071';
-    font-family: 'Line Awesome Free';
-    font-weight: 900;
-    position: absolute;
-    right: 10px;
-    font-size: 0.9rem;
-    animation: warning-pulse 2s infinite;
-}
-
 @keyframes warning-pulse {
     0%, 100% {
         opacity: 0.5;
@@ -1167,18 +1159,20 @@
     vertical-align: middle;
 }
 
+/* Stile base per i campi obbligatori - sottile bordo sinistro rosso */
 .required-field-select {
-    border-color: rgba(var(--tblr-danger-rgb), 0.4);
-    background-color: rgba(var(--tblr-danger-rgb), 0.02);
+    border-left: 3px solid rgba(var(--tblr-danger-rgb), 0.4);
 }
 
 .required-field-select:focus {
-    border-color: var(--tblr-danger);
-    box-shadow: 0 0 0 0.25rem rgba(var(--tblr-danger-rgb), 0.15);
+    border-color: var(--tblr-primary);
+    box-shadow: 0 0 0 0.25rem rgba(var(--tblr-primary-rgb), 0.15);
 }
 
+/* Stile per i campi obbligatori quando sono invalidi */
 .required-field-select.is-invalid {
     border-color: var(--tblr-danger);
+    border-left: 3px solid var(--tblr-danger);
     box-shadow: 0 0 0 0.25rem rgba(var(--tblr-danger-rgb), 0.25);
     background-color: rgba(var(--tblr-danger-rgb), 0.05);
     animation: pulse-error 2s ease-in-out;
@@ -1193,14 +1187,168 @@
     }
 }
 
-.mapping-row:has(.required-field-select) {
-    background-color: rgba(var(--tblr-danger-rgb), 0.02);
-}
-
-.mapping-row:has(.required-field-select):hover {
-    background-color: rgba(var(--tblr-danger-rgb), 0.05);
-}
-
-.mapping-row:has(.required-field-select.is-invalid) {
+/* Stile per le righe con campi obbligatori invalidi */
+.mapping-row.has-invalid-field {
     background-color: rgba(var(--tblr-danger-rgb), 0.08);
+}
+
+.mapping-row.has-invalid-field:hover {
+    background-color: rgba(var(--tblr-danger-rgb), 0.12);
+}
+
+/* Import behavior options styles - Moved from import_mapping.blade.php */
+#import-behavior-options {
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+#import-behavior-options.fade-in {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Stile migliorato per i radio button a forma di bottoni */
+.import-behavior-radios .form-check {
+    padding-left: 0;
+    margin-bottom: 12px;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.import-behavior-radios .form-check-input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+
+.import-behavior-radios .form-check-label {
+    display: block;
+    padding: 12px 15px 12px 45px;
+    border: 1px solid rgba(var(--tblr-primary-rgb), 0.2);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background-color: transparent; /* Rimozione dello sfondo che causava il doppio effetto */
+    position: relative;
+    font-weight: normal; /* Normal by default */
+}
+
+.import-behavior-radios .form-check-label:hover {
+    background-color: rgba(var(--tblr-primary-rgb), 0.08);
+    border-color: rgba(var(--tblr-primary-rgb), 0.3);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+/* Icona ingrandita e posizionata a sinistra */
+.import-behavior-radios .form-check-label i {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.3rem;
+    transition: all 0.2s ease;
+}
+
+/* Stile per i radio button selezionati */
+.import-behavior-radios .form-check-input:checked + .form-check-label {
+    background-color: rgba(var(--tblr-primary-rgb), 0.12);
+    border-color: var(--tblr-primary);
+    box-shadow: 0 2px 5px rgba(var(--tblr-primary-rgb), 0.2);
+    font-weight: 600 !important; /* Bold when selected */
+}
+
+/* Effetto pulse per l'icona del radio selezionato */
+.import-behavior-radios .form-check-input:checked + .form-check-label i {
+    animation: radio-icon-pulse 2s infinite;
+    color: var(--tblr-primary);
+}
+
+@keyframes radio-icon-pulse {
+    0% {
+        transform: translateY(-50%) scale(1);
+    }
+    50% {
+        transform: translateY(-50%) scale(1.15);
+    }
+    100% {
+        transform: translateY(-50%) scale(1);
+    }
+}
+
+/* Miglioramento per il testo secondario */
+.import-behavior-radios .form-check-label small {
+    margin-top: 4px;
+    opacity: 0.8;
+}
+
+/* Flash effect for radio buttons to draw attention */
+.flash-highlight {
+    animation: flash-animation 1.5s ease;
+}
+
+@keyframes flash-animation {
+    0%, 100% {
+        background-color: transparent;
+    }
+    20%, 80% {
+        background-color: rgba(var(--tblr-primary-rgb), 0.15);
+    }
+}
+
+.preview-csv-body {
+    overflow-y: hidden;
+    max-height: 600px;
+}
+
+/* Stili per il log delle operazioni di importazione */
+#operation-log {
+    transition: all 0.3s ease;
+    line-height: 1.5;
+}
+
+#operation-log .log-entry {
+    margin-bottom: 2px;
+    padding-bottom: 4px;
+    border-bottom: 1px dashed rgba(var(--tblr-primary-rgb), 0.1);
+    animation: fadeInLog 0.3s ease-in-out;
+}
+
+@keyframes fadeInLog {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Indicatore operazione corrente con animazione pulse */
+#current-operation-box {
+    transition: all 0.3s ease;
+    border-left: 3px solid var(--tblr-primary) !important;
+}
+
+.pulse-animation {
+    animation: currentOpPulse 1s ease-in-out;
+}
+
+@keyframes currentOpPulse {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(var(--tblr-primary-rgb), 0.5);
+    }
+    50% {
+        transform: scale(1.02);
+        box-shadow: 0 0 0 5px rgba(var(--tblr-primary-rgb), 0);
+    }
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(var(--tblr-primary-rgb), 0);
+    }
 }
