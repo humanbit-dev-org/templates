@@ -58,26 +58,18 @@ Route::group(
 		"namespace" => "App\Http\Controllers\Admin",
 	],
 	function () {
-		//DOCUMENTATION
-		Route::get("documentation", [GitHubController::class, "index"]);
-		Route::get("documentation/{page}", [GitHubController::class, "index"]);
-
 		//CUSTOM ROUTES FOR ADVANCED CRUDS
 
-		Route::post("ajax-request/{elemdId}", [HelperBackend::class, "getDataByAjax"]);
 		Route::post("{modelName}/sort", [HelperBackend::class, "sort"]);
 		Route::get("{crud}/{id}/duplicate", [DuplicateController::class, "duplicate"]);
 		Route::get("{crud}/export-csv", [ExportCsvController::class, "exportCrudToCsv"]);
 
-		// Rotte per l'importazione CSV
 		Route::get("{crud}/import-csv", [ImportCsvController::class, "showImportForm"]);
 		Route::post("{crud}/import-csv/analyze", [ImportCsvController::class, "analyzeUploadedFile"]);
 		Route::post("{crud}/import-csv/process", [ImportCsvController::class, "importCsv"]);
 		Route::get("{crud}/import-csv/status", [ImportCsvController::class, "getImportStatus"]);
 
 		Route::get("autocomplete-values", [AutocompleteController::class, "getValues"]);
-
-		Route::post("contact/{id}/{option}", [ContactController::class, "contactOption"]);
 
 		Route::crud("user", "UserCrudController");
 		Route::crud("role", "RoleCrudController");

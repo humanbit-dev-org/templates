@@ -70,7 +70,7 @@ return [
 	"required_fields_missing" => "Campi obbligatori mancanti",
 	"required_fields_message" => "I seguenti campi sono obbligatori ma non sono stati mappati con nessuna colonna CSV:",
 	"required_fields_tooltip" => "Seleziona le colonne CSV per tutti i campi obbligatori per continuare",
-	
+
 	// Operation log messages
 	"operation_log_title" => "Log Operazioni di Import",
 	"row_processing" => "Elaborazione riga #:row",
