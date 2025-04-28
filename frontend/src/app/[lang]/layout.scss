@@ -60,6 +60,8 @@
 ////////////////////////
 
 @media (max-width: 1399.98px) {
+	.root_layout {
+	}
 }
 
 @media (max-width: 1199.98px) {
@@ -199,6 +201,28 @@
 ///////////////////////
 
 @media (width: 1024px) and (height: 1366px) {
+	.root_layout {
+	}
+}
+
+// ----------------------- //
+
+/////////////////////////////
+/* all browsers (iOS only) */
+/////////////////////////////
+
+@supports (-webkit-touch-callout: none) and (hover: none) and (pointer: coarse) {
+	.root_layout {
+	}
+}
+
+// ------------------- //
+
+/////////////////////////
+/* Safari (MacOS only) */
+/////////////////////////
+
+@supports (-webkit-touch-callout: default) and (hover: hover) and (pointer: fine) {
 	.root_layout {
 	}
 }
