@@ -80,7 +80,8 @@ Route::group(
 		Route::crud("metadata", "MetadataCrudController");
 		Route::crud("media", "MediaCrudController");
 		Route::crud("attachment", "AttachmentCrudController");
-		Route::crud("contact", "ContactCrudController");
+    	Route::crud('backpack-role', 'BackpackRoleCrudController');
+    	Route::crud('role', 'RoleCrudController');
 	}
 ); // this should be the absolute last line of this file
 

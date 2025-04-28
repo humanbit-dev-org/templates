@@ -15,10 +15,7 @@ class RoleSeeder extends Seeder
 	{
 		Role::create([
 			"name" => "User",
-			"create_op" => true,
-			"read_op" => true,
-			"update_op" => true,
-			"delete_op" => true,
+			"description" => "User",
 		]);
 	}
 }

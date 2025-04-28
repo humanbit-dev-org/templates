@@ -2,17 +2,17 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Requests\ContactRequest;
+use App\Http\Requests\BackpackRoleRequest;
 use App\Http\Controllers\Admin\Helper\HelperBackend;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 
 /**
- * Class ContactCrudController
+ * Class BackpackRoleCrudController
  * @package App\Http\Controllers\Admin
  * @property-read \Backpack\CRUD\app\Library\CrudPanel\CrudPanel $crud
  */
-class ContactCrudController extends CrudController
+class BackpackRoleCrudController extends CrudController
 {
 	use \Backpack\CRUD\app\Http\Controllers\Operations\ListOperation;
 	use \Backpack\CRUD\app\Http\Controllers\Operations\CreateOperation;
@@ -27,9 +27,9 @@ class ContactCrudController extends CrudController
 	 */
 	public function setup()
 	{
-		CRUD::setModel(\App\Models\Contact::class);
-		CRUD::setRoute(config("backpack.base.route_prefix") . "/contact");
-		CRUD::setEntityNameStrings("contact", "contacts");
+		CRUD::setModel(\App\Models\BackpackRole::class);
+		CRUD::setRoute(config("backpack.base.route_prefix") . "/backpack-role");
+		CRUD::setEntityNameStrings("backend role", "backend roles");
 	}
 
 	/**
@@ -40,8 +40,7 @@ class ContactCrudController extends CrudController
 	 */
 	protected function setupListOperation()
 	{
-		HelperBackend::setFieldsView(new \App\Models\Contact());
-		CRUD::addButtonFromView("line", "contacts_options", "contacts_options", "view");
+		HelperBackend::setFieldsView(new \App\Models\BackpackRole());
 
 		/**
 		 * Columns can be defined using the fluent syntax:
@@ -57,8 +56,8 @@ class ContactCrudController extends CrudController
 	 */
 	protected function setupCreateOperation()
 	{
-		CRUD::setValidation(ContactRequest::class);
-		HelperBackend::setFields(new \App\Models\Contact());
+		CRUD::setValidation(BackpackRoleRequest::class);
+		HelperBackend::setFields(new \App\Models\BackpackRole());
 
 		/**
 		 * Fields can be defined using the fluent syntax:

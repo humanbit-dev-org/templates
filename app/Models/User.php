@@ -28,8 +28,8 @@ class User extends Authenticatable implements MustVerifyEmail
 		"address",
 		"email",
 		"phone",
-		"backpack_role",
 		"password",
+		"backpack_role_id",
 		"role_id",
 		"email_verified_at",
 	];
@@ -57,6 +57,11 @@ class User extends Authenticatable implements MustVerifyEmail
 	public function role()
 	{
 		return $this->belongsTo(Role::class);
+	}
+
+	public function backpackRole()
+	{
+		return $this->belongsTo(BackpackRole::class);
 	}
 
 	// public function sendEmailVerificationNotification()
