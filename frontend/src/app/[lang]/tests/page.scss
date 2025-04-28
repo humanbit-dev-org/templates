@@ -1,11 +1,11 @@
-// @use "@/page/components" as *; // File import statement
+// @use "@/page/tests" as *; // File import statement
 
 // >>> Controllers — START
 @use "@/scss/controllers/dynamics" as *; // controllers for mixins and variables
 @use "@/scss/controllers/extends" as *; // controller for modules
 // <<<<< Controllers — END
 
-.components_page {
+.tests_page {
 	.vert_charts {
 		height: 400px;
 
@@ -46,27 +46,27 @@
 ////////////////////////
 
 @media (max-width: 1399.98px) {
-	.components_page {
+	.tests_page {
 	}
 }
 
 @media (max-width: 1199.98px) {
-	.components_page {
+	.tests_page {
 	}
 }
 
 @media (max-width: 991.98px) {
-	.components_page {
+	.tests_page {
 	}
 }
 
 @media (max-width: 767.98px) {
-	.components_page {
+	.tests_page {
 	}
 }
 
 @media (max-width: 575.98px) {
-	.components_page {
+	.tests_page {
 	}
 }
 
@@ -77,27 +77,27 @@
 ////////////////////
 
 @media (min-width: 576px) and (max-width: 767.98px) {
-	.components_page {
+	.tests_page {
 	}
 }
 
 @media (min-width: 576px) and (max-width: 991.98px) {
-	.components_page {
+	.tests_page {
 	}
 }
 
 @media (min-width: 768px) and (max-width: 991.98px) {
-	.components_page {
+	.tests_page {
 	}
 }
 
 @media (min-width: 992px) and (max-width: 1199.98px) {
-	.components_page {
+	.tests_page {
 	}
 }
 
 @media (min-width: 1200px) and (max-width: 1399.98px) {
-	.components_page {
+	.tests_page {
 	}
 }
 
@@ -108,27 +108,27 @@
 ////////////////////////
 
 @media (min-width: 576px) {
-	.components_page {
+	.tests_page {
 	}
 }
 
 @media (min-width: 768px) {
-	.components_page {
+	.tests_page {
 	}
 }
 
 @media (min-width: 992px) {
-	.components_page {
+	.tests_page {
 	}
 }
 
 @media (min-width: 1200px) {
-	.components_page {
+	.tests_page {
 	}
 }
 
 @media (min-width: 1400px) {
-	.components_page {
+	.tests_page {
 	}
 }
 
@@ -139,7 +139,7 @@
 //////////////////////
 
 @media (max-height: 400px) and (orientation: landscape) {
-	.components_page {
+	.tests_page {
 	}
 }
 
@@ -150,6 +150,6 @@
 ///////////////////////
 
 @media (width: 1024px) and (height: 1366px) {
-	.components_page {
+	.tests_page {
 	}
 }

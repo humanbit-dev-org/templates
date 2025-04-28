@@ -1422,73 +1422,9 @@ ul {
 	// margin-left: auto;
 }
 
-////
-///---------- move translates in (function in main-humanbit.js ) ----------///
-//
-
-.viewport {
-	transition: all 1s ease-in-out;
-	-webkit-transition: all 1s ease-in-out;
-	-moz-transition: all 1s ease-in-out;
-	transform: matrix(1, 0, 0, 1, 0, 100);
-	opacity: 0;
-}
-
-.viewport.viewport_right {
-	transition: all 1s ease-in-out;
-	-webkit-transition: all 1s ease-in-out;
-	-moz-transition: all 1s ease-in-out;
-	transform: matrix(1, 0, 0, 1, 200, 0);
-	opacity: 0;
-}
-
-.viewport.viewport_left {
-	transition: all 1s ease-in-out;
-	-webkit-transition: all 1s ease-in-out;
-	-moz-transition: all 1s ease-in-out;
-	transform: matrix(1, 0, 0, 1, -200, 0);
-	opacity: 0;
-}
-
-.viewport.viewport_total_left {
-	transition: all 1s ease-in-out;
-	-webkit-transition: all 1s ease-in-out;
-	-moz-transition: all 1s ease-in-out;
-	transform: matrix(1, 0, 0, 1, -2000, 0);
-	opacity: 0.5;
-}
-
-.viewport.viewport_total_right {
-	transition: all 1.5s ease-in-out;
-	-webkit-transition: all 1.5s ease-in-out;
-	-moz-transition: all 1.5s ease-in-out;
-	transform: matrix(1, 0, 0, 1, 2000, 0);
-	opacity: 0.5;
-}
-
-.viewport.viewport_small_y_rotate {
-	transition: all 2s ease-in-out;
-	-webkit-transition: all 2s ease-in-out;
-	-moz-transition: all 2s ease-in-out;
-	transform: matrix(1, 0, 80, 1, 0, 0);
-	opacity: 0;
-}
-
-.viewport.viewport_big_y {
-	transition: all 2s ease-in-out;
-	-webkit-transition: all 2s ease-in-out;
-	-moz-transition: all 2s ease-in-out;
-	transform: matrix(1, 0, 0, 1, 0, 0);
-	opacity: 0;
-}
-
-////
-///---------- move translates out ----------///
-//
-
 /////
 ////
-/*/==================== @media ====================/*/ // {
+/*/ ==================== @media ==================== /*/
 /////////////
 ////////////
 ////////////////////////
@@ -1622,4 +1558,3 @@ ul {
 
 @media (width: 1024px) and (height: 1366px) {
 }
-// }

@@ -6,6 +6,16 @@
 // <<<<< Controllers — END
 
 .boilerplate_page {
+	sup,
+	.color_section,
+	.bg_color_section,
+	.el_title {
+		--color_section: #{$color_sixth};
+	}
+
+	.bg_color_gd::after {
+		--bg_color_gd: #{$color_sixth};
+	}
 }
 
 /////
@@ -24,7 +34,6 @@
 
 @media (max-width: 1199.98px) {
 	.boilerplate_page {
-		width: calc(100% - 20px);
 	}
 }
 
@@ -123,6 +132,28 @@
 ///////////////////////
 
 @media (width: 1024px) and (height: 1366px) {
+	.boilerplate_page {
+	}
+}
+
+// ----------------------- //
+
+/////////////////////////////
+/* all browsers (iOS only) */
+/////////////////////////////
+
+@supports (-webkit-touch-callout: none) and (hover: none) and (pointer: coarse) {
+	.boilerplate_page {
+	}
+}
+
+// ------------------- //
+
+/////////////////////////
+/* Safari (MacOS only) */
+/////////////////////////
+
+@supports (-webkit-touch-callout: default) and (hover: hover) and (pointer: fine) {
 	.boilerplate_page {
 	}
 }

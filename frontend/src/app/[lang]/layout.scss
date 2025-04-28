@@ -5,46 +5,48 @@
 @use "@/scss/controllers/extends" as *; // controller for modules
 // <<<<< Controllers — END
 
-.nav_cont {
-	z-index: 2001;
-}
-
-.bg_color_gd {
-	position: relative;
-	z-index: auto;
-
-	&::after {
-		content: "";
-		position: absolute;
-		top: 0;
-		left: 0;
-		width: 100%;
-		height: 100%;
-		background-color: var(--bg_color_gd, transparent);
-		mix-blend-mode: multiply;
-		z-index: -1;
+.root_layout {
+	.navbar {
+		z-index: 2001;
 	}
-}
 
-sup {
-	font-style: normal;
-	font-weight: 300;
-	letter-spacing: 0;
-	color: $color_white;
-	background-color: var(--color_section, $color_first);
-	border-radius: 50rem;
+	.bg_color_gd {
+		position: relative;
+		z-index: auto;
 
-	display: inline-flex;
-	justify-content: center;
-	align-items: center;
-	line-height: 1 !important;
-	width: 14px;
-	height: 14px;
-	padding: 8px;
+		&::after {
+			content: "";
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			background-color: var(--bg_color_gd, transparent);
+			mix-blend-mode: multiply;
+			z-index: -1;
+		}
+	}
 
-	&:hover {
-		box-shadow: 0px 4px 4px 0px rgba($color_black, 0.25);
-		transition: box-shadow 0.15s ease-in-out;
+	sup {
+		font-style: normal;
+		font-weight: 300;
+		letter-spacing: 0;
+		color: $color_white;
+		background-color: var(--color_section, $color_first);
+		border-radius: 50rem;
+
+		display: inline-flex;
+		justify-content: center;
+		align-items: center;
+		line-height: 1 !important;
+		width: 14px;
+		height: 14px;
+		padding: 8px;
+
+		&:hover {
+			box-shadow: 0px 4px 4px 0px rgba($color_black, 0.25);
+			transition: box-shadow 0.15s ease-in-out;
+		}
 	}
 }
 
@@ -61,41 +63,49 @@ sup {
 }
 
 @media (max-width: 1199.98px) {
-	.nav_cont {
-		width: 100%;
-	}
+	.root_layout {
+		.navbar {
+			width: 100%;
+		}
 
-	.space_wrap {
-		margin-bottom: calc(115px + $max_height_md);
-	}
+		.space_wrap {
+			margin-bottom: calc(115px + $max_height_md);
+		}
 
-	.btn_height {
-		height: 48px;
-	}
+		.btn_height {
+			height: 48px;
+		}
 
-	.icon_info_element {
-		width: 34px;
-		height: 34px;
-	}
+		.icon_info_element {
+			width: 34px;
+			height: 34px;
+		}
 
-	.el_btn.obj_chevron,
-	.el_btn.obj_toast {
-		width: 34px;
-		height: 34px;
+		.el_btn.obj_chevron,
+		.el_btn.obj_toast {
+			width: 34px;
+			height: 34px;
 
-		> i {
-			font-size: 34px;
+			> i {
+				font-size: 34px;
+			}
 		}
 	}
 }
 
 @media (max-width: 991.98px) {
+	.root_layout {
+	}
 }
 
 @media (max-width: 767.98px) {
+	.root_layout {
+	}
 }
 
 @media (max-width: 575.98px) {
+	.root_layout {
+	}
 }
 
 // -------------- //
@@ -105,18 +115,28 @@ sup {
 ////////////////////
 
 @media (min-width: 576px) and (max-width: 767.98px) {
+	.root_layout {
+	}
 }
 
 @media (min-width: 576px) and (max-width: 991.98px) {
+	.root_layout {
+	}
 }
 
 @media (min-width: 768px) and (max-width: 991.98px) {
+	.root_layout {
+	}
 }
 
 @media (min-width: 992px) and (max-width: 1199.98px) {
+	.root_layout {
+	}
 }
 
 @media (min-width: 1200px) and (max-width: 1399.98px) {
+	.root_layout {
+	}
 }
 
 // ------------------ //
@@ -126,29 +146,39 @@ sup {
 ////////////////////////
 
 @media (min-width: 576px) {
+	.root_layout {
+	}
 }
 
 @media (min-width: 768px) {
+	.root_layout {
+	}
 }
 
 @media (min-width: 992px) {
+	.root_layout {
+	}
 }
 
 @media (min-width: 1200px) {
-	.nav_cont {
-		width: 5%;
-	}
+	.root_layout {
+		.navbar {
+			width: 5%;
+		}
 
-	.space_wrap {
-		margin-bottom: 100vh;
-	}
+		.space_wrap {
+			margin-bottom: 100vh;
+		}
 
-	.toast {
-		max-width: 300px;
+		.toast {
+			max-width: 300px;
+		}
 	}
 }
 
 @media (min-width: 1400px) {
+	.root_layout {
+	}
 }
 
 // ---------------- //
@@ -158,6 +188,8 @@ sup {
 //////////////////////
 
 @media (max-height: 400px) and (orientation: landscape) {
+	.root_layout {
+	}
 }
 
 // ----------------- //
@@ -167,4 +199,6 @@ sup {
 ///////////////////////
 
 @media (width: 1024px) and (height: 1366px) {
+	.root_layout {
+	}
 }

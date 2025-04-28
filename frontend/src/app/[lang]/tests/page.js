@@ -1,6 +1,6 @@
 // Server-Side Rendering (React generates HTML before hydration)
 //
-// import ComponentsPage from "@/page/components"; // File import statement
+// import TestsPage from "@/page/tests"; // File import statement
 
 import * as constants from "@/config/constants"; // Global constants used throughout the app for API access
 import { getDictionary } from "@/app/dictionaries"; // Fetch translation dictionary based on language
@@ -12,7 +12,7 @@ import "./page.scss";
 // ## ############################################
 // ===============================================
 
-export default async function ComponentsPage({ params }) {
+export default async function TestsPage({ params }) {
 	// Get the language from route parameters
 	const { lang } = await params;
 
@@ -20,7 +20,7 @@ export default async function ComponentsPage({ params }) {
 	const translates = await getDictionary(lang);
 
 	// Fetch data from the API with language header
-	// const heroResponse = await fetch(`${constants.BASE_URL}/api/${lang}/components/<section>`, {
+	// const heroResponse = await fetch(`${constants.BASE_URL}/api/${lang}/tests/<section>`, {
 	// 	method: "GET",
 	// 	credentials: "include",
 	// 	headers: {
@@ -31,7 +31,7 @@ export default async function ComponentsPage({ params }) {
 	// const heroResponseJson = await heroResponse.json();
 
 	return (
-		<div className="components_page">
+		<div className="tests_page">
 			<div className="page_cont bg_color_fourth vh-100">
 				<section className="cont_space_1">
 					<div className="cont_mw_1">

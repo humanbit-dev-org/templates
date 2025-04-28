@@ -5,32 +5,34 @@
 @use "@/scss/controllers/extends" as *; // controller for modules
 // <<<<< Controllers — END
 
-.footer_cont {
-	.obj_1 {
-		z-index: -1;
-	}
-}
+.boilerplate_layout {
+	&.content {
+		.scrollspy_box {
+			&.active {
+				--color_section: #{$color_second};
 
-.storia_content {
-	.scrollspy_box {
-		&.active {
-			--color_section: #{$color_second};
-
-			.el_label {
-				color: $color_black;
+				.el_label {
+					color: $color_black;
+				}
 			}
+		}
+
+		sup,
+		.color_section,
+		.bg_color_section,
+		audio::-webkit-media-controls-enclosure {
+			--color_section: #{$color_second};
+		}
+
+		.bg_color_gd::after {
+			--bg_color_gd: #{$color_second};
 		}
 	}
 
-	sup,
-	.color_section,
-	.bg_color_section,
-	audio::-webkit-media-controls-enclosure {
-		--color_section: #{$color_second};
-	}
-
-	.bg_color_gd::after {
-		--bg_color_gd: #{$color_second};
+	&.footer {
+		.obj_1 {
+			z-index: -1;
+		}
 	}
 }
 
@@ -44,26 +46,36 @@
 ////////////////////////
 
 @media (max-width: 1399.98px) {
+	.boilerplate_layout {
+	}
 }
 
 @media (max-width: 1199.98px) {
-	.footer_cont {
-		width: 100%;
-		z-index: 2;
-	}
+	.boilerplate_layout {
+		&.content {
+			width: 100%;
+		}
 
-	.storia_content {
-		width: 100%;
+		&.footer {
+			width: 100%;
+			z-index: 2;
+		}
 	}
 }
 
 @media (max-width: 991.98px) {
+	.boilerplate_layout {
+	}
 }
 
 @media (max-width: 767.98px) {
+	.boilerplate_layout {
+	}
 }
 
 @media (max-width: 575.98px) {
+	.boilerplate_layout {
+	}
 }
 
 // -------------- //
@@ -73,18 +85,28 @@
 ////////////////////
 
 @media (min-width: 576px) and (max-width: 767.98px) {
+	.boilerplate_layout {
+	}
 }
 
 @media (min-width: 576px) and (max-width: 991.98px) {
+	.boilerplate_layout {
+	}
 }
 
 @media (min-width: 768px) and (max-width: 991.98px) {
+	.boilerplate_layout {
+	}
 }
 
 @media (min-width: 992px) and (max-width: 1199.98px) {
+	.boilerplate_layout {
+	}
 }
 
 @media (min-width: 1200px) and (max-width: 1399.98px) {
+	.boilerplate_layout {
+	}
 }
 
 // ------------------ //
@@ -94,25 +116,35 @@
 ////////////////////////
 
 @media (min-width: 576px) {
+	.boilerplate_layout {
+	}
 }
 
 @media (min-width: 768px) {
+	.boilerplate_layout {
+	}
 }
 
 @media (min-width: 992px) {
+	.boilerplate_layout {
+	}
 }
 
 @media (min-width: 1200px) {
-	.footer_cont {
-		width: 15%;
-	}
+	.boilerplate_layout {
+		&.content {
+			width: 80%;
+		}
 
-	.storia_content {
-		width: 80%;
+		&.footer {
+			width: 15%;
+		}
 	}
 }
 
 @media (min-width: 1400px) {
+	.boilerplate_layout {
+	}
 }
 
 // ---------------- //
@@ -122,6 +154,8 @@
 //////////////////////
 
 @media (max-height: 400px) and (orientation: landscape) {
+	.boilerplate_layout {
+	}
 }
 
 // ----------------- //
@@ -131,4 +165,28 @@
 ///////////////////////
 
 @media (width: 1024px) and (height: 1366px) {
+	.boilerplate_layout {
+	}
+}
+
+// ----------------------- //
+
+/////////////////////////////
+/* all browsers (iOS only) */
+/////////////////////////////
+
+@supports (-webkit-touch-callout: none) and (hover: none) and (pointer: coarse) {
+	.boilerplate_layout {
+	}
+}
+
+// ------------------- //
+
+/////////////////////////
+/* Safari (MacOS only) */
+/////////////////////////
+
+@supports (-webkit-touch-callout: default) and (hover: hover) and (pointer: fine) {
+	.boilerplate_layout {
+	}
 }

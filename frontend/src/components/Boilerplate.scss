@@ -5,6 +5,11 @@
 // <<<<< Controllers — END
 
 .boilerplate_component {
+	// @at-root .example_page {
+	// 	.el_title {
+	// 		--color_section: #{$color_sixth};
+	// 	}
+	// }
 }
 
 /////
@@ -121,6 +126,28 @@
 ///////////////////////
 
 @media (width: 1024px) and (height: 1366px) {
+	.boilerplate_component {
+	}
+}
+
+// ----------------------- //
+
+/////////////////////////////
+/* all browsers (iOS only) */
+/////////////////////////////
+
+@supports (-webkit-touch-callout: none) and (hover: none) and (pointer: coarse) {
+	.boilerplate_component {
+	}
+}
+
+// ------------------- //
+
+/////////////////////////
+/* Safari (MacOS only) */
+/////////////////////////
+
+@supports (-webkit-touch-callout: default) and (hover: hover) and (pointer: fine) {
 	.boilerplate_component {
 	}
 }

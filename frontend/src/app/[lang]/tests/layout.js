@@ -1,6 +1,6 @@
 // Server-Side Rendering (React generates HTML before hydration)
 //
-// import ComponentsLayout from "@/layout/components"; // File import statement
+// import TestsLayout from "@/layout/tests"; // File import statement
 
 import * as constants from "@/config/constants"; // Global constants used throughout the app for API access
 import "./layout.scss";
@@ -9,7 +9,7 @@ import "./layout.scss";
 // ## ############################################
 // ===============================================
 
-export default async function ComponentsLayout({ children, params }) {
+export default async function TestsLayout({ children, params }) {
 	// Get the language from route parameters
 	const { lang } = await params;
 
@@ -26,9 +26,9 @@ export default async function ComponentsLayout({ children, params }) {
 
 	return (
 		<>
-			<div className="components_layout grid_cont footer order-2 order-xl-0">{/* content */}</div>
+			<div className="tests_layout grid_cont footer order-2 order-xl-0">{/* content */}</div>
 
-			<div className="components_layout grid_cont content order-1">{children}</div>
+			<div className="tests_layout grid_cont content order-1">{children}</div>
 		</>
 	);
 }
