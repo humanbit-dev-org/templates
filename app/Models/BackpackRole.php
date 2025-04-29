@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class BackpackRole extends Model
 {
-    use CrudTrait;
+	use CrudTrait;
 	use HasFactory;
 
 	protected $fillable = ["name", "description"];
@@ -16,6 +16,11 @@ class BackpackRole extends Model
 	public function users()
 	{
 		return $this->hasMany(User::class);
+	}
+
+	public function modelPermissions()
+	{
+		return $this->hasMany(ModelPermission::class);
 	}
 
 	public function getDisplayAttribute()

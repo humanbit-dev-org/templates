@@ -36,13 +36,13 @@ class Institutional extends Model
 		return $this->hasMany(Media::class);
 	}
 
-	public function getDisplayAttribute()
-	{
-		return $this->title_italian;
-	}
-
 	public function attachment()
 	{
 		return $this->hasMany(Attachment::class);
+	}
+
+	public function getDisplayAttribute()
+	{
+		return $this->title_italian;
 	}
 }

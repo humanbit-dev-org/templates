@@ -80,11 +80,17 @@ Route::group(
 		Route::crud("metadata", "MetadataCrudController");
 		Route::crud("media", "MediaCrudController");
 		Route::crud("attachment", "AttachmentCrudController");
-    	Route::crud('backpack-role', 'BackpackRoleCrudController');
-    	Route::crud('role', 'RoleCrudController');
+		Route::crud("backpack-role", "BackpackRoleCrudController");
+		Route::crud("role", "RoleCrudController");
+		Route::crud("model-permission", "ModelPermissionCrudController");
 	}
 ); // this should be the absolute last line of this file
 
 /**
  * DO NOT ADD ANYTHING HERE.
  */
+
+Route::post(
+	"model-permission/check-used-permissions",
+	"App\Http\Controllers\Admin\ModelPermissionCrudController@checkUsedPermissions"
+);
