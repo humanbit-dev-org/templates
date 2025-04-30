@@ -60,7 +60,6 @@ class PageCrudController extends CrudController
 	protected function setupCreateOperation()
 	{
 		CRUD::setValidation(PageRequest::class);
-		HelperBackend::setFields(new \App\Models\Page());
 
 		/**
 		 * Fields can be defined using the fluent syntax:

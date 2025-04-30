@@ -18,6 +18,11 @@ class BackpackRole extends Model
 		return $this->hasMany(User::class);
 	}
 
+	public function modelPermissions()
+	{
+		return $this->hasMany(ModelPermission::class);
+	}
+
 	public function getDisplayAttribute()
 	{
 		return $this->name;

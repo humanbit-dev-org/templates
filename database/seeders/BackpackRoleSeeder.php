@@ -14,19 +14,19 @@ class BackpackRoleSeeder extends Seeder
 	public function run(): void
 	{
 		BackpackRole::create([
-			"name" => "admin",
+			"name" => "Admin",
 			"description" => "Administrator",
 		]);
 		BackpackRole::create([
-			"name" => "developer",
+			"name" => "Developer",
 			"description" => "Developer",
 		]);
 		BackpackRole::create([
-			"name" => "guest",
+			"name" => "Guest",
 			"description" => "Guest",
 		]);
 		BackpackRole::create([
-			"name" => "author",
+			"name" => "Author",
 			"description" => "Author",
 		]);
 	}

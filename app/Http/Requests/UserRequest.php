@@ -33,7 +33,7 @@ class UserRequest extends FormRequest
 			"password" => $this->route("id")
 				? ["nullable", Password::min(6)->mixedCase()->numbers()->symbols()->uncompromised()]
 				: ["required", Password::min(6)->mixedCase()->numbers()->symbols()->uncompromised()],
-			"backpack_role" => "required",
+			"role_id" => "required",
 			"phone" => "required|unique:users,phone," . $this->route("id"),
 			"address" => "required",
 		];

@@ -19,6 +19,7 @@
 <x-backpack::menu-dropdown title="Permissions" icon="la la-eye">
     <x-backpack::menu-dropdown-item title="Backend Roles" icon="la la-user-cog" :link="backpack_url('backpack-role')" />
     <x-backpack::menu-dropdown-item title="Web Roles" icon="la la-user-cog" :link="backpack_url('role')" />
+    <x-backpack::menu-dropdown-item title="Model Permissions" icon="la la-key" :link="backpack_url('model-permission')" />
 </x-backpack::menu-dropdown>
 
 @endif

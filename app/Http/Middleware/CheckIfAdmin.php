@@ -28,10 +28,10 @@ class CheckIfAdmin
 	private function checkIfUserIsAdmin($user)
 	{
 		return $user &&
-			($user->backpackRole->name == "admin" ||
-				$user->backpackRole->name == "guest" ||
-				$user->backpackRole->name == "developer" ||
-				$user->backpackRole->name == "author");
+			($user->backpackRole->name == "Admin" ||
+				$user->backpackRole->name == "Guest" ||
+				$user->backpackRole->name == "Developer" ||
+				$user->backpackRole->name == "Author");
 		//return true;
 	}
 
