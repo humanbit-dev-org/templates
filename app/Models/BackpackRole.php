@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class BackpackRole extends Model
 {
-    use CrudTrait;
+	use CrudTrait;
 	use HasFactory;
 
 	protected $fillable = ["name", "description"];

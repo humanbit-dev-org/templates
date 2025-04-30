@@ -130,3 +130,25 @@
 	.home_page {
 	}
 }
+
+// ----------------------- //
+
+/////////////////////////////
+/* all browsers (iOS only) */
+/////////////////////////////
+
+@supports (-webkit-touch-callout: none) and (hover: none) and (pointer: coarse) {
+	.home_page {
+	}
+}
+
+// ------------------- //
+
+/////////////////////////
+/* Safari (MacOS only) */
+/////////////////////////
+
+@supports (-webkit-touch-callout: default) and (hover: hover) and (pointer: fine) {
+	.home_page {
+	}
+}

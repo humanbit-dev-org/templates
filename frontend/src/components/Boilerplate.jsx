@@ -65,8 +65,12 @@ export async function BoilerplateComponent({ props }) {
 							<div className="group_wrap">
 								<div className="obj_cont">
 									<div className="obj_wrap">
-										{/* el_title el_subtitle el_abstract el_body el_txt el_btn el_img el_icon el_link
-										el_label el_logo obj_desktop obj_mobile obj_cont obj_cont el_cont el_wrap */}
+										<div className="el_cont">
+											<div className="el_wrap">
+												{/* el_title el_subtitle el_abstract el_body */}
+												{/* el_txt el_btn el_img el_icon el_link el_label el_logo */}
+											</div>
+										</div>
 									</div>
 								</div>
 							</div>

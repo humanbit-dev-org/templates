@@ -5,9 +5,9 @@
 // <<<<< Controllers — END
 
 .boilerplate_component {
-	// @at-root .example_page {
-	// 	.el_title {
-	// 		--color_section: #{$color_sixth};
+	// .obj_example {
+	// 	@at-root .grid_cont:not(:has(.example_target)) #{&} {
+	// 		background-color: $variable_name;
 	// 	}
 	// }
 }

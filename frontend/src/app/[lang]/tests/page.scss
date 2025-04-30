@@ -153,3 +153,25 @@
 	.tests_page {
 	}
 }
+
+// ----------------------- //
+
+/////////////////////////////
+/* all browsers (iOS only) */
+/////////////////////////////
+
+@supports (-webkit-touch-callout: none) and (hover: none) and (pointer: coarse) {
+	.tests_page {
+	}
+}
+
+// ------------------- //
+
+/////////////////////////
+/* Safari (MacOS only) */
+/////////////////////////
+
+@supports (-webkit-touch-callout: default) and (hover: hover) and (pointer: fine) {
+	.tests_page {
+	}
+}

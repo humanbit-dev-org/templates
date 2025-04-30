@@ -13,16 +13,17 @@
 // The mixin
 //
 // @use "sass:math";
-// // See https://stackoverflow.com/questions/12328259/how-do-you-strip-the-unit-from-any-number-in-sass
+//
+// See https://stackoverflow.com/questions/12328259/how-do-you-strip-the-unit-from-any-number-in-sass
 // @function strip-unit($value) {
 // 	@return math.div($value, ($value * 0 + 1));
 // }
 
 @mixin fluid_type(
 	// >>>>> VIEWPORT <<<<<
-	$viewport-min: 20em,
+	$viewport-min: 20em, // (320px)
 	// Set global values
-	$viewport-max: 100em,
+	$viewport-max: 100em, // (1600px)
 	// Set global values
 	// >>>>> MOBILE <<<<<
 	$font-size-min: null,
@@ -40,67 +41,39 @@
 
 	// @if $u1 == $u2 and $u1 == $u3 and $u1 == $u4 {
 	// 	& {
-	font-size: $font-size-min #{$important};
-	line-height: $line-height-mobile #{$important};
-
-	// @if $important {
-	// 	$important: "!important";
-	// } @else {
-	// 	$important: null;
-	// }
-
-	@media screen and (min-width: $viewport-min) and (max-width: 575.98px) {
-		font-size: calc(
-				#{$font-size-min} + #{strip-unit($font-size-max - $font-size-min)} *
-					((100vw - #{$viewport-min}) / #{strip-unit($viewport-max - $viewport-min)})
-			)
-			#{$important};
+	@media (max-width: 319.98px) {
+		font-size: $font-size-min #{$important};
 		line-height: $line-height-mobile #{$important};
 	}
 
-	@media screen and (min-width: 576px) and (max-width: $viewport-max) {
-		font-size: calc(
-				#{$font-size-min} + #{strip-unit($font-size-max - $font-size-min)} *
-					((100vw - #{$viewport-min}) / #{strip-unit($viewport-max - $viewport-min)})
-			)
-			#{$important};
-		line-height: $line-height-desktop #{$important};
+	@media (min-width: $viewport-min) and (max-width: 575.98px) {
+		font-size: clamp(
+			#{$font-size-min},
+			calc(
+				#{$font-size-min} + ((#{strip-unit($font-size-max)} - #{strip-unit($font-size-min)}) *
+				(((100vw - #{$viewport-min}) / (#{strip-unit($viewport-max)} - #{strip-unit($viewport-min)})) * 2))
+			),
+			#{$font-size-max}
+		) #{$important};
+		line-height: #{$line-height-mobile} #{$important};
 	}
 
-	@media screen and (min-width: $viewport-max) {
+	@media (min-width: 576px) and (max-width: calc(#{$viewport-max} - 0.02px)) {
+		font-size: clamp(
+			#{$font-size-min},
+			calc(
+				#{$font-size-min} + ((#{strip-unit($font-size-max)} - #{strip-unit($font-size-min)}) *
+				(((100vw - #{$viewport-min}) / (#{strip-unit($viewport-max)} - #{strip-unit($viewport-min)})) * 1))
+			),
+			#{$font-size-max}
+		) #{$important};
+		line-height: #{$line-height-desktop} #{$important};
+	}
+
+	@media (min-width: $viewport-max) {
 		font-size: $font-size-max #{$important};
 		line-height: $line-height-desktop #{$important};
 	}
-
-	// @if $important {
-	// 	font-size: $font-size-min !important;
-	// 	line-height: $line-height-mobile !important;
-
-	// 	@media screen and (min-width: $viewport-min) and (max-width: 575.98px) {
-	// 		font-size: calc($line-height-mobile * calc(#{$font-size-min} + #{strip-unit($font-size-max - $font-size-min)} * ((100vw - #{$viewport-min}) / #{strip-unit($viewport-max - $viewport-min)}))) !important;
-	// 		line-height: $line-height-mobile !important;
-	// 	}
-
-	// 	@media screen and (min-width: 576px) and (max-width: $viewport-max) {
-	// 		font-size: calc($line-height-desktop * calc(#{$font-size-min} + #{strip-unit($font-size-max - $font-size-min)} * ((100vw - #{$viewport-min}) / #{strip-unit($viewport-max - $viewport-min)}))) !important;
-	// 		line-height: $line-height-desktop !important;
-	// 	}
-
-	// 	@media screen and (min-width: $viewport-max) {
-	// 		font-size: $font-size-max !important;
-	// 		line-height: $line-height-desktop !important;
-	// 	}
-	// }
-
-	// @if $important {
-	// 	font-size: $font-size !important;
-	// 	line-height: $line-height !important;
-	// } @else {
-	// 	font-size: $font-size;
-	// 	line-height: $line-height;
-	// }
-	// 	}
-	// }
 }
 
 // The formula

@@ -127,421 +127,402 @@ body {
 // ----------- //
 
 .lora {
-	// <uniquifier>: Use a unique and descriptive class name
-	// <weight>: Use a value from 400 to 700
-
 	&,
 	& > * {
-		// .lora-<uniquifier> {
 		font-family: "Lora", serif !important;
 		font-optical-sizing: auto;
-		// font-weight: <weight>;
 		font-style: normal;
 	}
 }
 
 .manrope {
-	// <uniquifier>: Use a unique and descriptive class name
-	// <weight>: Use a value from 200 to 800
-
 	&,
 	& > * {
-		// .manrope-<uniquifier> {
 		font-family: "Manrope", serif !important;
 		font-optical-sizing: auto;
-		// font-weight: <weight>;
 		font-style: normal;
 	}
 }
 
-// ------------------------------- //
-// @mixin for responsive font-size //
-// ------------------------------- //
+// --------------------------------- //
+// @mixin for responsive `font-size` //
+// --------------------------------- //
 
 // `font-size` must be set at XX% of Figma's value.
 
+// Example of a filled-out guideline:
+// HERO TITLE (article-list) | Manrope (bold) | fs: 40px~60px/2.5rem~3.75rem | lh: 64px~70px/1.35~1.16
+
+// [ROLE (scope)] | [font-family] ([font-weight]) | fs: [min]px~[max]px/[min]rem~[max]rem | lh: [min]px~[max]px/[min-ratio]~[max-ratio]
 h1,
 .h1 {
-	// hero title
-	@include fluid_type(
-		// responsive typography
+	font-family: "Manrope", serif;
+	font-weight: 500;
+
+	// prettier-ignore
+	@include fluid_type( // responsive typography
 		// >>>>> VIEWPORT <<<<<
 		// $viewport-min: 20em, // default value set in `_fluid_type.scss` to enable global configuration
 		// $viewport-max: 100em, // default value set in `_fluid_type.scss` to enable global configuration
 		// >>>>> MOBILE <<<<<
-		// $font-size-min: 2.5rem,
-		$font-size-min: 2rem,
-		// $font-size-min: 1.1rem,
-		// `font-size` on mobile viewport (< 575.98px)
-		// $line-height-mobile: 1.35,
-		$line-height-mobile: 1.1,
-		// `line-height` multiplier on mobile viewport (< 575.98px)
+		$font-size-min: 1.73rem, // `font-size` on mobile viewport (< 575.98px)
+		$line-height-mobile: 1.5, // `line-height` multiplier on mobile viewport (< 575.98px)
 		// >>>>> DESKTOP <<<<<
-		$font-size-max: 3.75rem,
-		// $font-size-max: 4rem,
-		// `font-size` on desktop viewport (> 576px)
-		$line-height-desktop: 1.16,
-		// `line-height` multiplier on desktop viewport (> 576px)
+		$font-size-max: 2.5rem, // `font-size` on desktop viewport (> 576px)
+		$line-height-desktop: 1.2, // `line-height` multiplier on desktop viewport (> 576px)
 		// >>>>> IMPORTANT <<<<<
-		 // $important: "!important" // uncomment to add the `!important` flag
+		// $important: "!important" // uncomment to add the `!important` flag
 	);
-	font-family: "Manrope", serif;
-	// font-weight: 700;
-	// font-weight: 600;
-	font-weight: 500;
 }
 
+// [ROLE (scope)] | [font-family] ([font-weight]) | fs: [min]px~[max]px/[min]rem~[max]rem | lh: [min]px~[max]px/[min-ratio]~[max-ratio]
 h2,
 .h2 {
-	// hero abstract
-	@include fluid_type(
-		// responsive typography
-		// >>>>> VIEWPORT <<<<<
-		// $viewport-min: 20em, // default value set in `_fluid_type.scss` to enable global configuration
-		// $viewport-max: 100em, // default value set in `_fluid_type.scss` to enable global configuration
-		// >>>>> MOBILE <<<<<
-		$font-size-min: 0.75rem,
-		// `font-size` on mobile viewport (< 575.98px)
-		$line-height-mobile: 1.36,
-		// `line-height` multiplier on mobile viewport (< 575.98px)
-		// >>>>> DESKTOP <<<<<
-		// $font-size-max: 0.75rem,
-		$font-size-max: 0.8rem,
-		// `font-size` on desktop viewport (> 576px)
-		$line-height-desktop: 1.4,
-		// `line-height` multiplier on desktop viewport (> 576px)
-		// >>>>> IMPORTANT <<<<<
-		 // $important: "!important" // uncomment to add the `!important` flag
-	);
 	font-family: "Manrope", serif;
 	font-weight: 500;
+
+	// prettier-ignore
+	@include fluid_type( // responsive typography
+		// >>>>> VIEWPORT <<<<<
+		// $viewport-min: 20em, // default value set in `_fluid_type.scss` to enable global configuration
+		// $viewport-max: 100em, // default value set in `_fluid_type.scss` to enable global configuration
+		// >>>>> MOBILE <<<<<
+		$font-size-min: 1.54rem, // `font-size` on mobile viewport (< 575.98px)
+		$line-height-mobile: 1.5, // `line-height` multiplier on mobile viewport (< 575.98px)
+		// >>>>> DESKTOP <<<<<
+		$font-size-max: 2rem, // `font-size` on desktop viewport (> 576px)
+		$line-height-desktop: 1.2, // `line-height` multiplier on desktop viewport (> 576px)
+		// >>>>> IMPORTANT <<<<<
+		// $important: "!important" // uncomment to add the `!important` flag
+	);
 }
 
+// [ROLE (scope)] | [font-family] ([font-weight]) | fs: [min]px~[max]px/[min]rem~[max]rem | lh: [min]px~[max]px/[min-ratio]~[max-ratio]
 h3,
 .h3 {
-	// chapter title (paragraphs)
-	@include fluid_type(
-		// responsive typography
+	font-family: "Manrope", serif;
+	font-weight: 700;
+
+	// prettier-ignore
+	@include fluid_type( // responsive typography
 		// >>>>> VIEWPORT <<<<<
 		// $viewport-min: 20em, // default value set in `_fluid_type.scss` to enable global configuration
 		// $viewport-max: 100em, // default value set in `_fluid_type.scss` to enable global configuration
 		// >>>>> MOBILE <<<<<
-		$font-size-min: 1.375rem,
-		// `font-size` on mobile viewport (< 575.98px)
-		$line-height-mobile: 1.2,
-		// `line-height` multiplier on mobile viewport (< 575.98px)
+		$font-size-min: 1.44rem, // `font-size` on mobile viewport (< 575.98px)
+		$line-height-mobile: 1.5, // `line-height` multiplier on mobile viewport (< 575.98px)
 		// >>>>> DESKTOP <<<<<
-		$font-size-max: 2.68rem,
-		// `font-size` on desktop viewport (> 576px)
-		$line-height-desktop: 1.25,
-		// `line-height` multiplier on desktop viewport (> 576px)
+		$font-size-max: 1.75rem, // `font-size` on desktop viewport (> 576px)
+		$line-height-desktop: 1.2, // `line-height` multiplier on desktop viewport (> 576px)
 		// >>>>> IMPORTANT <<<<<
-		 // $important: "!important" // uncomment to add the `!important` flag
+		// $important: "!important" // uncomment to add the `!important` flag
 	);
-	font-family: "Manrope", serif;
-	font-weight: 700;
 }
 
+// [ROLE (scope)] | [font-family] ([font-weight]) | fs: [min]px~[max]px/[min]rem~[max]rem | lh: [min]px~[max]px/[min-ratio]~[max-ratio]
 h4,
 .h4 {
-	@include fluid_type(
-		// responsive typography
+	font-family: "Manrope", serif;
+	font-weight: 700;
+
+	// prettier-ignore
+	@include fluid_type( // responsive typography
 		// >>>>> VIEWPORT <<<<<
 		// $viewport-min: 20em, // default value set in `_fluid_type.scss` to enable global configuration
 		// $viewport-max: 100em, // default value set in `_fluid_type.scss` to enable global configuration
 		// >>>>> MOBILE <<<<<
-		$font-size-min: 1.35rem,
-		// `font-size` on mobile viewport (< 575.98px)
-		$line-height-mobile: 1.4,
-		// `line-height` multiplier on mobile viewport (< 575.98px)
+		$font-size-min: 1.35rem, // `font-size` on mobile viewport (< 575.98px)
+		$line-height-mobile: 1.5, // `line-height` multiplier on mobile viewport (< 575.98px)
 		// >>>>> DESKTOP <<<<<
-		$font-size-max: 2.5rem,
-		// `font-size` on desktop viewport (> 576px)
-		$line-height-desktop: 1.35,
-		// `line-height` multiplier on desktop viewport (> 576px)
+		$font-size-max: 1.5rem, // `font-size` on desktop viewport (> 576px)
+		$line-height-desktop: 1.2, // `line-height` multiplier on desktop viewport (> 576px)
 		// >>>>> IMPORTANT <<<<<
-		 // $important: "!important" // uncomment to add the `!important` flag
+		// $important: "!important" // uncomment to add the `!important` flag
 	);
-	font-family: "Manrope", serif;
-	font-weight: 700;
 }
 
+// [ROLE (scope)] | [font-family] ([font-weight]) | fs: [min]px~[max]px/[min]rem~[max]rem | lh: [min]px~[max]px/[min-ratio]~[max-ratio]
 h5,
 .h5 {
-	@include fluid_type(
-		// responsive typography
-		// >>>>> VIEWPORT <<<<<
-		// $viewport-min: 20em, // default value set in `_fluid_type.scss` to enable global configuration
-		// $viewport-max: 100em, // default value set in `_fluid_type.scss` to enable global configuration
-		// >>>>> MOBILE <<<<<
-		$font-size-min: 1.25rem,
-		// `font-size` on mobile viewport (< 575.98px)
-		$line-height-mobile: 1.4,
-		// `line-height` multiplier on mobile viewport (< 575.98px)
-		// >>>>> DESKTOP <<<<<
-		$font-size-max: 2.375rem,
-		// `font-size` on desktop viewport (> 576px)
-		$line-height-desktop: 1.18,
-		// `line-height` multiplier on desktop viewport (> 576px)
-		// >>>>> IMPORTANT <<<<<
-		 // $important: "!important" // uncomment to add the `!important` flag
-	);
 	font-family: "Manrope", serif;
 	font-weight: 700;
+
+	// prettier-ignore
+	@include fluid_type( // responsive typography
+		// >>>>> VIEWPORT <<<<<
+		// $viewport-min: 20em, // default value set in `_fluid_type.scss` to enable global configuration
+		// $viewport-max: 100em, // default value set in `_fluid_type.scss` to enable global configuration
+		// >>>>> MOBILE <<<<<
+		$font-size-min: 1.25rem, // `font-size` on mobile viewport (< 575.98px)
+		$line-height-mobile: 1.5, // `line-height` multiplier on mobile viewport (< 575.98px)
+		// >>>>> DESKTOP <<<<<
+		$font-size-max: 1.25rem, // `font-size` on desktop viewport (> 576px)
+		$line-height-desktop: 1.2, // `line-height` multiplier on desktop viewport (> 576px)
+		// >>>>> IMPORTANT <<<<<
+		// $important: "!important" // uncomment to add the `!important` flag
+	);
 }
 
+// [ROLE (scope)] | [font-family] ([font-weight]) | fs: [min]px~[max]px/[min]rem~[max]rem | lh: [min]px~[max]px/[min-ratio]~[max-ratio]
 h6,
 .h6 {
-	// article section subtitles (paragraphs)
-	@include fluid_type(
-		// responsive typography
-		// >>>>> VIEWPORT <<<<<
-		// $viewport-min: 20em, // default value set in `_fluid_type.scss` to enable global configuration
-		// $viewport-max: 100em, // default value set in `_fluid_type.scss` to enable global configuration
-		// >>>>> MOBILE <<<<<
-		$font-size-min: 0.8rem,
-		// $font-size-min: 0.55rem,
-		// `font-size` on mobile viewport (< 575.98px)
-		$line-height-mobile: 1.5,
-		// `line-height` multiplier on mobile viewport (< 575.98px)
-		// >>>>> DESKTOP <<<<<
-		$font-size-max: 1.25rem,
-		// `font-size` on desktop viewport (> 576px)
-		$line-height-desktop: 1.2,
-		// `line-height` multiplier on desktop viewport (> 576px)
-		// >>>>> IMPORTANT <<<<<
-		 // $important: "!important" // uncomment to add the `!important` flag
-	);
 	font-family: "Manrope", serif;
 	font-weight: 600;
-}
 
-p {
-	// article body (paragraphs)
-	@include fluid_type(
-		// responsive typography
+	// prettier-ignore
+	@include fluid_type( // responsive typography
 		// >>>>> VIEWPORT <<<<<
 		// $viewport-min: 20em, // default value set in `_fluid_type.scss` to enable global configuration
 		// $viewport-max: 100em, // default value set in `_fluid_type.scss` to enable global configuration
 		// >>>>> MOBILE <<<<<
-		$font-size-min: 0.875rem,
-		// `font-size` on mobile viewport (< 575.98px)
-		$line-height-mobile: 1.5,
-		// `line-height` multiplier on mobile viewport (< 575.98px)
+		$font-size-min: 1rem, // `font-size` on mobile viewport (< 575.98px)
+		$line-height-mobile: 1.5, // `line-height` multiplier on mobile viewport (< 575.98px)
 		// >>>>> DESKTOP <<<<<
-		// $font-size-max: 1rem,
-		$font-size-max: 1.063rem,
-		// `font-size` on desktop viewport (> 576px)
-		// $line-height-desktop: 1.4,
-		$line-height-desktop: 1.5,
-		// `line-height` multiplier on desktop viewport (> 576px)
+		$font-size-max: 1rem, // `font-size` on desktop viewport (> 576px)
+		$line-height-desktop: 1.2, // `line-height` multiplier on desktop viewport (> 576px)
 		// >>>>> IMPORTANT <<<<<
-		 // $important: "!important" // uncomment to add the `!important` flag
+		// $important: "!important" // uncomment to add the `!important` flag
 	);
+}
+
+// [ROLE (scope)] | [font-family] ([font-weight]) | fs: [min]px~[max]px/[min]rem~[max]rem | lh: [min]px~[max]px/[min-ratio]~[max-ratio]
+p {
 	font-family: "Lora", serif;
 	font-weight: 400;
 	letter-spacing: 0.2px;
+
+	// prettier-ignore
+	@include fluid_type( // responsive typography
+		// >>>>> VIEWPORT <<<<<
+		// $viewport-min: 20em, // default value set in `_fluid_type.scss` to enable global configuration
+		// $viewport-max: 100em, // default value set in `_fluid_type.scss` to enable global configuration
+		// >>>>> MOBILE <<<<<
+		$font-size-min: 1rem, // `font-size` on mobile viewport (< 575.98px)
+		$line-height-mobile: 1.5, // `line-height` multiplier on mobile viewport (< 575.98px)
+		// >>>>> DESKTOP <<<<<
+		$font-size-max: 1rem, // `font-size` on desktop viewport (> 576px)
+		$line-height-desktop: 1.2, // `line-height` multiplier on desktop viewport (> 576px)
+		// >>>>> IMPORTANT <<<<<
+		// $important: "!important" // uncomment to add the `!important` flag
+	);
 }
 
+// [ROLE (scope)] | [font-family] ([font-weight]) | fs: [min]px~[max]px/[min]rem~[max]rem | lh: [min]px~[max]px/[min-ratio]~[max-ratio]
 .p {
 	&,
-	& *:not(sup) {
-		// article body (paragraphs)
-		@include fluid_type(
-			// responsive typography
+	& * {
+		font-family: "Lora", serif;
+		font-weight: 400;
+		letter-spacing: 0.2px;
+
+		// prettier-ignore
+		@include fluid_type( // responsive typography
 			// >>>>> VIEWPORT <<<<<
 			// $viewport-min: 20em, // default value set in `_fluid_type.scss` to enable global configuration
 			// $viewport-max: 100em, // default value set in `_fluid_type.scss` to enable global configuration
 			// >>>>> MOBILE <<<<<
-			$font-size-min: 0.875rem,
-			// `font-size` on mobile viewport (< 575.98px)
-			$line-height-mobile: 1.5,
-			// `line-height` multiplier on mobile viewport (< 575.98px)
+			$font-size-min: 1rem, // `font-size` on mobile viewport (< 575.98px)
+			$line-height-mobile: 1.5, // `line-height` multiplier on mobile viewport (< 575.98px)
 			// >>>>> DESKTOP <<<<<
-			// $font-size-max: 1rem,
-			$font-size-max: 1.063rem,
-			// `font-size` on desktop viewport (> 576px)
-			// $line-height-desktop: 1.4,
-			$line-height-desktop: 1.5,
-			// `line-height` multiplier on desktop viewport (> 576px)
+			$font-size-max: 1rem, // `font-size` on desktop viewport (> 576px)
+			$line-height-desktop: 1.2, // `line-height` multiplier on desktop viewport (> 576px)
 			// >>>>> IMPORTANT <<<<<
 			$important: "!important" // uncomment to add the `!important` flag
 		);
-		font-family: "Lora", serif;
-		font-weight: 400;
-		letter-spacing: 0.2px;
 	}
 }
 
+// [ROLE (scope)] | [font-family] ([font-weight]) | fs: [min]px~[max]px/[min]rem~[max]rem | lh: [min]px~[max]px/[min-ratio]~[max-ratio]
+.biggest {
+	font-family: "Manrope", serif;
+	font-weight: 600;
+
+	// prettier-ignore
+	@include fluid_type( // responsive typography
+		// >>>>> VIEWPORT <<<<<
+		// $viewport-min: 20em, // default value set in `_fluid_type.scss` to enable global configuration
+		// $viewport-max: 100em, // default value set in `_fluid_type.scss` to enable global configuration
+		// >>>>> MOBILE <<<<<
+		$font-size-min: 2.5rem, // `font-size` on mobile viewport (< 575.98px)
+		$line-height-mobile: 1.5, // `line-height` multiplier on mobile viewport (< 575.98px)
+		// >>>>> DESKTOP <<<<<
+		$font-size-max: 5rem, // `font-size` on desktop viewport (> 576px)
+		$line-height-desktop: 1.2, // `line-height` multiplier on desktop viewport (> 576px)
+		// >>>>> IMPORTANT <<<<<
+		// $important: "!important" // uncomment to add the `!important` flag
+	);
+}
+
+// [ROLE (scope)] | [font-family] ([font-weight]) | fs: [min]px~[max]px/[min]rem~[max]rem | lh: [min]px~[max]px/[min-ratio]~[max-ratio]
+.bigger {
+	font-family: "Manrope", serif;
+	font-weight: 600;
+
+	// prettier-ignore
+	@include fluid_type( // responsive typography
+		// >>>>> VIEWPORT <<<<<
+		// $viewport-min: 20em, // default value set in `_fluid_type.scss` to enable global configuration
+		// $viewport-max: 100em, // default value set in `_fluid_type.scss` to enable global configuration
+		// >>>>> MOBILE <<<<<
+		$font-size-min: 2rem, // `font-size` on mobile viewport (< 575.98px)
+		$line-height-mobile: 1.5, // `line-height` multiplier on mobile viewport (< 575.98px)
+		// >>>>> DESKTOP <<<<<
+		$font-size-max: 4.375rem, // `font-size` on desktop viewport (> 576px)
+		$line-height-desktop: 1.2, // `line-height` multiplier on desktop viewport (> 576px)
+		// >>>>> IMPORTANT <<<<<
+		// $important: "!important" // uncomment to add the `!important` flag
+	);
+}
+
+// [ROLE (scope)] | [font-family] ([font-weight]) | fs: [min]px~[max]px/[min]rem~[max]rem | lh: [min]px~[max]px/[min-ratio]~[max-ratio]
 .big {
-	// banner date
-	@include fluid_type(
-		// responsive typography
+	font-family: "Manrope", serif;
+	font-weight: 600;
+
+	// prettier-ignore
+	@include fluid_type( // responsive typography
 		// >>>>> VIEWPORT <<<<<
 		// $viewport-min: 20em, // default value set in `_fluid_type.scss` to enable global configuration
 		// $viewport-max: 100em, // default value set in `_fluid_type.scss` to enable global configuration
 		// >>>>> MOBILE <<<<<
-		$font-size-min: 3.125rem,
-		// `font-size` on mobile viewport (< 575.98px)
-		$line-height-mobile: 1,
-		// `line-height` multiplier on mobile viewport (< 575.98px)
+		$font-size-min: 2rem, // `font-size` on mobile viewport (< 575.98px)
+		$line-height-mobile: 1.5, // `line-height` multiplier on mobile viewport (< 575.98px)
 		// >>>>> DESKTOP <<<<<
-		$font-size-max: 5.625rem,
-		// `font-size` on desktop viewport (> 576px)
-		$line-height-desktop: 1,
-		// `line-height` multiplier on desktop viewport (> 576px)
+		$font-size-max: 3.375rem, // `font-size` on desktop viewport (> 576px)
+		$line-height-desktop: 1.2, // `line-height` multiplier on desktop viewport (> 576px)
 		// >>>>> IMPORTANT <<<<<
-		 // $important: "!important" // uncomment to add the `!important` flag
+		// $important: "!important" // uncomment to add the `!important` flag
 	);
-	font-family: "Manrope", serif;
-	font-weight: 600;
 }
 
+// [ROLE (scope)] | [font-family] ([font-weight]) | fs: [min]px~[max]px/[min]rem~[max]rem | lh: [min]px~[max]px/[min-ratio]~[max-ratio]
 .midbig {
-	// hero title (home)
-	@include fluid_type(
-		// responsive typography
+	font-family: "Manrope", serif;
+	font-weight: 600;
+
+	// prettier-ignore
+	@include fluid_type( // responsive typography
 		// >>>>> VIEWPORT <<<<<
 		// $viewport-min: 20em, // default value set in `_fluid_type.scss` to enable global configuration
 		// $viewport-max: 100em, // default value set in `_fluid_type.scss` to enable global configuration
 		// >>>>> MOBILE <<<<<
-		$font-size-min: 1.8rem,
-		// `font-size` on mobile viewport (< 575.98px)
-		$line-height-mobile: 1.5,
-		// `line-height` multiplier on mobile viewport (< 575.98px)
+		$font-size-min: 1.6rem, // `font-size` on mobile viewport (< 575.98px)
+		$line-height-mobile: 1.5, // `line-height` multiplier on mobile viewport (< 575.98px)
 		// >>>>> DESKTOP <<<<<
-		$font-size-max: 4.375rem,
-		// `font-size` on desktop viewport (> 576px)
-		$line-height-desktop: 1.2,
-		// `line-height` multiplier on desktop viewport (> 576px)
+		$font-size-max: 2.25rem, // `font-size` on desktop viewport (> 576px)
+		$line-height-desktop: 1.2, // `line-height` multiplier on desktop viewport (> 576px)
 		// >>>>> IMPORTANT <<<<<
-		 // $important: "!important" // uncomment to add the `!important` flag
+		// $important: "!important" // uncomment to add the `!important` flag
 	);
-	font-family: "Manrope", serif;
-	font-weight: 600;
 }
 
+// [ROLE (scope)] | [font-family] ([font-weight]) | fs: [min]px~[max]px/[min]rem~[max]rem | lh: [min]px~[max]px/[min-ratio]~[max-ratio]
 .medium {
-	// banner title
-	@include fluid_type(
-		// responsive typography
-		// >>>>> VIEWPORT <<<<<
-		// $viewport-min: 20em, // default value set in `_fluid_type.scss` to enable global configuration
-		// $viewport-max: 100em, // default value set in `_fluid_type.scss` to enable global configuration
-		// >>>>> MOBILE <<<<<
-		$font-size-min: 2.2rem,
-		// `font-size` on mobile viewport (< 575.98px)
-		$line-height-mobile: 1.05,
-		// `line-height` multiplier on mobile viewport (< 575.98px)
-		// >>>>> DESKTOP <<<<<
-		$font-size-max: 4.25rem,
-		// `font-size` on desktop viewport (> 576px)
-		$line-height-desktop: 1.08,
-		// `line-height` multiplier on desktop viewport (> 576px)
-		// >>>>> IMPORTANT <<<<<
-		 // $important: "!important" // uncomment to add the `!important` flag
-	);
 	font-family: "Manrope", serif;
 	font-weight: 600;
-}
 
-.midsmall {
-	// president name (home)
-	@include fluid_type(
-		// responsive typography
+	// prettier-ignore
+	@include fluid_type( // responsive typography
 		// >>>>> VIEWPORT <<<<<
 		// $viewport-min: 20em, // default value set in `_fluid_type.scss` to enable global configuration
 		// $viewport-max: 100em, // default value set in `_fluid_type.scss` to enable global configuration
 		// >>>>> MOBILE <<<<<
-		$font-size-min: 1.2rem,
-		// `font-size` on mobile viewport (< 575.98px)
-		$line-height-mobile: 1.5,
-		// `line-height` multiplier on mobile viewport (< 575.98px)
+		$font-size-min: 1.2rem, // `font-size` on mobile viewport (< 575.98px)
+		$line-height-mobile: 1.5, // `line-height` multiplier on mobile viewport (< 575.98px)
 		// >>>>> DESKTOP <<<<<
-		$font-size-max: 3.125rem,
-		// `font-size` on desktop viewport (> 576px)
-		$line-height-desktop: 1.1,
-		// `line-height` multiplier on desktop viewport (> 576px)
+		$font-size-max: 1.3rem, // `font-size` on desktop viewport (> 576px)
+		$line-height-desktop: 1.2, // `line-height` multiplier on desktop viewport (> 576px)
 		// >>>>> IMPORTANT <<<<<
-		 // $important: "!important" // uncomment to add the `!important` flag
+		// $important: "!important" // uncomment to add the `!important` flag
 	);
+}
+
+// [ROLE (scope)] | [font-family] ([font-weight]) | fs: [min]px~[max]px/[min]rem~[max]rem | lh: [min]px~[max]px/[min-ratio]~[max-ratio]
+.midsmall {
 	font-family: "Manrope", serif;
 	font-weight: 500;
+
+	// prettier-ignore
+	@include fluid_type( // responsive typography
+		// >>>>> VIEWPORT <<<<<
+		// $viewport-min: 20em, // default value set in `_fluid_type.scss` to enable global configuration
+		// $viewport-max: 100em, // default value set in `_fluid_type.scss` to enable global configuration
+		// >>>>> MOBILE <<<<<
+		$font-size-min: 1.2rem, // `font-size` on mobile viewport (< 575.98px)
+		$line-height-mobile: 1.5, // `line-height` multiplier on mobile viewport (< 575.98px)
+		// >>>>> DESKTOP <<<<<
+		$font-size-max: 3.125rem, // `font-size` on desktop viewport (> 576px)
+		$line-height-desktop: 1.1, // `line-height` multiplier on desktop viewport (> 576px)
+		// >>>>> IMPORTANT <<<<<
+		// $important: "!important" // uncomment to add the `!important` flag
+	);
 }
 
+// [ROLE (scope)] | [font-family] ([font-weight]) | fs: [min]px~[max]px/[min]rem~[max]rem | lh: [min]px~[max]px/[min-ratio]~[max-ratio]
 small,
 .small {
-	// layout title (left)
-	@include fluid_type(
-		// responsive typography
-		// >>>>> VIEWPORT <<<<<
-		// $viewport-min: 20em, // default value set in `_fluid_type.scss` to enable global configuration
-		// $viewport-max: 100em, // default value set in `_fluid_type.scss` to enable global configuration
-		// >>>>> MOBILE <<<<<
-		$font-size-min: 1.5rem,
-		// `font-size` on mobile viewport (< 575.98px)
-		$line-height-mobile: 1.35,
-		// `line-height` multiplier on mobile viewport (< 575.98px)
-		// >>>>> DESKTOP <<<<<
-		$font-size-max: 1.875rem,
-		// `font-size` on desktop viewport (> 576px)
-		$line-height-desktop: 1.2,
-		// `line-height` multiplier on desktop viewport (> 576px)
-		// >>>>> IMPORTANT <<<<<
-		 // $important: "!important" // uncomment to add the `!important` flag
-	);
 	font-family: "Manrope", serif;
 	font-weight: 700;
+
+	// prettier-ignore
+	@include fluid_type( // responsive typography
+		// >>>>> VIEWPORT <<<<<
+		// $viewport-min: 20em, // default value set in `_fluid_type.scss` to enable global configuration
+		// $viewport-max: 100em, // default value set in `_fluid_type.scss` to enable global configuration
+		// >>>>> MOBILE <<<<<
+		$font-size-min: 0.875rem, // `font-size` on mobile viewport (< 575.98px)
+		$line-height-mobile: 1.5, // `line-height` multiplier on mobile viewport (< 575.98px)
+		// >>>>> DESKTOP <<<<<
+		$font-size-max: 0.875rem, // `font-size` on desktop viewport (> 576px)
+		$line-height-desktop: 1.2, // `line-height` multiplier on desktop viewport (> 576px)
+		// >>>>> IMPORTANT <<<<<
+		// $important: "!important" // uncomment to add the `!important` flag
+	);
 }
 
+// [ROLE (scope)] | [font-family] ([font-weight]) | fs: [min]px~[max]px/[min]rem~[max]rem | lh: [min]px~[max]px/[min-ratio]~[max-ratio]
 .smaller {
-	// captions
-	@include fluid_type(
-		// responsive typography
+	font-family: "Manrope", serif;
+	font-weight: 300;
+
+	// prettier-ignore
+	@include fluid_type( // responsive typography
 		// >>>>> VIEWPORT <<<<<
 		// $viewport-min: 20em, // default value set in `_fluid_type.scss` to enable global configuration
 		// $viewport-max: 100em, // default value set in `_fluid_type.scss` to enable global configuration
 		// >>>>> MOBILE <<<<<
-		$font-size-min: 0.812rem,
-		// `font-size` on mobile viewport (< 575.98px)
-		$line-height-mobile: 1.35,
-		// `line-height` multiplier on mobile viewport (< 575.98px)
+		$font-size-min: 0.812rem, // `font-size` on mobile viewport (< 575.98px)
+		$line-height-mobile: 1.35, // `line-height` multiplier on mobile viewport (< 575.98px)
 		// >>>>> DESKTOP <<<<<
-		$font-size-max: 0.875rem,
-		// `font-size` on desktop viewport (> 576px)
-		$line-height-desktop: 1.4,
-		// `line-height` multiplier on desktop viewport (> 576px)
+		$font-size-max: 0.875rem, // `font-size` on desktop viewport (> 576px)
+		$line-height-desktop: 1.4, // `line-height` multiplier on desktop viewport (> 576px)
 		// >>>>> IMPORTANT <<<<<
-		 // $important: "!important" // uncomment to add the `!important` flag
+		// $important: "!important" // uncomment to add the `!important` flag
 	);
-	font-family: "Manrope", serif;
-	font-weight: 300;
 }
 
+// [ROLE (scope)] | [font-family] ([font-weight]) | fs: [min]px~[max]px/[min]rem~[max]rem | lh: [min]px~[max]px/[min-ratio]~[max-ratio]
 .smallest {
-	// nav tracker caption
-	@include fluid_type(
-		// responsive typography
+	font-family: "Manrope", serif;
+	font-weight: 300;
+
+	// prettier-ignore
+	@include fluid_type( // responsive typography
 		// >>>>> VIEWPORT <<<<<
 		// $viewport-min: 20em, // default value set in `_fluid_type.scss` to enable global configuration
 		// $viewport-max: 100em, // default value set in `_fluid_type.scss` to enable global configuration
 		// >>>>> MOBILE <<<<<
-		$font-size-min: 0.625rem,
-		// `font-size` on mobile viewport (< 575.98px)
-		$line-height-mobile: 1.2,
-		// `line-height` multiplier on mobile viewport (< 575.98px)
+		$font-size-min: 0.625rem, // `font-size` on mobile viewport (< 575.98px)
+		$line-height-mobile: 1.2, // `line-height` multiplier on mobile viewport (< 575.98px)
 		// >>>>> DESKTOP <<<<<
-		$font-size-max: 0.625rem,
-		// `font-size` on desktop viewport (> 576px)
-		$line-height-desktop: 1.2,
-		// `line-height` multiplier on desktop viewport (> 576px)
+		$font-size-max: 0.625rem, // `font-size` on desktop viewport (> 576px)
+		$line-height-desktop: 1.2, // `line-height` multiplier on desktop viewport (> 576px)
 		// >>>>> IMPORTANT <<<<<
-		 // ss $important: "!important" // uncomment to add the `!important` flag
+		// $important: "!important" // uncomment to add the `!important` flag
 	);
-	font-family: "Manrope", serif;
-	font-weight: 300;
 }
 
+// FORMS ([font-family] | [font-weight]) → fs: [min]px~[max]px/[min]rem~[max]rem — lh: [min]px~[max]px/[min-ratio]~[max-ratio]
 select,
 select.form-select,
 input:not([type="checkbox"], [type="radio"]),
@@ -549,27 +530,23 @@ input:not([type="checkbox"], [type="radio"]),
 label,
 .label,
 .form-check-label {
-	// 18px/1.13rem - light (300)/regular (400)/medium (500)
-	@include fluid_type(
-		// responsive typography
+	font-family: "Manrope", serif;
+	font-weight: 300;
+
+	// prettier-ignore
+	@include fluid_type( // responsive typography
 		// >>>>> VIEWPORT <<<<<
 		// $viewport-min: 20em, // default value set in `_fluid_type.scss` to enable global configuration
 		// $viewport-max: 100em, // default value set in `_fluid_type.scss` to enable global configuration
 		// >>>>> MOBILE <<<<<
-		$font-size-min: 0.9rem,
-		// `font-size` on mobile viewport (< 575.98px)
-		$line-height-mobile: 1.5,
-		// `line-height` multiplier on mobile viewport (< 575.98px)
+		$font-size-min: 0.9rem, // `font-size` on mobile viewport (< 575.98px)
+		$line-height-mobile: 1.5, // `line-height` multiplier on mobile viewport (< 575.98px)
 		// >>>>> DESKTOP <<<<<
-		$font-size-max: 0.9rem,
-		// `font-size` on desktop viewport (> 576px)
-		$line-height-desktop: 1.2,
-		// `line-height` multiplier on desktop viewport (> 576px)
+		$font-size-max: 0.9rem, // `font-size` on desktop viewport (> 576px)
+		$line-height-desktop: 1.2, // `line-height` multiplier on desktop viewport (> 576px)
 		// >>>>> IMPORTANT <<<<<
-		 // $important: "!important" // uncomment to add the `!important` flag
+		// $important: "!important" // uncomment to add the `!important` flag
 	);
-	font-family: "Manrope", serif;
-	font-weight: 300;
 }
 
 input {

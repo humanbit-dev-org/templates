@@ -7,32 +7,18 @@
 
 .boilerplate_layout {
 	&.content {
-		.scrollspy_box {
-			&.active {
-				--color_section: #{$color_second};
-
-				.el_label {
-					color: $color_black;
-				}
-			}
-		}
-
-		sup,
 		.color_section,
-		.bg_color_section,
-		audio::-webkit-media-controls-enclosure {
-			--color_section: #{$color_second};
+		.bg_color_section {
+			--color_section: #{$color_first};
 		}
 
 		.bg_color_gd::after {
-			--bg_color_gd: #{$color_second};
+			--bg_color_gd: #{$color_first};
 		}
 	}
 
 	&.footer {
-		.obj_1 {
-			z-index: -1;
-		}
+		z-index: -1;
 	}
 }
 
@@ -52,14 +38,6 @@
 
 @media (max-width: 1199.98px) {
 	.boilerplate_layout {
-		&.content {
-			width: 100%;
-		}
-
-		&.footer {
-			width: 100%;
-			z-index: 2;
-		}
 	}
 }
 
@@ -132,13 +110,6 @@
 
 @media (min-width: 1200px) {
 	.boilerplate_layout {
-		&.content {
-			width: 80%;
-		}
-
-		&.footer {
-			width: 15%;
-		}
 	}
 }
 

@@ -6,16 +6,6 @@
 // <<<<< Controllers — END
 
 .boilerplate_page {
-	sup,
-	.color_section,
-	.bg_color_section,
-	.el_title {
-		--color_section: #{$color_sixth};
-	}
-
-	.bg_color_gd::after {
-		--bg_color_gd: #{$color_sixth};
-	}
 }
 
 /////

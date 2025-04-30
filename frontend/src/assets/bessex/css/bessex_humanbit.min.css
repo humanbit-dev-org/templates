@@ -8,7 +8,7 @@
  * Copyright 2023 Gabriel Silveri
  * Licensed under MIT (https://github.com/g-silveri/bessex/blob/main/LICENSE)
  */
-h1,
+/* h1,
 .h1 {
 	font-size: 1.73rem;
 }
@@ -199,7 +199,7 @@ small,
 	.small {
 		font-size: 0.875rem;
 	}
-}
+} */
 @media (prefers-reduced-motion: no-preference) {
 	:focus,
 	:focus-visible {

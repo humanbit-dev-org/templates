@@ -12,26 +12,23 @@ $color_black: #000000;
 // White
 $color_white: #ffffff;
 
-// Prussian Blue (Base)
-$color_first: #00384c;
+// Yale Blue
+$color_first: #0e4c94;
 
-// Eucalyptus (La nostra storia)
-$color_second: #4fdbae;
+// Yankees Blue
+$color_second: #192946;
 
-// Blue Sapphire (La voce dei Presidenti)
-$color_third: #00627d;
+// Big Foot Feet
+$color_third: #f28f52;
 
-// UA Red (Riflessioni su Milano)
-// $color_fourth: #e50846;
-$color_fourth: #cb0834;
+// Kelly Green
+$color_fourth: #69c914;
 
-// Cyan-Blue Azure (Assolombarda si racconta)
-$color_fifth: #4689c8;
+// Tangerine Yellow
+$color_fifth: #ffcc00;
 
-// Golden Poppy (Interventi istituzionali)
-$color_sixth: #fdc500;
-
-// ################################################## //
+// Pink Raspberry
+$color_sixth: #980539;
 
 // Telemagenta
 $color_seventh: #d12a6a;
@@ -106,12 +103,12 @@ $color_whatsapp: #25d366;
 
 // <nav>'s `height` and content's `margin-top`/`top`. <<IN>> //
 $height_scroll: 4rem; // Changed height after scroll.
-$height_md: 115px; // Desktop.
-$max_height_md: 102px; // Tablet.
+$height_md: 6rem; // Desktop.
+$max_height_md: 5rem; // Tablet.
 $max_height_xs_landscape: 4.5rem; // Mobile landscape orientation.
 // <nav>'s `height` with extra field (e.g. city).
 $max_height_extra: 9rem; // Extra slot enabled.
-// <nav>'s `height` and content's `margin-top`/`top`. <<IN>> //
+// <nav>'s `height` and content's `margin-top`/`top`. <<OUT>> //
 
 // <footer>'s `height`. <<IN>> //
 $footer_min_height: 0rem; // Default: 0rem
