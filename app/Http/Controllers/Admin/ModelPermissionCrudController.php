@@ -17,9 +17,7 @@ use App\Models\ModelPermission;
 class ModelPermissionCrudController extends CrudController
 {
 	use \Backpack\CRUD\app\Http\Controllers\Operations\ListOperation;
-	use \Backpack\CRUD\app\Http\Controllers\Operations\CreateOperation {
-		store as traitStore;
-	}
+	use \Backpack\CRUD\app\Http\Controllers\Operations\CreateOperation;
 	use \Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
 	use \Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation;
 	use \Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
@@ -61,16 +59,15 @@ class ModelPermissionCrudController extends CrudController
 	protected function setupCreateOperation()
 	{
 		CRUD::setValidation(ModelPermissionRequest::class);
-		CRUD::removeField("model");
 
 		$models = [];
 		foreach (File::allFiles(app_path("Models")) as $file) {
 			$name = pathinfo($file, PATHINFO_FILENAME);
-			$models[] = $name;
+			$models[$name] = $name;
 		}
 
 		CRUD::addField([
-			"name" => "model_select",
+			"name" => "model_name",
 			"type" => "select_from_array",
 			"options" => $models,
 			"label" => "Model",
@@ -138,16 +135,5 @@ class ModelPermissionCrudController extends CrudController
 	protected function setupUpdateOperation()
 	{
 		$this->setupCreateOperation();
-	}
-
-	public function store(ModelPermissionRequest $request)
-	{
-		CRUD::addField([
-			"name" => "model_name",
-			"type" => "hidden",
-			"value" => json_encode($request->model_select),
-		]);
-		$response = $this->traitStore();
-		return $response;
 	}
 }

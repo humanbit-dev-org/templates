@@ -30,4 +30,24 @@ class ModelPermission extends Model
 	{
 		return $this->belongsTo(Role::class);
 	}
+
+	public function getModelNameAttribute($value)
+	{
+		return json_decode($value, true);
+	}
+
+	public function setModelNameAttribute($value)
+	{
+		$this->attributes["model_name"] = json_encode($value);
+	}
+
+	public function getDisplayAttribute()
+	{
+		// Handle both array and string cases
+		if (is_array($this->model_name)) {
+			return implode(",", $this->model_name);
+		}
+
+		return $this->model_name;
+	}
 }

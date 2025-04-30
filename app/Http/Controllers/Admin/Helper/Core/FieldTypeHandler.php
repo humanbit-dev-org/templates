@@ -49,6 +49,8 @@ class FieldTypeHandler
 				return "datetime";
 			case "bigint":
 				return "break";
+			case "json":
+				return "select_from_array";
 			default:
 				return "text";
 		}

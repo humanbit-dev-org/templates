@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Traits\ChecksBackpackPermissions;
 use App\Http\Requests\UserRequest;
 use App\Http\Controllers\Admin\Helper\HelperBackend;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
@@ -19,6 +20,7 @@ class UserCrudController extends CrudController
 	use \Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
 	use \Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation;
 	use \Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
+	use ChecksBackpackPermissions;
 
 	/**
 	 * Configure the CrudPanel object. Apply settings to all operations.
@@ -30,6 +32,9 @@ class UserCrudController extends CrudController
 		CRUD::setModel(\App\Models\User::class);
 		CRUD::setRoute(config("backpack.base.route_prefix") . "/user");
 		CRUD::setEntityNameStrings("user", "users");
+
+		// Applica i controlli di autorizzazione
+		$this->setupPermissionChecks();
 	}
 
 	/**

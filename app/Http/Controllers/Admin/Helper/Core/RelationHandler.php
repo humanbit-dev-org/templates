@@ -281,10 +281,14 @@ class RelationHandler
 		$relatedModelClass = get_class($relatedModel);
 		$tableModel = $relatedModel->getTable();
 
+		// Format label by splitting camelCase into separate words
+		$readableLabel = ucwords(preg_replace("/(?<!^)[A-Z]/", ' $0', $methodName));
+
 		// Create column for related model name with links
 		CRUD::column($methodName)
 			->type("custom_html")
 			->entity($methodName)
+			->label($readableLabel)
 			->model($relatedModelClass)
 			->value(function ($entry) use ($formattedRelatedModelName, $methodName, $backendUrl) {
 				$links = [];
@@ -306,7 +310,7 @@ class RelationHandler
 		// Create column for pivot table percentage attribute for BelongsToMany relations
 		if ($result instanceof BelongsToMany) {
 			CRUD::column($methodName . "_pivot")
-				->label(ucfirst($methodName . " pivot"))
+				->label($readableLabel . " Pivot")
 				->type("custom_html")
 				->entity($methodName)
 				->model($relatedModelClass)
@@ -343,27 +347,42 @@ class RelationHandler
 	 */
 	public static function configureRelationColumnView($column, $relationName, $projectBaseUrl)
 	{
-		CRUD::column($column)
-			->label(ucfirst($relationName))
-			->type("custom_html")
-			->value(function ($entry) use ($relationName, $projectBaseUrl) {
-				if ($entry->$relationName) {
-					$id = $entry->$relationName->id;
+		// Deal with camelCase relation names (e.g. backpackRole -> backpack_role)
+		$camelCaseRelationName = Str::camel($relationName);
 
-					$displayText = method_exists($entry->$relationName, "getDisplayAttribute")
-						? $entry->$relationName->getDisplayAttribute()
-						: $id;
+		CRUD::column($column)
+			->label(ucwords(str_replace("_", " ", $relationName)))
+			->type("custom_html")
+			->value(function ($entry) use ($relationName, $camelCaseRelationName, $projectBaseUrl) {
+				// Try with original name first
+				$relation = $entry->$relationName ?? null;
+
+				// If relation is null, try with camelCase version
+				if ($relation === null && $relationName !== $camelCaseRelationName) {
+					$relation = $entry->$camelCaseRelationName ?? null;
+				}
+
+				if ($relation) {
+					$id = $relation->id;
+
+					$displayText = method_exists($relation, "getDisplayAttribute")
+						? $relation->getDisplayAttribute()
+						: $relation->name ?? ($relation->title ?? $id);
+
+					$modelName = strtolower(class_basename($relation));
 
 					return '<a target="_blank" href="' .
 						$projectBaseUrl .
 						"/" .
-						strtolower(class_basename($entry->$relationName)) .
+						Str::kebab($modelName) .
 						"/" .
 						$id .
 						'/edit">' .
 						$displayText .
 						"</a>";
 				}
+
+				return null;
 			});
 	}
 }

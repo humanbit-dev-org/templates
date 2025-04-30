@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Log;
 
 class ModelPermissionRequest extends FormRequest
 {
@@ -25,11 +26,36 @@ class ModelPermissionRequest extends FormRequest
 	public function rules()
 	{
 		return [
-			"can_read" => "required|boolean",
-			"can_create" => "required|boolean",
-			"can_update" => "required|boolean",
-			"can_delete" => "required|boolean",
+			'model_name' => 'required|array',
+			'model_name.*' => 'string',
+			'backpack_role_id' => 'nullable|exists:backpack_roles,id',
+			'role_id' => 'nullable|exists:roles,id',
+			'can_read' => 'boolean',
+			'can_create' => 'boolean',
+			'can_update' => 'boolean',
+			'can_delete' => 'boolean',
 		];
+	}
+
+	/**
+	 * Prepare the data for validation.
+	 *
+	 * @return void
+	 */
+	protected function prepareForValidation()
+	{
+		// Assicuriamoci che almeno uno tra backpack_role_id o role_id sia impostato
+		if (empty($this->backpack_role_id) && empty($this->role_id)) {
+			$this->merge(['validation_error' => true]);
+		}
+
+		$this->merge([
+			'can_read' => $this->has('can_read') ? 1 : 0,
+			'can_create' => $this->has('can_create') ? 1 : 0,
+			'can_update' => $this->has('can_update') ? 1 : 0,
+			'can_delete' => $this->has('can_delete') ? 1 : 0,
+		]);
+
 	}
 
 	/**
@@ -60,7 +86,7 @@ class ModelPermissionRequest extends FormRequest
 	public function messages()
 	{
 		return [
-				//
-			];
+			'validation_error' => 'È necessario specificare almeno un ruolo (Backpack o Frontend)',
+		];
 	}
 }
