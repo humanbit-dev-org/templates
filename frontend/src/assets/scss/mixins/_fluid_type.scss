@@ -15,15 +15,16 @@
 // @use "sass:math";
 //
 // See https://stackoverflow.com/questions/12328259/how-do-you-strip-the-unit-from-any-number-in-sass
-// @function strip-unit($value) {
+// @function strip_unit($value) {
 // 	@return math.div($value, ($value * 0 + 1));
 // }
 
 @mixin fluid_type(
+	// prettier-ignore
 	// >>>>> VIEWPORT <<<<<
-	$viewport-min: 20em, // (320px)
+	$viewport-min: 20em /*(320px)*/,
 	// Set global values
-	$viewport-max: 100em, // (1600px)
+	$viewport-max: 100em /*(1600px)*/,
 	// Set global values
 	// >>>>> MOBILE <<<<<
 	$font-size-min: null,
@@ -34,39 +35,34 @@
 	// >>>>> IMPORTANT <<<<<
 	$important: null
 ) {
-	// $u1: unit($viewport-min);
-	// $u2: unit($viewport-max);
-	// $u3: unit($font-size-min);
-	// $u4: unit($font-size-max);
-
-	// @if $u1 == $u2 and $u1 == $u3 and $u1 == $u4 {
-	// 	& {
 	@media (max-width: 319.98px) {
 		font-size: $font-size-min #{$important};
 		line-height: $line-height-mobile #{$important};
 	}
 
 	@media (min-width: $viewport-min) and (max-width: 575.98px) {
+		$range-vw: round_3(strip_unit($viewport-max - $viewport-min));
+		$delta-fs: round_3(strip_unit($font-size-max - $font-size-min));
+
 		font-size: clamp(
-			#{$font-size-min},
-			calc(
-				#{$font-size-min} + ((#{strip-unit($font-size-max)} - #{strip-unit($font-size-min)}) *
-				(((100vw - #{$viewport-min}) / (#{strip-unit($viewport-max)} - #{strip-unit($viewport-min)})) * 2))
-			),
-			#{$font-size-max}
-		) #{$important};
+				#{$font-size-min},
+				calc(#{$font-size-min} + (#{$delta-fs} * (((100vw - #{$viewport-min}) / #{$range-vw}) * 2))),
+				#{$font-size-max}
+			)
+			#{$important};
 		line-height: #{$line-height-mobile} #{$important};
 	}
 
 	@media (min-width: 576px) and (max-width: calc(#{$viewport-max} - 0.02px)) {
+		$range-vw: round_3(strip_unit($viewport-max - $viewport-min));
+		$delta-fs: round_3(strip_unit($font-size-max - $font-size-min));
+
 		font-size: clamp(
-			#{$font-size-min},
-			calc(
-				#{$font-size-min} + ((#{strip-unit($font-size-max)} - #{strip-unit($font-size-min)}) *
-				(((100vw - #{$viewport-min}) / (#{strip-unit($viewport-max)} - #{strip-unit($viewport-min)})) * 1))
-			),
-			#{$font-size-max}
-		) #{$important};
+				#{$font-size-min},
+				calc(#{$font-size-min} + (#{$delta-fs} * (((100vw - #{$viewport-min}) / #{$range-vw}) * 1))),
+				#{$font-size-max}
+			)
+			#{$important};
 		line-height: #{$line-height-desktop} #{$important};
 	}
 
@@ -84,42 +80,6 @@
 // $mob_multi: 1.5;
 // $desk_multi: 1.2;
 
-// h1,
-// .h1 {
+// .example {
 // 	@include fluid_type($min_width, $max_width, $mob_multi, $desk_multi, 1.73rem, 2.5rem);
-// }
-
-// h2,
-// .h2 {
-// 	@include fluid_type($min_width, $max_width, $mob_multi, $desk_multi, 1.54rem, 2rem);
-// }
-
-// h3,
-// .h3 {
-// 	@include fluid_type($min_width, $max_width, $mob_multi, $desk_multi, 1.44rem, 1.75rem);
-// }
-
-// h4,
-// .h4 {
-// 	@include fluid_type($min_width, $max_width, $mob_multi, $desk_multi, 1.35rem, 1.5rem);
-// }
-
-// h5,
-// .h5 {
-// 	@include fluid_type($min_width, $max_width, $mob_multi, $desk_multi, 1.25rem, 1.25rem);
-// }
-
-// h6,
-// .h6 {
-// 	@include fluid_type($min_width, $max_width, $mob_multi, $desk_multi, 1rem, 1rem);
-// }
-
-// p,
-// .p {
-// 	@include fluid_type($min_width, $max_width, $mob_multi, $desk_multi, 1rem, 1rem);
-// }
-
-// small,
-// .small {
-// 	@include fluid_type($min_width, $max_width, $mob_multi, $desk_multi, 0.875rem, 0.875rem);
 // }

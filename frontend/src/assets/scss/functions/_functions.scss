@@ -4,12 +4,17 @@
 
 @use "sass:math";
 
+// Round any number to three decimals
+@function round-3($value) {
+	@return math.div(math.round($value * 1000), 1000);
+}
+
 // Unitless
 // Removes the unit of a given value.
 // @param {Number} $number - Number to remove unit from
 // @return {Number} - Unitless number
 // See https://stackoverflow.com/questions/12328259/how-do-you-strip-the-unit-from-any-number-in-sass
-@function strip-unit($number) {
+@function strip_unit($number) {
 	@if type-of($number) == "number" and not unitless($number) {
 		@return math.div($number, ($number * 0 + 1));
 	}

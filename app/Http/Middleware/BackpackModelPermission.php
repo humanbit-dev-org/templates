@@ -11,15 +11,15 @@ use Symfony\Component\HttpFoundation\Response;
 
 class BackpackModelPermission
 {
-    public function handle(Request $request, Closure $next, string $modelName, string $action): Response
-    {
-        $user = Auth::guard(backpack_guard_name())->user();
-        $allowed = Gate::forUser($user)->allows('backpack-access-model', [$modelName, $action]);
-    
-        if (!$allowed) {
-            abort(403, 'Non sei autorizzato ad accedere a questa risorsa.');
-        }
+	public function handle(Request $request, Closure $next, string $modelName, string $action): Response
+	{
+		$user = Auth::guard(backpack_guard_name())->user();
+		$allowed = Gate::forUser($user)->allows("backpack-access-model", [$modelName, $action]);
 
-        return $next($request);
-    }
-} 
+		if (!$allowed) {
+			abort(403, "Non sei autorizzato ad accedere a questa risorsa.");
+		}
+
+		return $next($request);
+	}
+}

@@ -25,8 +25,8 @@ class BackpackRoleRequest extends FormRequest
 	public function rules()
 	{
 		return [
-			'name' => 'required|string|max:255|unique:backpack_roles,name,' . $this->id,
-			'description' => 'nullable|string',
+			"name" => "required|string|max:255|unique:backpack_roles,name," . $this->id,
+			"description" => "nullable|string",
 		];
 	}
 
@@ -50,8 +50,8 @@ class BackpackRoleRequest extends FormRequest
 	public function messages()
 	{
 		return [
-			'name.required' => 'Il nome del ruolo è obbligatorio',
-			'name.unique' => 'Questo nome è già in uso',
+			"name.required" => "Il nome del ruolo è obbligatorio",
+			"name.unique" => "Questo nome è già in uso",
 		];
 	}
 }
