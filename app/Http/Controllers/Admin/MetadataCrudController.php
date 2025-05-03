@@ -6,7 +6,7 @@ use App\Http\Requests\MetadataRequest;
 use App\Http\Controllers\Admin\Helper\HelperBackend;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
-
+use App\Http\Traits\ChecksBackpackPermissions;
 /**
  * Class MetadataCrudController
  * @package App\Http\Controllers\Admin
@@ -19,7 +19,7 @@ class MetadataCrudController extends CrudController
 	use \Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
 	use \Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation;
 	use \Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
-
+	use ChecksBackpackPermissions;
 	/**
 	 * Configure the CrudPanel object. Apply settings to all operations.
 	 *
@@ -30,6 +30,8 @@ class MetadataCrudController extends CrudController
 		CRUD::setModel(\App\Models\Metadata::class);
 		CRUD::setRoute(config("backpack.base.route_prefix") . "/metadata");
 		CRUD::setEntityNameStrings("metadata", "metadata");
+
+		$this->setupPermissionChecks();
 	}
 
 	/**

@@ -19,21 +19,29 @@ class BackpackAuthServiceProvider extends ServiceProvider
 	{
 		Log::info("BackpackAuthServiceProvider boot chiamato");
 
-		// Registriamo un gate generale per verificare se un utente
-		// ha accesso a un determinato modello e azione
+		// Verify if user has access to a specific model and action
 		Gate::define("backpack-access-model", function (User $user, string $modelName, string $action) {
-			// Se l'utente non ha un ruolo backpack, non ha accesso
+			// If user doesn't have a backpack role, they don't have access
 			if (!$user->backpack_role_id) {
 				return false;
 			}
 
-			// Cerca permessi per questo ruolo e modello
+			// Search permissions for this role and model
 			$permissions = ModelPermission::where("backpack_role_id", $user->backpack_role_id)->get();
 
 			foreach ($permissions as $permission) {
-				// Verifica se il modello è incluso nei permessi
-				if (is_array($permission->model_name) && in_array($modelName, $permission->model_name)) {
-					// Controlla il permesso specifico
+				$models = $permission->model_name;
+
+				// Verify if the model is included in the permissions
+				// Supports both numeric arrays ["Model1", "Model2"]
+				// and associative arrays {"Model1": "Model1"}
+				$modelExists = false;
+				if (is_array($models)) {
+					$modelExists = in_array($modelName, $models) || array_key_exists($modelName, $models);
+				}
+
+				if ($modelExists) {
+					// Check the specific permission
 					$result = false;
 					switch ($action) {
 						case "read":

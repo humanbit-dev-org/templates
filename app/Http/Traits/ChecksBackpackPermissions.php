@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Auth;
 trait ChecksBackpackPermissions
 {
 	/**
-	 * Controlla se l'utente corrente ha il permesso di eseguire un'azione su un modello
+	 * Check if the current backpack user has permission to perform an action on a model
 	 */
 	protected function userCan(string $modelName, string $action): bool
 	{
@@ -22,17 +22,17 @@ trait ChecksBackpackPermissions
 	}
 
 	/**
-	 * Applica i controlli di autorizzazione sui metodi CRUD nel controller
+	 * Apply the authorization checks on the CRUD methods in the controller
 	 */
 	protected function setupPermissionChecks(): void
 	{
-		// Estrai il nome del modello dal nome della classe controller
+		// Extract the model name from the controller class name
 		$fullClassName = static::class;
 		$parts = explode("\\", $fullClassName);
 		$className = end($parts);
 		$modelName = str_replace("CrudController", "", $className);
 
-		// Applica il middleware per ogni azione CRUD
+		// Apply the middleware for each CRUD action
 		$this->crud->denyAccess(["list", "create", "update", "delete"]);
 
 		if ($this->userCan($modelName, "read")) {
@@ -51,5 +51,22 @@ trait ChecksBackpackPermissions
 		if ($this->userCan($modelName, "delete")) {
 			$this->crud->allowAccess("delete");
 		}
+	}
+
+	/**
+	 * Check if current backpack user can access a specific model menu item
+	 */
+	public static function userCanAccessMenu(string $modelName): bool
+	{
+		$user = Auth::guard(backpack_guard_name())->user();
+		if (!$user) {
+			return false;
+		}
+
+		if ($user->backpack_role === "admin") {
+			return true;
+		}
+
+		return Gate::forUser($user)->allows("backpack-access-model", [$modelName, "read"]);
 	}
 }
