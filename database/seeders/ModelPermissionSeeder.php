@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Role;
 use App\Models\BackpackRole;
 use App\Models\ModelPermission;
 use Illuminate\Database\Seeder;
@@ -83,6 +84,15 @@ class ModelPermissionSeeder extends Seeder
 			"can_read" => true,
 			"can_create" => false,
 			"can_update" => false,
+			"can_delete" => false,
+		]);
+
+		ModelPermission::create([
+			"model_name" => ["Article", "Institutional", "Media", "Attachment", "User"],
+			"role_id" => Role::where("name", "User")->first()->id,
+			"can_read" => true,
+			"can_create" => true,
+			"can_update" => true,
 			"can_delete" => false,
 		]);
 	}
