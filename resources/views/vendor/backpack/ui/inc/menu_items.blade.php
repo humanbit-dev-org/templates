@@ -68,3 +68,4 @@
         @endif
     @endforeach
 @endif
+@include(backpack_view('inc.footer'))
