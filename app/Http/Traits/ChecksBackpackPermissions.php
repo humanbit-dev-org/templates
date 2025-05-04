@@ -69,4 +69,20 @@ trait ChecksBackpackPermissions
 
 		return Gate::forUser($user)->allows("backpack-access-model", [$modelName, "read"]);
 	}
+
+	/**
+	 * Check if current backpack user can access any of the provided menu items
+	 *
+	 * @param array $items Array of items containing 'name' key with model name
+	 * @return bool
+	 */
+	public static function userCanAccessAnyMenu(array $items): bool
+	{
+		foreach ($items as $item) {
+			if (isset($item["name"]) && self::userCanAccessMenu($item["name"])) {
+				return true;
+			}
+		}
+		return false;
+	}
 }
