@@ -63,10 +63,6 @@ trait ChecksBackpackPermissions
 			return false;
 		}
 
-		if ($user->backpack_role === "admin") {
-			return true;
-		}
-
 		return Gate::forUser($user)->allows("backpack-access-model", [$modelName, "read"]);
 	}
 

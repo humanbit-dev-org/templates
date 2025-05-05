@@ -12,16 +12,16 @@ return new class extends Migration {
 	{
 		Schema::create("users", function (Blueprint $table) {
 			$table->id();
+			$table->string("email")->unique();
+			$table->foreignId("role_id")->constrained("roles");
+			$table->foreignId("backpack_role_id")->nullable()->constrained("backpack_roles");
 			$table->string("username");
 			$table->string("name");
 			$table->string("surname");
 			$table->string("address")->nullable();
-			$table->string("email")->unique();
-			$table->timestamp("email_verified_at")->nullable();
-			$table->string("password");
 			$table->string("phone")->nullable();
-			$table->foreignId("backpack_role_id")->nullable()->constrained("backpack_roles");
-			$table->foreignId("role_id")->constrained("roles");
+			$table->string("password");
+			$table->timestamp("email_verified_at")->nullable();
 			$table->rememberToken();
 			$table->timestamps();
 		});

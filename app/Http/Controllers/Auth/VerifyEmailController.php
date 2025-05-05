@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Models\Role;
 use App\Http\Controllers\Controller;
 use Illuminate\Auth\Events\Verified;
-use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
 
 class VerifyEmailController extends Controller
 {
@@ -20,6 +21,8 @@ class VerifyEmailController extends Controller
 
 		if ($request->user()->markEmailAsVerified()) {
 			event(new Verified($request->user()));
+			$request->user()->role_id = Role::where("name", "User")->first()->id;
+			$request->user()->save();
 		}
 
 		return redirect()->intended(config("app.frontend_url") . "/profile?verified=1");

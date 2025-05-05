@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Models\Role;
 use App\Models\User;
 use App\Models\Invite;
 use Illuminate\Http\Request;
@@ -36,17 +37,9 @@ class RegisteredUserController extends Controller
 			"surname" => $request->surname,
 			"email" => $request->email,
 			"address" => $request->address,
-			"backpack_role" => "user",
-			"role_id" => "1",
+			"role_id" => Role::where("name", "Public")->first()->id,
 			"password" => Hash::make($request->string("password")),
 		]);
-
-		$invite = $request->invite;
-		if ($invite === "yes") {
-			$invite = Invite::where("email", $request->email)->first();
-			$invite->receiver_id = $user->id;
-			$invite->save();
-		}
 
 		event(new Registered($user));
 

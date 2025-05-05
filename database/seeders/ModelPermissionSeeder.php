@@ -91,8 +91,17 @@ class ModelPermissionSeeder extends Seeder
 			"model_name" => ["Article", "Institutional", "Media", "Attachment", "User"],
 			"role_id" => Role::where("name", "User")->first()->id,
 			"can_read" => true,
-			"can_create" => true,
+			"can_create" => false,
 			"can_update" => true,
+			"can_delete" => false,
+		]);
+
+		ModelPermission::create([
+			"model_name" => ["User"],
+			"role_id" => Role::where("name", "Public")->first()->id,
+			"can_read" => true,
+			"can_create" => false,
+			"can_update" => false,
 			"can_delete" => false,
 		]);
 	}

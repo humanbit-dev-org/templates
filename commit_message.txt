@@ -1,0 +1,9 @@
+- Refactored role assignment logic in `RegisteredUserController` to dynamically fetch the "Public" role.
+- Updated `VerifyEmailController` to assign the "User" role upon email verification.
+- Removed deprecated `backpack_role` field and related logic from `ChecksBackpackPermissions` trait.
+- Added new middleware `FrontendModelPermission` and trait `ChecksFrontendPermissions` for frontend permission checks.
+- Updated `UserFactory` to conditionally assign roles based on email verification status.
+- Adjusted `ModelPermissionSeeder` to include permissions for the "Public" role.
+- Updated API route `/user` to use the new `frontend.permission` middleware.
+- Added `FrontendAuthServiceProvider` for defining frontend-specific gates.
+- Updated constants in frontend to differentiate between client and server URLs. 

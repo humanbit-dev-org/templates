@@ -19,6 +19,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'verified' => \App\Http\Middleware\EnsureEmailIsVerified::class,
             'backpack.permission' => \App\Http\Middleware\BackpackModelPermission::class,
+            'frontend.permission' => \App\Http\Middleware\FrontendModelPermission::class,
         ]);
 
         //

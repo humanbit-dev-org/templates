@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Role;
 use App\Models\User;
 use App\Models\BackpackRole;
 use Illuminate\Database\Seeder;
@@ -22,7 +23,7 @@ class UserSeeder extends Seeder
 			"email" => "admin@humanbit.com",
 			"phone" => fake()->phoneNumber(),
 			"backpack_role_id" => BackpackRole::where("name", "Admin")->first()->id,
-			"role_id" => 1,
+			"role_id" => Role::where("name", "User")->first()->id,
 			"password" => bcrypt("Adm1n."),
 			"email_verified_at" => now(),
 		]);
@@ -34,7 +35,7 @@ class UserSeeder extends Seeder
 			"email" => "author@humanbit.com",
 			"phone" => fake()->phoneNumber(),
 			"backpack_role_id" => BackpackRole::where("name", "Author")->first()->id,
-			"role_id" => 1,
+			"role_id" => Role::where("name", "User")->first()->id,
 			"password" => bcrypt("Auth0r."),
 			"email_verified_at" => now(),
 		]);
@@ -46,7 +47,7 @@ class UserSeeder extends Seeder
 			"email" => "guest@humanbit.com",
 			"phone" => fake()->phoneNumber(),
 			"backpack_role_id" => BackpackRole::where("name", "Guest")->first()->id,
-			"role_id" => 1,
+			"role_id" => Role::where("name", "User")->first()->id,
 			"password" => bcrypt("Gu3st."),
 			"email_verified_at" => now(),
 		]);
@@ -58,7 +59,7 @@ class UserSeeder extends Seeder
 			"email" => "borreca@humanbit.com",
 			"phone" => fake()->phoneNumber(),
 			"backpack_role_id" => BackpackRole::where("name", "Developer")->first()->id,
-			"role_id" => 1,
+			"role_id" => Role::where("name", "User")->first()->id,
 			"password" => bcrypt("D3v3l0p3r."),
 			"email_verified_at" => now(),
 		]);
@@ -70,7 +71,7 @@ class UserSeeder extends Seeder
 			"email" => "silveri@humanbit.com",
 			"phone" => fake()->phoneNumber(),
 			"backpack_role_id" => BackpackRole::where("name", "Developer")->first()->id,
-			"role_id" => 1,
+			"role_id" => Role::where("name", "User")->first()->id,
 			"password" => bcrypt("D3v3l0p3r."),
 			"email_verified_at" => now(),
 		]);
@@ -82,7 +83,7 @@ class UserSeeder extends Seeder
 			"email" => "ponzano@humanbit.com",
 			"phone" => fake()->phoneNumber(),
 			"backpack_role_id" => BackpackRole::where("name", "Developer")->first()->id,
-			"role_id" => 1,
+			"role_id" => Role::where("name", "User")->first()->id,
 			"password" => bcrypt("D3v3l0p3r."),
 			"email_verified_at" => now(),
 		]);
@@ -94,7 +95,7 @@ class UserSeeder extends Seeder
 			"email" => "solia@humanbit.com",
 			"phone" => fake()->phoneNumber(),
 			"backpack_role_id" => BackpackRole::where("name", "Developer")->first()->id,
-			"role_id" => 1,
+			"role_id" => Role::where("name", "User")->first()->id,
 			"password" => bcrypt("D3v3l0p3r."),
 			"email_verified_at" => now(),
 		]);
