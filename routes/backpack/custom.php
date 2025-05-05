@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\Helper\DuplicateController;
 use App\Http\Controllers\Admin\Helper\ExportCsvController;
 use App\Http\Controllers\Admin\Helper\ImportCsvController;
 use App\Http\Controllers\Admin\Helper\AutocompleteController;
+use App\Http\Controllers\Admin\Helper\BulkOperationsController;
 
 // --------------------------
 // Custom Backpack Routes
@@ -70,6 +71,10 @@ Route::group(
 		Route::get("{crud}/import-csv/status", [ImportCsvController::class, "getImportStatus"]);
 
 		Route::get("autocomplete-values", [AutocompleteController::class, "getValues"]);
+
+		// Bulk Operations Routes
+		Route::post("{crud}/bulk-delete", [BulkOperationsController::class, "bulkDelete"]);
+		Route::post("{crud}/bulk-duplicate", [BulkOperationsController::class, "bulkDuplicate"]);
 
 		Route::crud("user", "UserCrudController");
 		Route::crud("role", "RoleCrudController");

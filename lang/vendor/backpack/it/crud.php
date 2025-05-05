@@ -52,4 +52,15 @@ return [
 	"csv_export" => "Esporta CSV",
 	"csv_import" => "Importa CSV",
 	"csv_import_disabled" => "Import CSV disabilitato per la sezione :section",
+	
+	// BULK OPERATIONS
+	"bulk_delete" => "Elimina elementi selezionati",
+	"bulk_delete_confirm" => "Sei sicuro di voler eliminare tutti gli elementi selezionati?",
+	"bulk_delete_confirmation_title" => "Elementi eliminati",
+	"bulk_delete_confirmation_message" => "Gli elementi selezionati sono stati eliminati con successo.",
+	"bulk_duplicate" => "Duplica elementi selezionati",
+	"bulk_duplicate_confirm" => "Sei sicuro di voler duplicare tutti gli elementi selezionati?",
+	"bulk_duplicate_confirmation_title" => "Elementi duplicati",
+	"bulk_duplicate_confirmation_message" => "Gli elementi selezionati sono stati duplicati con successo.",
+	"selected" => "elementi selezionati",
 ];
