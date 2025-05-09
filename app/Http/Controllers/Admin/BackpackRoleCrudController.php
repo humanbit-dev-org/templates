@@ -6,6 +6,7 @@ use App\Http\Requests\BackpackRoleRequest;
 use App\Http\Controllers\Admin\Helper\HelperBackend;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
+use App\Http\Traits\ChecksBackpackPermissions;
 
 /**
  * Class BackpackRoleCrudController
@@ -19,7 +20,7 @@ class BackpackRoleCrudController extends CrudController
 	use \Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
 	use \Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation;
 	use \Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
-
+	use ChecksBackpackPermissions;
 	/**
 	 * Configure the CrudPanel object. Apply settings to all operations.
 	 *
@@ -30,6 +31,8 @@ class BackpackRoleCrudController extends CrudController
 		CRUD::setModel(\App\Models\BackpackRole::class);
 		CRUD::setRoute(config("backpack.base.route_prefix") . "/backpack-role");
 		CRUD::setEntityNameStrings("backend role", "backend roles");
+
+		$this->setupPermissionChecks();
 	}
 
 	/**

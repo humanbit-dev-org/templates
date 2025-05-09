@@ -29,7 +29,7 @@ async function fetchUser(lang) {
 		}
 
 		// Make a secure request to the Laravel API to get the current user credentials
-		const userResponse = await fetch(`${constants.BASE_URL}/api/user`, {
+		const userResponse = await fetch(`${constants.BASE_URL_CLIENT}/api/user`, {
 			method: "GET",
 			headers: {
 				"Accept": "application/json",
@@ -74,6 +74,7 @@ export function ClientProvider({ children, lang }) {
 		// Fetch and store the current user when the path changes
 		const fetchUserFunction = async () => {
 			const user = await fetchUser(lang);
+			//console.log(user);
 			setUser(user);
 		};
 

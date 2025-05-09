@@ -199,6 +199,7 @@ class HelperBackend extends Controller
 
 		CRUD::removeButton("show", "line");
 		CRUD::addButtonFromView("line", "duplicate", "duplicate", "view");
+		CRUD::addButtonFromView("top", "bulk_operations", "bulk_operations", "beginning");
 	}
 
 	/**

@@ -7,7 +7,7 @@ use Backpack\CRUD\app\Library\Widget;
 use App\Http\Controllers\Admin\Helper\HelperBackend;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
-
+use App\Http\Traits\ChecksBackpackPermissions;
 /**
  * Class PageCrudController
  * @package App\Http\Controllers\Admin
@@ -20,6 +20,7 @@ class PageCrudController extends CrudController
 	use \Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
 	use \Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation;
 	use \Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
+	use ChecksBackpackPermissions;
 
 	/**
 	 * Configure the CrudPanel object. Apply settings to all operations.
@@ -31,7 +32,8 @@ class PageCrudController extends CrudController
 		CRUD::setModel(\App\Models\Page::class);
 		CRUD::setRoute(config("backpack.base.route_prefix") . "/page");
 		CRUD::setEntityNameStrings("page", "pages");
-		Widget::add()->type("script")->content("static/js/draggable-sort.js");
+
+		$this->setupPermissionChecks();
 	}
 
 	/**

@@ -8,7 +8,7 @@ use App\Http\Requests\TranslateRequest;
 use App\Http\Controllers\Admin\Helper\HelperBackend;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
-
+use App\Http\Traits\ChecksBackpackPermissions;
 /**
  * Class TranslateCrudController
  * @package App\Http\Controllers\Admin
@@ -21,6 +21,7 @@ class TranslateCrudController extends CrudController
 	use \Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
 	use \Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation;
 	use \Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
+	use ChecksBackpackPermissions;
 
 	/**
 	 * Configure the CrudPanel object. Apply settings to all operations.
@@ -32,6 +33,8 @@ class TranslateCrudController extends CrudController
 		CRUD::setModel(\App\Models\Translate::class);
 		CRUD::setRoute(config("backpack.base.route_prefix") . "/translate");
 		CRUD::setEntityNameStrings("translate", "translates");
+
+		$this->setupPermissionChecks();
 	}
 
 	/**

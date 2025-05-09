@@ -52,4 +52,15 @@ return [
 	"csv_export" => "Export CSV",
 	"csv_import" => "Import CSV",
 	"csv_import_disabled" => "CSV import disabled for :section section",
+	
+	// BULK OPERATIONS
+	"bulk_delete" => "Delete selected items",
+	"bulk_delete_confirm" => "Are you sure you want to delete all selected items?",
+	"bulk_delete_confirmation_title" => "Items Deleted",
+	"bulk_delete_confirmation_message" => "The selected items have been deleted successfully.",
+	"bulk_duplicate" => "Duplicate selected items",
+	"bulk_duplicate_confirm" => "Are you sure you want to duplicate all selected items?",
+	"bulk_duplicate_confirmation_title" => "Items Duplicated",
+	"bulk_duplicate_confirmation_message" => "The selected items have been duplicated successfully.",
+	"selected" => "items selected",
 ];

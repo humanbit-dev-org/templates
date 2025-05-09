@@ -21,6 +21,10 @@ class ModelPermission extends Model
 		"can_delete",
 	];
 
+	protected $casts = [
+		"model_name" => "array",
+	];
+
 	public function backpackRole()
 	{
 		return $this->belongsTo(BackpackRole::class);
@@ -29,16 +33,6 @@ class ModelPermission extends Model
 	public function role()
 	{
 		return $this->belongsTo(Role::class);
-	}
-
-	public function getModelNameAttribute($value)
-	{
-		return json_decode($value, true);
-	}
-
-	public function setModelNameAttribute($value)
-	{
-		$this->attributes["model_name"] = json_encode($value);
 	}
 
 	public function getDisplayAttribute()

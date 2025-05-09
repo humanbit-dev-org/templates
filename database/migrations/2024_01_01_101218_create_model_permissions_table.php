@@ -13,13 +13,13 @@ return new class extends Migration {
 	{
 		Schema::create("model_permissions", function (Blueprint $table) {
 			$table->id();
+			$table->foreignId("backpack_role_id")->nullable()->constrained("backpack_roles");
+			$table->foreignId("role_id")->nullable()->constrained("roles");
 			$table->json("model_name");
 			$table->boolean("can_read")->default(false);
 			$table->boolean("can_create")->default(false);
 			$table->boolean("can_update")->default(false);
 			$table->boolean("can_delete")->default(false);
-			$table->foreignId("backpack_role_id")->nullable()->constrained("backpack_roles");
-			$table->foreignId("role_id")->nullable()->constrained("roles");
 			$table->timestamps();
 		});
 	}

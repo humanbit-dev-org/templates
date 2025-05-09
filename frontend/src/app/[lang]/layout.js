@@ -51,7 +51,7 @@ export const viewport = {
 export async function generateMetadata({ params }) {
 	const ssr = await getServer(); // Get server-side context
 	const { lang } = await params; // Get language from route params
-	const url = `${constants.BASE_URL}/api/${lang}/${ssr.page}/seo`; // Construct the URL for the SEO metadata API
+	const url = `${constants.BASE_URL_SERVER}/api/${lang}/${ssr.page}/seo`; // Construct the URL for the SEO metadata API
 
 	const metadataResponse = await fetch(url, {
 		method: "GET",

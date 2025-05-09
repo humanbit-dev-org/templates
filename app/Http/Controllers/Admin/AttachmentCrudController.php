@@ -6,7 +6,7 @@ use App\Http\Requests\AttachmentRequest;
 use App\Http\Controllers\Admin\Helper\HelperBackend;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
-
+use App\Http\Traits\ChecksBackpackPermissions;
 /**
  * Class AttachmentCrudController
  * @package App\Http\Controllers\Admin
@@ -19,6 +19,7 @@ class AttachmentCrudController extends CrudController
 	use \Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
 	use \Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation;
 	use \Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
+	use ChecksBackpackPermissions;
 
 	/**
 	 * Configure the CrudPanel object. Apply settings to all operations.
@@ -30,6 +31,8 @@ class AttachmentCrudController extends CrudController
 		CRUD::setModel(\App\Models\Attachment::class);
 		CRUD::setRoute(config("backpack.base.route_prefix") . "/attachment");
 		CRUD::setEntityNameStrings("attachment", "attachments");
+
+		$this->setupPermissionChecks();
 	}
 
 	/**

@@ -7,7 +7,7 @@ use App\Http\Requests\ModelPermissionRequest;
 use App\Http\Controllers\Admin\Helper\HelperBackend;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
-use App\Models\ModelPermission;
+use App\Http\Traits\ChecksBackpackPermissions;
 
 /**
  * Class ModelPermissionCrudController
@@ -21,7 +21,7 @@ class ModelPermissionCrudController extends CrudController
 	use \Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
 	use \Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation;
 	use \Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
-
+	use ChecksBackpackPermissions;
 	/**
 	 * Configure the CrudPanel object. Apply settings to all operations.
 	 *
@@ -32,6 +32,8 @@ class ModelPermissionCrudController extends CrudController
 		CRUD::setModel(\App\Models\ModelPermission::class);
 		CRUD::setRoute(config("backpack.base.route_prefix") . "/model-permission");
 		CRUD::setEntityNameStrings("model permission", "model permissions");
+
+		$this->setupPermissionChecks();
 	}
 
 	/**
@@ -91,7 +93,7 @@ class ModelPermissionCrudController extends CrudController
 
 		CRUD::addField([
 			"name" => "can_create",
-			"type" => "checkbox",
+			"type" => "boolean",
 			"label" => "Create",
 			"wrapper" => [
 				"class" => "form-group col-md-3",
@@ -100,7 +102,7 @@ class ModelPermissionCrudController extends CrudController
 
 		CRUD::addField([
 			"name" => "can_read",
-			"type" => "checkbox",
+			"type" => "boolean",
 			"label" => "Read",
 			"wrapper" => [
 				"class" => "form-group col-md-3",
@@ -109,7 +111,7 @@ class ModelPermissionCrudController extends CrudController
 
 		CRUD::addField([
 			"name" => "can_update",
-			"type" => "checkbox",
+			"type" => "boolean",
 			"label" => "Update",
 			"wrapper" => [
 				"class" => "form-group col-md-3",
@@ -118,7 +120,7 @@ class ModelPermissionCrudController extends CrudController
 
 		CRUD::addField([
 			"name" => "can_delete",
-			"type" => "checkbox",
+			"type" => "boolean",
 			"label" => "Delete",
 			"wrapper" => [
 				"class" => "form-group col-md-3",
