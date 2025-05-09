@@ -27,7 +27,7 @@
 
 // User Agents must apply any scrollbar-color value set on the root element to the viewport.
 :root {
-	font-size: 16px; // REM base value.
+	font-size: 100%; // REM base value.
 	// First passed value corresponds to the thumb and the second one to the background.
 	// scrollbar-color: $color_fourth rgba($color_first, 0.8); // Mozilla Firefox.
 	scrollbar-color: $color_first rgba($color_gray_medium, 1); // Mozilla Firefox.

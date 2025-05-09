@@ -20,8 +20,8 @@
 // }
 
 @mixin fluid_type(
-	// prettier-ignore
 	// >>>>> VIEWPORT <<<<<
+	// prettier-ignore
 	$viewport-min: 20em /*(320px)*/,
 	// Set global values
 	$viewport-max: 100em /*(1600px)*/,
@@ -35,35 +35,120 @@
 	// >>>>> IMPORTANT <<<<<
 	$important: null
 ) {
+	// Option A – Pick a slope, compute matching multiplier
+	// $desktop-slope: 0.290909;                         // your preferred slope (0.15–0.3 range)
+	// $F: $fs1 / ($fs0 - $Δfs * $desktop-slope);        // computed multiplier (≈2.2)
+
+	// Option B – Pick a multiplier, compute matching slope
+	// $F: 2.2;                                       // your preferred multiplier
+	// $desktop-slope: ($fs0 - $fs1 / $F) / $Δfs;     // computed slope (≈0.29)
+
+	// ################################################## //
+
+	// Viewport ranges
+	$vw-range-mobile: 576 - round_3(strip_unit(to_px($viewport-min))); // base viewport range for mobile
+	$vw-range-desktop: round_3(strip_unit(to_px($viewport-max) - 576)); // comment here
+	$vw-range-full: round_3(strip_unit(to_px($viewport-max) - to_px($viewport-min))); // comment here
+
+	$fs-delta: round_3(strip_unit(to_px($font-size-max) - to_px($font-size-min)));
+	// signed delta, its absolute magnitude, and the direction (+1 or −1)
+	// $fs-delta-signed: strip_unit(to_px($font-size-max) - to_px($font-size-min));
+	$fs-range: abs($fs-delta); // always positive
+	$fs-direction: if($fs-delta >= 0, 1, -1);
+
+	// `font-size` at 576px
+	$fs-threshold: strip_unit(to_px($font-size-min) + $fs-delta * ($vw-range-mobile / $vw-range-full));
+
+	// target multiplier obtained from the average between the `line-height` values (mobile and desktop)
+	$lh-target: ($line-height-mobile + $line-height-desktop) / 2; // → 1.35
+
+	// ################################################## //
+
+	// Mobile progress scaling (to match visual rate of desktop)
+	$vw-scale-mobile: $vw-range-full / $vw-range-mobile;
+
+	$mobile-slope: (
+		strip_unit(to_px($font-size-min)) -
+		($lh-target * strip_unit(to_px($font-size-max)) / $line-height-mobile)
+	) / ($fs-range * $fs-direction);
+
+	$desktop-slope: (
+		strip_unit(to_px($font-size-max)) -
+		($lh-target * $fs-threshold / $line-height-desktop)
+	) / ($fs-range * $fs-direction);
+
+	// $desktop-slope: $fs-direction * (
+	// 	strip_unit(to_px($font-size-max)) -
+	// 	($lh-target * strip_unit(to_px($font-size-min) + $fs-delta *
+	// 	($vw-range-mobile / $vw-range-full)) / $line-height-desktop)
+	// ) / $fs-range;
+
 	@media (max-width: 319.98px) {
 		font-size: $font-size-min #{$important};
 		line-height: $line-height-mobile #{$important};
 	}
 
 	@media (min-width: $viewport-min) and (max-width: 575.98px) {
-		$range-vw: round_3(strip_unit($viewport-max - $viewport-min));
-		$delta-fs: round_3(strip_unit($font-size-max - $font-size-min));
-
 		font-size: clamp(
-				#{$font-size-min},
-				calc(#{$font-size-min} + (#{$delta-fs} * (((100vw - #{$viewport-min}) / #{$range-vw}) * 2))),
-				#{$font-size-max}
+				#{min($font-size-min, $font-size-max)},
+				calc(
+					#{$font-size-min} +
+						(
+							(#{$fs-range} * #{$fs-direction}) *
+								(
+									((100vw - #{to_px($viewport-min)}) / #{$vw-range-full}) * #{$vw-scale-mobile}
+										/* mobile slope */
+								)
+						)
+				),
+				#{max($font-size-min, $font-size-max)}
 			)
 			#{$important};
-		line-height: #{$line-height-mobile} #{$important};
+		// line-height: #{$line-height-mobile} #{$important};
+		line-height: calc(
+				(
+						#{$font-size-min} -
+							(
+								(#{$fs-range} * #{$fs-direction}) *
+									(
+										((100vw - #{to_px($viewport-min)}) / #{$vw-range-full}) *
+											(#{$vw-scale-mobile} * #{$mobile-slope}) /* mobile slope */
+									)
+							)
+					) *
+					(#{$line-height-mobile} * 1) /* keep the declared line-height at the smallest viewport */
+			)
+			#{$important};
 	}
 
 	@media (min-width: 576px) and (max-width: calc(#{$viewport-max} - 0.02px)) {
-		$range-vw: round_3(strip_unit($viewport-max - $viewport-min));
-		$delta-fs: round_3(strip_unit($font-size-max - $font-size-min));
-
 		font-size: clamp(
-				#{$font-size-min},
-				calc(#{$font-size-min} + (#{$delta-fs} * (((100vw - #{$viewport-min}) / #{$range-vw}) * 1))),
-				#{$font-size-max}
+				#{min($font-size-min, $font-size-max)},
+				calc(
+					#{$font-size-min} +
+						(
+							(#{$fs-range} * #{$fs-direction}) *
+								(((100vw - #{$viewport-min}) / #{$vw-range-full}) * 1 /* desktop slope */)
+						)
+				),
+				#{max($font-size-min, $font-size-max)}
 			)
 			#{$important};
-		line-height: #{$line-height-desktop} #{$important};
+		// line-height: #{$line-height-desktop} #{$important};
+		line-height: calc(
+				(
+						#{$font-size-max} -
+							(
+								(#{$fs-range} * #{$fs-direction}) *
+									(
+										(#{to_px($viewport-max)} - 100vw) / #{$vw-range-desktop} * (1 * #{$desktop-slope})
+											/* desktop slope */
+									)
+							)
+					) *
+					(#{$line-height-desktop} * 1) /* keep the declared line-height at the largest viewport */
+			)
+			#{$important};
 	}
 
 	@media (min-width: $viewport-max) {

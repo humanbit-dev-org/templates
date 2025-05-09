@@ -5,7 +5,7 @@
 @use "sass:math";
 
 // Round any number to three decimals
-@function round-3($value) {
+@function round_3($value) {
 	@return math.div(math.round($value * 1000), 1000);
 }
 
@@ -20,4 +20,9 @@
 	}
 
 	@return $number;
+}
+
+// Convert em to px
+@function to_px($em) {
+	@return strip_unit($em) * 16px; // assuming 1em = 16px
 }
