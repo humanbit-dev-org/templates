@@ -1,21 +1,31 @@
-../.git/
-../bootstrap/
-../public/
-../storage/
-../vendor/
-../.env*
-../artisan
-../composer.lock
-../package-lock.json
-../README.md
+# Build Output / Runtime Caches
+**/.next
+**/cache
+**/dist
+**/storage
+**/vendor
 
-/.next/
-/cache/
-/lang/
-/node_modules/
-/public/
-/src/pages/
-/src/static/bessex/
-/src/static/css/
-package-lock.json
-pnpm-lock.yaml
+# Dependencies
+**/node_modules
+**/package-lock.json
+**/pnpm-lock.yaml
+**/composer.lock
+
+# Framework / Tool Files
+**/.env*
+**/.git*
+**/artisan
+**/bootstrap
+**/lang
+
+# Static Assets / Public
+**/public
+!**/public/favicon
+!**/public/static
+
+# Docs / Markdown
+**/*.md*
+
+# Source Maps / Minified
+**/*.map
+**/*.min.*

@@ -40,48 +40,41 @@
 	// $F: $fs1 / ($fs0 - $Δfs * $desktop-slope);        // computed multiplier (≈2.2)
 
 	// Option B – Pick a multiplier, compute matching slope
-	// $F: 2.2;                                       // your preferred multiplier
-	// $desktop-slope: ($fs0 - $fs1 / $F) / $Δfs;     // computed slope (≈0.29)
+	// $F: 2.2;                                          // your preferred multiplier
+	// $desktop-slope: ($fs0 - $fs1 / $F) / $Δfs;        // computed slope (≈0.29)
 
 	// ################################################## //
 
 	// Viewport ranges
-	$vw-range-mobile: 576 - round_3(strip_unit(to_px($viewport-min))); // base viewport range for mobile
-	$vw-range-desktop: round_3(strip_unit(to_px($viewport-max) - 576)); // comment here
-	$vw-range-full: round_3(strip_unit(to_px($viewport-max) - to_px($viewport-min))); // comment here
+	$vw-range-mobile: 576 - round_3(strip_unit(to_px($viewport-min))); // span from min viewport to 576px (mobile range)
+	$vw-range-desktop: round_3(strip_unit(to_px($viewport-max) - 576)); // span from 576px to max viewport (desktop range)
+	$vw-range-full: round_3(
+		strip_unit(to_px($viewport-max) - to_px($viewport-min))
+	); // total responsive range from min to max
+	$vw-scale-mobile: $vw-range-full / $vw-range-mobile; // scales mobile slope to match full range progress rate
 
-	$fs-delta: round_3(strip_unit(to_px($font-size-max) - to_px($font-size-min)));
-	// signed delta, its absolute magnitude, and the direction (+1 or −1)
-	// $fs-delta-signed: strip_unit(to_px($font-size-max) - to_px($font-size-min));
-	$fs-range: abs($fs-delta); // always positive
-	$fs-direction: if($fs-delta >= 0, 1, -1);
+	// Font-size slope & direction helpers
+	$fs-delta: round_3(strip_unit(to_px($font-size-max) - to_px($font-size-min))); // signed delta (`font-size` difference)
+	$fs-range: abs($fs-delta); // absolute `font-size` difference (keep output always positive)
+	$fs-direction: if($fs-delta >= 0, 1, -1); // 1 if `font-size` is growing, -1 if it's shrinking
+	$fs-threshold: strip_unit(
+		to_px($font-size-min) + $fs-delta * ($vw-range-mobile / $vw-range-full)
+	); // interpolated `font-size` at 576px
 
-	// `font-size` at 576px
-	$fs-threshold: strip_unit(to_px($font-size-min) + $fs-delta * ($vw-range-mobile / $vw-range-full));
-
-	// target multiplier obtained from the average between the `line-height` values (mobile and desktop)
-	$lh-target: ($line-height-mobile + $line-height-desktop) / 2; // → 1.35
+	// Line-height control
+	$lh-target: ($line-height-mobile + $line-height-desktop) / 2; // average multiplier to aim for at query threshold
 
 	// ################################################## //
 
-	// Mobile progress scaling (to match visual rate of desktop)
-	$vw-scale-mobile: $vw-range-full / $vw-range-mobile;
-
+	// Slope calculation for multiplier progression
 	$mobile-slope: (
-		strip_unit(to_px($font-size-min)) -
-		($lh-target * strip_unit(to_px($font-size-max)) / $line-height-mobile)
-	) / ($fs-range * $fs-direction);
+			strip_unit(to_px($font-size-min)) - ($lh-target * strip_unit(to_px($font-size-max)) / $line-height-mobile)
+		) /
+		($fs-range * $fs-direction);
 
-	$desktop-slope: (
-		strip_unit(to_px($font-size-max)) -
-		($lh-target * $fs-threshold / $line-height-desktop)
-	) / ($fs-range * $fs-direction);
-
-	// $desktop-slope: $fs-direction * (
-	// 	strip_unit(to_px($font-size-max)) -
-	// 	($lh-target * strip_unit(to_px($font-size-min) + $fs-delta *
-	// 	($vw-range-mobile / $vw-range-full)) / $line-height-desktop)
-	// ) / $fs-range;
+	// Slope calculation for multiplier progression
+	$desktop-slope: (strip_unit(to_px($font-size-max)) - ($lh-target * $fs-threshold / $line-height-desktop)) /
+		($fs-range * $fs-direction);
 
 	@media (max-width: 319.98px) {
 		font-size: $font-size-min #{$important};
@@ -165,6 +158,7 @@
 // $mob_multi: 1.5;
 // $desk_multi: 1.2;
 
-// .example {
+// element_example,
+// .class_example {
 // 	@include fluid_type($min_width, $max_width, $mob_multi, $desk_multi, 1.73rem, 2.5rem);
 // }

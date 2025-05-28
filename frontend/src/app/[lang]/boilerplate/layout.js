@@ -13,7 +13,7 @@
 // 3. Absolute internal (`@/` alias)
 // import DefaultExportModule from "@/<path>/DefaultExports";
 // import { NamedExportModule } from "@/<path>/NamedExports";
-import * as constants from "@/config/constants"; // Global constants used throughout the app for API access
+import * as constants from "@/config/constants"; // Global constants shared across the app
 
 // 4. Relative internal (same directory)
 import "./layout.scss";

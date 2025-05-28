@@ -53,19 +53,36 @@ export async function generateMetadata({ params }) {
 	const { lang } = await params; // Get language from route params
 	const url = `${constants.BASE_URL_SERVER}/api/${lang}/${ssr.page}/seo`; // Construct the URL for the SEO metadata API
 
-	const metadataResponse = await fetch(url, {
-		method: "GET",
-		credentials: "include",
-		headers: {
-			"Content-Type": "application/json",
-			"locale": lang,
-		},
-	});
+	try {
+		// Get metadata from the backend
+		const response = await fetch(url, {
+			method: "GET",
+			credentials: "include",
+			headers: {
+				"Content-Type": "application/json",
+				"locale": lang,
+			},
+		});
 
-	const metadataJson = (await metadataResponse.json()) || null; // Parse the JSON response
+		// Exit early if the request fails
+		if (!response.ok) {
+			console.error("SEO fetch failed:", response.status, url);
+			return {};
+		}
 
-	// Pass the fetched data to `MetadataSetup`
-	return await MetadataSetup(metadataJson, lang);
+		// Parse the JSON response and format it
+		const rawMetadata = await response.json(); // Raw API response
+		const metadataJson = await MetadataSetup(rawMetadata, lang); // Structured SEO metadata
+
+		// Inject the processed metadata and append additional headers
+		return {
+			...metadataJson, // Finalized metadata object
+			acceptCH: ["viewport-width"], // Enables responsive layout via Client Hints
+		};
+	} catch (error) {
+		console.error("SEO fetch error:", error); // Log unexpected fetch or parsing errors
+		return {}; // Return empty metadata on failure
+	}
 }
 
 // ===============================================

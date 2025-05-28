@@ -8,7 +8,7 @@ import { usePathname } from "next/navigation";
 // ## ############################################
 // ===============================================
 
-// Extracts structured path info (pathname, page, id, slug) from the current URL on the client
+// Extracts structured path info from the current URL on the client
 export function usePathInfo() {
 	const pathname = usePathname() || "";
 

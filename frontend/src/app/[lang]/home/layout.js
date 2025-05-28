@@ -2,7 +2,7 @@
 //
 // import HomeLayout from "@/layout/home"; // File import statement
 
-import * as constants from "@/config/constants"; // Global constants used throughout the app for API access
+import * as constants from "@/config/constants"; // Global constants shared across the app
 import "./layout.scss";
 
 // ===============================================

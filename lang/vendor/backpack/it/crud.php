@@ -52,7 +52,7 @@ return [
 	"csv_export" => "Esporta CSV",
 	"csv_import" => "Importa CSV",
 	"csv_import_disabled" => "Import CSV disabilitato per la sezione :section",
-	
+
 	// BULK OPERATIONS
 	"bulk_delete" => "Elimina elementi selezionati",
 	"bulk_delete_confirm" => "Sei sicuro di voler eliminare tutti gli elementi selezionati?",

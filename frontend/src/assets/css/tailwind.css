@@ -1,5 +1,4 @@
-/* Tailwind CSS initialization */
+/* Tailwind initialization */
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* @import "tailwindcss"; */
+@import "tailwindcss" prefix(tw);
