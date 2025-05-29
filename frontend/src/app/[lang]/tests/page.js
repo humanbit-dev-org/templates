@@ -38,13 +38,13 @@ export default async function TestsPage({ params }) {
 						<main>
 							{/* <IntlTelInputComponent /> */}
 
-							<h1 className="big">TYPOGRAPHY TEST</h1>
+							<h1 className="tw:p-12">TYPOGRAPHY TEST</h1>
 							<h1 className="tw:p-5">TYPOGRAPHY TEST</h1>
 							<h1 className="tw:text-9xl">TYPOGRAPHY TEST</h1>
 							<h1 className="tw:text-2xl">TYPOGRAPHY TEST</h1>
 
 							{/* <div className="el_body big"> */}
-							<div className="tw:text-red-500 tw:text-4xl">
+							<div className="big tw:text-red-500">
 								Lorem ipsum dolor, <span className="fw-700">fw-700</span> sit amet consectetur adipisicing
 								elit. Ad quasi asperiores voluptatum odit, molestiae repellendus fugiat nihil at ullam! Quis
 								veniam enim, excepturi vitae consectetur eos. Voluptate ut accusamus fugiat.

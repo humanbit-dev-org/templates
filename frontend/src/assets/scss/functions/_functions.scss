@@ -4,6 +4,8 @@
 
 @use "sass:math";
 
+$root-font-size: 16px;
+
 // Round any number to three decimals
 @function round_3($value) {
 	@return math.div(math.round($value * 1000), 1000);
@@ -24,5 +26,24 @@
 
 // Convert em to px
 @function to_px($em) {
-	@return strip_unit($em) * 16px; // assuming 1em = 16px
+	@return strip_unit($em) * $root-font-size; // assuming 1em = 16px
+}
+
+// Convert px to em
+@function to_em($px) {
+	@return strip_unit($px) / strip_unit($root-font-size) * 1em; // assuming 1em = 16px
+}
+
+// Project a font-size at a given desktop design viewport up to the real max viewport
+// Convert a font-size set at the designer’s mobile viewport
+// down to your real minimum viewport (direct proportion)
+@function convert_to_target_min($value, $source-vw-min, $target-vw-min: 320px) {
+	@return $value * (strip_unit($target-vw-min) / strip_unit($source-vw-min));
+}
+
+// Project a font-size at a given mobile design viewport down to the real min viewport
+// Convert a font-size set at the designer’s desktop viewport
+// up to your real maximum viewport (direct proportion)
+@function convert_to_target_max($value, $source-vw-max, $target-vw-max: 1600px) {
+	@return $value * (strip_unit($target-vw-max) / strip_unit($source-vw-max));
 }

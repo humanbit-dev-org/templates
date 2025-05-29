@@ -19,69 +19,124 @@
 // 	@return math.div($value, ($value * 0 + 1));
 // }
 
+// ===============================================
+// ## ############################################
+// ===============================================
+
 @mixin fluid_type(
-	// >>>>> VIEWPORT <<<<<
+	// >>>>> TARGET VIEWPORT <<<<<
 	// prettier-ignore
-	$viewport-min: 20em /*(320px)*/,
 	// Set global values
-	$viewport-max: 100em /*(1600px)*/,
+	$target-vw-min: 20em /*(320px)*/,
 	// Set global values
+	$target-vw-max: 100em /*(1600px)*/,
+
+	// >>>>> SOURCE VIEWPORT <<<<<
+	// prettier-ignore
+	// e.g. 375px
+	$source-vw-min: null,
+	// e.g. 1280px
+	$source-vw-max: null,
+
 	// >>>>> MOBILE <<<<<
 	$font-size-min: null,
 	$line-height-mobile: null,
+
 	// >>>>> DESKTOP <<<<<
 	$font-size-max: null,
 	$line-height-desktop: null,
+
 	// >>>>> IMPORTANT <<<<<
 	$important: null
 ) {
+	// Fallback: if no designer widths, reuse the target ones
+	$source-vw-min: if($source-vw-min == null, $target-vw-min, $source-vw-min);
+	$source-vw-max: if($source-vw-max == null, $target-vw-max, $source-vw-max);
+
+	// ---------------------------------
+	// 1. normalise viewport numbers
+	//    (turn any em into px so maths is easy)
+	// ---------------------------------
+	$px-source-min: if(unit($source-vw-min) == "em", strip_unit(to_px($source-vw-min)), strip_unit($source-vw-min));
+	$px-source-max: if(unit($source-vw-max) == "em", strip_unit(to_px($source-vw-max)), strip_unit($source-vw-max));
+	$px-target-min: strip_unit(to_px($target-vw-min)); // target min is declared in em
+	$px-target-max: strip_unit(to_px($target-vw-max)); // target max is declared in em
+
+	// ---------------------------------
+	// 2. scale the design font-sizes to the real edges
+	// ---------------------------------
+	$font-size-min: convert_to_target_min($font-size-min, $px-source-min, $px-target-min);
+	$font-size-max: convert_to_target_max($font-size-max, $px-source-max, $px-target-max);
+
+	// ===============================================
+	// ## ############################################
+	// ===============================================
+
 	// Option A – Pick a slope, compute matching multiplier
-	// $desktop-slope: 0.290909;                         // your preferred slope (0.15–0.3 range)
-	// $F: $fs1 / ($fs0 - $Δfs * $desktop-slope);        // computed multiplier (≈2.2)
+	// $lh-desktop-slope: 0.290909;                         // your preferred slope (0.15–0.3 range)
+	// $F: $fs1 / ($fs0 - $Δfs * $lh-desktop-slope);        // computed multiplier (≈2.2)
 
 	// Option B – Pick a multiplier, compute matching slope
 	// $F: 2.2;                                          // your preferred multiplier
-	// $desktop-slope: ($fs0 - $fs1 / $F) / $Δfs;        // computed slope (≈0.29)
+	// $lh-desktop-slope: ($fs0 - $fs1 / $F) / $Δfs;        // computed slope (≈0.29)
 
-	// ################################################## //
+	/////////////////////
+	// ==================
+	// ## Viewport ranges
+	// ==================
+	//
+	// Span from `$target-vw-min` to transition point (mobile breakpoint)
+	$vw-range-mobile: 576 - round_3(strip_unit(to_px($target-vw-min)));
+	// Span from transition point to `$target-vw-max` (desktop breakpoint)
+	$vw-range-desktop: round_3(strip_unit(to_px($target-vw-max) - 576));
+	// Full viewport range from `$target-vw-min` to `$target-vw-max`
+	$vw-range-full: round_3(strip_unit(to_px($target-vw-max) - to_px($target-vw-min)));
 
-	// Viewport ranges
-	$vw-range-mobile: 576 - round_3(strip_unit(to_px($viewport-min))); // span from min viewport to 576px (mobile range)
-	$vw-range-desktop: round_3(strip_unit(to_px($viewport-max) - 576)); // span from 576px to max viewport (desktop range)
-	$vw-range-full: round_3(
-		strip_unit(to_px($viewport-max) - to_px($viewport-min))
-	); // total responsive range from min to max
-	$vw-scale-mobile: $vw-range-full / $vw-range-mobile; // scales mobile slope to match full range progress rate
+	///////////////////////////////////////
+	// ====================================
+	// ## Font-size progression & direction
+	// ====================================
+	//
+	// Signed delta (`font-size` difference)
+	$fs-delta: round_3(strip_unit(to_px($font-size-max) - to_px($font-size-min)));
+	// Absolute `font-size` difference (always positive)
+	$fs-range: abs($fs-delta);
+	// `font-size`: 1 = GROWING | -1 = SHRINKING
+	$fs-direction: if($fs-delta >= 0, 1, -1);
+	// `font-size` at transition point
+	$fs-threshold: strip_unit(to_px($font-size-min) + $fs-delta * ($vw-range-mobile / $vw-range-full));
+	// Mobile `font-size` slope
+	// prettier-ignore
+	$fs-scale-mobile: if(
+		$fs-direction == 1,                     // Adjust `font-size` scaling on mobile
+		$vw-range-full / $vw-range-mobile,      // - Growing: compress to match desktop pace (desktop > mobile)
+		($vw-range-full / $vw-range-mobile) / 2 // - Shrinking: reduce compression for smoother scale (mobile > desktop)
+	);
 
-	// Font-size slope & direction helpers
-	$fs-delta: round_3(strip_unit(to_px($font-size-max) - to_px($font-size-min))); // signed delta (`font-size` difference)
-	$fs-range: abs($fs-delta); // absolute `font-size` difference (keep output always positive)
-	$fs-direction: if($fs-delta >= 0, 1, -1); // 1 if `font-size` is growing, -1 if it's shrinking
-	$fs-threshold: strip_unit(
-		to_px($font-size-min) + $fs-delta * ($vw-range-mobile / $vw-range-full)
-	); // interpolated `font-size` at 576px
-
-	// Line-height control
-	$lh-target: ($line-height-mobile + $line-height-desktop) / 2; // average multiplier to aim for at query threshold
-
-	// ################################################## //
-
-	// Slope calculation for multiplier progression
-	$mobile-slope: (
+	///////////////////////////////////
+	// ================================
+	// ## Line-height progression logic
+	// ================================
+	//
+	// Target average `line-height` multiplier at transition point
+	$lh-target: ($line-height-mobile + $line-height-desktop) / 2;
+	// `line-height` multiplier change across mobile range
+	$lh-mobile-slope: (
 			strip_unit(to_px($font-size-min)) - ($lh-target * strip_unit(to_px($font-size-max)) / $line-height-mobile)
 		) /
 		($fs-range * $fs-direction);
-
-	// Slope calculation for multiplier progression
-	$desktop-slope: (strip_unit(to_px($font-size-max)) - ($lh-target * $fs-threshold / $line-height-desktop)) /
+	// `line-height` multiplier change across desktop range
+	$lh-desktop-slope: (strip_unit(to_px($font-size-max)) - ($lh-target * $fs-threshold / $line-height-desktop)) /
 		($fs-range * $fs-direction);
+
+	// ################################################## //
 
 	@media (max-width: 319.98px) {
 		font-size: $font-size-min #{$important};
 		line-height: $line-height-mobile #{$important};
 	}
 
-	@media (min-width: $viewport-min) and (max-width: 575.98px) {
+	@media (min-width: $target-vw-min) and (max-width: #{to_em(575.98px)}) {
 		font-size: clamp(
 				#{min($font-size-min, $font-size-max)},
 				calc(
@@ -89,7 +144,7 @@
 						(
 							(#{$fs-range} * #{$fs-direction}) *
 								(
-									((100vw - #{to_px($viewport-min)}) / #{$vw-range-full}) * #{$vw-scale-mobile}
+									((100vw - #{to_px($target-vw-min)}) / #{$vw-range-full}) * #{$fs-scale-mobile}
 										/* mobile slope */
 								)
 						)
@@ -104,8 +159,8 @@
 							(
 								(#{$fs-range} * #{$fs-direction}) *
 									(
-										((100vw - #{to_px($viewport-min)}) / #{$vw-range-full}) *
-											(#{$vw-scale-mobile} * #{$mobile-slope}) /* mobile slope */
+										((100vw - #{to_px($target-vw-min)}) / #{$vw-range-full}) *
+											(#{$fs-scale-mobile} * #{$lh-mobile-slope}) /* mobile slope */
 									)
 							)
 					) *
@@ -114,14 +169,14 @@
 			#{$important};
 	}
 
-	@media (min-width: 576px) and (max-width: calc(#{$viewport-max} - 0.02px)) {
+	@media (min-width: to_em(576px)) and (max-width: calc(#{$target-vw-max} - to_em(0.02px))) {
 		font-size: clamp(
 				#{min($font-size-min, $font-size-max)},
 				calc(
 					#{$font-size-min} +
 						(
 							(#{$fs-range} * #{$fs-direction}) *
-								(((100vw - #{$viewport-min}) / #{$vw-range-full}) * 1 /* desktop slope */)
+								(((100vw - #{to_px($target-vw-min)}) / #{$vw-range-full}) * 1 /* desktop slope */)
 						)
 				),
 				#{max($font-size-min, $font-size-max)}
@@ -134,8 +189,8 @@
 							(
 								(#{$fs-range} * #{$fs-direction}) *
 									(
-										(#{to_px($viewport-max)} - 100vw) / #{$vw-range-desktop} * (1 * #{$desktop-slope})
-											/* desktop slope */
+										(#{to_px($target-vw-max)} - 100vw) / #{$vw-range-desktop} *
+											(1 * #{$lh-desktop-slope}) /* desktop slope */
 									)
 							)
 					) *
@@ -144,11 +199,15 @@
 			#{$important};
 	}
 
-	@media (min-width: $viewport-max) {
+	@media (min-width: $target-vw-max) {
 		font-size: $font-size-max #{$important};
 		line-height: $line-height-desktop #{$important};
 	}
 }
+
+// ===============================================
+// ## ############################################
+// ===============================================
 
 // The formula
 //
