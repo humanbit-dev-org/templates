@@ -65,7 +65,7 @@
 	// ---------------------------------
 	// 2. scale the design font-sizes to the real edges
 	// ---------------------------------
-	$font-size-min: convert_to_target_min($font-size-min, $px-source-min, $px-target-min);
+	// $font-size-min: convert_to_target_min($font-size-min, $px-source-min, $px-target-min);
 	$font-size-max: convert_to_target_max($font-size-max, $px-source-max, $px-target-max);
 
 	// ===============================================
@@ -112,6 +112,13 @@
 		$vw-range-full / $vw-range-mobile,      // - Growing: compress to match desktop pace (desktop > mobile)
 		($vw-range-full / $vw-range-mobile) / 2 // - Shrinking: reduce compression for smoother scale (mobile > desktop)
 	);
+
+	@if $source-vw-min != null {
+		$font-size-min: to_em(
+			strip_unit(to_px($font-size-min)) -
+				(($fs-range * $fs-direction) * (($px-source-min - $px-target-min) / $vw-range-full) * $fs-scale-mobile)
+		);
+	}
 
 	///////////////////////////////////
 	// ================================
