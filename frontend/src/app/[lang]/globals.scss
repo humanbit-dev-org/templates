@@ -385,8 +385,8 @@ p {
 		// $target-vw-min: 20em, // default value set in `_fluid_type.scss` to enable global configuration
 		// $target-vw-max: 100em, // default value set in `_fluid_type.scss` to enable global configuration
 		// >>>>> SOURCE VIEWPORT <<<<<
-		$source-vw-min: 375px,
-		$source-vw-max: 1280px,
+		$source-vw-min: 23.438em,
+		$source-vw-max: 80em,
 		// >>>>> MOBILE <<<<<
 		$font-size-min: 2rem, // `font-size` on mobile viewport (< 575.98px)
 		$line-height-mobile: 1.5, // `line-height` multiplier on mobile viewport (< 575.98px)

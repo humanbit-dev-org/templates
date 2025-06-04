@@ -25,25 +25,43 @@ $root-font-size: 16px;
 }
 
 // Convert em to px
-@function to_px($em) {
-	@return strip_unit($em) * $root-font-size; // assuming 1em = 16px
+@function to_px($val) {
+	$u: unit($val);
+	@if $u == "px" {
+		@return $val;
+	}
+	@if $u == "em" or $u == "rem" {
+		@return strip_unit($val) * strip_unit($root-font-size) * 1px;
+	}
+	@return $val; // fallback (unitless or unknown)
 }
 
 // Convert px to em
-@function to_em($px) {
-	@return strip_unit($px) / strip_unit($root-font-size) * 1em; // assuming 1em = 16px
+@function to_em($val) {
+	$u: unit($val);
+	@if $u == "em" {
+		@return $val;
+	}
+	@if $u == "px" {
+		@return strip_unit($val) / strip_unit($root-font-size) * 1em;
+	}
+	@if $u == "rem" {
+		@return strip_unit($val) * 1em;
+	} // rem → em (same root)
+	@return $val;
 }
 
-// Project a font-size at a given desktop design viewport up to the real max viewport
-// Convert a font-size set at the designer’s mobile viewport
-// down to your real minimum viewport (direct proportion)
-@function convert_to_target_min($value, $source-vw-min, $target-vw-min: 320px) {
-	@return $value * (strip_unit($target-vw-min) / strip_unit($source-vw-min));
-}
-
-// Project a font-size at a given mobile design viewport down to the real min viewport
-// Convert a font-size set at the designer’s desktop viewport
-// up to your real maximum viewport (direct proportion)
-@function convert_to_target_max($value, $source-vw-max, $target-vw-max: 1600px) {
-	@return $value * (strip_unit($target-vw-max) / strip_unit($source-vw-max));
+// Convert px to rem
+@function to_rem($val) {
+	$u: unit($val);
+	@if $u == "rem" {
+		@return $val;
+	}
+	@if $u == "px" {
+		@return strip_unit($val) / strip_unit($root-font-size) * 1rem;
+	}
+	@if $u == "em" {
+		@return strip_unit($val) * 1rem;
+	} // em → rem
+	@return $val;
 }
