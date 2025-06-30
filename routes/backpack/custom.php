@@ -30,6 +30,11 @@ Route::group(
 			Route::get("register", "Auth\RegisterController@showRegistrationForm")->name("backpack.auth.register");
 			Route::post("register", "Auth\RegisterController@register");
 
+			// Two-Factor Authentication Routes
+			Route::get("two-factor", "Auth\LoginController@showTwoFactorForm")->name("backpack.auth.two-factor");
+			Route::post("two-factor/verify", "Auth\LoginController@verifyTwoFactor")->name("backpack.auth.two-factor.verify");
+			Route::post("two-factor/resend", "Auth\LoginController@resendTwoFactorToken")->name("backpack.auth.two-factor.resend");
+
 			if (config("backpack.base.setup_email_verification_routes", false)) {
 				Route::get("email/verify", "Auth\VerifyEmailController@emailVerificationRequired")->name(
 					"verification.notice"
