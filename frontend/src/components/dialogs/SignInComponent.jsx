@@ -106,7 +106,7 @@ export function SignInComponent({ lang }) {
 		<>
 			<div
 				data-bs-backdrop="static"
-				className="modal_full modal fade"
+				className="modal_full modal fade show d-block"
 				id="signInModal"
 				tabIndex="-1"
 				aria-labelledby="signInModalLabel"

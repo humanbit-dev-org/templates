@@ -100,7 +100,7 @@ return [
     */
 
 	"from" => [
-		"address" => env("MAIL_FROM_ADDRESS", "info@alltogetherpay.com"),
-		"name" => env("MAIL_FROM_NAME", "AllTogetherPay"),
+		"address" => env("MAIL_FROM_ADDRESS", "info@templates.com"),
+		"name" => env("MAIL_FROM_NAME", "Templates"),
 	],
 ];
