@@ -15,7 +15,7 @@ mechanism.
 /* Differently shaded colors */
 /*
 Use @include var(property, varname) to include a variable, e.g.
-  
+
     @include var(background-color, white1);
 
 to create a white background.

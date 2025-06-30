@@ -9,7 +9,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Parses the environment variable into a URL object so you can access protocol, hostname, etc.
-const url = new URL(process.env.NEXT_PUBLIC_BACKEND_URL_CLIENT);
+const url = new URL(process.env.BACKEND_URL_CLIENT);
 
 /** @type {import('next').NextConfig} */
 // Webpack configuration (default engine)
@@ -44,17 +44,31 @@ const nextConfig = {
 
 			// Configure file-watching behavior for faster and optimized rebuilds
 			config.watchOptions = {
-				poll: false, // Use native file system events (polling causes rebuild loops in this setup)
-				aggregateTimeout: 1000, // Wait longer before triggering rebuild
+				poll: false, // File watching method (polling vs. native events)
+				aggregateTimeout: 1000, // Time before triggering rebuild
 				// Ignore files to avoid unnecessary recompilations
 				ignored: [
+					"**/.cursor",
 					"**/.DS_Store",
-					"**/.git/**",
-					"**/.next/**",
-					"**/cache/**",
-					"**/node_modules/**",
-					"**/*.min.css",
-					"**/*.min.js",
+					"**/.eslintcache",
+					"**/.git",
+					"**/.github",
+					"**/.idea",
+					"**/.next",
+					"**/.parcel-cache",
+					"**/.pnpm-files",
+					"**/.sass-cache",
+					"**/.turbo",
+					"**/.vscode",
+					"**/cache",
+					"**/coverage",
+					"**/dist",
+					"**/node_modules",
+					"**/public",
+					"**/temp",
+					"**/tmp",
+					"**/*.map",
+					"**/*.min.*",
 					"**/*.swp",
 				],
 			};
@@ -79,14 +93,14 @@ const nextConfig = {
 		remotePatterns: [
 			// Development
 			{
-				protocol: url.protocol.replace(":", ""),
-				hostname: url.hostname,
-				port: url.port,
+				protocol: url.protocol.slice(0, -1), // "http:" → "http"
+				hostname: url.hostname, // "localhost"
+				port: url.port, // Empty string if no explicit port
 			},
-			// Production
+			// Production (same host, but always HTTPS)
 			{
 				protocol: "https",
-				hostname: process.env.NEXT_PUBLIC_BACKEND_URL_CLIENT,
+				hostname: url.hostname,
 			},
 			// External
 			{
@@ -110,7 +124,7 @@ const nextConfig = {
 // Turbopack configuration (next-gen engine)
 nextConfig.turbopack = {
 	// Match file extensions in import paths
-	resolveExtensions: [".tsx", ".ts", ".jsx", ".js", ".json"],
+	resolveExtensions: [".mdx", ".md", ".tsx", ".ts", ".jsx", ".js", ".mjs", ".cjs", ".json", ".scss", ".css"],
 
 	// Define custom loaders per file type
 	rules: {

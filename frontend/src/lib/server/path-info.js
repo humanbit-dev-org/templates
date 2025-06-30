@@ -4,7 +4,7 @@
 // ## ############################################
 // ===============================================
 
-// Extracts structured path info (pathname, page, id, slug) from the current URL on the server
+// Extracts structured path info from the current URL on the server
 export async function getPathInfo() {
 	// Import and call the `headers()` function from the Next.js server module
 	const headersList = await import("next/headers").then((m) => m.headers());

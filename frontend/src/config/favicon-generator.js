@@ -2,17 +2,30 @@
 //
 // "use client";
 
+import * as constants from "@/config/constants"; // Global constants shared across the app
+
+// ===============================================
+// ## ############################################
+// ===============================================
+
 export const FaviconGenerator = {
 	icons: {
-		icon: "/favicon/icon1.png",
-		shortcut: "/favicon/favicon.ico",
-		apple: [{ rel: "apple-touch-icon", type: "image/png", sizes: "180x180", url: "/favicon/apple-icon.png" }],
-		other: [
+		icon: [
 			{ rel: "icon", type: "image/svg+xml", url: "/favicon/icon0.svg" },
-			{ rel: "manifest", url: "/favicon/manifest.json" },
+			{ rel: "icon", type: "image/png", sizes: "96x96", url: "/favicon/icon1.png" },
 		],
+		shortcut: "/favicon/favicon.ico",
+		apple: [
+			{
+				rel: "apple-touch-icon",
+				type: "image/png",
+				sizes: "180x180",
+				url: "/favicon/apple-icon.png",
+			},
+		],
+		other: [{ rel: "manifest", url: "/favicon/manifest.json" }],
 	},
-	msapplication: {
-		"msapplication-TileColor": "#ffffff",
+	appleWebApp: {
+		title: constants.BASE_APP_NAME,
 	},
 };

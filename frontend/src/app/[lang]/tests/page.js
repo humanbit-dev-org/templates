@@ -2,7 +2,7 @@
 //
 // import TestsPage from "@/page/tests"; // File import statement
 
-import * as constants from "@/config/constants"; // Global constants used throughout the app for API access
+import * as constants from "@/config/constants"; // Global constants shared across the app
 import { getDictionary } from "@/app/dictionaries"; // Fetch translation dictionary based on language
 import { IntlTelInputComponent } from "@/components/blocks/IntlTelInput"; // International Telephone Input
 import { TranslateProvider } from "@/providers/Translate"; // Provides translation context and hook access for `lang` and `translates`
@@ -38,11 +38,14 @@ export default async function TestsPage({ params }) {
 						<main>
 							{/* <IntlTelInputComponent /> */}
 
-							<h1 className="big">TYPOGRAPHY TEST</h1>
+							<h1 className="tw:p-12">TYPOGRAPHY TEST</h1>
+							<h1 className="tw:p-5">TYPOGRAPHY TEST</h1>
+							<h1 className="tw:text-9xl">TYPOGRAPHY TEST</h1>
+							<h1 className="tw:text-2xl">TYPOGRAPHY TEST</h1>
 
-							{/* <div className="el_body p"> */}
-							<div className="el_body big">
-								Lorem ipsum dolor, <span className="fw-700">fw-700</span>sit amet consectetur adipisicing
+							{/* <div className="el_body big"> */}
+							<div className="big tw:text-red-500">
+								Lorem ipsum dolor, <span className="fw-700">fw-700</span> sit amet consectetur adipisicing
 								elit. Ad quasi asperiores voluptatum odit, molestiae repellendus fugiat nihil at ullam! Quis
 								veniam enim, excepturi vitae consectetur eos. Voluptate ut accusamus fugiat.
 							</div>

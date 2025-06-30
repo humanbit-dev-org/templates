@@ -4,8 +4,10 @@
 
 @use "sass:math";
 
+$root-font-size: 16px;
+
 // Round any number to three decimals
-@function round-3($value) {
+@function round_3($value) {
 	@return math.div(math.round($value * 1000), 1000);
 }
 
@@ -20,4 +22,46 @@
 	}
 
 	@return $number;
+}
+
+// Convert em to px
+@function to_px($val) {
+	$u: unit($val);
+	@if $u == "px" {
+		@return $val;
+	}
+	@if $u == "em" or $u == "rem" {
+		@return strip_unit($val) * strip_unit($root-font-size) * 1px;
+	}
+	@return $val; // fallback (unitless or unknown)
+}
+
+// Convert px to em
+@function to_em($val) {
+	$u: unit($val);
+	@if $u == "em" {
+		@return $val;
+	}
+	@if $u == "px" {
+		@return strip_unit($val) / strip_unit($root-font-size) * 1em;
+	}
+	@if $u == "rem" {
+		@return strip_unit($val) * 1em;
+	} // rem → em (same root)
+	@return $val;
+}
+
+// Convert px to rem
+@function to_rem($val) {
+	$u: unit($val);
+	@if $u == "rem" {
+		@return $val;
+	}
+	@if $u == "px" {
+		@return strip_unit($val) / strip_unit($root-font-size) * 1rem;
+	}
+	@if $u == "em" {
+		@return strip_unit($val) * 1rem;
+	} // em → rem
+	@return $val;
 }

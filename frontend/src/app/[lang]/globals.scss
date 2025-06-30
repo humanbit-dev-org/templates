@@ -27,7 +27,7 @@
 
 // User Agents must apply any scrollbar-color value set on the root element to the viewport.
 :root {
-	font-size: 16px; // REM base value.
+	font-size: 100%; // REM base value.
 	// First passed value corresponds to the thumb and the second one to the background.
 	// scrollbar-color: $color_fourth rgba($color_first, 0.8); // Mozilla Firefox.
 	scrollbar-color: $color_first rgba($color_gray_medium, 1); // Mozilla Firefox.
@@ -381,9 +381,12 @@ p {
 
 	// prettier-ignore
 	@include fluid_type( // responsive typography
-		// >>>>> VIEWPORT <<<<<
-		// $viewport-min: 20em, // default value set in `_fluid_type.scss` to enable global configuration
-		// $viewport-max: 100em, // default value set in `_fluid_type.scss` to enable global configuration
+		// >>>>> TARGET VIEWPORT <<<<<
+		// $target-vw-min: 20em, // default value set in `_fluid_type.scss` to enable global configuration
+		// $target-vw-max: 100em, // default value set in `_fluid_type.scss` to enable global configuration
+		// >>>>> SOURCE VIEWPORT <<<<<
+		$source-vw-min: 23.438em,
+		$source-vw-max: 80em,
 		// >>>>> MOBILE <<<<<
 		$font-size-min: 2rem, // `font-size` on mobile viewport (< 575.98px)
 		$line-height-mobile: 1.5, // `line-height` multiplier on mobile viewport (< 575.98px)
@@ -1391,8 +1394,6 @@ ul {
 }
 
 .cont_mw_2 {
-	// max-width: 356px;
-	// max-width: 440px;
 	max-width: 550px;
 	margin: 0 auto;
 	// margin-right: auto;

@@ -2,9 +2,10 @@
 //
 "use client"; // marks module for full browser execution
 
-import { createContext, useContext, useEffect, useState } from "react";
-import * as constants from "@/config/constants";
-import { usePathInfo } from "@/hooks/pathInfo";
+import { createContext, useContext, useEffect, useState } from "react"; // Core imports (React & Next.js)
+import * as constants from "@/config/constants"; // Global constants shared across the app
+import { useDeviceInfo } from "@/hooks/deviceInfo"; // Track window width and compute device flags
+import { usePathInfo } from "@/hooks/pathInfo"; // Extract structured path info from the current URL
 
 // ===============================================
 // ## ############################################
@@ -33,7 +34,7 @@ async function fetchUser(lang) {
 			method: "GET",
 			headers: {
 				"Accept": "application/json",
-				"Referer": process.env.APP_URL,
+				"Referer": constants.BASE_APP_URL,
 				"X-Requested-With": "XMLHttpRequest",
 				"Content-Type": "application/json",
 				"X-XSRF-TOKEN": xsrfToken, // Pass XSRF token for CSRF protection
@@ -87,7 +88,8 @@ export function ClientProvider({ children, lang }) {
 		// setGlobalState,
 		// apiData,
 		// setApiData,
-		...usePathInfo(), // Get structured path info from the current URL
+		...useDeviceInfo(),
+		...usePathInfo(),
 		user, // Include user in context
 	};
 

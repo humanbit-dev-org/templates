@@ -2,7 +2,7 @@
 //
 // import HomePage from "@/page/home"; // File import statement
 
-import * as constants from "@/config/constants"; // Global constants used throughout the app for API access
+import * as constants from "@/config/constants"; // Global constants shared across the app
 import { getDictionary } from "@/app/dictionaries"; // Fetch translation dictionary based on language
 import { TranslateProvider } from "@/providers/Translate"; // Provides translation context and hook access for `lang` and `translates`
 import "./page.scss";
