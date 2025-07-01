@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Sortable;
+use App\Models\Traits\Sortable;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\File;

@@ -17,6 +17,7 @@ return new class extends Migration {
 			$table->foreignId("backpack_role_id")->nullable()->constrained("backpack_roles");
 			$table->string('token', 6)->nullable()->comment('Two-factor authentication token');
             $table->timestamp('token_expire')->nullable()->comment('Token expiration date');
+			$table->boolean('token_verified')->default(false)->comment('Whether the 2FA token has been verified');
 			$table->string("username");
 			$table->string("name");
 			$table->string("surname");

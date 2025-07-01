@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\StorableMedia;
+use App\Models\Traits\StorableMedia;
 use Backpack\CRUD\app\Models\Traits\CrudTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;

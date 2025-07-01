@@ -10,13 +10,13 @@ use Backpack\CRUD\app\Models\Traits\CrudTrait;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Support\Facades\Mail;
-use Carbon\Carbon;
+use App\Models\Traits\HasTwoFactorAuth;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
 	use CrudTrait;
 	use HasFactory, Notifiable, HasApiTokens;
+	use HasTwoFactorAuth;
 
 	/**
 	 * The attributes that are mass assignable.
@@ -36,6 +36,7 @@ class User extends Authenticatable implements MustVerifyEmail
 		"email_verified_at",
 		"token",
 		"token_expire",
+		"token_verified",
 	];
 
 	/**
@@ -69,67 +70,14 @@ class User extends Authenticatable implements MustVerifyEmail
 		return $this->belongsTo(BackpackRole::class);
 	}
 
-	// public function sendEmailVerificationNotification()
-	// {
-	// 	if ($this->backpack_role == "user") {
-	// 		// Send a custom notification for admin users
-	// 		$this->notify(new VerifyEmailCustom());
-	// 	} else {
-	// 		// Use the default notification for regular users
-	// 		$this->notify(new \Illuminate\Auth\Notifications\VerifyEmail());
-	// 	}
-	// }
-
 	public function sendEmailVerificationNotification()
 	{
 		$this->notify(new \Illuminate\Auth\Notifications\VerifyEmail());
 	}
 
-	/**
-	 * Generate a new two-factor authentication token
-	 */
-	public function generateTwoFactorToken(): string
+	public function hasVerifiedEmail()
 	{
-		$token = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
-		
-		$this->token = $token;
-		$this->token_expire = Carbon::now()->addDays(30);
-		$this->save();
-		
-		return $token;
-	}
-
-	/**
-	 * Check if the two-factor token is valid
-	 */
-	public function isValidTwoFactorToken(string $token): bool
-	{
-		return $this->token === $token && 
-			   $this->token_expire && 
-			   $this->token_expire->isFuture();
-	}
-
-	/**
-	 * Check if token has expired and needs regeneration
-	 */
-	public function needsNewToken(): bool
-	{
-		return !$this->token || 
-			   !$this->token_expire || 
-			   $this->token_expire->isPast();
-	}
-
-	/**
-	 * Send two-factor authentication token via email
-	 */
-	public function sendTwoFactorTokenEmail(): void
-	{
-		$token = $this->generateTwoFactorToken();
-		
-		Mail::send('emails.two-factor-token', ['token' => $token, 'user' => $this], function ($message) {
-			$message->to($this->email)
-					->subject('Codice di accesso - Autenticazione a due fattori');
-		});
+		return $this->email_verified_at != null;
 	}
 
 	public function getDisplayAttribute()

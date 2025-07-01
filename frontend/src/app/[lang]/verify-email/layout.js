@@ -1,6 +1,6 @@
 // Server-Side Rendering (React generates HTML before hydration)
 //
-// import BoilerplatePage from "@/page/boilerplate"; // File import statement
+// import VerifyEmailLayout from "@/layout/verify_email"; // File import statement
 
 // 1. Core imports (React & Next.js)
 // import Link from "next/link"; // Client-side routing with automatic pre-fetching
@@ -11,28 +11,23 @@
 // import clsx from "clsx"; // Conditional CSS class name joiner
 
 // 3. Absolute internal (`@/` alias)
-// import DefaultExportModule from "@/<path>/DefaultExport";
-// import { NamedExportModule } from "@/<path>/NamedExport";
+// import DefaultExportModule from "@/<path>/DefaultExports";
+// import { NamedExportModule } from "@/<path>/NamedExports";
 import * as constants from "@/config/constants"; // Global constants shared across the app
-import { getDictionary } from "@/app/dictionaries"; // Fetch translation dictionary based on language
-import { TranslateProvider } from "@/providers/Translate"; // Provides translation context and hook access for `lang` and `translates`
 
 // 4. Relative internal (same directory)
-import "./page.scss";
+import "./layout.scss";
 
 // ===============================================
 // ## ############################################
 // ===============================================
 
-export default async function BoilerplatePage({ params }) {
+export default async function VerifyEmailLayout({ children, params }) {
 	// Get the language from route parameters
 	const { lang } = await params;
 
-	// Fetch translation dictionary based on language
-	const translates = await getDictionary(lang);
-
 	// Fetch data from the API with language header
-	// const dataResponse = await fetch(`${constants.BASE_URL}/api/${lang}/boilerplate/<section>`, {
+	// const dataResponse = await fetch(`${constants.APP_URL}/api/${lang}/<route>`, {
 	// 	method: "GET",
 	// 	credentials: "include",
 	// 	headers: {
@@ -43,14 +38,8 @@ export default async function BoilerplatePage({ params }) {
 	// const dataResponseJson = await dataResponse.json();
 
 	return (
-		<div className="boilerplate_page">
-			<div className="page_cont">
-				<section className="cont_space_1">
-					<div className="cont_mw_1">
-						{/* <NamedExportModule idModule="nameModulePage" dataModule={dataModule} /> */}
-					</div>
-				</section>
-			</div>
-		</div>
+		<>
+			<div className="verify_email_layout grid_cont content">{children}</div>
+		</>
 	);
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace App\Models\Traits;
 
 trait Sortable
 {
@@ -42,4 +42,4 @@ trait Sortable
 	{
 		static::where("order", ">", $model->order)->decrement("order");
 	}
-}
+} 

@@ -23,6 +23,12 @@
                         </div>
                     @endif
 
+                    @error('throttle')
+                        <div class="alert alert-danger" role="alert">
+                            {{ $message }}
+                        </div>
+                    @enderror
+
                     <form method="POST" action="{{ route('backpack.auth.two-factor.verify') }}">
                         @csrf
                         
@@ -62,7 +68,9 @@
                         <p class="mb-2">Non hai ricevuto il codice?</p>
                         <form method="POST" action="{{ route('backpack.auth.two-factor.resend') }}" class="d-inline">
                             @csrf
-                            <button type="submit" class="btn btn-link p-0 text-decoration-underline">
+                            <button type="submit" 
+                                    class="btn btn-link p-0 text-decoration-underline @error('throttle') disabled @enderror"
+                                    @error('throttle') disabled @enderror>
                                 Invia nuovo codice
                             </button>
                         </form>

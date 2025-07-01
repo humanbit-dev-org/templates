@@ -102,64 +102,32 @@ export default async function RootLayout({ children, params }) {
 	// Fetch translation dictionary based on language
 	const translates = await getDictionary(lang);
 
-	// // Get cookies from the request
-	// const cookiesStore = await cookies();
-
-	// // Extract the Laravel session ID
-	// const laravelSession = cookiesStore.get("laravel_session")?.value;
-
-	// // Fetch authenticated user data from Laravel Sanctum API
-	// const userResponse = await fetch(`${constants.BASE_URL}/api/user`, {
-	// 	method: "GET",
-	// 	credentials: "include",
-	// 	headers: {
-	// 		"Accept": "application/json",
-	// 		"Content-Type": "application/json",
-	// 		"X-Requested-With": "XMLHttpRequest",
-	// 		"Referer": process.env.APP_URL,
-	// 		"cookie": "laravel_session=" + laravelSession,
-	// 	},
-	// });
-
-	// // Parse user data response
-	// const userResponseJson = await userResponse.json();
-
-	// // Fetch menu/page data from the API
-	// const menuResponse = await fetch(`${constants.BASE_URL}/api/pages`, {
-	// 	method: "GET",
-	// 	credentials: "include",
-	// 	headers: {
-	// 		"Content-Type": "application/json",
-	// 	},
-	// });
-
-	// // Parse menu data response
-	// const menuResponseJson = await menuResponse.json();
-
 	return (
 		<html lang={lang} className={fontClasses}>
 			{/* <body className="bg_color_white fx_load"> */}
 			<body className="bg_color_white">
 				{/* USER AND LOCALE CONTEXT (navbar | footer) */}
 				<ClientProvider lang={lang} dict={translates}>
-					<div className="root_layout container_structure container-fluid">
-						<div className="grid_cont navbar row justify-content-center position-sticky">
-							{/* <NavSideBurgerComponent menu={menuResponseJson} /> */}
-							{/* <NavSlideTopComponent /> */}
+					<TranslateProvider lang={lang} translates={translates}>
+						<div className="root_layout container_structure container-fluid">
+							<div className="grid_cont navbar row justify-content-center position-sticky">
+								{/* <NavSideBurgerComponent menu={menuResponseJson} /> */}
+								{/* <NavSlideTopComponent /> */}
+							</div>
+
+							{children}
 						</div>
 
-						{children}
-					</div>
+						{/* PROJECT UTILITIES (scripts | cookies) */}
+						<GlobalScripts />
+						<KlaroCookieConsent config={klaroConfig} />
 
-					{/* PROJECT UTILITIES (scripts | cookies) */}
-					<GlobalScripts />
-					<KlaroCookieConsent config={klaroConfig} />
-
-					{/* USER PROMPTS (modals | toasts) */}
-					<ForgotPasswordComponent lang={lang} />
-					<PasswordResetComponent lang={lang} />
-					<RegisterComponent lang={lang} />
-					<SignInComponent lang={lang} />
+						{/* USER PROMPTS (modals | toasts) */}
+						<ForgotPasswordComponent lang={lang} />
+						<PasswordResetComponent lang={lang} />
+						<RegisterComponent lang={lang} />
+						<SignInComponent lang={lang} />
+					</TranslateProvider>
 				</ClientProvider>
 			</body>
 		</html>

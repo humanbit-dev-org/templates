@@ -70,6 +70,15 @@ return [
 	// Defaults to 1,10 - 1 time in 10 minutes.
 	"email_verification_throttle_access" => "3,15",
 
+	// Set this to true if you would like to enable two-factor authentication for your users.
+	// Make sure your user model has `token` and `token_expire` columns and the necessary methods.
+	"setup_two_factor_auth" => true,
+
+	// How many times in any given time period should the user be allowed to
+	// request a new two-factor token via email?
+	// Defaults to 5,30 - 5 times in 30 minutes.
+	"two_factor_throttle_access" => "5,30",
+
 	/*
     |--------------------------------------------------------------------------
     | Security

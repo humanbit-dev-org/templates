@@ -2,7 +2,7 @@
 //
 "use client"; // marks module for full browser execution
 
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 
 // ===============================================
 // ## ############################################
@@ -11,9 +11,13 @@ import { usePathname } from "next/navigation";
 // Extracts structured path info from the current URL on the client
 export function usePathInfo() {
 	const pathname = usePathname() || "";
+	const searchParams = useSearchParams();
 
 	// Break the pathname into segments
 	const segments = pathname.split("/").filter(Boolean); // Remove empty strings
+
+	// Extract query parameters as object with key-value pairs
+	const queryParams = Object.fromEntries(searchParams.entries());
 
 	let page = null; // Holds the static page name (e.g., "page-example")
 	let id = null; // Holds dynamic numeric ID from the URL (if present)
@@ -32,5 +36,5 @@ export function usePathInfo() {
 		}
 	}
 
-	return { pathname, page, id, slug };
+	return { pathname, page, id, slug, queryParams };
 }
