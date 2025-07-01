@@ -35,4 +35,4 @@ trait StorableMedia
 	{
 		return Str::endsWith($key, "_path") && $value instanceof UploadedFile;
 	}
-} 
+}

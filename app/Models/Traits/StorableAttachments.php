@@ -35,4 +35,4 @@ trait StorableAttachments
 	{
 		return Str::endsWith($key, "_path") && $value instanceof UploadedFile;
 	}
-} 
+}

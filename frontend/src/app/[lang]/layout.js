@@ -12,6 +12,7 @@ import * as constants from "@/config/constants";
 import MetadataSetup, { FontsLoader, GlobalScripts } from "@/config/metadata-setup";
 import { ClientProvider } from "@/providers/Client";
 import { getDictionary } from "@/app/dictionaries"; // TODO: Keep this here?
+import { TranslateProvider } from "@/providers/Translate"; // Provides translation context and hook access for `lang` and `translates`
 import { getServer } from "@/lib/server";
 import { klaroConfig } from "@/config/klaro-config"; // cookie configuration
 import { KlaroCookieConsent } from "@/config/klaro-cookie-consent"; // cookie handling
@@ -51,7 +52,7 @@ export const viewport = {
 export async function generateMetadata({ params }) {
 	const ssr = await getServer(); // Get server-side context
 	const { lang } = await params; // Get language from route params
-	const url = `${constants.BASE_URL_SERVER}/api/${lang}/${ssr.page}/seo`; // Construct the URL for the SEO metadata API
+	const url = `${constants.BACKEND_URL_SERVER}/api/${lang}/${ssr.page}/seo`; // Construct the URL for the SEO metadata API
 
 	try {
 		// Get metadata from the backend

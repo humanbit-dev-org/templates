@@ -32,8 +32,7 @@ class LoginController extends AuthLoginController
 		$this->validateLogin($request);
 
 		// Check if too many login attempts have been made
-		if (method_exists($this, 'hasTooManyLoginAttempts') &&
-			$this->hasTooManyLoginAttempts($request)) {
+		if (method_exists($this, "hasTooManyLoginAttempts") && $this->hasTooManyLoginAttempts($request)) {
 			$this->fireLockoutEvent($request);
 			return $this->sendLockoutResponse($request);
 		}
@@ -42,15 +41,15 @@ class LoginController extends AuthLoginController
 
 		if (backpack_auth()->validate($credentials)) {
 			$user = backpack_auth()->getProvider()->retrieveByCredentials($credentials);
-			
-			if (config('backpack.base.setup_two_factor_auth', false)) {
+
+			if (config("backpack.base.setup_two_factor_auth", false)) {
 				return $this->handleTwoFactorAuth($request, $user, $credentials);
 			} else {
 				return $this->loginUser($request, $user);
 			}
 		}
 
-		if (method_exists($this, 'incrementLoginAttempts')) {
+		if (method_exists($this, "incrementLoginAttempts")) {
 			$this->incrementLoginAttempts($request);
 		}
 
@@ -65,17 +64,17 @@ class LoginController extends AuthLoginController
 		if ($this->twoFactorService->needsNewToken($user)) {
 			$this->twoFactorService->resetRateLimit($user);
 			$this->twoFactorService->sendTokenEmail($user);
-			
-			$request->session()->put('2fa_user_id', $user->id);
-			$request->session()->put('2fa_login_credentials', $credentials);
-			
-			if (method_exists($this, 'clearLoginAttempts')) {
+
+			$request->session()->put("2fa_user_id", $user->id);
+			$request->session()->put("2fa_login_credentials", $credentials);
+
+			if (method_exists($this, "clearLoginAttempts")) {
 				$this->clearLoginAttempts($request);
 			}
-			
-			return redirect()->route('backpack.auth.two-factor');
+
+			return redirect()->route("backpack.auth.two-factor");
 		}
-		
+
 		return $this->loginUser($request, $user);
 	}
 
@@ -84,12 +83,12 @@ class LoginController extends AuthLoginController
 	 */
 	private function loginUser(Request $request, User $user)
 	{
-		backpack_auth()->login($user, $request->filled('remember'));
-		
-		if (method_exists($this, 'clearLoginAttempts')) {
+		backpack_auth()->login($user, $request->filled("remember"));
+
+		if (method_exists($this, "clearLoginAttempts")) {
 			$this->clearLoginAttempts($request);
 		}
-		
+
 		return $this->sendLoginResponse($request);
 	}
 
@@ -101,11 +100,11 @@ class LoginController extends AuthLoginController
 	 */
 	public function showTwoFactorForm(Request $request)
 	{
-		if (!$request->session()->has('2fa_user_id')) {
-			return redirect()->route('backpack.auth.login');
+		if (!$request->session()->has("2fa_user_id")) {
+			return redirect()->route("backpack.auth.login");
 		}
 
-		return view('vendor.backpack.theme-tabler.auth.login.two-factor');
+		return view("vendor.backpack.theme-tabler.auth.login.two-factor");
 	}
 
 	/**
@@ -116,26 +115,27 @@ class LoginController extends AuthLoginController
 	 */
 	public function verifyTwoFactor(Request $request)
 	{
-		$request->validate(['token' => 'required|string|size:6']);
+		$request->validate(["token" => "required|string|size:6"]);
 
-		$userId = $request->session()->get('2fa_user_id');
-		
+		$userId = $request->session()->get("2fa_user_id");
+
 		if (!$userId) {
-			return redirect()->route('backpack.auth.login')
-				->withErrors(['token' => 'Sessione scaduta. Riprova l\'accesso.']);
+			return redirect()
+				->route("backpack.auth.login")
+				->withErrors(["token" => 'Sessione scaduta. Riprova l\'accesso.']);
 		}
 
 		$user = User::find($userId);
-		
+
 		if (!$user || !$this->twoFactorService->validateToken($user, $request->token)) {
-			return back()->withErrors(['token' => 'Codice non valido o scaduto.']);
+			return back()->withErrors(["token" => "Codice non valido o scaduto."]);
 		}
 
 		$this->twoFactorService->markTokenVerified($user);
-		backpack_auth()->login($user, $request->filled('remember'));
-		
-		$request->session()->forget(['2fa_user_id', '2fa_login_credentials']);
-		
+		backpack_auth()->login($user, $request->filled("remember"));
+
+		$request->session()->forget(["2fa_user_id", "2fa_login_credentials"]);
+
 		return $this->sendLoginResponse($request);
 	}
 
@@ -147,22 +147,22 @@ class LoginController extends AuthLoginController
 	 */
 	public function resendTwoFactorToken(Request $request)
 	{
-		$userId = $request->session()->get('2fa_user_id');
-		
+		$userId = $request->session()->get("2fa_user_id");
+
 		if (!$userId) {
-			return redirect()->route('backpack.auth.login');
+			return redirect()->route("backpack.auth.login");
 		}
 
 		$user = User::find($userId);
 		if (!$user) {
-			return redirect()->route('backpack.auth.login');
+			return redirect()->route("backpack.auth.login");
 		}
 
 		if (!$this->twoFactorService->canSendToken($user)) {
 			$minutes = ceil($this->twoFactorService->getTimeUntilNextAttempt($user) / 60);
-			
+
 			return back()->withErrors([
-				'throttle' => "Troppi tentativi di invio. Riprova tra {$minutes} minuti."
+				"throttle" => "Troppi tentativi di invio. Riprova tra {$minutes} minuti.",
 			]);
 		}
 
@@ -170,12 +170,12 @@ class LoginController extends AuthLoginController
 		$this->twoFactorService->sendTokenEmail($user);
 
 		$remaining = $this->twoFactorService->getRemainingAttempts($user);
-		$message = 'Nuovo codice inviato via email.';
-		
+		$message = "Nuovo codice inviato via email.";
+
 		if ($remaining <= 2 && $remaining > 0) {
 			$message .= " (Rimangono {$remaining} tentativi)";
 		}
 
-		return back()->with('status', $message);
+		return back()->with("status", $message);
 	}
 }

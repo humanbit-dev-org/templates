@@ -33,8 +33,12 @@ Route::group(
 			// Two-Factor Authentication Routes (only if enabled)
 			if (config("backpack.base.setup_two_factor_auth", false)) {
 				Route::get("two-factor", "Auth\LoginController@showTwoFactorForm")->name("backpack.auth.two-factor");
-				Route::post("two-factor/verify", "Auth\LoginController@verifyTwoFactor")->name("backpack.auth.two-factor.verify");
-				Route::post("two-factor/resend", "Auth\LoginController@resendTwoFactorToken")->name("backpack.auth.two-factor.resend");
+				Route::post("two-factor/verify", "Auth\LoginController@verifyTwoFactor")->name(
+					"backpack.auth.two-factor.verify"
+				);
+				Route::post("two-factor/resend", "Auth\LoginController@resendTwoFactorToken")->name(
+					"backpack.auth.two-factor.resend"
+				);
 			}
 
 			if (config("backpack.base.setup_email_verification_routes", false)) {
@@ -91,7 +95,7 @@ Route::group(
 		Route::crud("backpack-role", "BackpackRoleCrudController");
 		Route::crud("role", "RoleCrudController");
 		Route::crud("model-permission", "ModelPermissionCrudController");
-		
+
 		// Model Permission custom routes
 		Route::post("model-permission/check-used-permissions", "ModelPermissionCrudController@checkUsedPermissions");
 	}

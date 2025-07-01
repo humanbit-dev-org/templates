@@ -42,4 +42,4 @@ trait Sortable
 	{
 		static::where("order", ">", $model->order)->decrement("order");
 	}
-} 
+}
