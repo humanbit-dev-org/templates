@@ -59,11 +59,14 @@ class RelationHandler
 			// Check if foreign key is present in URL
 			$defaultValue = request($foreignKey, null);
 
-			// Create select field with preselected value
-			$field = CRUD::field($methodName . "_id")
+			// Create select field with preselected value using actual foreign key name
+			$field = CRUD::field($foreignKey)
 				->type("select_from_array")
+				->label(self::generateFieldLabel($methodName))
+				->entity($methodName)
 				->model($relatedModelClass)
 				->wrapper(["class" => "form-group col-sm-12"])
+				->allows_null(true)
 				->options(
 					$relatedModelClass
 						::all()
@@ -93,11 +96,11 @@ class RelationHandler
 			}
 
 			// Add preview field with same tab
-			$previewField = CRUD::field($methodName . "_preview")
+			$previewField = CRUD::field($foreignKey . "_preview")
 				->type("custom_html")
 				->value(
 					'<a id="' .
-						$methodName .
+						$foreignKey .
 						'_preview_link" href="#" class="small text-capitalize" style="display: none;">
                         <i class="la la-link"></i> ' .
 						trans("backpack::crud.open") .
@@ -113,16 +116,16 @@ class RelationHandler
 
 			// Include script to dynamically update preview button
 			CRUD::addField([
-				"name" => "script_" . $methodName,
+				"name" => "script_" . $foreignKey,
 				"type" => "custom_html",
 				"value" =>
 					"<script>
                         document.addEventListener('DOMContentLoaded', function () {
                             const select = document.querySelector('[name=\"" .
-					$methodName .
-					"_id\"]');
+					$foreignKey .
+					"\"]');
                             const previewLink = document.getElementById('" .
-					$methodName .
+					$foreignKey .
 					"_preview_link');
                             
                             // Detect if we are in edit mode
@@ -130,14 +133,13 @@ class RelationHandler
 					(CRUD::getCurrentEntryId() ? "true" : "false") .
 					";
                             const basePath = isEditMode ? '../../../admin/' : '../../admin/';
+                            const routeName = '" . self::generateRouteSlug($methodName) . "';
             
                             if (select && previewLink) {
                                 select.addEventListener('change', function () {
                                     const selectedId = select.value;
                                     if (selectedId) {
-                                        previewLink.href = basePath + '" .
-					$methodName .
-					"/' + selectedId + '/edit';
+                                        previewLink.href = basePath + routeName + '/' + selectedId + '/edit';
                                         previewLink.style.display = 'inline-block';
                                     } else {
                                         previewLink.style.display = 'none';
@@ -146,9 +148,7 @@ class RelationHandler
             
                                 const initialSelectedId = select.value;
                                 if (initialSelectedId) {
-                                    previewLink.href = basePath + '" .
-					$methodName .
-					"/' + initialSelectedId + '/edit';
+                                    previewLink.href = basePath + routeName + '/' + initialSelectedId + '/edit';
                                     previewLink.style.display = 'inline-block';
                                 }
                             }
@@ -384,5 +384,36 @@ class RelationHandler
 
 				return null;
 			});
+	}
+
+	/**
+	 * Generate appropriate field label for relation
+	 *
+	 * @param string $methodName Method name representing the relation
+	 * @return string Generated label
+	 */
+	private static function generateFieldLabel($methodName): string
+	{
+		// Convert camelCase to readable format
+		$readable = ucwords(preg_replace('/(?<!^)[A-Z]/', ' $0', $methodName));
+		
+		// Don't add "Role" if the name already contains "role" (case insensitive)
+		if (stripos($methodName, 'role') === false) {
+			$readable .= ' Role';
+		}
+		
+		return $readable;
+	}
+
+	/**
+	 * Generate route slug from method name (converts camelCase to kebab-case)
+	 *
+	 * @param string $methodName Method name representing the relation
+	 * @return string Route slug in kebab-case
+	 */
+	private static function generateRouteSlug($methodName): string
+	{
+		// Convert camelCase to kebab-case
+		return strtolower(preg_replace('/(?<!^)[A-Z]/', '-$0', $methodName));
 	}
 }

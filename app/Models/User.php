@@ -67,7 +67,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
 	public function backpackRole()
 	{
-		return $this->belongsTo(BackpackRole::class);
+		return $this->belongsTo(BackpackRole::class, 'backpack_role_id');
 	}
 
 	public function sendEmailVerificationNotification()

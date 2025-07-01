@@ -45,7 +45,6 @@ class UserCrudController extends CrudController
 	 */
 	protected function setupListOperation()
 	{
-		//CRUD::setFromDb(); // set columns from db columns.
 		HelperBackend::setFieldsView(new \App\Models\User());
 
 		/**
@@ -62,7 +61,6 @@ class UserCrudController extends CrudController
 	 */
 	protected function setupCreateOperation()
 	{
-		//CRUD::setFromDb(); // set fields from db columns.
 		CRUD::setValidation(UserRequest::class);
 		HelperBackend::setFields(new \App\Models\User());
 
@@ -86,7 +84,7 @@ class UserCrudController extends CrudController
 			"label" => "Password",
 			"type" => "password",
 			"value" => "",
-			"hint" => "Leave blank if you don’t want to change the password.",
+			"hint" => "Leave blank if you don't want to change the password.",
 		]);
 		if ($this->crud->getCurrentEntry() && $this->crud->getCurrentEntry()->email_verified_at) {
 			CRUD::addField([
