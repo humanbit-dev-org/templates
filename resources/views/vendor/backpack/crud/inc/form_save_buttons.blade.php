@@ -142,7 +142,7 @@
         }).then((value) => {
             if (value) {
                 $.ajax({
-                    url: '{{ url($crud->route.' / '.$entry->getKey()) }}',
+                    url: '{{ url($crud->route.'/'.$entry->getKey()) }}',
                     type: 'DELETE',
                     success: function(result) {
                         if (result !== '1') {
@@ -181,9 +181,7 @@
 
                         // Redirect in 1 sec so that admins get to see the success message
                         setTimeout(function() {
-                            window.location.href = '{{ is_bool($crud->get('
-                            update.showDeleteButton ')) ? url($crud->route) : (string) $crud->get('
-                            update.showDeleteButton ') }}';
+                            window.location.href = "{{ is_bool($crud->get('update.showDeleteButton')) ? url($crud->route) : (string) $crud->get('update.showDeleteButton') }}";
                         }, 1000);
                     },
                     error: function() {
