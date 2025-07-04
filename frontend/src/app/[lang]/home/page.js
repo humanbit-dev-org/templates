@@ -30,16 +30,14 @@ export default async function HomePage({ params }) {
 	// const heroResponseJson = await heroResponse.json();
 
 	return (
-		<TranslateProvider lang={lang} translates={translates}>
-			<div className="home_page">
-				<div className="page_cont">
-					<section className="cont_space_1">
-						<div className="cont_mw_1">
-							{/* <NamedExportModule idModule="nameModulePage" dataModule={dataModule} /> */}
-						</div>
-					</section>
-				</div>
+		<div className="home_page">
+			<div className="page_cont">
+				<section className="cont_space_1">
+					<div className="cont_mw_1">
+						{/* <NamedExportModule idModule="nameModulePage" dataModule={dataModule} /> */}
+					</div>
+				</section>
 			</div>
-		</TranslateProvider>
+		</div>
 	);
 }

@@ -1,0 +1,163 @@
+// @use "@/layout/verify_email" as *; // File import statement
+
+// >>> Controllers — START
+@use "@/scss/controllers/dynamics" as *; // controllers for mixins and variables
+@use "@/scss/controllers/extends" as *; // controller for modules
+// <<<<< Controllers — END
+
+.verify_email_layout {
+	&.content {
+		.color_section,
+		.bg_color_section {
+			--color_section: #{$color_first};
+		}
+
+		.bg_color_gd::after {
+			--bg_color_gd: #{$color_first};
+		}
+	}
+
+	&.footer {
+		z-index: -1;
+	}
+}
+
+/////
+////
+/*/ ==================== @media ==================== /*/
+/////////////
+////////////
+////////////////////////
+/* @media (max-width) */
+////////////////////////
+
+@media (max-width: 1399.98px) {
+	.verify_email_layout {
+	}
+}
+
+@media (max-width: 1199.98px) {
+	.verify_email_layout {
+	}
+}
+
+@media (max-width: 991.98px) {
+	.verify_email_layout {
+	}
+}
+
+@media (max-width: 767.98px) {
+	.verify_email_layout {
+	}
+}
+
+@media (max-width: 575.98px) {
+	.verify_email_layout {
+	}
+}
+
+// -------------- //
+
+////////////////////
+/* @media between */
+////////////////////
+
+@media (min-width: 576px) and (max-width: 767.98px) {
+	.verify_email_layout {
+	}
+}
+
+@media (min-width: 576px) and (max-width: 991.98px) {
+	.verify_email_layout {
+	}
+}
+
+@media (min-width: 768px) and (max-width: 991.98px) {
+	.verify_email_layout {
+	}
+}
+
+@media (min-width: 992px) and (max-width: 1199.98px) {
+	.verify_email_layout {
+	}
+}
+
+@media (min-width: 1200px) and (max-width: 1399.98px) {
+	.verify_email_layout {
+	}
+}
+
+// ------------------ //
+
+////////////////////////
+/* @media (min-width) */
+////////////////////////
+
+@media (min-width: 576px) {
+	.verify_email_layout {
+	}
+}
+
+@media (min-width: 768px) {
+	.verify_email_layout {
+	}
+}
+
+@media (min-width: 992px) {
+	.verify_email_layout {
+	}
+}
+
+@media (min-width: 1200px) {
+	.verify_email_layout {
+	}
+}
+
+@media (min-width: 1400px) {
+	.verify_email_layout {
+	}
+}
+
+// ---------------- //
+
+//////////////////////
+/* mobile landscape */
+//////////////////////
+
+@media (max-height: 400px) and (orientation: landscape) {
+	.verify_email_layout {
+	}
+}
+
+// ----------------- //
+
+///////////////////////
+/* iPad Pro portrait */
+///////////////////////
+
+@media (width: 1024px) and (height: 1366px) {
+	.verify_email_layout {
+	}
+}
+
+// ----------------------- //
+
+/////////////////////////////
+/* all browsers (iOS only) */
+/////////////////////////////
+
+@supports (-webkit-touch-callout: none) and (hover: none) and (pointer: coarse) {
+	.verify_email_layout {
+	}
+}
+
+// ------------------- //
+
+/////////////////////////
+/* Safari (MacOS only) */
+/////////////////////////
+
+@supports (-webkit-touch-callout: default) and (hover: hover) and (pointer: fine) {
+	.verify_email_layout {
+	}
+}

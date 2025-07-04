@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\Models\Role;
 use App\Models\User;
 use App\Models\Invite;
+use App\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Validation\Rules;
@@ -20,7 +20,7 @@ class RegisteredUserController extends Controller
 	 *
 	 * @throws \Illuminate\Validation\ValidationException
 	 */
-	public function store(Request $request): Response
+	public function store(Request $request)
 	{
 		$request->validate([
 			"username" => ["required", "string", "max:255", "unique:" . User::class],
@@ -41,10 +41,15 @@ class RegisteredUserController extends Controller
 			"password" => Hash::make($request->string("password")),
 		]);
 
+		$invite = $request->invite;
+		if ($invite === "yes") {
+			$invite = Invite::where("email", $request->email)->first();
+			$invite->receiver_id = $user->id;
+			$invite->save();
+		}
+
 		event(new Registered($user));
 
-		Auth::login($user);
-
-		return response()->noContent();
+		return response()->json(["id" => $user->id, "errors" => $request->errors]);
 	}
 }

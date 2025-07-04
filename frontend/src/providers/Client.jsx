@@ -6,6 +6,7 @@ import { createContext, useContext, useEffect, useState } from "react"; // Core 
 import * as constants from "@/config/constants"; // Global constants shared across the app
 import { useDeviceInfo } from "@/hooks/deviceInfo"; // Track window width and compute device flags
 import { usePathInfo } from "@/hooks/pathInfo"; // Extract structured path info from the current URL
+import { fetchCsrf } from "@/hooks/fetchCsrf"; // Fetch CSRF token for secure requests
 
 // ===============================================
 // ## ############################################
@@ -30,11 +31,12 @@ async function fetchUser(lang) {
 		}
 
 		// Make a secure request to the Laravel API to get the current user credentials
-		const userResponse = await fetch(`${constants.BASE_URL_CLIENT}/api/user`, {
+		const userResponse = await fetch(`${constants.BACKEND_URL_CLIENT}/api/user`, {
 			method: "GET",
+			credentials: "include",
 			headers: {
 				"Accept": "application/json",
-				"Referer": constants.BASE_APP_URL,
+				"Referer": constants.APP_URL,
 				"X-Requested-With": "XMLHttpRequest",
 				"Content-Type": "application/json",
 				"X-XSRF-TOKEN": xsrfToken, // Pass XSRF token for CSRF protection
@@ -54,7 +56,7 @@ async function fetchUser(lang) {
 
 		// Parse and return the user object from the response
 		const responseData = await userResponse.json();
-		return responseData.user;
+		return responseData;
 	} catch (error) {
 		// Handle unexpected fetch or parsing errors
 		console.error("Error fetching user:", error);
@@ -75,13 +77,12 @@ export function ClientProvider({ children, lang }) {
 		// Fetch and store the current user when the path changes
 		const fetchUserFunction = async () => {
 			const user = await fetchUser(lang);
-			//console.log(user);
+			console.log(user);
 			setUser(user);
 		};
 
 		fetchUserFunction();
 	}, [pathInfo.pathname]); // Re-run if pathname changes
-	// TODO: Try `document.cookie.split("; ").find((row) => row.startsWith("XSRF-TOKEN"))?.split("=")[1]`
 
 	const values = {
 		// globalState,
@@ -89,8 +90,9 @@ export function ClientProvider({ children, lang }) {
 		// apiData,
 		// setApiData,
 		...useDeviceInfo(),
-		...usePathInfo(),
-		user, // Include user in context
+		...usePathInfo(), // return { pathname, page, id, slug };
+		user,
+		isLoggedIn: user != undefined ? true : false, // Include user in context
 	};
 
 	return <ClientContext.Provider value={values}>{children}</ClientContext.Provider>;

@@ -1,17 +1,17 @@
 <?php
 
-namespace App;
+namespace App\Models\Traits;
 
 use Illuminate\Support\Str;
 use Illuminate\Http\UploadedFile;
 
-trait StorableAttachments
+trait StorableMedia
 {
 	public function setAttribute($key, $value)
 	{
 		if ($this->isFileAttribute($key, $value)) {
 			$disk = "uploads"; // Ensure this matches your filesystems config
-			$destination_path = "attachments";
+			$destination_path = "media";
 
 			// Sanitize filename
 			$filename = preg_replace("/[^A-Za-z0-9\-\_\.]/", "_", $value->getClientOriginalName());

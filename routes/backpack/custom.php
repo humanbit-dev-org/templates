@@ -1,11 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\ContactController;
 use App\Http\Controllers\Admin\Helper\HelperBackend;
-use App\Http\Controllers\Admin\OrderUserCrudController;
-use App\Http\Controllers\Admin\TranslateCrudController;
-use App\Http\Controllers\Admin\Services\GitHubController;
 use App\Http\Controllers\Admin\Helper\DuplicateController;
 use App\Http\Controllers\Admin\Helper\ExportCsvController;
 use App\Http\Controllers\Admin\Helper\ImportCsvController;
@@ -33,6 +29,17 @@ Route::group(
 
 			Route::get("register", "Auth\RegisterController@showRegistrationForm")->name("backpack.auth.register");
 			Route::post("register", "Auth\RegisterController@register");
+
+			// Two-Factor Authentication Routes (only if enabled)
+			if (config("backpack.base.setup_two_factor_auth", false)) {
+				Route::get("two-factor", "Auth\LoginController@showTwoFactorForm")->name("backpack.auth.two-factor");
+				Route::post("two-factor/verify", "Auth\LoginController@verifyTwoFactor")->name(
+					"backpack.auth.two-factor.verify"
+				);
+				Route::post("two-factor/resend", "Auth\LoginController@resendTwoFactorToken")->name(
+					"backpack.auth.two-factor.resend"
+				);
+			}
 
 			if (config("backpack.base.setup_email_verification_routes", false)) {
 				Route::get("email/verify", "Auth\VerifyEmailController@emailVerificationRequired")->name(
@@ -88,14 +95,12 @@ Route::group(
 		Route::crud("backpack-role", "BackpackRoleCrudController");
 		Route::crud("role", "RoleCrudController");
 		Route::crud("model-permission", "ModelPermissionCrudController");
+
+		// Model Permission custom routes
+		Route::post("model-permission/check-used-permissions", "ModelPermissionCrudController@checkUsedPermissions");
 	}
 ); // this should be the absolute last line of this file
 
 /**
  * DO NOT ADD ANYTHING HERE.
  */
-
-Route::post(
-	"model-permission/check-used-permissions",
-	"App\Http\Controllers\Admin\ModelPermissionCrudController@checkUsedPermissions"
-);

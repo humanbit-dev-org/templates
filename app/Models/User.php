@@ -10,11 +10,13 @@ use Backpack\CRUD\app\Models\Traits\CrudTrait;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use App\Models\Traits\HasTwoFactorAuth;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
 	use CrudTrait;
 	use HasFactory, Notifiable, HasApiTokens;
+	use HasTwoFactorAuth;
 
 	/**
 	 * The attributes that are mass assignable.
@@ -32,6 +34,9 @@ class User extends Authenticatable implements MustVerifyEmail
 		"backpack_role_id",
 		"role_id",
 		"email_verified_at",
+		"token",
+		"token_expire",
+		"token_verified",
 	];
 
 	/**
@@ -39,7 +44,7 @@ class User extends Authenticatable implements MustVerifyEmail
 	 *
 	 * @var array<int, string>
 	 */
-	protected $hidden = ["password", "remember_token"];
+	protected $hidden = ["password", "remember_token", "token"];
 
 	/**
 	 * Get the attributes that should be cast.
@@ -51,6 +56,7 @@ class User extends Authenticatable implements MustVerifyEmail
 		return [
 			"email_verified_at" => "datetime",
 			"password" => "hashed",
+			"token_expire" => "datetime",
 		];
 	}
 
@@ -61,23 +67,17 @@ class User extends Authenticatable implements MustVerifyEmail
 
 	public function backpackRole()
 	{
-		return $this->belongsTo(BackpackRole::class);
+		return $this->belongsTo(BackpackRole::class, 'backpack_role_id');
 	}
-
-	// public function sendEmailVerificationNotification()
-	// {
-	// 	if ($this->backpack_role == "user") {
-	// 		// Send a custom notification for admin users
-	// 		$this->notify(new VerifyEmailCustom());
-	// 	} else {
-	// 		// Use the default notification for regular users
-	// 		$this->notify(new \Illuminate\Auth\Notifications\VerifyEmail());
-	// 	}
-	// }
 
 	public function sendEmailVerificationNotification()
 	{
 		$this->notify(new \Illuminate\Auth\Notifications\VerifyEmail());
+	}
+
+	public function hasVerifiedEmail()
+	{
+		return $this->email_verified_at != null;
 	}
 
 	public function getDisplayAttribute()

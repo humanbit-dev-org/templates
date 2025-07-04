@@ -13,6 +13,7 @@ import * as constants from "@/config/constants";
 import MetadataSetup, { FontsLoader, GlobalScripts } from "@/config/metadata-setup";
 import { ClientProvider } from "@/providers/Client";
 import { getDictionary } from "@/app/dictionaries"; // TODO: Keep this here?
+import { TranslateProvider } from "@/providers/Translate"; // Provides translation context and hook access for `lang` and `translates`
 import { getServer } from "@/lib/server";
 import { klaroConfig } from "@/config/klaro-config"; // cookie configuration
 import { KlaroCookieConsent } from "@/config/klaro-cookie-consent"; // cookie handling
@@ -51,7 +52,7 @@ export const viewport = {
 export async function generateMetadata({ params }) {
 	const ssr = await getServer(); // Get server-side context
 	const { lang } = await params; // Get language from route params
-	const url = `${constants.BASE_URL_SERVER}/api/${lang}/${ssr.page}/seo`; // Construct the URL for the SEO metadata API
+	const url = `${constants.BACKEND_URL_SERVER}/api/${lang}/${ssr.page}/seo`; // Construct the URL for the SEO metadata API
 
 	try {
 		// Get metadata from the backend
@@ -102,64 +103,32 @@ export default async function RootLayout({ children, params }) {
 	// Fetch translation dictionary based on language
 	const translates = await getDictionary(lang);
 
-	// // Get cookies from the request
-	// const cookiesStore = await cookies();
-
-	// // Extract the Laravel session ID
-	// const laravelSession = cookiesStore.get("laravel_session")?.value;
-
-	// // Fetch authenticated user data from Laravel Sanctum API
-	// const userResponse = await fetch(`${constants.BASE_URL}/api/user`, {
-	// 	method: "GET",
-	// 	credentials: "include",
-	// 	headers: {
-	// 		"Accept": "application/json",
-	// 		"Content-Type": "application/json",
-	// 		"X-Requested-With": "XMLHttpRequest",
-	// 		"Referer": process.env.APP_URL,
-	// 		"cookie": "laravel_session=" + laravelSession,
-	// 	},
-	// });
-
-	// // Parse user data response
-	// const userResponseJson = await userResponse.json();
-
-	// // Fetch menu/page data from the API
-	// const menuResponse = await fetch(`${constants.BASE_URL}/api/pages`, {
-	// 	method: "GET",
-	// 	credentials: "include",
-	// 	headers: {
-	// 		"Content-Type": "application/json",
-	// 	},
-	// });
-
-	// // Parse menu data response
-	// const menuResponseJson = await menuResponse.json();
-
 	return (
 		<html lang={lang} className={fontClasses}>
 			{/* <body className="bg_color_white fx_load"> */}
 			<body className="bg_color_white">
 				{/* USER AND LOCALE CONTEXT (navbar | footer) */}
 				<ClientProvider lang={lang} dict={translates}>
-					<div className="root_layout container_structure container-fluid">
-						<div className="grid_cont navbar row justify-content-center position-sticky">
-							{/* <NavSideBurgerComponent menu={menuResponseJson} /> */}
-							{/* <NavSlideTopComponent /> */}
+					<TranslateProvider lang={lang} translates={translates}>
+						<div className="root_layout container_structure container-fluid">
+							<div className="grid_cont navbar row justify-content-center position-sticky">
+								{/* <NavSideBurgerComponent menu={menuResponseJson} /> */}
+								{/* <NavSlideTopComponent /> */}
+							</div>
+
+							{children}
 						</div>
 
-						{children}
-					</div>
+						{/* PROJECT UTILITIES (scripts | cookies) */}
+						<GlobalScripts />
+						<KlaroCookieConsent config={klaroConfig} />
 
-					{/* PROJECT UTILITIES (scripts | cookies) */}
-					<GlobalScripts />
-					<KlaroCookieConsent config={klaroConfig} />
-
-					{/* USER PROMPTS (modals | toasts) */}
-					<ForgotPasswordComponent lang={lang} />
-					<PasswordResetComponent lang={lang} />
-					<RegisterComponent lang={lang} />
-					<SignInComponent lang={lang} />
+						{/* USER PROMPTS (modals | toasts) */}
+						<ForgotPasswordComponent lang={lang} />
+						<PasswordResetComponent lang={lang} />
+						<RegisterComponent lang={lang} />
+						<SignInComponent lang={lang} />
+					</TranslateProvider>
 				</ClientProvider>
 			</body>
 
