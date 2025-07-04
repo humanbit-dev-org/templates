@@ -11,7 +11,10 @@
 		"watch": "concurrently 'next lint || true' 'prettier \"../**/*\" --write --no-editorconfig --config \".prettierrc\" --ignore-unknown --no-error-on-unmatched-pattern --log-level silent --check || true' 'chokidar \"../**/*\" --silent --command \"prettier \\\"{path}\\\" --write --no-editorconfig --config \\\".prettierrc\\\" --ignore-unknown --no-error-on-unmatched-pattern || true\"' 'chokidar \"src/utils/**/*.js\" --ignore \"/src/utils/manual/\" --initial --silent --command \"pnpm exec node rollup.config.mjs || true\"'"
 	},
 	"dependencies": {
+		"@next/third-parties": "^15.3.4",
 		"@popperjs/core": "^2.11.8",
+		"@stripe/react-stripe-js": "^3.7.0",
+		"@stripe/stripe-js": "^7.3.1",
 		"@tabler/icons-react": "^3.31.0",
 		"axios": "^1.9.0",
 		"bootstrap": "5.2.3",

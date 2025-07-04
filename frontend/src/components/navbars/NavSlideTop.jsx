@@ -2,12 +2,12 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { motion } from "motion/react";
+import { PlusComponent } from "components/templates/PlusComponent";
 import { useEffect, useRef, useState } from "react";
-import { useLocale, useUser } from "@/hooks/auth";
+import { useUser, useLocale } from "components/utilities/AuthHelper";
 import { usePathname } from "next/navigation";
 
-const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL_CLIENT;
+const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 async function fetchCsrf() {
 	try {
@@ -27,7 +27,7 @@ async function fetchCsrf() {
 	}
 }
 
-export const NavSlideTopComponent = function ({ ...props }) {
+export const NavSlideTop = function ({ ...props }) {
 	const collapseRef = useRef(null);
 	const [loading, setLoading] = useState(true);
 	const pathName = usePathname();
@@ -74,7 +74,7 @@ export const NavSlideTopComponent = function ({ ...props }) {
 
 		const xsrfToken = await fetchCsrf();
 
-		const fetchPath = BASE_URL + "/logout";
+		const fetchPath = baseUrl + "/logout";
 
 		const logoutRequest = new Request(fetchPath, {
 			method: "POST",
@@ -100,7 +100,7 @@ export const NavSlideTopComponent = function ({ ...props }) {
 
 	return (
 		<div className={`nav_partial ${isScrolled ? "navbar-scrolled" : ""}`}>
-			<nav className={`nav_slide_top navbar scrollbar_spacing ${isScrolled ? "scrolled" : ""}`}>
+			<nav className={`nav_slide_top rounded-3 navbar scrollbar_spacing ${isScrolled ? "scrolled" : ""}`}>
 				<div className="navbar_container_full container_humanbit_1 color_white container-fluid row justify-content-between align-items-center py-0">
 					<div className="menu_navbar container_max_width_1 row justify-content-between align-items-center">
 						<div className="collapse_nav navbar-nav row flex-row col-12 py-4">
@@ -122,97 +122,12 @@ export const NavSlideTopComponent = function ({ ...props }) {
 							</Link>
 							{/* fine logo */}
 
-							<div className="nav_menu col-4 align-content-center d-none d-lg-flex flex-wrap justify-content-between">
-								{/* Link della navbar */}
-								<Link
-									className="collapse_link col-auto show-search"
-									href={{
-										pathname: `/${lang}`,
-									}}>
-									<p className="nav-link small text-capitalize d-inline-block py-2 px-0">Home</p>
-								</Link>
-
-								<Link
-									className="collapse_link col-auto"
-									href={{
-										pathname: `/${lang}/groups-list`,
-									}}>
-									<p className="nav-link small text-capitalize d-inline-block py-2 px-0">Gruppi</p>
-								</Link>
-
-								<Link
-									className="collapse_link col-auto"
-									href={{
-										pathname: `/${lang}/ecommerce`,
-									}}>
-									<p className="nav-link small text-capitalize d-inline-block py-2 px-0">Ecommerce</p>
-								</Link>
-
-								<Link
-									className="collapse_link col-auto"
-									href={{
-										pathname: `/${lang}/about`,
-									}}>
-									<p className="nav-link small text-capitalize d-inline-block py-2 px-0">Chi Siamo</p>
-								</Link>
-
-								<Link
-									className="collapse_link col-auto"
-									href={{
-										pathname: `/${lang}/contact`,
-									}}>
-									<p className="nav-link small text-capitalize d-inline-block py-2 px-0">Contatti</p>
-								</Link>
-							</div>
-							<div className="menu_box box_right flex-row flex-nowrap gap-3 d-none d-lg-flex text-uppercase color_white d-flex flex-wrap justify-content-end align-items-center col-auto order-0 order-lg-1 ms-auto">
-								{isLoggedIn ? (
-									<Link
-										className="btn_bg_first"
-										href={{
-											pathname: `/${lang}/profile`,
-										}}>
-										Profile
-									</Link>
-								) : (
-									<motion.button
-										className="btn_bg_first"
-										type="button"
-										data-bs-toggle="modal"
-										data-bs-target="#signInModal"
-										whileHover={{ scale: 1.1 }}
-										whileTap={{ scale: 0.95 }}>
-										{dict.sign_in}
-									</motion.button>
-								)}
-
-								{isLoggedIn ? (
-									<motion.button
-										className="btn_bg_second"
-										type="button"
-										onClick={logout}
-										whileHover={{ scale: 1.1 }}
-										whileTap={{ scale: 0.95 }}>
-										Logout
-									</motion.button>
-								) : (
-									<motion.button
-										className="btn_bg_second"
-										type="button"
-										data-bs-toggle="modal"
-										data-bs-target="#registerModal"
-										whileHover={{ scale: 1.1 }}
-										whileTap={{ scale: 0.95 }}>
-										{dict.sign_up}
-									</motion.button>
-								)}
-							</div>
-
 							{/* toggler */}
-							<div className="menu_box box_left d-lg-none color_white row justify-content-start align-items-center col-auto col-lg-3 ms-auto">
-								<div className="toggle_wrapper col-1 me-4 me-xl-5">
+							<div className="menu_box box_left color_white row justify-content-start align-items-center col-auto ms-auto">
+								<div className="toggle_wrapper w-auto h-100">
 									<button
 										onClick={handleToggle}
-										className="btn_toggler_open navbar-toggler border-0 align-middle p-0 w-auto collapsed"
+										className="btn_toggler_open navbar-toggler border-0 align-middle p-0 w-auto h-100 collapsed"
 										type="button"
 										data-bs-toggle="collapse"
 										data-bs-target="#navbarBasicContent"
@@ -220,41 +135,66 @@ export const NavSlideTopComponent = function ({ ...props }) {
 										aria-expanded="false"
 										aria-label="Toggle navigation"
 										id="navTogglerBasic">
-										<span className="span_toggler color_white" />
-										<span className="span_toggler color_white" />
-										<span className="span_toggler color_white" />
+										<span className="span_toggler" />
+										<span className="span_toggler d-none" />
+										<span className="span_toggler" />
 									</button>
 								</div>
 							</div>
 							{/* fine toggler */}
 						</div>
 						{/* Voci del menu per mobile */}
+						{/* Half circle at the top center */}
+						<PlusComponent />
+
 						<div
-							className="menu_collapse  bg_color_second navbar-collapse collapse d-lg-none"
+							className="menu_collapse bg_color_second semicerchio navbar-collapse collapse"
 							id="navbarBasicContent"
 							ref={collapseRef}>
 							<div className="collapse_wrapper scrollbar_spacing h-auto min-vw-100 mw-100">
-								<div className="collapse_contents row container_humanbit_1 py-0 w-100">
-									<div className="basic container_sizing container_max_width_1 row justify-content-between align-items-start">
-										<div className="collapse_nav  navbar-nav row flex-row col-12 col-lg-6 py-4 pe-lg-4">
+								<div className="collapse_contents  row container_humanbit_1 py-0 w-100">
+									<div className="basic container_sizing row container_max_width_1 pt-8">
+										<div className="collapse_nav navbar-nav col-12 col-lg-6 py-4 pe-lg-4">
 											<Link className="nav-link" href={`/${lang}`}>
-												Home
+												Cos'è All Together Pay
 											</Link>
 
 											<Link className="nav-link" href={`/${lang}/groups-list`}>
-												Gruppi
+												Come funziona
 											</Link>
 
 											<Link className="nav-link" href={`/${lang}/ecommerce`}>
-												Ecommerce
+												Chi siamo
 											</Link>
 
 											<Link className="nav-link" href={`/${lang}/about`}>
-												Chi Siamo
+												Lista e-commerce
 											</Link>
 
 											<Link className="nav-link" href={`/${lang}/contact`}>
-												Contatti
+												Gruppi aperti
+											</Link>
+
+											<Link className="nav-link" href={`/${lang}/contact`}>
+												FAQ
+											</Link>
+
+											<div className="d-flex col-6 pt-5">
+												<img src="/images/other/logo_orange.png" alt="Logo" />
+											</div>
+										</div>
+
+										<div className="collapse_nav navbar-nav col-12 col-lg-6 py-4 pe-lg-4">
+											<Link className="nav-link nav-link_dx" href={`/${lang}`}>
+												Instruzioni
+											</Link>
+
+											<Link className="nav-link nav-link_dx" href={`/${lang}/groups-list`}>
+												Tutti i gruppi
+											</Link>
+
+											<Link className="nav-link nav-link_dx mb-3" href={`/${lang}/ecommerce`}>
+												Tutti gli e-commerce
 											</Link>
 
 											{isLoggedIn ? (
@@ -262,32 +202,26 @@ export const NavSlideTopComponent = function ({ ...props }) {
 													Profile
 												</Link>
 											) : (
-												<motion.button
-													className="btn_bg_first nav-link border-0 my-2"
+												<button
+													className="btn_bg_sixth border-0 my-2 w-fit-content"
 													data-bs-toggle="modal"
-													data-bs-target="#signInModal"
-													whileHover={{ scale: 1.1 }}
-													whileTap={{ scale: 0.95 }}>
+													data-bs-target="#signInModal">
 													{dict.sign_in}
-												</motion.button>
+												</button>
 											)}
 											{isLoggedIn ? (
-												<motion.button
-													className="my-2 btn_bg_second nav-link border-0"
-													onClick={logout}
-													whileHover={{ scale: 1.1 }}
-													whileTap={{ scale: 0.95 }}>
+												<button
+													className="btn_bg_sixth border-0 my-2 w-fit-content"
+													onClick={logout}>
 													Logout
-												</motion.button>
+												</button>
 											) : (
-												<motion.button
-													className="my-2 btn_bg_second nav-link border-0"
+												<button
+													className="btn_bg_third border-0 my-2 w-fit-content"
 													data-bs-toggle="modal"
-													data-bs-target="#registerModal"
-													whileHover={{ scale: 1.1 }}
-													whileTap={{ scale: 0.95 }}>
+													data-bs-target="#registerModal">
 													{dict.sign_up}
-												</motion.button>
+												</button>
 											)}
 										</div>
 									</div>
@@ -300,3 +234,10 @@ export const NavSlideTopComponent = function ({ ...props }) {
 		</div>
 	);
 };
+
+<style jsx>
+	{`.semicerchio
+		background-color: #ffffff !important;
+		clip-path: ellipse(50% 50% at 50% 0) !important;
+	`}
+</style>;

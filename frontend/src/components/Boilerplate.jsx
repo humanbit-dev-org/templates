@@ -1,6 +1,6 @@
-// import { BoilerplateComponent } from "@/components/Boilerplate"; // File import statement
-//
 // "use client"; // marks module for full browser execution
+//
+// import { BoilerplateComponent } from "@/components/<filename>"; // File import statement
 
 // 1. Core imports (React & Next.js)
 // import Link from "next/link"; // Client-side routing with automatic pre-fetching {CSR}
@@ -36,6 +36,7 @@
 // UTILITY IMPORTS:
 // import { getServer } from "@/lib/server"; // Provide server-only values to the current component {SSR}
 // import { useClient } from "@/providers/Client"; // Provide client-only values to the current component {CSR}
+// import { useTranslate } from "@/providers/Translate"; // Provides translation context and hook access for `lang` and `translates`
 //
 // FUTURE REFERENCE IMPORTS:
 // import { Alert, Dialog, Input } from "@/components/ui"; // Accessible component primitives (Radix-based, styled with Tailwind) {CSR}
@@ -51,6 +52,8 @@ import "./Boilerplate.scss";
 export async function BoilerplateComponent({ props }) {
 	// const ssr = await getServer();
 	// const csr = useClient();
+	// const lang = useTranslate()["lang"];
+	// const translates = useTranslate()["translates"]; // E.g., {translates?.[csr.page]?.["<code>"]?.[lang] ?? "Translate fallback"}
 
 	return (
 		<div className="boilerplate_component">

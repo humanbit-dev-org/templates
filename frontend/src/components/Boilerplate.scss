@@ -1,4 +1,4 @@
-// @use "@/components/<subfolder>/Example" as *; // File import statement
+// @use "@/components/<subfolder>/<filename>" as *; // File import statement
 
 // >>> Controllers — START
 @use "@/scss/controllers/dynamics" as *; // controllers for mixins and variables

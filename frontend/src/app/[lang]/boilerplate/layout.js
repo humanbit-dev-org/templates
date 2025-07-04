@@ -1,6 +1,6 @@
 // Server-Side Rendering (React generates HTML before hydration)
 //
-// import BoilerplateLayout from "@/layout/boilerplate"; // File import statement
+// import BoilerplateLayout from "@/layout/<route>"; // File import statement
 
 // 1. Core imports (React & Next.js)
 // import Link from "next/link"; // Client-side routing with automatic pre-fetching
@@ -27,7 +27,7 @@ export default async function BoilerplateLayout({ children, params }) {
 	const { lang } = await params;
 
 	// Fetch data from the API with language header
-	// const dataResponse = await fetch(`${constants.BASE_URL}/api/${lang}/<route>`, {
+	// const dataResponse = await fetch(`${constants.APP_URL}/api/${lang}/<route>`, {
 	// 	method: "GET",
 	// 	credentials: "include",
 	// 	headers: {

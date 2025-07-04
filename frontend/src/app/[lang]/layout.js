@@ -5,7 +5,8 @@
 // import RootLayout from "@/layout/root"; // File import statement
 
 // EXTERNAL DEPENDENCIES
-import { cookies } from "next/headers";
+// import { cookies } from "next/headers";
+// import { GoogleAnalytics } from "@next/third-parties/google";
 
 // PROJECT UTILITIES (metadata | context | translates | cookies)
 import * as constants from "@/config/constants";
@@ -23,9 +24,8 @@ import { RegisterComponent } from "@/components/dialogs/RegisterComponent";
 import { SignInComponent } from "@/components/dialogs/SignInComponent";
 
 // INTERNAL RESOURCES
-import { NavSideBurgerComponent } from "@/navbars/NavSideBurger";
 // import { NavSlideTopComponent } from "@/navbars/NavSlideTop";
-import "./globals.scss";
+import { NavSideBurgerComponent } from "@/navbars/NavSideBurger";
 import "./layout.scss";
 
 // ===============================================
@@ -162,6 +162,8 @@ export default async function RootLayout({ children, params }) {
 					<SignInComponent lang={lang} />
 				</ClientProvider>
 			</body>
+
+			{/* <GoogleAnalytics gaId="G-**********" /> */}
 		</html>
 	);
 }

@@ -22,9 +22,9 @@
 		"paths": {
 			// ─── Core structure ───────────────────────────────────────────
 			"@/app/*": ["src/app/[lang]/*"],
-			"@/layout/root": ["src/app/[lang]/layout.js"],
-			"@/layout/*": ["src/app/[lang]/*/layout.js"],
-			"@/page/*": ["src/app/[lang]/*/page.js"],
+			"@/layout/root": ["src/app/[lang]/layout"],
+			"@/layout/*": ["src/app/[lang]/*/layout", "src/app/[lang]/*/[id]/layout"],
+			"@/page/*": ["src/app/[lang]/*/page", "src/app/[lang]/*/[id]/page"],
 
 			// ─── Modular components ───────────────────────────────────────
 			"@/components/*": ["src/components/*"],
@@ -47,6 +47,7 @@
 			"@/scss/*": ["src/assets/scss/*"],
 
 			// ─── SCSS partials ────────────────────────────────────────────
+			// pretier-ignore
 			"@/scss/navbars/*": [
 				"src/assets/scss/partials/navbars/*",
 				"src/assets/scss/partials/navbars/nav_grow/*",
@@ -55,6 +56,6 @@
 		},
 		"target": "ES2017"
 	},
-	"include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+	"include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "types/**/*.d.ts", ".next/types/**/*.ts"],
 	"exclude": ["node_modules"]
 }

@@ -9,7 +9,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Parses the environment variable into a URL object so you can access protocol, hostname, etc.
-const url = new URL(process.env.BACKEND_URL_CLIENT);
+const url = new URL(process.env.NEXT_PUBLIC_BACKEND_URL_CLIENT);
 
 /** @type {import('next').NextConfig} */
 // Webpack configuration (default engine)
@@ -107,6 +107,10 @@ const nextConfig = {
 				protocol: "https",
 				hostname: "api.dicebear.com",
 			},
+			{
+				protocol: "https",
+				hostname: "picsum.photos",
+			},
 		],
 		dangerouslyAllowSVG: true, // Allow SVGs to be imported
 	},
@@ -124,7 +128,20 @@ const nextConfig = {
 // Turbopack configuration (next-gen engine)
 nextConfig.turbopack = {
 	// Match file extensions in import paths
-	resolveExtensions: [".mdx", ".md", ".tsx", ".ts", ".jsx", ".js", ".mjs", ".cjs", ".json", ".scss", ".css"],
+	// prettier-ignore
+	resolveExtensions: [
+		".mdx",
+		".md",
+		".tsx",
+		".ts",
+		".jsx",
+		".js",
+		".mjs",
+		".cjs",
+		".json",
+		".scss",
+		".css",
+	],
 
 	// Define custom loaders per file type
 	rules: {

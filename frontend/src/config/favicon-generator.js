@@ -26,6 +26,6 @@ export const FaviconGenerator = {
 		other: [{ rel: "manifest", url: "/favicon/manifest.json" }],
 	},
 	appleWebApp: {
-		title: constants.BASE_APP_NAME,
+		title: constants.APP_NAME,
 	},
 };

@@ -1,17 +1,20 @@
 import "server-only";
 import fs from "fs";
 import path from "path";
+import * as constants from "@/config/constants";
 
-const SUPPORTED_LOCALES = ["it"];
+// ===============================================
+// ## ############################################
+// ===============================================
 
 // Build the path to the locale file based on the selected language
 const getFilePath = (locale) => path.join(process.cwd(), "lang", `${locale}.json`);
 
 export const getDictionary = async (locale) => {
 	// Validate the locale
-	if (!SUPPORTED_LOCALES.includes(locale)) {
+	if (!constants.SUPPORTED_LOCALES.includes(locale)) {
 		console.error(`Invalid locale: "${locale}". Falling back to default locale: "en".`);
-		locale = "en";
+		locale = constants.DEFAULT_LOCALE;
 	}
 
 	try {

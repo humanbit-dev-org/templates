@@ -104,7 +104,7 @@
 body {
 	font-family: "Lora", serif;
 	font-size: 1rem;
-	line-height: 1.5;
+	line-height: 1.2;
 	font-weight: 400;
 	color: #000000a8;
 	margin: 0;
@@ -388,10 +388,10 @@ p {
 		$source-vw-min: 23.438em,
 		$source-vw-max: 80em,
 		// >>>>> MOBILE <<<<<
-		$font-size-min: 2rem, // `font-size` on mobile viewport (< 575.98px)
+		$font-size-min: 3.375rem, // `font-size` on mobile viewport (< 575.98px)
 		$line-height-mobile: 1.5, // `line-height` multiplier on mobile viewport (< 575.98px)
 		// >>>>> DESKTOP <<<<<
-		$font-size-max: 3.375rem, // `font-size` on desktop viewport (> 576px)
+		$font-size-max: 2rem, // `font-size` on desktop viewport (> 576px)
 		$line-height-desktop: 1.2, // `line-height` multiplier on desktop viewport (> 576px)
 		// >>>>> IMPORTANT <<<<<
 		// $important: "!important" // uncomment to add the `!important` flag
@@ -581,7 +581,7 @@ input {
 	$label-padding-transformed: 0.15em 1.75em,
 	// bEssEx default: 0.1rem 1.75rem (top/bottom [max. 0.5rem with 2.5rem height] left/right)
 	$label-font-size-transformed: 0.8rem,
-	// tranformed `<label>` text w/ `.form-floating` (bEssEx default: 0.75rem)
+	// transformed `<label>` text w/ `.form-floating` (bEssEx default: 0.75rem)
 	// >>>>> DEFAULT COLOR <<<<<
 	$body-color-default: #0e4c95,
 	// placeholder

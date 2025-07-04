@@ -1,4 +1,4 @@
-// @use "@/layout/boilerplate" as *; // File import statement
+// @use "@/layout/<route>" as *; // File import statement
 
 // >>> Controllers — START
 @use "@/scss/controllers/dynamics" as *; // controllers for mixins and variables
@@ -6,20 +6,20 @@
 // <<<<< Controllers — END
 
 .boilerplate_layout {
-	&.content {
-		.color_section,
-		.bg_color_section {
-			--color_section: #{$color_first};
-		}
+	// &.content {
+	// 	.color_section,
+	// 	.bg_color_section {
+	// 		--color_section: #{$color_first};
+	// 	}
 
-		.bg_color_gd::after {
-			--bg_color_gd: #{$color_first};
-		}
-	}
+	// 	.bg_color_gd::after {
+	// 		--bg_color_gd: #{$color_first};
+	// 	}
+	// }
 
-	&.footer {
-		z-index: -1;
-	}
+	// &.footer {
+	// 	z-index: -1;
+	// }
 }
 
 /////

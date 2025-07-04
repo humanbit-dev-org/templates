@@ -1,7 +1,12 @@
 import { NextResponse } from "next/server";
+import * as constants from "@/config/constants";
 
-const locales = ["it"]; // Defined supported 2-letter locales
-const defaultLocale = "it";
+// ===============================================
+// ## ############################################
+// ===============================================
+
+const locales = constants.SUPPORTED_LOCALES; // Defined supported 2-letter locales
+const defaultLocale = constants.DEFAULT_LOCALE;
 
 // Read locale from user's cookie (if present)
 function getLocaleFromCookie(request) {

@@ -1,6 +1,6 @@
 // Server-Side Rendering (React generates HTML before hydration)
 //
-// import BoilerplatePage from "@/page/boilerplate"; // File import statement
+// import BoilerplatePage from "@/page/<route>"; // File import statement
 
 // 1. Core imports (React & Next.js)
 // import Link from "next/link"; // Client-side routing with automatic pre-fetching
@@ -32,7 +32,7 @@ export default async function BoilerplatePage({ params }) {
 	const translates = await getDictionary(lang);
 
 	// Fetch data from the API with language header
-	// const dataResponse = await fetch(`${constants.BASE_URL}/api/${lang}/boilerplate/<section>`, {
+	// const dataResponse = await fetch(`${constants.APP_URL}/api/${lang}/<route>/<section>`, {
 	// 	method: "GET",
 	// 	credentials: "include",
 	// 	headers: {
@@ -43,7 +43,7 @@ export default async function BoilerplatePage({ params }) {
 	// const dataResponseJson = await dataResponse.json();
 
 	return (
-		<TranslateProvider lang={lang} translates={translates}>
+		<>
 			<div className="boilerplate_page">
 				<div className="page_cont">
 					<section className="cont_space_1">
@@ -53,6 +53,6 @@ export default async function BoilerplatePage({ params }) {
 					</section>
 				</div>
 			</div>
-		</TranslateProvider>
+		</>
 	);
 }

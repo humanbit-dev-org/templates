@@ -125,17 +125,17 @@
 	$fs-raw-min: to_px($font-size-min); // raw input before any adjustments
 	$fs-raw-max: to_px($font-size-max); // raw input before any adjustments
 
-	$fs-delta-source: strip_unit(to_px($font-size-max) - $fs-raw-min);
-	$fs-range-source: abs($fs-delta-source);
-	$fs-direction-source: if($fs-delta-source >= 0, 1, -1);
+	// $fs-delta-source: strip_unit(to_px($font-size-max) - $fs-raw-min);
+	// $fs-range-source: abs($fs-delta-source);
+	// $fs-direction-source: if($fs-delta-source >= 0, 1, -1);
 
-	// Mobile `font-size` slope
-	// prettier-ignore
-	$fs-scale-mobile-source: if(
-		$fs-direction-source == 1,
-		$source-vw-full / $source-vw-mobile,
-		$source-vw-full / $source-vw-mobile / 2,
-	);
+	// // Mobile `font-size` slope
+	// // prettier-ignore
+	// $fs-scale-mobile-source: if(
+	// 	$fs-direction-source == 1,
+	// 	$source-vw-full / $source-vw-mobile,
+	// 	$source-vw-full / $source-vw-mobile / 2,
+	// );
 
 	@if $source-vw-min != null {
 		$font-size-min: to_px($font-size-min) -
@@ -155,7 +155,7 @@
 	// Target average `line-height` multiplier at transition point
 	$lh-target: ($line-height-mobile + $line-height-desktop) / 2; // 1.35
 	// `line-height` multiplier change across mobile range
-	$lh-mobile-slope: (strip_unit($fs-raw-min) - ($lh-target * strip_unit(to_px($fs-raw-max)) / $line-height-mobile)) /
+	$lh-mobile-slope: (strip_unit($fs-raw-min) - ($lh-target * strip_unit($fs-raw-max) / $line-height-mobile)) /
 		($fs-range * $fs-direction);
 	// `line-height` multiplier change across desktop range
 	$lh-desktop-slope: (strip_unit($fs-raw-max) - ($lh-target * $fs-threshold / $line-height-desktop)) /
