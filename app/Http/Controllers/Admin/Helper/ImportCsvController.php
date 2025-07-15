@@ -95,10 +95,10 @@ class ImportCsvController extends Controller
 
 		$file = $request->file("csv_file");
 		$fileName = time() . "_" . $file->getClientOriginalName();
-		$filePath = $file->storeAs("csv-imports", $fileName);
+		$filePath = $file->storeAs("csv-preview", $fileName, "backups");
 
 		// Legge l'intestazione del CSV
-		$csvPath = storage_path("app/" . $filePath);
+		$csvPath = Storage::disk("backups")->path($filePath);
 
 		// Prova a rilevare il delimitatore (virgola, punto e virgola, tab)
 		$delimiter = $this->detectDelimiter($csvPath);
@@ -227,7 +227,7 @@ class ImportCsvController extends Controller
 		$backupFile = $this->createTableBackup($tableName);
 
 		// Legge il file CSV
-		$csvPath = storage_path("app/" . $filePath);
+		$csvPath = Storage::disk("backups")->path($filePath);
 		$handle = fopen($csvPath, "r");
 
 		// Salta l'intestazione
@@ -265,7 +265,14 @@ class ImportCsvController extends Controller
 				// Mappa i dati in base alla configurazione
 				foreach ($columnMapping as $csvIndex => $dbColumn) {
 					if (!empty($dbColumn) && isset($data[$csvIndex])) {
-						$rowData[$dbColumn] = $data[$csvIndex];
+						$value = $data[$csvIndex];
+
+						// Convert empty strings to null for nullable fields (especially foreign keys)
+						if ($value === "" && in_array($dbColumn, ["page_id"])) {
+							$value = null;
+						}
+
+						$rowData[$dbColumn] = $value;
 					}
 				}
 
@@ -371,16 +378,19 @@ class ImportCsvController extends Controller
 			DB::commit();
 
 			// Elimina il file CSV dopo l'importazione riuscita
-			Storage::delete($filePath);
+			Storage::disk("backups")->delete($filePath);
 
 			// Elimina anche eventuali file temporanei nella stessa directory
 			$csvDir = dirname($filePath);
 			$csvFilename = basename($filePath);
-			$tempFiles = Storage::files($csvDir);
+			$tempFiles = Storage::disk("backups")->files($csvDir);
 			foreach ($tempFiles as $tempFile) {
 				// Verifica se il file è più vecchio di un'ora per sicurezza
-				if ($tempFile !== $filePath && Storage::lastModified($tempFile) < now()->subHour()->timestamp) {
-					Storage::delete($tempFile);
+				if (
+					$tempFile !== $filePath &&
+					Storage::disk("backups")->lastModified($tempFile) < now()->subHour()->timestamp
+				) {
+					Storage::disk("backups")->delete($tempFile);
 				}
 			}
 
@@ -430,14 +440,14 @@ class ImportCsvController extends Controller
 	 */
 	private function createTableBackup($tableName)
 	{
-		$backupDir = "import-backups";
-		if (!Storage::exists($backupDir)) {
-			Storage::makeDirectory($backupDir);
+		$backupDir = "csv-imports";
+		if (!Storage::disk("backups")->exists($backupDir)) {
+			Storage::disk("backups")->makeDirectory($backupDir);
 		}
 
 		$timestamp = now()->format("Y-m-d_His");
 		$filename = $tableName . "_" . $timestamp . ".sql";
-		$path = storage_path("app/" . $backupDir . "/" . $filename);
+		$path = Storage::disk("backups")->path($backupDir . "/" . $filename);
 
 		// Ottiene i dati di connessione al database
 		$dbName = config("database.connections.mysql.database");

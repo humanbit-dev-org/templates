@@ -36,19 +36,36 @@ class RelationHandler
 			return; // Prevent errors if table doesn't exist
 		}
 
-		// Determine primary attribute dynamically
-		$primaryAttribute = method_exists($relatedModel, "getDisplayAttribute")
-			? $relatedModel->getDisplayAttribute()
-			: $relatedModel->id;
+		// We'll use options() method for both relation types to properly handle getDisplayAttribute()
 
 		// Handle BelongsToMany relation
 		if ($result instanceof BelongsToMany) {
+			// Check if model has getDisplayAttributePivot method to determine field name for pivot display
+			$displayAttribute = method_exists($relatedModel, "getDisplayAttributePivot")
+				? $relatedModel->getDisplayAttributePivot()
+				: "name"; // Default fallback
+
+			// Check if the determined field exists in the table
+			$tableName = $relatedModel->getTable();
+			$columns = Schema::getColumnListing($tableName);
+
+			if (!in_array($displayAttribute, $columns)) {
+				// If specified field doesn't exist, use fallback logic
+				if (in_array("name", $columns)) {
+					$displayAttribute = "name";
+				} elseif (in_array("title", $columns)) {
+					$displayAttribute = "title";
+				} else {
+					$displayAttribute = "id";
+				}
+			}
+
 			CRUD::field($methodName)
 				->type("select_multiple")
 				->entity($methodName)
 				->wrapper(["class" => "form-group col-md-6"])
 				->model($relatedModelClass)
-				->attribute($primaryAttribute)
+				->attribute($displayAttribute)
 				->pivot(true);
 		}
 		// Handle BelongsTo relation
@@ -56,8 +73,10 @@ class RelationHandler
 			// Get foreign key from relation
 			$foreignKey = $result->getForeignKeyName();
 
-			// Check if foreign key is present in URL
-			$defaultValue = request($foreignKey, null);
+			// Get value from current entry if in edit mode, otherwise from request
+			$defaultValue = CRUD::getCurrentEntryId()
+				? CRUD::getCurrentEntry()->{$foreignKey} ?? request($foreignKey, null)
+				: request($foreignKey, null);
 
 			// Create select field with preselected value using actual foreign key name
 			$field = CRUD::field($foreignKey)
@@ -78,7 +97,7 @@ class RelationHandler
 						})
 						->toArray()
 				)
-				->value($defaultValue); // Pre-fill value from URL if available
+				->value($defaultValue); // Pre-fill value from current entry or URL
 
 			// Determine tab dynamically
 			$tabName = null;
@@ -133,7 +152,9 @@ class RelationHandler
 					(CRUD::getCurrentEntryId() ? "true" : "false") .
 					";
                             const basePath = isEditMode ? '../../../admin/' : '../../admin/';
-                            const routeName = '" . self::generateRouteSlug($methodName) . "';
+                            const routeName = '" .
+					self::generateRouteSlug($methodName) .
+					"';
             
                             if (select && previewLink) {
                                 select.addEventListener('change', function () {
@@ -395,14 +416,7 @@ class RelationHandler
 	private static function generateFieldLabel($methodName): string
 	{
 		// Convert camelCase to readable format
-		$readable = ucwords(preg_replace('/(?<!^)[A-Z]/', ' $0', $methodName));
-		
-		// Don't add "Role" if the name already contains "role" (case insensitive)
-		if (stripos($methodName, 'role') === false) {
-			$readable .= ' Role';
-		}
-		
-		return $readable;
+		return ucwords(preg_replace("/(?<!^)[A-Z]/", ' $0', $methodName));
 	}
 
 	/**
@@ -414,6 +428,6 @@ class RelationHandler
 	private static function generateRouteSlug($methodName): string
 	{
 		// Convert camelCase to kebab-case
-		return strtolower(preg_replace('/(?<!^)[A-Z]/', '-$0', $methodName));
+		return strtolower(preg_replace("/(?<!^)[A-Z]/", '-$0', $methodName));
 	}
 }

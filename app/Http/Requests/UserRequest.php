@@ -14,8 +14,19 @@ class UserRequest extends FormRequest
 	 */
 	public function authorize()
 	{
-		// only allow updates if the user is logged in
-		return backpack_auth()->check();
+		// Check if request comes from backpack by verifying middleware or guard
+		$isBackpackRequest =
+			$this->routeIs("backpack.*") ||
+			in_array("admin", $this->route()->middleware()) ||
+			in_array(config("backpack.base.middleware_key", "admin"), $this->route()->middleware());
+
+		// If request comes from backpack, require backpack authentication
+		if ($isBackpackRequest) {
+			return backpack_auth()->check();
+		}
+
+		// If request comes from frontend API, allow without authentication
+		return true;
 	}
 
 	/**
@@ -30,13 +41,16 @@ class UserRequest extends FormRequest
 			"name" => "required",
 			"surname" => "required",
 			"email" => "required|email|max:255|unique:users,email," . $this->route("id"),
+			"phone" => "required",
+			"address" => "required",
 			"password" => $this->route("id")
 				? ["nullable", Password::min(6)->mixedCase()->numbers()->symbols()->uncompromised()]
 				: ["required", Password::min(6)->mixedCase()->numbers()->symbols()->uncompromised()],
-			"role_id" => "required",
+			"role_id" => $this->isMethod("POST") && $this->hasHeader("X-Requested-With") ? "nullable" : "required",
 			"backpack_role_id" => "nullable",
-			"phone" => "required|unique:users,phone," . $this->route("id"),
-			"address" => "required",
+			"lang" => "required",
+			"send_email_notifications" => "nullable",
+			"send_push_notifications" => "nullable",
 		];
 	}
 

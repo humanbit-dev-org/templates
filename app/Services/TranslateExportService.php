@@ -19,7 +19,7 @@ class TranslateExportService
 
 		foreach ($records as $record) {
 			$page_id = $record->page_id;
-			$page = Page::where("id", $page_id)->first()->name ?? "unknown";
+			$page = Page::where("id", $page_id)->first()->name ?? "all";
 
 			// Ensure the page exists in the data arrays
 			if (!isset($italianData[$page])) {
