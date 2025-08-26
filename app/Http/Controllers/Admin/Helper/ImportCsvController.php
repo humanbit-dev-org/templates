@@ -83,8 +83,12 @@ class ImportCsvController extends Controller
 	 */
 	public function analyzeUploadedFile(Request $request, $crud)
 	{
+		// Increase execution time and memory for large imports
+		set_time_limit(0); // No timeout
+		ini_set('memory_limit', '512M'); // Increase memory limit
+		
 		$request->validate([
-			"csv_file" => "required|file|mimes:csv,txt|max:10240",
+			"csv_file" => "required|file|mimes:csv,txt", // Removed max:200000 limit
 		]);
 
 		$modelClass = "App\\Models\\" . Str::studly($crud);
@@ -196,6 +200,10 @@ class ImportCsvController extends Controller
 	 */
 	public function importCsv(Request $request, $crud)
 	{
+		// Increase execution time and memory for large imports
+		set_time_limit(0); // No timeout
+		ini_set('memory_limit', '512M'); // Increase memory limit
+		
 		// Inizializzazione del buffer di output
 		if (ob_get_level() == 0) {
 			ob_start();
@@ -449,69 +457,134 @@ class ImportCsvController extends Controller
 		$filename = $tableName . "_" . $timestamp . ".sql";
 		$path = Storage::disk("backups")->path($backupDir . "/" . $filename);
 
-		// Ottiene i dati di connessione al database
-		$dbName = config("database.connections.mysql.database");
-		$dbUser = config("database.connections.mysql.username");
-		$dbPass = config("database.connections.mysql.password");
-		$dbHost = config("database.connections.mysql.host");
-		$dbPort = config("database.connections.mysql.port");
+		// Use PHP-based backup directly (no mysqldump dependency)
+		$this->createPhpBackup($tableName, $path);
 
-		// Utilizza Process per eseguire mysqldump con maggiore controllo
-		$command = sprintf(
-			"mysqldump -h%s -P%s -u%s -p%s %s %s --no-tablespaces --skip-comments",
-			$dbHost,
-			$dbPort ?: "3306",
-			$dbUser,
-			$dbPass,
-			$dbName,
-			$tableName
-		);
-
-		// Esegue mysqldump e salva direttamente nel file
-		$process = new \Symfony\Component\Process\Process(explode(" ", $command));
-		$process->setWorkingDirectory(base_path());
-		$process->setTimeout(300); // 5 minuti di timeout
-		$process->run();
-
-		// Verifica se il comando è stato eseguito con successo
-		if ($process->isSuccessful()) {
-			$output = $process->getOutput();
-			// Scrive l'output nel file
-			if (!empty($output)) {
-				file_put_contents($path, $output);
-				return $filename;
-			}
+		// Clean old backups (keep only last 3)
+		$backupFiles = Storage::disk("backups")->files($backupDir);
+		$tableBackups = array_filter($backupFiles, function($file) use ($tableName) {
+			return strpos($file, $tableName . '_') === 0;
+		});
+		
+		if (count($tableBackups) > 3) {
+			// Sort by modification time and keep only the 3 most recent
+			$sortedBackups = collect($tableBackups)->sortBy(function($file) {
+				return Storage::disk("backups")->lastModified($file);
+			})->reverse();
+			
+			// Delete old backups
+			$sortedBackups->slice(3)->each(function($file) {
+				Storage::disk("backups")->delete($file);
+			});
 		}
-
-		// Se il comando mysqldump fallisce, creiamo un backup alternativo utilizzando query SQL
-		$this->createSqlBackupAlternative($tableName, $path);
 
 		return $filename;
 	}
 
 	/**
-	 * Crea un backup alternativo usando query SQL se mysqldump fallisce
-	 *
-	 * @param string $tableName
-	 * @param string $path
-	 * @return void
+	 * Create a PHP-based backup of a specific table
 	 */
-	private function createSqlBackupAlternative($tableName, $path)
+	private function createPhpBackup($tableName, $path)
 	{
-		// Prende i dati della tabella
-		$rows = DB::table($tableName)->get();
+		try {
+			// Get database connection
+			$connection = config("database.default");
+			$host = config("database.connections.{$connection}.host");
+			$port = config("database.connections.{$connection}.port");
+			$database = config("database.connections.{$connection}.database");
+			$username = config("database.connections.{$connection}.username");
+			$password = config("database.connections.{$connection}.password");
 
-		// Ottiene la struttura della tabella
+			$pdo = new \PDO("mysql:host={$host};port={$port};dbname={$database};charset=utf8mb4", $username, $password, [
+				\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
+			]);
+
+			// Get table structure
+			$stmt = $pdo->query("SHOW CREATE TABLE `{$tableName}`");
+			$createRow = $stmt->fetch(\PDO::FETCH_NUM);
+
+			// Start SQL backup content
+			$sql = "-- Table Backup: {$tableName}\n";
+			$sql .= "-- Generated: " . now()->toDateTimeString() . "\n";
+			$sql .= "-- Created by ImportCsvController\n\n";
+			$sql .= "SET FOREIGN_KEY_CHECKS = 0;\n";
+			$sql .= "SET SQL_MODE = \"NO_AUTO_VALUE_ON_ZERO\";\n\n";
+
+			// Add table structure
+			$sql .= "-- Table structure for table `{$tableName}`\n";
+			$sql .= "DROP TABLE IF EXISTS `{$tableName}`;\n";
+			$sql .= $createRow[1] . ";\n\n";
+
+			// Get data count
+			$countStmt = $pdo->query("SELECT COUNT(*) FROM `{$tableName}`");
+			$rowCount = $countStmt->fetchColumn();
+
+			if ($rowCount > 0) {
+				$sql .= "-- Dumping data for table `{$tableName}`\n";
+				$sql .= "LOCK TABLES `{$tableName}` WRITE;\n";
+
+				// Get data in chunks to avoid memory issues
+				$limit = 1000;
+				$offset = 0;
+
+				while ($offset < $rowCount) {
+					$result = $pdo->query("SELECT * FROM `{$tableName}` LIMIT {$limit} OFFSET {$offset}");
+					$rows = $result->fetchAll(\PDO::FETCH_NUM);
+
+					if (!empty($rows)) {
+						$sql .= "INSERT INTO `{$tableName}` VALUES ";
+						$rowValues = [];
+
+						foreach ($rows as $row) {
+							$values = [];
+							foreach ($row as $value) {
+								if (is_null($value)) {
+									$values[] = "NULL";
+								} elseif (is_numeric($value)) {
+									$values[] = $value;
+								} else {
+									$values[] = "'" . addslashes($value) . "'";
+								}
+							}
+							$rowValues[] = "(" . implode(",", $values) . ")";
+						}
+
+						$sql .= implode(",\n", $rowValues) . ";\n";
+					}
+
+					$offset += $limit;
+				}
+
+				$sql .= "UNLOCK TABLES;\n";
+			}
+
+			$sql .= "\nSET FOREIGN_KEY_CHECKS = 1;\n";
+			$sql .= "-- Backup completed successfully\n";
+
+			// Write backup file
+			file_put_contents($path, $sql);
+
+		} catch (\Exception $e) {
+			// Fallback to the simple method if PDO fails
+			$this->createSimpleBackup($tableName, $path);
+		}
+	}
+
+	/**
+	 * Simple backup fallback using Eloquent
+	 */
+	private function createSimpleBackup($tableName, $path)
+	{
+		// Get table data using Eloquent
+		$rows = DB::table($tableName)->get();
 		$columns = Schema::getColumnListing($tableName);
 
-		// Prepara l'SQL per il backup
-		$sql = "-- Backup della tabella {$tableName} creato il " . now() . "\n";
-		$sql .= "-- Backup alternativo creato automaticamente\n\n";
-
-		// Aggiunge DELETE per svuotare la tabella
+		// Prepare SQL for backup
+		$sql = "-- Simple Backup: {$tableName}\n";
+		$sql .= "-- Generated: " . now()->toDateTimeString() . "\n\n";
 		$sql .= "DELETE FROM `{$tableName}`;\n\n";
 
-		// Crea le istruzioni INSERT
+		// Create INSERT statements
 		if (count($rows) > 0) {
 			$chunks = array_chunk($rows->toArray(), 100);
 
@@ -538,7 +611,7 @@ class ImportCsvController extends Controller
 			}
 		}
 
-		// Scrive il file SQL
+		// Write SQL file
 		file_put_contents($path, $sql);
 	}
 

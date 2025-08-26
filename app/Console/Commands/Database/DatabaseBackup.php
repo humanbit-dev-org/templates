@@ -219,164 +219,18 @@ class DatabaseBackup extends Command
 	}
 
 	/**
-	 * Perform a MySQL/MariaDB database backup
+	 * Perform a MySQL/MariaDB database backup using PHP
 	 */
 	protected function mysqlBackup($backupPath)
 	{
-		$connection = config("database.default");
-		$host = config("database.connections.{$connection}.host");
-		$port = config("database.connections.{$connection}.port");
-		$database = config("database.connections.{$connection}.database");
-		$username = config("database.connections.{$connection}.username");
-		$password = config("database.connections.{$connection}.password");
-
-		// Check if mysqldump is available
-		$this->line($this->formatLine("Checking mysqldump availability", "RUNNING"));
-		$startTime = microtime(true);
-		exec("which mysqldump", $output, $returnVar);
-		$mysqldumpAvailable = $returnVar === 0;
-		$endTime = microtime(true);
-		$duration = round($endTime - $startTime, 2);
-		$this->line($this->formatLine("Checking mysqldump availability", "DONE", "green", $duration));
-		$this->newLine();
-
-		if (!$mysqldumpAvailable) {
-			// Try to install mysqldump
-			$installSuccess = false;
-
-			if ($this->isDebianBased()) {
-				$this->line($this->formatLine("Installing MySQL client (Debian/Ubuntu)", "RUNNING"));
-				$startTime = microtime(true);
-				system("apt-get update && apt-get install -y default-mysql-client", $installResult);
-				$installSuccess = $installResult === 0;
-				$endTime = microtime(true);
-				$duration = round($endTime - $startTime, 2);
-				if ($installSuccess) {
-					$this->line($this->formatLine("Installing MySQL client (Debian/Ubuntu)", "DONE", "green", $duration));
-				} else {
-					$this->line($this->formatLine("Installing MySQL client (Debian/Ubuntu)", "FAILED", "red"));
-				}
-				$this->newLine();
-			} elseif ($this->isRedHatBased()) {
-				$this->line($this->formatLine("Installing MySQL client (RedHat/CentOS)", "RUNNING"));
-				$startTime = microtime(true);
-				system("yum install -y mysql", $installResult);
-				$installSuccess = $installResult === 0;
-				$endTime = microtime(true);
-				$duration = round($endTime - $startTime, 2);
-				if ($installSuccess) {
-					$this->line($this->formatLine("Installing MySQL client (RedHat/CentOS)", "DONE", "green", $duration));
-				} else {
-					$this->line($this->formatLine("Installing MySQL client (RedHat/CentOS)", "FAILED", "red"));
-				}
-				$this->newLine();
-			}
-
-			if (!$installSuccess) {
-				return $this->handleMysqlDumpNotAvailable($backupPath);
-			}
-		}
-
-		// Continue with mysqldump which should now be available
-		$command = sprintf(
-			"mysqldump -h %s -P %s -u %s %s --no-tablespaces",
-			escapeshellarg($host),
-			escapeshellarg($port),
-			escapeshellarg($username),
-			escapeshellarg($database)
-		);
-
-		// Add password if it exists
-		if (!empty($password)) {
-			$command .= " -p" . escapeshellarg($password);
-		}
-
-		// Redirect output to file
-		$command .= " > " . escapeshellarg($backupPath);
-
-		// Execute the backup command
-		$startTime = microtime(true);
-
-		$process = proc_open(
-			$command,
-			[
-				0 => ["pipe", "r"],
-				1 => ["pipe", "w"],
-				2 => ["pipe", "w"],
-			],
-			$pipes
-		);
-
-		if (!is_resource($process)) {
-			$this->line($this->formatLine("Creating database backup", "FAILED", "red"));
-			throw new \Exception("Failed to start backup process");
-		}
-
-		$error = stream_get_contents($pipes[2]);
-
-		foreach ($pipes as $pipe) {
-			fclose($pipe);
-		}
-
-		$exitCode = proc_close($process);
-
-		if ($exitCode !== 0) {
-			$this->line($this->formatLine("Creating database backup", "FAILED", "red"));
-			throw new \Exception("Backup command failed: " . $error);
-		}
-
-		$endTime = microtime(true);
-		$duration = round($endTime - $startTime, 2);
-		$this->line($this->formatLine("Creating database backup", "DONE", "green", $duration));
-		$this->newLine();
-
-		return true;
-	}
-
-	/**
-	 * Handle case when mysqldump is not available
-	 */
-	protected function handleMysqlDumpNotAvailable($backupPath)
-	{
-		$this->newLine();
-		$this->components->warn("Could not install or find mysqldump.");
-
-		if (!$this->confirm("Do you want to proceed with a slower PHP-based backup instead?", true)) {
-			throw new \Exception("Backup canceled: mysqldump not available and PHP alternative rejected.");
-		}
-
-		$this->line("Using PHP alternative for database backup.");
+		// Use PHP-based backup directly (no mysqldump dependency)
 		return $this->mysqlBackupWithPHP($backupPath);
 	}
 
-	/**
-	 * Check if we're on a Debian/Ubuntu based system
-	 */
-	protected function isDebianBased()
-	{
-		if (file_exists("/etc/debian_version")) {
-			return true;
-		}
 
-		exec("command -v apt-get", $output, $returnVar);
-		return $returnVar === 0;
-	}
 
 	/**
-	 * Check if we're on a RedHat/CentOS based system
-	 */
-	protected function isRedHatBased()
-	{
-		if (file_exists("/etc/redhat-release")) {
-			return true;
-		}
-
-		exec("command -v yum", $output, $returnVar);
-		return $returnVar === 0;
-	}
-
-	/**
-	 * Create a MySQL backup using PHP when mysqldump is not available
+	 * Create a MySQL backup using PHP
 	 */
 	protected function mysqlBackupWithPHP($backupPath)
 	{
@@ -425,8 +279,15 @@ class DatabaseBackup extends Command
 
 			$this->line("Found {$tableCount} tables to backup");
 
-			$output = "-- Backup of database {$database} created via PHP PDO\n";
-			$output .= "-- Generated: " . date("Y-m-d H:i:s") . "\n\n";
+			// Write header
+			$output = "-- MySQL Database Backup\n";
+			$output .= "-- Database: {$database}\n";
+			$output .= "-- Generated: " . date("Y-m-d H:i:s") . "\n";
+			$output .= "-- Created by DatabaseBackup Command\n\n";
+			$output .= "SET FOREIGN_KEY_CHECKS = 0;\n";
+			$output .= "SET SQL_MODE = \"NO_AUTO_VALUE_ON_ZERO\";\n";
+			$output .= "SET AUTOCOMMIT = 0;\n";
+			$output .= "START TRANSACTION;\n\n";
 			file_put_contents($backupPath, $output);
 
 			$progress = $this->output->createProgressBar($tableCount);
@@ -438,35 +299,55 @@ class DatabaseBackup extends Command
 
 				// Get create statement
 				$stmt = $pdo->query("SHOW CREATE TABLE `{$table}`");
-				$row = $stmt->fetch(\PDO::FETCH_NUM);
+				$createRow = $stmt->fetch(\PDO::FETCH_NUM);
+				$tableOutput .= "-- Table structure for table `{$table}`\n";
 				$tableOutput .= "DROP TABLE IF EXISTS `{$table}`;\n";
-				$tableOutput .= $row[1] . ";\n\n";
+				$tableOutput .= $createRow[1] . ";\n\n";
 
-				// Get data
-				$result = $pdo->query("SELECT * FROM `{$table}`");
-				$numFields = $result->columnCount();
+				// Get data count
+				$countStmt = $pdo->query("SELECT COUNT(*) FROM `{$table}`");
+				$rowCount = $countStmt->fetchColumn();
 
-				while ($row = $result->fetch(\PDO::FETCH_NUM)) {
-					$tableOutput .= "INSERT INTO `{$table}` VALUES (";
+				if ($rowCount > 0) {
+					$tableOutput .= "-- Dumping data for table `{$table}`\n";
+					$tableOutput .= "LOCK TABLES `{$table}` WRITE;\n";
 
-					for ($i = 0; $i < $numFields; $i++) {
-						if (isset($row[$i])) {
-							$row[$i] = addslashes($row[$i]);
-							$row[$i] = str_replace("\n", "\\n", $row[$i]);
-							$tableOutput .= '"' . $row[$i] . '"';
-						} else {
-							$tableOutput .= "NULL";
+					// Get data in chunks to avoid memory issues
+					$limit = 1000;
+					$offset = 0;
+
+					while ($offset < $rowCount) {
+						$result = $pdo->query("SELECT * FROM `{$table}` LIMIT {$limit} OFFSET {$offset}");
+						$rows = $result->fetchAll(\PDO::FETCH_NUM);
+
+						if (!empty($rows)) {
+							$tableOutput .= "INSERT INTO `{$table}` VALUES ";
+							$rowValues = [];
+
+							foreach ($rows as $row) {
+								$values = [];
+								foreach ($row as $value) {
+									if (is_null($value)) {
+										$values[] = "NULL";
+									} elseif (is_numeric($value)) {
+										$values[] = $value;
+									} else {
+										$values[] = "'" . addslashes($value) . "'";
+									}
+								}
+								$rowValues[] = "(" . implode(",", $values) . ")";
+							}
+
+							$tableOutput .= implode(",\n", $rowValues) . ";\n";
 						}
 
-						if ($i < $numFields - 1) {
-							$tableOutput .= ",";
-						}
+						$offset += $limit;
 					}
 
-					$tableOutput .= ");\n";
+					$tableOutput .= "UNLOCK TABLES;\n";
 				}
 
-				$tableOutput .= "\n\n";
+				$tableOutput .= "\n";
 
 				// Write to file in batches to avoid memory issues
 				file_put_contents($backupPath, $tableOutput, FILE_APPEND);
@@ -477,9 +358,15 @@ class DatabaseBackup extends Command
 			$progress->finish();
 			$this->newLine(2);
 
+			// Write footer
+			$footer = "COMMIT;\n";
+			$footer .= "SET FOREIGN_KEY_CHECKS = 1;\n";
+			$footer .= "-- Backup completed successfully\n";
+			file_put_contents($backupPath, $footer, FILE_APPEND);
+
 			return true;
 		} catch (\Exception $e) {
-			throw new \Exception("PHP backup failed: " . $e->getMessage());
+			throw new \Exception("Database backup failed: " . $e->getMessage());
 		}
 	}
 

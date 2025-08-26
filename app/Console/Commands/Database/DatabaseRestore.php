@@ -398,53 +398,7 @@ class DatabaseRestore extends Command
 
 		$this->components->info("Restoring database from backup: " . $filename);
 
-		// Check if mysql client is available
-		$this->line($this->formatLine("Checking MySQL client availability", "RUNNING"));
-		$startTime = microtime(true);
-		exec("which mysql", $output, $returnVar);
-		$mysqlAvailable = $returnVar === 0;
-		$endTime = microtime(true);
-		$duration = round($endTime - $startTime, 2) * 1000;
-		$this->line($this->formatLine("Checking MySQL client availability", "DONE", "green", $duration));
-		$this->newLine();
 
-		if (!$mysqlAvailable) {
-			// Try to install mysql client
-			$installSuccess = false;
-
-			if ($this->isDebianBased()) {
-				$this->line($this->formatLine("Installing MySQL client (Debian/Ubuntu)", "RUNNING"));
-				$startTime = microtime(true);
-				system("apt-get update && apt-get install -y default-mysql-client", $installResult);
-				$installSuccess = $installResult === 0;
-				$endTime = microtime(true);
-				$duration = round($endTime - $startTime, 2) * 1000;
-				if ($installSuccess) {
-					$this->line($this->formatLine("Installing MySQL client (Debian/Ubuntu)", "DONE", "green", $duration));
-				} else {
-					$this->line($this->formatLine("Installing MySQL client (Debian/Ubuntu)", "FAILED", "red"));
-				}
-				$this->newLine();
-			} elseif ($this->isRedHatBased()) {
-				$this->line($this->formatLine("Installing MySQL client (RedHat/CentOS)", "RUNNING"));
-				$startTime = microtime(true);
-				system("yum install -y mysql", $installResult);
-				$installSuccess = $installResult === 0;
-				$endTime = microtime(true);
-				$duration = round($endTime - $startTime, 2) * 1000;
-				if ($installSuccess) {
-					$this->line($this->formatLine("Installing MySQL client (RedHat/CentOS)", "DONE", "green", $duration));
-				} else {
-					$this->line($this->formatLine("Installing MySQL client (RedHat/CentOS)", "FAILED", "red"));
-				}
-				$this->newLine();
-			}
-
-			if (!$installSuccess) {
-				$this->components->error("Could not install MySQL client. Please install it manually.");
-				return Command::FAILURE;
-			}
-		}
 
 		// Final confirmation
 		$confirmStyle = new ConfirmStyle($this->input, $this->output);
@@ -454,79 +408,177 @@ class DatabaseRestore extends Command
 			return Command::SUCCESS;
 		}
 
-		// Format the output line in the same style as DatabaseBackup
-		$this->line($this->formatLine("Restoring database", "RUNNING"));
-		$startTime = microtime(true);
+		// Use PHP-based restore (no mysql client dependency)
+		return $this->restoreDatabaseWithPHP($backupFile, $isCompressed);
+	}
 
-		// Build the mysql command
-		$mysqlCommand = sprintf(
-			"mysql -h %s -P %s -u %s",
-			escapeshellarg($host),
-			escapeshellarg($port),
-			escapeshellarg($username)
-		);
+	/**
+	 * Restore database using PHP (no mysql client dependency)
+	 */
+	protected function restoreDatabaseWithPHP($backupFile, $isCompressed)
+	{
+		$connection = config("database.default");
+		$host = config("database.connections.{$connection}.host");
+		$port = config("database.connections.{$connection}.port");
+		$database = config("database.connections.{$connection}.database");
+		$username = config("database.connections.{$connection}.username");
+		$password = config("database.connections.{$connection}.password");
 
-		// Add password if it exists
-		if (!empty($password)) {
-			$mysqlCommand .= " -p" . escapeshellarg($password);
-		}
+		$filename = basename($backupFile);
 
-		// Add database name
-		$mysqlCommand .= " " . escapeshellarg($database);
+		try {
+			// Connect to database
+			$this->line($this->formatLine("Connecting to database", "RUNNING"));
+			$startTime = microtime(true);
 
-		// Create the full command based on whether the file is compressed or not
-		if ($isCompressed) {
-			$command = "gzip -dc " . escapeshellarg($backupFile) . " | " . $mysqlCommand;
-		} else {
-			$command = $mysqlCommand . " < " . escapeshellarg($backupFile);
-		}
+			$pdo = new \PDO("mysql:host={$host};port={$port};dbname={$database};charset=utf8mb4", $username, $password, [
+				\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
+			]);
 
-		// Execute the restore process with error handling
-		$process = proc_open(
-			$command,
-			[
-				0 => ["pipe", "r"],
-				1 => ["pipe", "w"],
-				2 => ["pipe", "w"],
-			],
-			$pipes
-		);
-
-		if (!is_resource($process)) {
-			$this->line($this->formatLine("Restoring database", "FAILED", "red"));
-			$this->components->error("Failed to start restore process");
-			return Command::FAILURE;
-		}
-
-		// Close STDIN
-		fclose($pipes[0]);
-
-		// Capture output and errors
-		$output = stream_get_contents($pipes[1]);
-		$error = stream_get_contents($pipes[2]);
-		fclose($pipes[1]);
-		fclose($pipes[2]);
-
-		// Get exit code
-		$exitCode = proc_close($process);
-
-		$endTime = microtime(true);
-		$duration = round($endTime - $startTime, 2);
-
-		if ($exitCode !== 0) {
-			$this->line($this->formatLine("Restoring database", "FAILED", "red"));
-			$this->components->error("Failed to restore database:");
+			$endTime = microtime(true);
+			$duration = round(($endTime - $startTime) * 1000);
+			$this->line($this->formatLine("Connecting to database", "DONE", "green", $duration));
 			$this->newLine();
-			$this->line("<fg=red>" . ($error ? $error : "Unknown error") . "</fg=red>");
+
+			// Read the backup file
+			$this->line($this->formatLine("Reading backup file", "RUNNING"));
+			$startTime = microtime(true);
+
+			if ($isCompressed) {
+				$sqlContent = gzdecode(file_get_contents($backupFile));
+			} else {
+				$sqlContent = file_get_contents($backupFile);
+			}
+
+			if ($sqlContent === false) {
+				throw new \Exception("Could not read backup file");
+			}
+
+			$endTime = microtime(true);
+			$duration = round(($endTime - $startTime) * 1000);
+			$this->line($this->formatLine("Reading backup file", "DONE", "green", $duration));
+			$this->newLine();
+
+			// Execute SQL statements
+			$this->line($this->formatLine("Executing SQL statements", "RUNNING"));
+			$startTime = microtime(true);
+
+			// Split SQL into individual statements
+			$statements = $this->splitSqlStatements($sqlContent);
+			$totalStatements = count($statements);
+
+			if ($totalStatements === 0) {
+				throw new \Exception("No SQL statements found in backup file");
+			}
+
+			$this->line("Found {$totalStatements} SQL statements to execute");
+
+			$progress = $this->output->createProgressBar($totalStatements);
+			$progress->start();
+
+			$executedStatements = 0;
+			foreach ($statements as $statement) {
+				$statement = trim($statement);
+				if (empty($statement) || strpos($statement, '--') === 0) {
+					$progress->advance();
+					continue;
+				}
+
+				try {
+					$pdo->exec($statement);
+					$executedStatements++;
+				} catch (\PDOException $e) {
+					// Skip some common non-critical errors
+					if (strpos($e->getMessage(), 'Table') !== false && strpos($e->getMessage(), 'already exists') !== false) {
+						// Table already exists - continue
+					} elseif (strpos($e->getMessage(), 'Unknown table') !== false) {
+						// Table doesn't exist - continue
+					} else {
+						// For other errors, show warning but continue
+						$this->output->writeln("");
+						$this->components->warn("SQL Error: " . $e->getMessage());
+						$this->output->writeln("Statement: " . substr($statement, 0, 100) . "...");
+					}
+				}
+				$progress->advance();
+			}
+
+			$progress->finish();
+			$this->newLine(2);
+
+			$endTime = microtime(true);
+			$duration = round(($endTime - $startTime) * 1000);
+			$this->line($this->formatLine("Executing SQL statements", "DONE", "green", $duration));
+			$this->newLine();
+
+			$this->components->info("Database has been successfully restored from {$filename}");
+			$this->line("<fg=gray>Executed {$executedStatements} out of {$totalStatements} statements</>");
+
+			return Command::SUCCESS;
+
+		} catch (\Exception $e) {
+			$this->line($this->formatLine("Restoring database", "FAILED", "red"));
+			$this->components->error("Failed to restore database: " . $e->getMessage());
 			return Command::FAILURE;
 		}
+	}
 
-		$this->line($this->formatLine("Restoring database", "DONE", "green", $duration * 1000));
-		$this->newLine();
-		$this->components->info("Database has been successfully restored from {$filename}");
-		$this->line("<fg=gray>Restore completed in {$duration} seconds</>");
-
-		return Command::SUCCESS;
+	/**
+	 * Split SQL content into individual statements
+	 */
+	protected function splitSqlStatements($sqlContent)
+	{
+		// Remove comments (lines starting with --)
+		$lines = explode("\n", $sqlContent);
+		$cleanLines = [];
+		
+		foreach ($lines as $line) {
+			$line = trim($line);
+			if (!empty($line) && strpos($line, '--') !== 0) {
+				$cleanLines[] = $line;
+			}
+		}
+		
+		$cleanSql = implode("\n", $cleanLines);
+		
+		// Split by semicolon, but be careful with quotes
+		$statements = [];
+		$currentStatement = '';
+		$inQuotes = false;
+		$quoteChar = '';
+		
+		for ($i = 0; $i < strlen($cleanSql); $i++) {
+			$char = $cleanSql[$i];
+			
+			if (!$inQuotes && ($char === '"' || $char === "'")) {
+				$inQuotes = true;
+				$quoteChar = $char;
+			} elseif ($inQuotes && $char === $quoteChar) {
+				// Check if it's escaped
+				if ($i > 0 && $cleanSql[$i-1] !== '\\') {
+					$inQuotes = false;
+					$quoteChar = '';
+				}
+			}
+			
+			if (!$inQuotes && $char === ';') {
+				$statement = trim($currentStatement);
+				if (!empty($statement)) {
+					$statements[] = $statement;
+				}
+				$currentStatement = '';
+			} else {
+				$currentStatement .= $char;
+			}
+		}
+		
+		// Add the last statement if it doesn't end with semicolon
+		$statement = trim($currentStatement);
+		if (!empty($statement)) {
+			$statements[] = $statement;
+		}
+		
+		return $statements;
 	}
 
 	/**
@@ -603,29 +655,5 @@ class DatabaseRestore extends Command
 		return $width;
 	}
 
-	/**
-	 * Check if we're on a Debian/Ubuntu based system
-	 */
-	protected function isDebianBased()
-	{
-		if (file_exists("/etc/debian_version")) {
-			return true;
-		}
 
-		exec("command -v apt-get", $output, $returnVar);
-		return $returnVar === 0;
-	}
-
-	/**
-	 * Check if we're on a RedHat/CentOS based system
-	 */
-	protected function isRedHatBased()
-	{
-		if (file_exists("/etc/redhat-release")) {
-			return true;
-		}
-
-		exec("command -v yum", $output, $returnVar);
-		return $returnVar === 0;
-	}
 }
