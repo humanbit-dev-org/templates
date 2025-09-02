@@ -332,7 +332,7 @@
                             <i class="la la-info-circle me-2"></i>
                             <span>
                                 {{ trans('backpack::import.backup_created') }}
-                                <code>/storage/app/import-backups/</code>
+                                <code>/storage/backups/csv-imports/</code>
                             </span>
                         </div>
 
@@ -358,7 +358,7 @@
                         </div>
                         <p class="mb-0">
                             {{ trans('backpack::import.backup_created') }}
-                            <code>/storage/app/import-backups/</code>
+                            <code>/storage/backups/csv-imports/</code>
                         </p>
                     </div>
                 </div>
@@ -1231,7 +1231,7 @@
                     
                     // Update the backup message to show only directory, not filename
                     $('#backup-filename').closest('.alert').find('span').html(
-                        '{{ trans("backpack::import.backup_created") }} <code>/storage/app/import-backups/</code>'
+                        '{{ trans("backpack::import.backup_created") }} <code>/storage/backups/csv-imports/</code>'
                     );
                     
                     // Make backup container visible with a highlight effect
@@ -1273,7 +1273,7 @@
                     
                     // Update the backup message to show only directory, not filename
                     $('#backup-filename').closest('.alert').find('span').html(
-                        '{{ trans("backpack::import.backup_created") }} <code>/storage/app/import-backups/</code>'
+                        '{{ trans("backpack::import.backup_created") }} <code>/storage/backups/csv-imports/</code>'
                     );
                     
                     // Make backup container visible with a highlight effect

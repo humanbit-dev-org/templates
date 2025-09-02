@@ -110,7 +110,7 @@ class FieldTypeHandler
 			$fieldType = "upload";
 		} elseif (str_contains($column, "password")) {
 			$fieldType = "password";
-		} elseif (str_contains($column, "email")) {
+		} elseif ($column === "email" || str_ends_with($column, "_email")) {
 			$fieldType = "email";
 		} elseif (str_contains($column, "formatted")) {
 			$fieldType = "summernote";
