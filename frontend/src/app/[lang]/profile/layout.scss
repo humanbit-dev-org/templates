@@ -1,25 +1,30 @@
-// File import statement:
-// @extend %nav_logo_top_component;
+// @use "@/layout/profile" as *; // File import statement
 
 // >>> Controllers — START
 @use "@/scss/controllers/dynamics" as *; // controllers for mixins and variables
+@use "@/scss/controllers/extends" as *; // controller for modules
 // <<<<< Controllers — END
 
-// >>>> Components — START
-// @use "./Example" as *;
-// <<<<<< Components — END
-
-.nav_logo_top_component {
-	.obj_cont {
-		&.obj_1 {
-			height: $height_md;
+.profile_layout {
+	&.content {
+		.color_section,
+		.bg_color_section {
+			--color_section: #{$color_first};
 		}
+
+		.bg_color_gd::after {
+			--bg_color_gd: #{$color_first};
+		}
+	}
+
+	&.footer {
+		z-index: -1;
 	}
 }
 
 /////
 ////
-/*/==================== @media ====================/*/
+/*/ ==================== @media ==================== /*/
 /////////////
 ////////////
 ////////////////////////
@@ -27,27 +32,27 @@
 ////////////////////////
 
 @media (max-width: 1399.98px) {
-	.nav_logo_top_component {
+	.profile_layout {
 	}
 }
 
 @media (max-width: 1199.98px) {
-	.nav_logo_top_component {
+	.profile_layout {
 	}
 }
 
 @media (max-width: 991.98px) {
-	.nav_logo_top_component {
+	.profile_layout {
 	}
 }
 
 @media (max-width: 767.98px) {
-	.nav_logo_top_component {
+	.profile_layout {
 	}
 }
 
 @media (max-width: 575.98px) {
-	.nav_logo_top_component {
+	.profile_layout {
 	}
 }
 
@@ -58,27 +63,27 @@
 ////////////////////
 
 @media (min-width: 576px) and (max-width: 767.98px) {
-	.nav_logo_top_component {
+	.profile_layout {
 	}
 }
 
 @media (min-width: 576px) and (max-width: 991.98px) {
-	.nav_logo_top_component {
+	.profile_layout {
 	}
 }
 
 @media (min-width: 768px) and (max-width: 991.98px) {
-	.nav_logo_top_component {
+	.profile_layout {
 	}
 }
 
 @media (min-width: 992px) and (max-width: 1199.98px) {
-	.nav_logo_top_component {
+	.profile_layout {
 	}
 }
 
 @media (min-width: 1200px) and (max-width: 1399.98px) {
-	.nav_logo_top_component {
+	.profile_layout {
 	}
 }
 
@@ -89,27 +94,27 @@
 ////////////////////////
 
 @media (min-width: 576px) {
-	.nav_logo_top_component {
+	.profile_layout {
 	}
 }
 
 @media (min-width: 768px) {
-	.nav_logo_top_component {
+	.profile_layout {
 	}
 }
 
 @media (min-width: 992px) {
-	.nav_logo_top_component {
+	.profile_layout {
 	}
 }
 
 @media (min-width: 1200px) {
-	.nav_logo_top_component {
+	.profile_layout {
 	}
 }
 
 @media (min-width: 1400px) {
-	.nav_logo_top_component {
+	.profile_layout {
 	}
 }
 
@@ -120,7 +125,7 @@
 //////////////////////
 
 @media (max-height: 400px) and (orientation: landscape) {
-	.nav_logo_top_component {
+	.profile_layout {
 	}
 }
 
@@ -131,6 +136,28 @@
 ///////////////////////
 
 @media (width: 1024px) and (height: 1366px) {
-	.nav_logo_top_component {
+	.profile_layout {
+	}
+}
+
+// ----------------------- //
+
+/////////////////////////////
+/* all browsers (iOS only) */
+/////////////////////////////
+
+@supports (-webkit-touch-callout: none) and (hover: none) and (pointer: coarse) {
+	.profile_layout {
+	}
+}
+
+// ------------------- //
+
+/////////////////////////
+/* Safari (MacOS only) */
+/////////////////////////
+
+@supports (-webkit-touch-callout: default) and (hover: hover) and (pointer: fine) {
+	.profile_layout {
 	}
 }

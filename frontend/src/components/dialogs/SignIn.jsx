@@ -1,54 +1,18 @@
 "use client";
 
-import AuthSessionStatus from "@/components/elements/AuthSessionStatus";
-import { useAuth } from "@/hooks/auth";
-import { use, useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState } from "react";
+import * as constants from "@/config/constants";
+import { useTranslate } from "@/providers/Translate"; // Provides translation context and hook access for `lang` and `translates`
+import { fetchCsrf } from "@/hooks/fetchCsrf";
 
-const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL_CLIENT;
-
-async function fetchCsrf() {
-	try {
-		const fetchPath = BASE_URL + "/sanctum/csrf-cookie";
-		await fetch(fetchPath, {
-			method: "GET",
-			credentials: "include",
-		});
-		const xsrfToken = document.cookie
-			.split("; ")
-			.find((row) => row.startsWith("XSRF-TOKEN"))
-			?.split("=")[1];
-		return decodeURIComponent(xsrfToken);
-	} catch (error) {
-		console.error("Error fetching csrf:", error);
-	}
-}
-
-export function SignInComponent({ lang }) {
+export function SignInComponent({ preventClose = false }) {
 	const [errors, setErrors] = useState([]);
-	const router = useRouter();
-
-	useEffect(() => {
-		if (typeof window !== "undefined") {
-			if (router.reset?.length > 0 && errors.length === 0) {
-				setStatus(atob(router.reset));
-			} else {
-				setStatus(null);
-			}
-		}
-	});
-
-	// const redirectIfAuthenticated = "/";
-
-	// const { login } = useAuth({
-	// 	middleware: "guest",
-	// });
-
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [password, setPassword] = useState("");
 	const [shouldRemember, setShouldRemember] = useState(false);
 	const [email, setEmail] = useState("");
-	const [status, setStatus] = useState(null);
+	const lang = useTranslate()["lang"];
+	const translates = useTranslate()["translates"];
 
 	const submitForm = async (event) => {
 		event.preventDefault();
@@ -56,11 +20,10 @@ export function SignInComponent({ lang }) {
 		setIsSubmitting(true);
 
 		setErrors([]);
-		setStatus(null);
 
 		const xsrfToken = await fetchCsrf();
 
-		const fetchPath = BASE_URL + "/login";
+		const fetchPath = `${constants.BACKEND_URL_CLIENT}/login`;
 
 		const loginRequest = new Request(fetchPath, {
 			method: "POST",
@@ -72,6 +35,7 @@ export function SignInComponent({ lang }) {
 			}),
 			headers: {
 				"Accept": "application/json",
+				"Referer": constants.APP_URL,
 				"X-Requested-With": "XMLHttpRequest",
 				"Content-Type": "application/json",
 				"X-XSRF-TOKEN": xsrfToken,
@@ -92,41 +56,33 @@ export function SignInComponent({ lang }) {
 			setIsSubmitting(false);
 			throw error;
 		}
-
-		// login({
-		// 	email,
-		// 	password,
-		// 	remember: shouldRemember,
-		// 	setErrors,
-		// 	setStatus,
-		// });
 	};
 
 	return (
 		<>
 			<div
-				data-bs-backdrop="static"
-				className="modal_full modal fade show d-block"
+				className="modal_full modal fade"
 				id="signInModal"
 				tabIndex="-1"
 				aria-labelledby="signInModalLabel"
-				aria-hidden="true">
+				aria-hidden="true"
+				{...(preventClose && {
+					"data-bs-backdrop": "static",
+					"data-bs-keyboard": "false",
+				})}>
 				<div className="modal-dialog modal-dialog-centered">
-					<form className="modal-content color_white border border_color_third p-3 p-md-5" onSubmit={submitForm}>
+					<form className="modal-content color_first p-3 p-md-5" onSubmit={submitForm}>
 						<div className="modal-header mb-5">
 							<h5 className="modal-title big" id="signInModalLabel">
-								Sign in
+								{translates?.["all"]?.["sign_in"]?.[lang] ?? "Translate fallback"}
 							</h5>
-
-							{/* Session status */}
-							<AuthSessionStatus className="mb-4" status={status} />
 
 							<button
 								type="button"
 								className={`btn-close w-auto h-auto ${isSubmitting ? "pe-none opacity-50" : ""} `}
 								data-bs-dismiss="modal"
 								aria-label="Close">
-								<i className="fa-regular fa-rectangle-xmark fa-2xl color_white" />
+								<i className="fa-regular fa-rectangle-xmark fa-2xl color_first" />
 							</button>
 						</div>
 
@@ -142,11 +98,13 @@ export function SignInComponent({ lang }) {
 										onChange={(event) => setEmail(event.target.value)}
 										required
 										autoFocus
-										placeholder="Enter your email"
+										placeholder={
+											translates?.["all"]?.["email"]?.[`text_${lang}`] ?? "Translate fallback"
+										}
 									/>
 
 									<label className="label" htmlFor="signInEmail">
-										Email
+										{translates?.["all"]?.["email"]?.[lang] ?? "Translate fallback"}
 									</label>
 									<p>{errors.email}</p>
 									{/* <InputError messages={errors.email} className="mt-2" /> */}
@@ -164,11 +122,13 @@ export function SignInComponent({ lang }) {
 										onChange={(event) => setPassword(event.target.value)}
 										required
 										autoComplete="current-password"
-										placeholder="Enter your password"
+										placeholder={
+											translates?.["all"]?.["password"]?.[`text_${lang}`] ?? "Translate fallback"
+										}
 									/>
 
 									<label className="label" htmlFor="signInPassword">
-										Password
+										{translates?.["all"]?.["password"]?.[lang] ?? "Translate fallback"}
 									</label>
 
 									{/* <InputError messages={errors.password} className="mt-2" /> */}
@@ -177,10 +137,10 @@ export function SignInComponent({ lang }) {
 							</div>
 
 							{/* Remember me */}
-							<div className="input_wrapper_spacing d-flex flex-wrap justify-content-between">
+							<div className="input_wrapper_spacing d-flex flex-wrap justify-content-between mb-3">
 								<div className="form-check">
-									<label className="form-check-label" htmlFor="signInRememberMe">
-										Remember me
+									<label className="form-check-label color_first" htmlFor="signInRememberMe">
+										{translates?.["all"]?.["remember_me"]?.[lang] ?? "Translate fallback"}
 									</label>
 
 									<input
@@ -193,10 +153,36 @@ export function SignInComponent({ lang }) {
 								</div>
 
 								<button
-									className={`btn_bg_first ${isSubmitting ? "pe-none opacity-50" : ""}`}
+									className={`btn_bg_second ${isSubmitting ? "pe-none opacity-50" : ""}`}
 									type="submit"
 									disabled={isSubmitting}>
-									Submit
+									{translates?.["all"]?.["send"]?.[lang] ?? "Translate fallback"}
+								</button>
+							</div>
+
+							<div className="input_wrapper_spacing d-flex flex-wrap justify-content-between">
+								<button
+									className={`btn_bg_third flex-fill ${isSubmitting ? "pe-none opacity-50" : ""}`}
+									type="submit"
+									disabled={isSubmitting}>
+									<span className="el_txt pe-2">Facebook</span>
+									<i className="fa-brands fa-facebook-f" />
+								</button>
+
+								<button
+									className={`btn_bg_third flex-fill ${isSubmitting ? "pe-none opacity-50" : ""}`}
+									type="submit"
+									disabled={isSubmitting}>
+									<span className="el_txt pe-2">Apple</span>
+									<i className="fa-brands fa-apple" />
+								</button>
+
+								<button
+									className={`btn_bg_third flex-fill ${isSubmitting ? "pe-none opacity-50" : ""}`}
+									type="submit"
+									disabled={isSubmitting}>
+									<span className="el_txt pe-2">Google</span>
+									<i className="fa-brands fa-google" />
 								</button>
 							</div>
 						</fieldset>
@@ -207,7 +193,9 @@ export function SignInComponent({ lang }) {
 								type="button"
 								data-bs-toggle="modal"
 								href="#forgotPasswordModal">
-								<div className="fx_fill service pb-2">Forgot your password?</div>
+								<span className="fx_fill service pb-2">
+									{translates?.["all"]?.["forgot_your_password"]?.[lang] ?? "Translate fallback"}
+								</span>
 							</a>
 
 							<a
@@ -215,7 +203,9 @@ export function SignInComponent({ lang }) {
 								type="button"
 								data-bs-toggle="modal"
 								href="#registerModal">
-								<div className="fx_fill main pb-2">Don't have an account?</div>
+								<span className="fx_fill main pb-2">
+									{translates?.["all"]?.["dont_have_an_account"]?.[lang] ?? "Translate fallback"}
+								</span>
 							</a>
 						</div>
 					</form>

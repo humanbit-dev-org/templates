@@ -1,0 +1,714 @@
+//
+// Navbar with sliding collapse effect towards the upper edge of the viewport
+//
+
+// >>> Controllers — START
+@use "@/scss/controllers/dynamics" as *; // controllers for mixins and variables
+// <<<<< Controllers — END
+
+.navbar_component {
+	width: 100%;
+
+	@at-root .grid_cont.navbar {
+		z-index: 1039;
+	}
+
+	.nav_slide_top {
+		height: $height_md; // `_variables.scss`
+		// position: fixed;
+		top: 0;
+		right: 0;
+		left: 0;
+		background-color: var(--nav_bg_color_primary); // `_variables.scss`
+		background-image: none;
+		// Maximum value of 1039 needed to overlay most `z-index` priorities such as <iframe>s while keeping `.modal` (1060) and `.modal-backdrop` (1040) visible.
+		z-index: 1039;
+
+		.nav_menu a {
+			color: $color_fourth;
+			font-weight: 700;
+		}
+
+		// Navbar's `background` containers.
+		.cont_ghost_bg {
+			height: $height_md; // `_variables.scss`
+
+			&.nav_ghost_bg {
+				background: var(--nav_bg_color_top); // `_variables.scss`
+				background-size: 300% 300%; // Default value (avoid changing).
+			}
+
+			&.coll_ghost_bg {
+				width: 100%;
+				max-width: calc(var(--coll_ghost_width) - calc(100vw - 100%)); // `_variables.scss`
+				background: var(--nav_bg_color_right); // `_variables.scss`
+				background-size: 300% 300%; // Default value (avoid changing).
+			}
+		}
+
+		.menu_navbar {
+			z-index: 1;
+
+			.obj_plus {
+				&::before {
+					content: "";
+					position: absolute;
+					left: 0;
+					bottom: 0;
+					width: 100%;
+					height: 130px;
+					background-color: transparent;
+				}
+
+				a:hover {
+					+ .box_call {
+						opacity: 1;
+						visibility: visible;
+					}
+				}
+
+				.box_call {
+					opacity: 0;
+					visibility: hidden;
+					transition:
+						opacity 0.275s ease-in-out,
+						visibility 0s;
+				}
+			}
+
+			.landmark {
+				@include fluid_type(
+					// >>>>> VIEWPORT <<<<<
+					// $viewport-min: 20em, // default value set in `_fluid_type.scss` to enable global configuration
+					// $viewport-max: 100em, // default value set in `_fluid_type.scss` to enable global configuration
+					// >>>>> MOBILE <<<<<
+					$font-size-min: 1rem,
+					// `font-size` on mobile viewport (< 575.98px)
+					$line-height-mobile: 1.5,
+					// `line-height` multiplier on mobile viewport (< 575.98px)
+					// >>>>> DESKTOP <<<<<
+					$font-size-max: 1.125rem,
+					// `font-size` on desktop viewport (> 576px)
+					$line-height-desktop: 1.2,
+					// `line-height` multiplier on desktop viewport (> 576px)
+					// >>>>> IMPORTANT <<<<<
+					 // $important: "!important" // uncomment to add the `!important` flag
+				);
+				font-weight: 500;
+				text-transform: capitalize;
+				color: $color_black;
+
+				.menu_item {
+					&:hover {
+						color: $color_white;
+						background-color: $color_third;
+					}
+				}
+
+				.vbar {
+					line-height: 1.7;
+				}
+			}
+
+			.box_left {
+				// Necessary to avoid layout break during transition.
+				min-width: 42.5px;
+
+				.navbar-toggler {
+					width: 40px;
+					transition: 0.4s ease-out; // Default value (avoid changing).
+
+					&:hover {
+						opacity: 0.8;
+					}
+
+					&:focus {
+						box-shadow: none;
+					}
+
+					&.collapsed {
+						transform: rotate(0deg);
+
+						&:active {
+							transform: rotate(45deg);
+						}
+					}
+
+					&:not(.collapsed) {
+						transform: rotate(180deg);
+
+						&:active {
+							transform: rotate(135deg);
+						}
+
+						// Animate collapse into "X".
+
+						// Top line rotates 45 degrees clockwise and moves up and in a bit to close the center of the "X" in the center of the <button>.
+						span:nth-child(1) {
+							transform: translate(0%, 75%) rotate(45deg);
+							width: 30px;
+						}
+
+						// Center line goes transparent.
+						span:nth-child(2) {
+							opacity: 0;
+						}
+
+						// Bottom line rotates 45 degrees counter clockwise, in, and down a bit to close the center of the "X" in the center of the <button>.
+						span:nth-child(3) {
+							transform: translate(0%, -75%) rotate(-45deg);
+						}
+					}
+
+					// Define the shape and color of the hamburger lines.
+					span {
+						position: relative;
+						left: 0;
+						display: block;
+						width: 30px;
+						// height: 3px;
+						height: 4px;
+						margin-top: 2px;
+						margin-bottom: 2px;
+						background-color: $color_first;
+						border-radius: 50rem;
+						opacity: 1;
+						transition: 0.25s ease-out;
+						// transform-origin: center left;
+						transform-origin: center;
+
+						// Top line needs a little `padding`.
+						// &:nth-child(1) {
+						// 	margin-top: 0.3em;
+						// }
+
+						// Animate collapse open into hamburger menu.
+
+						// Top line moves back to initial position and rotates back to 0 degrees.
+						&:nth-child(1) {
+							transform: translate(0%, 0%) rotate(0deg);
+							width: 38px;
+						}
+
+						// Middle line goes back to regular color and `opacity`.
+						&:nth-child(2) {
+							opacity: 0;
+							height: 0px;
+						}
+
+						// Bottom line goes back to initial position and rotates back to 0 degrees.
+						&:nth-child(3) {
+							transform: translate(27%, 0%) rotate(0deg);
+						}
+					}
+				}
+			}
+
+			.figure_logo {
+				max-width: 165px;
+
+				img {
+					max-height: 48px;
+				}
+			}
+
+			// .nav-link {
+			// 	@include filling_effect($color_fourth, $color_second, $color_fifth, $color_second);
+
+			// 	// &:hover,
+			// 	// &:focus {
+			// 	//   color: $color_white;
+			// 	// }
+			// }
+
+			.menu_link,
+			.menu_steps,
+			.login_modal {
+				@include fluid_type(
+					// >>>>> VIEWPORT <<<<<
+					// $viewport-min: 20em, // default value set in `_fluid_type.scss` to enable global configuration
+					// $viewport-max: 100em, // default value set in `_fluid_type.scss` to enable global configuration
+					// >>>>> MOBILE <<<<<
+					$font-size-min: 0.8rem,
+					// `font-size` on mobile viewport (< 575.98px)
+					$line-height-mobile: 1.5,
+					// `line-height` multiplier on mobile viewport (< 575.98px)
+					// >>>>> DESKTOP <<<<<
+					$font-size-max: 1rem,
+					// `font-size` on desktop viewport (> 576px)
+					$line-height-desktop: 1.2,
+					// `line-height` multiplier on desktop viewport (> 576px)
+					// >>>>> IMPORTANT <<<<<
+					 // $important: "!important" // uncomment to add the `!important` flag
+				);
+				font-weight: 400;
+
+				&:hover,
+				&:focus {
+					background-color: $color_second;
+					opacity: 1;
+				}
+			}
+
+			.circle_1 {
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				width: 48px;
+				height: 48px;
+				background-color: transparent;
+				border: 2px solid $color_white;
+				border-radius: 50%;
+			}
+		}
+
+		// Transition is achieved through `transform` properties (`translate`/`translateX`/`translateY`).
+		.navbar-collapse {
+			overflow: hidden auto; // "If two keywords are specified, the first applies to `overflow-x` and the second to `overflow-y`."
+
+			&.menu_collapse {
+				position: fixed;
+				right: 0;
+				bottom: 0;
+				left: 0;
+				width: calc(100vw - (100vw - 100%)); // Default value (avoid changing).
+				height: calc(100% - $height_md); // `_variables.scss`
+				transition: transform 0.35s ease; // Default value (avoid changing).
+
+				// Bootstrap's transition class.
+				&.collapsing {
+					// Animation's point of origin.
+					// max-width: 0; // Uncomment line to activate diagonal movement.
+					// max-height: 0; // Uncomment line to activate diagonal movement.
+					transform: translateY(100%); // Default value (avoid changing).
+					transition: transform 0.35s ease; // Default value (avoid changing).
+				}
+
+				.collapse_wrapper {
+					min-height: calc(100vh - $height_md); // `_variables.scss`
+					// Transition for `.scrollbar_spacing`.
+					transition: padding-right 0.35s ease !important; // Default value (avoid changing).
+
+					.collapse_contents {
+						min-height: calc(100vh - $height_md); // `_variables.scss`
+
+						.container_sizing {
+							width: -webkit-fill-available;
+							width: -moz-available;
+
+							// Collapse (basic).
+							&.basic {
+								.nav-link {
+									// Sizing values necessary to allow the use of negative margins.
+									width: -webkit-fill-available; // Default value (avoid changing).
+									width: -moz-available; // Default value (avoid changing).
+									max-width: unset; // Default value (avoid changing).
+									color: $color_eighth;
+									border-color: $color_white !important;
+
+									&:hover,
+									&:focus {
+										color: $color_white;
+										background-color: transparent;
+										border-color: $color_second !important;
+										// margin-left: -1rem;
+										// padding-right: 1rem;
+										// padding-left: 0rem;
+										opacity: 1;
+									}
+
+									&.active_link {
+										color: $color_second;
+										background-color: $color_white;
+										border-color: $color_second !important;
+										// margin-left: -1rem;
+										// padding-right: 1rem;
+										padding-left: 1rem;
+										opacity: 1;
+									}
+								}
+								.nav-link_dx {
+									// Sizing values necessary to allow the use of negative margins.
+									width: -webkit-fill-available; // Default value (avoid changing).
+									width: -moz-available; // Default value (avoid changing).
+									max-width: unset; // Default value (avoid changing).
+									color: $color_eleventh;
+									border-color: $color_white !important;
+
+									&:hover,
+									&:focus {
+										color: $color_white;
+										background-color: transparent;
+										border-color: $color_second !important;
+										// margin-left: -1rem;
+										// padding-right: 1rem;
+										// padding-left: 0rem;
+										opacity: 1;
+									}
+
+									&.active_link_dx {
+										color: $color_second;
+										background-color: $color_white;
+										border-color: $color_second !important;
+										// margin-left: -1rem;
+										// padding-right: 1rem;
+										padding-left: 1rem;
+										opacity: 1;
+									}
+								}
+							}
+
+							// Collapse (sections).
+							&.sections {
+								.nav-link {
+									color: unset;
+									opacity: 1;
+
+									&:hover,
+									&:focus {
+										opacity: 0.8;
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+
+			&.menu_options {
+				position: fixed;
+				top: $height_md; // `_variables.scss`
+				right: 0;
+				max-width: var(--coll_ghost_width); // `_variables.scss`
+				width: 100%;
+				height: auto;
+				transition: transform 0.35s ease; // Default value (avoid changing).
+
+				// Bootstrap's transition class.
+				&.collapsing {
+					// Animation's point of origin.
+					transform: translateX(100%); // Default value (avoid changing).
+					transition: transform 0.35s ease; // Default value (avoid changing).
+				}
+
+				.options_wrapper {
+					min-width: var(--coll_ghost_width); // `_variables.scss`
+
+					.btn_toggler {
+						&.collapsed {
+							.icon_toggler {
+								transform: rotate(180deg);
+							}
+						}
+
+						&:not(.collapsed) {
+							.icon_toggler {
+								transform: rotate(0deg);
+							}
+						}
+
+						.icon_toggler {
+							transition: 0.35s ease-out; // Default value (avoid changing).
+						}
+					}
+
+					.option_item {
+						padding: 0.3rem 1.7rem;
+						@include fluid_type(
+							// >>>>> VIEWPORT <<<<<
+							// $viewport-min: 20em, // default value set in `_fluid_type.scss` to enable global configuration
+							// $viewport-max: 100em, // default value set in `_fluid_type.scss` to enable global configuration
+							// >>>>> MOBILE <<<<<
+							$font-size-min: 0.8rem,
+							// `font-size` on mobile viewport (< 575.98px)
+							$line-height-mobile: 1.5,
+							// `line-height` multiplier on mobile viewport (< 575.98px)
+							// >>>>> DESKTOP <<<<<
+							$font-size-max: 0.8rem,
+							// `font-size` on desktop viewport (> 576px)
+							$line-height-desktop: 1.2,
+							// `line-height` multiplier on desktop viewport (> 576px)
+							// >>>>> IMPORTANT <<<<<
+							 // $important: "!important" // uncomment to add the `!important` flag
+						);
+						font-weight: 400;
+						color: $color_white;
+
+						&:hover {
+							background-color: $color_first;
+							border: 2px solid $color_white;
+						}
+					}
+
+					.option_unsaved {
+						background-color: $color_first;
+						border: 2px solid $color_white;
+
+						&:hover {
+							background-color: $color_third;
+							border: 2px solid $color_third;
+						}
+					}
+				}
+			}
+
+			// Hide scrollbar for Chromium.
+			&::-webkit-scrollbar {
+				display: none;
+			}
+
+			// Hide scrollbar for Firefox.
+			scrollbar-width: none;
+		}
+	}
+}
+
+// modifica lo stile della nav allo scroll
+.nav_slide_top.scrolled {
+	background-color: #fff;
+	/* Modifica lo sfondo quando scrolla */
+}
+
+/////
+////
+/*/==================== @media ====================/*/
+// {
+/////////////
+////////////
+////////////////////////
+/* @media (max-width) */
+////////////////////////
+
+@media (max-width: 1399.98px) {
+	.navbar_component {
+		.nav_slide_top {
+		}
+	}
+}
+
+@media (max-width: 1199.98px) {
+	.navbar_component {
+		.nav_slide_top {
+		}
+	}
+}
+
+@media (max-width: 991.98px) {
+	.navbar_component {
+		.nav_slide_top {
+			&.nav_extra {
+				height: $max_height_extra; // `_variables.scss`
+
+				// Navbar's `background` containers.
+				.cont_ghost_bg {
+					height: $max_height_extra; // `_variables.scss`
+				}
+
+				.navbar-collapse {
+					&.menu_collapse {
+						height: calc(100% - $max_height_extra); // `_variables.scss`
+
+						.collapse_wrapper {
+							min-height: calc(100vh - $max_height_extra); // `_variables.scss`
+
+							.collapse_contents {
+								min-height: calc(100vh - $max_height_extra); // `_variables.scss`
+							}
+						}
+					}
+
+					&.menu_options {
+						top: $max_height_extra; // `_variables.scss`
+					}
+				}
+			}
+		}
+	}
+}
+
+@media (max-width: 767.98px) {
+	.navbar_component {
+		.nav_slide_top {
+			height: $max_height_md; // `_variables.scss`
+
+			// Navbar's `background` containers.
+			.cont_ghost_bg {
+				height: $max_height_md; // `_variables.scss`
+			}
+
+			.menu_navbar {
+				.figure_logo {
+					max-width: 125px;
+
+					img {
+						max-height: 30px;
+					}
+				}
+
+				.circle_1 {
+					width: 30px;
+					height: 30px;
+				}
+			}
+
+			.navbar-collapse {
+				&.menu_collapse {
+					height: calc(100% - $max_height_md); // `_variables.scss`
+
+					.collapse_wrapper {
+						min-height: calc(100vh - $max_height_md); // `_variables.scss`
+
+						.collapse_contents {
+							min-height: calc(100vh - $max_height_md); // `_variables.scss`
+						}
+					}
+				}
+
+				&.menu_options {
+					top: $max_height_md; // `_variables.scss`
+				}
+			}
+		}
+	}
+}
+
+@media (max-width: 575.98px) {
+	.navbar_component {
+		.nav_slide_top {
+		}
+	}
+}
+
+// -------------- //
+
+////////////////////
+/* @media between */
+////////////////////
+
+@media (min-width: 576px) and (max-width: 767.98px) {
+	.navbar_component {
+		.nav_slide_top {
+		}
+	}
+}
+
+@media (min-width: 576px) and (max-width: 991.98px) {
+	.navbar_component {
+		.nav_slide_top {
+		}
+	}
+}
+
+@media (min-width: 768px) and (max-width: 991.98px) {
+	.navbar_component {
+		.nav_slide_top {
+		}
+	}
+}
+
+@media (min-width: 992px) and (max-width: 1199.98px) {
+	.navbar_component {
+		.nav_slide_top {
+		}
+	}
+}
+
+@media (min-width: 1200px) and (max-width: 1399.98px) {
+	.navbar_component {
+		.nav_slide_top {
+		}
+	}
+}
+
+// ------------------ //
+
+////////////////////////
+/* @media (min-width) */
+////////////////////////
+
+@media (min-width: 576px) {
+	.navbar_component {
+		.nav_slide_top {
+		}
+	}
+}
+
+@media (min-width: 768px) {
+	.navbar_component {
+		.nav_slide_top {
+		}
+	}
+}
+
+@media (min-width: 992px) {
+	.navbar_component {
+		.nav_slide_top {
+		}
+	}
+}
+
+@media (min-width: 1200px) {
+	.navbar_component {
+		.nav_slide_top {
+		}
+	}
+}
+
+@media (min-width: 1400px) {
+	.navbar_component {
+		.nav_slide_top {
+		}
+	}
+}
+
+// ---------------- //
+
+//////////////////////
+/* Mobile landscape */
+//////////////////////
+
+@media (max-height: 400px) and (orientation: landscape) {
+	.navbar_component {
+		.nav_slide_top {
+			height: $max_height_xs_landscape; // `_variables.scss`
+
+			// Navbar's `background` containers.
+			.cont_ghost_bg {
+				height: $max_height_xs_landscape; // `_variables.scss`
+			}
+
+			.navbar-collapse {
+				&.menu_collapse {
+					height: calc(100% - $max_height_xs_landscape); // `_variables.scss`
+
+					.collapse_wrapper {
+						min-height: calc(100vh - $max_height_xs_landscape); // `_variables.scss`
+
+						.collapse_contents {
+							min-height: calc(100vh - $max_height_xs_landscape); // `_variables.scss`
+						}
+					}
+				}
+
+				&.menu_options {
+					top: $max_height_xs_landscape; // `_variables.scss`
+				}
+			}
+		}
+	}
+}
+
+// ----------------- //
+
+///////////////////////
+/* iPad Pro portrait */
+///////////////////////
+
+@media (width: 1024px) and (height: 1366px) {
+	.navbar_component {
+		.nav_slide_top {
+		}
+	}
+}
+
+// }

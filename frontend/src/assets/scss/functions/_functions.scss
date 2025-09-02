@@ -27,6 +27,7 @@ $root-font-size: 16px;
 // Convert em to px
 @function to_px($val) {
 	$u: unit($val);
+
 	@if $u == "px" {
 		@return $val;
 	}
@@ -39,6 +40,7 @@ $root-font-size: 16px;
 // Convert px to em
 @function to_em($val) {
 	$u: unit($val);
+
 	@if $u == "em" {
 		@return $val;
 	}
@@ -54,6 +56,7 @@ $root-font-size: 16px;
 // Convert px to rem
 @function to_rem($val) {
 	$u: unit($val);
+
 	@if $u == "rem" {
 		@return $val;
 	}

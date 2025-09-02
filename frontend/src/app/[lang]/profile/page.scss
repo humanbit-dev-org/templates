@@ -1,0 +1,202 @@
+// @use "@/page/profile" as *; // File import statement
+
+// >>> Controllers — START
+@use "@/scss/controllers/dynamics" as *; // controllers for mixins and variables
+@use "@/scss/controllers/extends" as *; // controller for modules
+// <<<<< Controllers — END
+
+.profile_page {
+	.fx_fill {
+		@include filling_effect($color_third, $color_third, $color_gray_medium, $color_first);
+	}
+
+	.nav {
+		.outer_pills {
+			.nav-link {
+				color: $color_first;
+				background-color: transparent;
+			}
+
+			.nav-link.active,
+			.show > .nav-link {
+				color: $color_white;
+				background-color: $color_first;
+				background-image: unset;
+			}
+		}
+	}
+
+	.accordion-flush {
+		.accordion-item,
+		.accordion-item .accordion-button.collapsed,
+		.accordion-item .accordion-button:not(.collapsed) {
+			background-color: transparent;
+		}
+
+		.accordion-item .accordion-button.collapsed {
+			color: $color_first;
+
+			&::before {
+				background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23051269'><path fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/></svg>");
+			}
+		}
+
+		.accordion-item .accordion-button:not(.collapsed) {
+			color: $color_first;
+
+			&::after {
+				background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23ee556d'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+			}
+		}
+	}
+}
+
+/////
+////
+/*/ ==================== @media ==================== /*/
+/////////////
+////////////
+////////////////////////
+/* @media (max-width) */
+////////////////////////
+
+@media (max-width: 1399.98px) {
+	.profile_page {
+	}
+}
+
+@media (max-width: 1199.98px) {
+	.profile_page {
+	}
+}
+
+@media (max-width: 991.98px) {
+	.profile_page {
+	}
+}
+
+@media (max-width: 767.98px) {
+	.profile_page {
+	}
+}
+
+@media (max-width: 575.98px) {
+	.profile_page {
+	}
+}
+
+// -------------- //
+
+////////////////////
+/* @media between */
+////////////////////
+
+@media (min-width: 576px) and (max-width: 767.98px) {
+	.profile_page {
+	}
+}
+
+@media (min-width: 576px) and (max-width: 991.98px) {
+	.profile_page {
+	}
+}
+
+@media (min-width: 768px) and (max-width: 991.98px) {
+	.profile_page {
+	}
+}
+
+@media (min-width: 992px) and (max-width: 1199.98px) {
+	.profile_page {
+	}
+}
+
+@media (min-width: 1200px) and (max-width: 1399.98px) {
+	.profile_page {
+	}
+}
+
+// ------------------ //
+
+////////////////////////
+/* @media (min-width) */
+////////////////////////
+
+@media (min-width: 576px) {
+	.profile_page {
+	}
+}
+
+@media (min-width: 768px) {
+	.profile_page {
+	}
+}
+
+@media (min-width: 992px) {
+	.profile_page {
+		.obj_radius {
+			&.accordion-item {
+				border-top-left-radius: 0px;
+				border-top-right-radius: 0px;
+			}
+		}
+
+		.accordion-body {
+			min-height: 753px;
+		}
+	}
+}
+
+@media (min-width: 1200px) {
+	.profile_page {
+	}
+}
+
+@media (min-width: 1400px) {
+	.profile_page {
+	}
+}
+
+// ---------------- //
+
+//////////////////////
+/* mobile landscape */
+//////////////////////
+
+@media (max-height: 400px) and (orientation: landscape) {
+	.profile_page {
+	}
+}
+
+// ----------------- //
+
+///////////////////////
+/* iPad Pro portrait */
+///////////////////////
+
+@media (width: 1024px) and (height: 1366px) {
+	.profile_page {
+	}
+}
+
+// ----------------------- //
+
+/////////////////////////////
+/* all browsers (iOS only) */
+/////////////////////////////
+
+@supports (-webkit-touch-callout: none) and (hover: none) and (pointer: coarse) {
+	.profile_page {
+	}
+}
+
+// ------------------- //
+
+/////////////////////////
+/* Safari (MacOS only) */
+/////////////////////////
+
+@supports (-webkit-touch-callout: default) and (hover: hover) and (pointer: fine) {
+	.profile_page {
+	}
+}

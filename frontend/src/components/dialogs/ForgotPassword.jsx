@@ -2,13 +2,10 @@
 
 import AuthSessionStatus from "@/components/elements/AuthSessionStatus";
 import { useState } from "react";
-import { useAuth } from "@/hooks/auth";
-
-const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL_CLIENT;
 
 async function fetchCsrf() {
 	try {
-		const fetchPath = BASE_URL + "/sanctum/csrf-cookie";
+		const fetchPath = constants.BACKEND_URL_CLIENT + "/sanctum/csrf-cookie";
 
 		await fetch(fetchPath, {
 			method: "GET",
@@ -44,7 +41,7 @@ export function ForgotPasswordComponent({ lang }) {
 
 		const xsrfToken = await fetchCsrf();
 
-		const fetchPath = BASE_URL + "/forgot-password";
+		const fetchPath = `${constants.BACKEND_URL_CLIENT}/forgot-password`;
 
 		const forgotPasswordRequest = new Request(fetchPath, {
 			method: "POST",

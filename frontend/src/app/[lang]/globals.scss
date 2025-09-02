@@ -150,6 +150,10 @@ body {
 
 // `font-size` must be set at XX% of Figma's value.
 
+// >>>>> VIEWPORT (EXTERNAL) <<<<<
+$reference-vw-min: 23.438em; // Minimum REFERENCE viewport width
+$reference-vw-max: 80em; // Maximum REFERENCE viewport width
+
 // Example of a filled-out guideline:
 // HERO TITLE (article-list) | Manrope (bold) | fs: 40px~60px/2.5rem~3.75rem | lh: 64px~70px/1.35~1.16
 
@@ -161,17 +165,18 @@ h1,
 
 	// prettier-ignore
 	@include fluid_type( // responsive typography
-		// >>>>> VIEWPORT <<<<<
-		// $viewport-min: 20em, // default value set in `_fluid_type.scss` to enable global configuration
-		// $viewport-max: 100em, // default value set in `_fluid_type.scss` to enable global configuration
-		// >>>>> MOBILE <<<<<
+		// >>>>> VIEWPORT (EXTERNAL) <<<<<
+		$source-vw-min: $reference-vw-min, // Minimum REFERENCE viewport width
+		$source-vw-max: $reference-vw-max, // Maximum REFERENCE viewport width
+		// >>>>> TYPOGRAPHY (MOBILE) <<<<<
 		$font-size-min: 1.73rem, // `font-size` on mobile viewport (< 575.98px)
 		$line-height-mobile: 1.5, // `line-height` multiplier on mobile viewport (< 575.98px)
-		// >>>>> DESKTOP <<<<<
+		// >>>>> TYPOGRAPHY (DESKTOP) <<<<<
 		$font-size-max: 2.5rem, // `font-size` on desktop viewport (> 576px)
 		$line-height-desktop: 1.2, // `line-height` multiplier on desktop viewport (> 576px)
-		// >>>>> IMPORTANT <<<<<
-		// $important: "!important" // uncomment to add the `!important` flag
+		// >>>>> EXTRA SETTINGS <<<<<
+		$line-height-dynamic: true, // enables fluid `line-height` when `true`
+		// $important: "!important", // uncomment to add `!important` to the string
 	);
 }
 
@@ -183,17 +188,18 @@ h2,
 
 	// prettier-ignore
 	@include fluid_type( // responsive typography
-		// >>>>> VIEWPORT <<<<<
-		// $viewport-min: 20em, // default value set in `_fluid_type.scss` to enable global configuration
-		// $viewport-max: 100em, // default value set in `_fluid_type.scss` to enable global configuration
-		// >>>>> MOBILE <<<<<
+		// >>>>> VIEWPORT (EXTERNAL) <<<<<
+		$source-vw-min: $reference-vw-min, // Minimum REFERENCE viewport width
+		$source-vw-max: $reference-vw-max, // Maximum REFERENCE viewport width
+		// >>>>> TYPOGRAPHY (MOBILE) <<<<<
 		$font-size-min: 1.54rem, // `font-size` on mobile viewport (< 575.98px)
 		$line-height-mobile: 1.5, // `line-height` multiplier on mobile viewport (< 575.98px)
-		// >>>>> DESKTOP <<<<<
+		// >>>>> TYPOGRAPHY (DESKTOP) <<<<<
 		$font-size-max: 2rem, // `font-size` on desktop viewport (> 576px)
 		$line-height-desktop: 1.2, // `line-height` multiplier on desktop viewport (> 576px)
-		// >>>>> IMPORTANT <<<<<
-		// $important: "!important" // uncomment to add the `!important` flag
+		// >>>>> EXTRA SETTINGS <<<<<
+		$line-height-dynamic: true, // enables fluid `line-height` when `true`
+		// $important: "!important", // uncomment to add `!important` to the string
 	);
 }
 
@@ -205,17 +211,18 @@ h3,
 
 	// prettier-ignore
 	@include fluid_type( // responsive typography
-		// >>>>> VIEWPORT <<<<<
-		// $viewport-min: 20em, // default value set in `_fluid_type.scss` to enable global configuration
-		// $viewport-max: 100em, // default value set in `_fluid_type.scss` to enable global configuration
-		// >>>>> MOBILE <<<<<
+		// >>>>> VIEWPORT (EXTERNAL) <<<<<
+		$source-vw-min: $reference-vw-min, // Minimum REFERENCE viewport width
+		$source-vw-max: $reference-vw-max, // Maximum REFERENCE viewport width
+		// >>>>> TYPOGRAPHY (MOBILE) <<<<<
 		$font-size-min: 1.44rem, // `font-size` on mobile viewport (< 575.98px)
 		$line-height-mobile: 1.5, // `line-height` multiplier on mobile viewport (< 575.98px)
-		// >>>>> DESKTOP <<<<<
+		// >>>>> TYPOGRAPHY (DESKTOP) <<<<<
 		$font-size-max: 1.75rem, // `font-size` on desktop viewport (> 576px)
 		$line-height-desktop: 1.2, // `line-height` multiplier on desktop viewport (> 576px)
-		// >>>>> IMPORTANT <<<<<
-		// $important: "!important" // uncomment to add the `!important` flag
+		// >>>>> EXTRA SETTINGS <<<<<
+		$line-height-dynamic: true, // enables fluid `line-height` when `true`
+		// $important: "!important", // uncomment to add `!important` to the string
 	);
 }
 
@@ -227,17 +234,18 @@ h4,
 
 	// prettier-ignore
 	@include fluid_type( // responsive typography
-		// >>>>> VIEWPORT <<<<<
-		// $viewport-min: 20em, // default value set in `_fluid_type.scss` to enable global configuration
-		// $viewport-max: 100em, // default value set in `_fluid_type.scss` to enable global configuration
-		// >>>>> MOBILE <<<<<
+		// >>>>> VIEWPORT (EXTERNAL) <<<<<
+		$source-vw-min: $reference-vw-min, // Minimum REFERENCE viewport width
+		$source-vw-max: $reference-vw-max, // Maximum REFERENCE viewport width
+		// >>>>> TYPOGRAPHY (MOBILE) <<<<<
 		$font-size-min: 1.35rem, // `font-size` on mobile viewport (< 575.98px)
 		$line-height-mobile: 1.5, // `line-height` multiplier on mobile viewport (< 575.98px)
-		// >>>>> DESKTOP <<<<<
+		// >>>>> TYPOGRAPHY (DESKTOP) <<<<<
 		$font-size-max: 1.5rem, // `font-size` on desktop viewport (> 576px)
 		$line-height-desktop: 1.2, // `line-height` multiplier on desktop viewport (> 576px)
-		// >>>>> IMPORTANT <<<<<
-		// $important: "!important" // uncomment to add the `!important` flag
+		// >>>>> EXTRA SETTINGS <<<<<
+		$line-height-dynamic: true, // enables fluid `line-height` when `true`
+		// $important: "!important", // uncomment to add `!important` to the string
 	);
 }
 
@@ -249,17 +257,18 @@ h5,
 
 	// prettier-ignore
 	@include fluid_type( // responsive typography
-		// >>>>> VIEWPORT <<<<<
-		// $viewport-min: 20em, // default value set in `_fluid_type.scss` to enable global configuration
-		// $viewport-max: 100em, // default value set in `_fluid_type.scss` to enable global configuration
-		// >>>>> MOBILE <<<<<
+		// >>>>> VIEWPORT (EXTERNAL) <<<<<
+		$source-vw-min: $reference-vw-min, // Minimum REFERENCE viewport width
+		$source-vw-max: $reference-vw-max, // Maximum REFERENCE viewport width
+		// >>>>> TYPOGRAPHY (MOBILE) <<<<<
 		$font-size-min: 1.25rem, // `font-size` on mobile viewport (< 575.98px)
 		$line-height-mobile: 1.5, // `line-height` multiplier on mobile viewport (< 575.98px)
-		// >>>>> DESKTOP <<<<<
+		// >>>>> TYPOGRAPHY (DESKTOP) <<<<<
 		$font-size-max: 1.25rem, // `font-size` on desktop viewport (> 576px)
 		$line-height-desktop: 1.2, // `line-height` multiplier on desktop viewport (> 576px)
-		// >>>>> IMPORTANT <<<<<
-		// $important: "!important" // uncomment to add the `!important` flag
+		// >>>>> EXTRA SETTINGS <<<<<
+		$line-height-dynamic: true, // enables fluid `line-height` when `true`
+		// $important: "!important", // uncomment to add `!important` to the string
 	);
 }
 
@@ -271,17 +280,18 @@ h6,
 
 	// prettier-ignore
 	@include fluid_type( // responsive typography
-		// >>>>> VIEWPORT <<<<<
-		// $viewport-min: 20em, // default value set in `_fluid_type.scss` to enable global configuration
-		// $viewport-max: 100em, // default value set in `_fluid_type.scss` to enable global configuration
-		// >>>>> MOBILE <<<<<
+		// >>>>> VIEWPORT (EXTERNAL) <<<<<
+		$source-vw-min: $reference-vw-min, // Minimum REFERENCE viewport width
+		$source-vw-max: $reference-vw-max, // Maximum REFERENCE viewport width
+		// >>>>> TYPOGRAPHY (MOBILE) <<<<<
 		$font-size-min: 1rem, // `font-size` on mobile viewport (< 575.98px)
 		$line-height-mobile: 1.5, // `line-height` multiplier on mobile viewport (< 575.98px)
-		// >>>>> DESKTOP <<<<<
+		// >>>>> TYPOGRAPHY (DESKTOP) <<<<<
 		$font-size-max: 1rem, // `font-size` on desktop viewport (> 576px)
 		$line-height-desktop: 1.2, // `line-height` multiplier on desktop viewport (> 576px)
-		// >>>>> IMPORTANT <<<<<
-		// $important: "!important" // uncomment to add the `!important` flag
+		// >>>>> EXTRA SETTINGS <<<<<
+		$line-height-dynamic: true, // enables fluid `line-height` when `true`
+		// $important: "!important", // uncomment to add `!important` to the string
 	);
 }
 
@@ -293,17 +303,18 @@ p {
 
 	// prettier-ignore
 	@include fluid_type( // responsive typography
-		// >>>>> VIEWPORT <<<<<
-		// $viewport-min: 20em, // default value set in `_fluid_type.scss` to enable global configuration
-		// $viewport-max: 100em, // default value set in `_fluid_type.scss` to enable global configuration
-		// >>>>> MOBILE <<<<<
+		// >>>>> VIEWPORT (EXTERNAL) <<<<<
+		$source-vw-min: $reference-vw-min, // Minimum REFERENCE viewport width
+		$source-vw-max: $reference-vw-max, // Maximum REFERENCE viewport width
+		// >>>>> TYPOGRAPHY (MOBILE) <<<<<
 		$font-size-min: 1rem, // `font-size` on mobile viewport (< 575.98px)
 		$line-height-mobile: 1.5, // `line-height` multiplier on mobile viewport (< 575.98px)
-		// >>>>> DESKTOP <<<<<
+		// >>>>> TYPOGRAPHY (DESKTOP) <<<<<
 		$font-size-max: 1rem, // `font-size` on desktop viewport (> 576px)
 		$line-height-desktop: 1.2, // `line-height` multiplier on desktop viewport (> 576px)
-		// >>>>> IMPORTANT <<<<<
-		// $important: "!important" // uncomment to add the `!important` flag
+		// >>>>> EXTRA SETTINGS <<<<<
+		$line-height-dynamic: true, // enables fluid `line-height` when `true`
+		// $important: "!important", // uncomment to add `!important` to the string
 	);
 }
 
@@ -313,21 +324,22 @@ p {
 	& * {
 		font-family: "Lora", serif;
 		font-weight: 400;
-		letter-spacing: 0.2px;
+		// letter-spacing: 0.2px;
 
 		// prettier-ignore
 		@include fluid_type( // responsive typography
-			// >>>>> VIEWPORT <<<<<
-			// $viewport-min: 20em, // default value set in `_fluid_type.scss` to enable global configuration
-			// $viewport-max: 100em, // default value set in `_fluid_type.scss` to enable global configuration
-			// >>>>> MOBILE <<<<<
+			// >>>>> VIEWPORT (EXTERNAL) <<<<<
+			$source-vw-min: $reference-vw-min, // Minimum REFERENCE viewport width
+			$source-vw-max: $reference-vw-max, // Maximum REFERENCE viewport width
+			// >>>>> TYPOGRAPHY (MOBILE) <<<<<
 			$font-size-min: 1rem, // `font-size` on mobile viewport (< 575.98px)
 			$line-height-mobile: 1.5, // `line-height` multiplier on mobile viewport (< 575.98px)
-			// >>>>> DESKTOP <<<<<
+			// >>>>> TYPOGRAPHY (DESKTOP) <<<<<
 			$font-size-max: 1rem, // `font-size` on desktop viewport (> 576px)
 			$line-height-desktop: 1.2, // `line-height` multiplier on desktop viewport (> 576px)
-			// >>>>> IMPORTANT <<<<<
-			$important: "!important" // uncomment to add the `!important` flag
+			// >>>>> EXTRA SETTINGS <<<<<
+			$line-height-dynamic: true, // enables fluid `line-height` when `true`
+			$important: "!important", // uncomment to add `!important` to the string
 		);
 	}
 }
@@ -339,17 +351,18 @@ p {
 
 	// prettier-ignore
 	@include fluid_type( // responsive typography
-		// >>>>> VIEWPORT <<<<<
-		// $viewport-min: 20em, // default value set in `_fluid_type.scss` to enable global configuration
-		// $viewport-max: 100em, // default value set in `_fluid_type.scss` to enable global configuration
-		// >>>>> MOBILE <<<<<
+		// >>>>> VIEWPORT (EXTERNAL) <<<<<
+		$source-vw-min: $reference-vw-min, // Minimum REFERENCE viewport width
+		$source-vw-max: $reference-vw-max, // Maximum REFERENCE viewport width
+		// >>>>> TYPOGRAPHY (MOBILE) <<<<<
 		$font-size-min: 2.5rem, // `font-size` on mobile viewport (< 575.98px)
 		$line-height-mobile: 1.5, // `line-height` multiplier on mobile viewport (< 575.98px)
-		// >>>>> DESKTOP <<<<<
+		// >>>>> TYPOGRAPHY (DESKTOP) <<<<<
 		$font-size-max: 5rem, // `font-size` on desktop viewport (> 576px)
 		$line-height-desktop: 1.2, // `line-height` multiplier on desktop viewport (> 576px)
-		// >>>>> IMPORTANT <<<<<
-		// $important: "!important" // uncomment to add the `!important` flag
+		// >>>>> EXTRA SETTINGS <<<<<
+		$line-height-dynamic: true, // enables fluid `line-height` when `true`
+		// $important: "!important", // uncomment to add `!important` to the string
 	);
 }
 
@@ -360,17 +373,18 @@ p {
 
 	// prettier-ignore
 	@include fluid_type( // responsive typography
-		// >>>>> VIEWPORT <<<<<
-		// $viewport-min: 20em, // default value set in `_fluid_type.scss` to enable global configuration
-		// $viewport-max: 100em, // default value set in `_fluid_type.scss` to enable global configuration
-		// >>>>> MOBILE <<<<<
+		// >>>>> VIEWPORT (EXTERNAL) <<<<<
+		$source-vw-min: $reference-vw-min, // Minimum REFERENCE viewport width
+		$source-vw-max: $reference-vw-max, // Maximum REFERENCE viewport width
+		// >>>>> TYPOGRAPHY (MOBILE) <<<<<
 		$font-size-min: 2rem, // `font-size` on mobile viewport (< 575.98px)
 		$line-height-mobile: 1.5, // `line-height` multiplier on mobile viewport (< 575.98px)
-		// >>>>> DESKTOP <<<<<
+		// >>>>> TYPOGRAPHY (DESKTOP) <<<<<
 		$font-size-max: 4.375rem, // `font-size` on desktop viewport (> 576px)
 		$line-height-desktop: 1.2, // `line-height` multiplier on desktop viewport (> 576px)
-		// >>>>> IMPORTANT <<<<<
-		// $important: "!important" // uncomment to add the `!important` flag
+		// >>>>> EXTRA SETTINGS <<<<<
+		$line-height-dynamic: true, // enables fluid `line-height` when `true`
+		// $important: "!important", // uncomment to add `!important` to the string
 	);
 }
 
@@ -381,20 +395,18 @@ p {
 
 	// prettier-ignore
 	@include fluid_type( // responsive typography
-		// >>>>> TARGET VIEWPORT <<<<<
-		// $target-vw-min: 20em, // default value set in `_fluid_type.scss` to enable global configuration
-		// $target-vw-max: 100em, // default value set in `_fluid_type.scss` to enable global configuration
-		// >>>>> SOURCE VIEWPORT <<<<<
-		$source-vw-min: 23.438em,
-		$source-vw-max: 80em,
-		// >>>>> MOBILE <<<<<
+		// >>>>> VIEWPORT (EXTERNAL) <<<<<
+		$source-vw-min: $reference-vw-min, // Minimum REFERENCE viewport width
+		$source-vw-max: $reference-vw-max, // Maximum REFERENCE viewport width
+		// >>>>> TYPOGRAPHY (MOBILE) <<<<<
 		$font-size-min: 3.375rem, // `font-size` on mobile viewport (< 575.98px)
 		$line-height-mobile: 1.5, // `line-height` multiplier on mobile viewport (< 575.98px)
-		// >>>>> DESKTOP <<<<<
+		// >>>>> TYPOGRAPHY (DESKTOP) <<<<<
 		$font-size-max: 2rem, // `font-size` on desktop viewport (> 576px)
 		$line-height-desktop: 1.2, // `line-height` multiplier on desktop viewport (> 576px)
-		// >>>>> IMPORTANT <<<<<
-		// $important: "!important" // uncomment to add the `!important` flag
+		// >>>>> EXTRA SETTINGS <<<<<
+		$line-height-dynamic: true, // enables fluid `line-height` when `true`
+		// $important: "!important", // uncomment to add `!important` to the string
 	);
 }
 
@@ -405,17 +417,18 @@ p {
 
 	// prettier-ignore
 	@include fluid_type( // responsive typography
-		// >>>>> VIEWPORT <<<<<
-		// $viewport-min: 20em, // default value set in `_fluid_type.scss` to enable global configuration
-		// $viewport-max: 100em, // default value set in `_fluid_type.scss` to enable global configuration
-		// >>>>> MOBILE <<<<<
+		// >>>>> VIEWPORT (EXTERNAL) <<<<<
+		$source-vw-min: $reference-vw-min, // Minimum REFERENCE viewport width
+		$source-vw-max: $reference-vw-max, // Maximum REFERENCE viewport width
+		// >>>>> TYPOGRAPHY (MOBILE) <<<<<
 		$font-size-min: 1.6rem, // `font-size` on mobile viewport (< 575.98px)
 		$line-height-mobile: 1.5, // `line-height` multiplier on mobile viewport (< 575.98px)
-		// >>>>> DESKTOP <<<<<
+		// >>>>> TYPOGRAPHY (DESKTOP) <<<<<
 		$font-size-max: 2.25rem, // `font-size` on desktop viewport (> 576px)
 		$line-height-desktop: 1.2, // `line-height` multiplier on desktop viewport (> 576px)
-		// >>>>> IMPORTANT <<<<<
-		// $important: "!important" // uncomment to add the `!important` flag
+		// >>>>> EXTRA SETTINGS <<<<<
+		$line-height-dynamic: true, // enables fluid `line-height` when `true`
+		// $important: "!important", // uncomment to add `!important` to the string
 	);
 }
 
@@ -426,17 +439,18 @@ p {
 
 	// prettier-ignore
 	@include fluid_type( // responsive typography
-		// >>>>> VIEWPORT <<<<<
-		// $viewport-min: 20em, // default value set in `_fluid_type.scss` to enable global configuration
-		// $viewport-max: 100em, // default value set in `_fluid_type.scss` to enable global configuration
-		// >>>>> MOBILE <<<<<
+		// >>>>> VIEWPORT (EXTERNAL) <<<<<
+		$source-vw-min: $reference-vw-min, // Minimum REFERENCE viewport width
+		$source-vw-max: $reference-vw-max, // Maximum REFERENCE viewport width
+		// >>>>> TYPOGRAPHY (MOBILE) <<<<<
 		$font-size-min: 1.2rem, // `font-size` on mobile viewport (< 575.98px)
 		$line-height-mobile: 1.5, // `line-height` multiplier on mobile viewport (< 575.98px)
-		// >>>>> DESKTOP <<<<<
+		// >>>>> TYPOGRAPHY (DESKTOP) <<<<<
 		$font-size-max: 1.3rem, // `font-size` on desktop viewport (> 576px)
 		$line-height-desktop: 1.2, // `line-height` multiplier on desktop viewport (> 576px)
-		// >>>>> IMPORTANT <<<<<
-		// $important: "!important" // uncomment to add the `!important` flag
+		// >>>>> EXTRA SETTINGS <<<<<
+		$line-height-dynamic: true, // enables fluid `line-height` when `true`
+		// $important: "!important", // uncomment to add `!important` to the string
 	);
 }
 
@@ -447,17 +461,18 @@ p {
 
 	// prettier-ignore
 	@include fluid_type( // responsive typography
-		// >>>>> VIEWPORT <<<<<
-		// $viewport-min: 20em, // default value set in `_fluid_type.scss` to enable global configuration
-		// $viewport-max: 100em, // default value set in `_fluid_type.scss` to enable global configuration
-		// >>>>> MOBILE <<<<<
+		// >>>>> VIEWPORT (EXTERNAL) <<<<<
+		$source-vw-min: $reference-vw-min, // Minimum REFERENCE viewport width
+		$source-vw-max: $reference-vw-max, // Maximum REFERENCE viewport width
+		// >>>>> TYPOGRAPHY (MOBILE) <<<<<
 		$font-size-min: 1.2rem, // `font-size` on mobile viewport (< 575.98px)
 		$line-height-mobile: 1.5, // `line-height` multiplier on mobile viewport (< 575.98px)
-		// >>>>> DESKTOP <<<<<
+		// >>>>> TYPOGRAPHY (DESKTOP) <<<<<
 		$font-size-max: 3.125rem, // `font-size` on desktop viewport (> 576px)
 		$line-height-desktop: 1.1, // `line-height` multiplier on desktop viewport (> 576px)
-		// >>>>> IMPORTANT <<<<<
-		// $important: "!important" // uncomment to add the `!important` flag
+		// >>>>> EXTRA SETTINGS <<<<<
+		$line-height-dynamic: true, // enables fluid `line-height` when `true`
+		// $important: "!important", // uncomment to add `!important` to the string
 	);
 }
 
@@ -469,17 +484,18 @@ small,
 
 	// prettier-ignore
 	@include fluid_type( // responsive typography
-		// >>>>> VIEWPORT <<<<<
-		// $viewport-min: 20em, // default value set in `_fluid_type.scss` to enable global configuration
-		// $viewport-max: 100em, // default value set in `_fluid_type.scss` to enable global configuration
-		// >>>>> MOBILE <<<<<
+		// >>>>> VIEWPORT (EXTERNAL) <<<<<
+		$source-vw-min: $reference-vw-min, // Minimum REFERENCE viewport width
+		$source-vw-max: $reference-vw-max, // Maximum REFERENCE viewport width
+		// >>>>> TYPOGRAPHY (MOBILE) <<<<<
 		$font-size-min: 0.875rem, // `font-size` on mobile viewport (< 575.98px)
 		$line-height-mobile: 1.5, // `line-height` multiplier on mobile viewport (< 575.98px)
-		// >>>>> DESKTOP <<<<<
+		// >>>>> TYPOGRAPHY (DESKTOP) <<<<<
 		$font-size-max: 0.875rem, // `font-size` on desktop viewport (> 576px)
 		$line-height-desktop: 1.2, // `line-height` multiplier on desktop viewport (> 576px)
-		// >>>>> IMPORTANT <<<<<
-		// $important: "!important" // uncomment to add the `!important` flag
+		// >>>>> EXTRA SETTINGS <<<<<
+		$line-height-dynamic: true, // enables fluid `line-height` when `true`
+		// $important: "!important", // uncomment to add `!important` to the string
 	);
 }
 
@@ -490,17 +506,18 @@ small,
 
 	// prettier-ignore
 	@include fluid_type( // responsive typography
-		// >>>>> VIEWPORT <<<<<
-		// $viewport-min: 20em, // default value set in `_fluid_type.scss` to enable global configuration
-		// $viewport-max: 100em, // default value set in `_fluid_type.scss` to enable global configuration
-		// >>>>> MOBILE <<<<<
+		// >>>>> VIEWPORT (EXTERNAL) <<<<<
+		$source-vw-min: $reference-vw-min, // Minimum REFERENCE viewport width
+		$source-vw-max: $reference-vw-max, // Maximum REFERENCE viewport width
+		// >>>>> TYPOGRAPHY (MOBILE) <<<<<
 		$font-size-min: 0.812rem, // `font-size` on mobile viewport (< 575.98px)
 		$line-height-mobile: 1.35, // `line-height` multiplier on mobile viewport (< 575.98px)
-		// >>>>> DESKTOP <<<<<
+		// >>>>> TYPOGRAPHY (DESKTOP) <<<<<
 		$font-size-max: 0.875rem, // `font-size` on desktop viewport (> 576px)
 		$line-height-desktop: 1.4, // `line-height` multiplier on desktop viewport (> 576px)
-		// >>>>> IMPORTANT <<<<<
-		// $important: "!important" // uncomment to add the `!important` flag
+		// >>>>> EXTRA SETTINGS <<<<<
+		$line-height-dynamic: true, // enables fluid `line-height` when `true`
+		// $important: "!important", // uncomment to add `!important` to the string
 	);
 }
 
@@ -511,44 +528,47 @@ small,
 
 	// prettier-ignore
 	@include fluid_type( // responsive typography
-		// >>>>> VIEWPORT <<<<<
-		// $viewport-min: 20em, // default value set in `_fluid_type.scss` to enable global configuration
-		// $viewport-max: 100em, // default value set in `_fluid_type.scss` to enable global configuration
-		// >>>>> MOBILE <<<<<
+		// >>>>> VIEWPORT (EXTERNAL) <<<<<
+		$source-vw-min: $reference-vw-min, // Minimum REFERENCE viewport width
+		$source-vw-max: $reference-vw-max, // Maximum REFERENCE viewport width
+		// >>>>> TYPOGRAPHY (MOBILE) <<<<<
 		$font-size-min: 0.625rem, // `font-size` on mobile viewport (< 575.98px)
 		$line-height-mobile: 1.2, // `line-height` multiplier on mobile viewport (< 575.98px)
-		// >>>>> DESKTOP <<<<<
+		// >>>>> TYPOGRAPHY (DESKTOP) <<<<<
 		$font-size-max: 0.625rem, // `font-size` on desktop viewport (> 576px)
 		$line-height-desktop: 1.2, // `line-height` multiplier on desktop viewport (> 576px)
-		// >>>>> IMPORTANT <<<<<
-		// $important: "!important" // uncomment to add the `!important` flag
+		// >>>>> EXTRA SETTINGS <<<<<
+		$line-height-dynamic: true, // enables fluid `line-height` when `true`
+		// $important: "!important", // uncomment to add `!important` to the string
 	);
 }
 
 // FORMS ([font-family] | [font-weight]) → fs: [min]px~[max]px/[min]rem~[max]rem — lh: [min]px~[max]px/[min-ratio]~[max-ratio]
+input:not([type="checkbox"], [type="radio"]),
+label,
 select,
 select.form-select,
-input:not([type="checkbox"], [type="radio"]),
+.form-check-label,
+.form-label,
 .input,
-label,
-.label,
-.form-check-label {
+.label {
 	font-family: "Manrope", serif;
 	font-weight: 300;
 
 	// prettier-ignore
 	@include fluid_type( // responsive typography
-		// >>>>> VIEWPORT <<<<<
-		// $viewport-min: 20em, // default value set in `_fluid_type.scss` to enable global configuration
-		// $viewport-max: 100em, // default value set in `_fluid_type.scss` to enable global configuration
-		// >>>>> MOBILE <<<<<
+		// >>>>> VIEWPORT (EXTERNAL) <<<<<
+		$source-vw-min: $reference-vw-min, // Minimum REFERENCE viewport width
+		$source-vw-max: $reference-vw-max, // Maximum REFERENCE viewport width
+		// >>>>> TYPOGRAPHY (MOBILE) <<<<<
 		$font-size-min: 0.9rem, // `font-size` on mobile viewport (< 575.98px)
 		$line-height-mobile: 1.5, // `line-height` multiplier on mobile viewport (< 575.98px)
-		// >>>>> DESKTOP <<<<<
+		// >>>>> TYPOGRAPHY (DESKTOP) <<<<<
 		$font-size-max: 0.9rem, // `font-size` on desktop viewport (> 576px)
 		$line-height-desktop: 1.2, // `line-height` multiplier on desktop viewport (> 576px)
-		// >>>>> IMPORTANT <<<<<
-		// $important: "!important" // uncomment to add the `!important` flag
+		// >>>>> EXTRA SETTINGS <<<<<
+		$line-height-dynamic: true, // enables fluid `line-height` when `true`
+		// $important: "!important", // uncomment to add `!important` to the string
 	);
 }
 

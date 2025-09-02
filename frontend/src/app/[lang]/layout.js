@@ -95,7 +95,7 @@ export default async function RootLayout({ children, params }) {
 	// Get the language from route params
 	const { lang } = (await params) || {};
 
-	// Dynamically gather all font variables from the font loader
+	// Dynamically gather all font variables from `fonts-loader.js`
 	const fontClasses = Object.values(FontsLoader)
 		.map((font) => font.variable)
 		.join(" ");

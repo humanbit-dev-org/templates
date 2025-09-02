@@ -7,7 +7,11 @@
 // The equation
 //
 // body {
-// 	font-size: calc([minimum size] + ([maximum size] - [minimum size]) * ((100vw - [minimum viewport width]) / ([maximum viewport width] - [minimum viewport width])));
+// 	font-size: calc(
+// 		[minimum size] +
+// 		([maximum size] - [minimum size]) *
+// 		((100vw - [minimum viewport width]) / ([maximum viewport width] - [minimum viewport width]))
+// 	);
 // }
 
 // The mixin
@@ -24,39 +28,52 @@
 // ===============================================
 
 @mixin fluid_type(
-	// >>>>> TARGET VIEWPORT <<<<<
-	// prettier-ignore
-	// Set global values
-	$target-vw-min: 20em /*(320px)*/,
-	// Set global values
-	$target-vw-max: 100em /*(1600px)*/,
-
-	// >>>>> SOURCE VIEWPORT <<<<<
-	// prettier-ignore
-	// e.g. 375px
-	$source-vw-min: null,
-	// e.g. 1280px
-	$source-vw-max: null,
-
-	// >>>>> MOBILE <<<<<
-	$font-size-min: null,
-	$line-height-mobile: null,
-
-	// >>>>> DESKTOP <<<<<
-	$font-size-max: null,
-	$line-height-desktop: null,
-
-	// >>>>> IMPORTANT <<<<<
-	$important: null
+	// >>>>> VIEWPORT (INTERNAL) <<<<<
+	$target-vw-min: 20em /* Minimum BASELINE viewport width (320px) */,
+	$target-vw-max: 100em /* Maximum BASELINE viewport width (1600px) */,
+	//
+	// >>>>> VIEWPORT (EXTERNAL) <<<<<
+	$source-vw-min: null /* Minimum REFERENCE viewport width */,
+	$source-vw-max: null /* Maximum REFERENCE viewport width */,
+	//
+	// >>>>> TYPOGRAPHY (MOBILE) <<<<<
+	$font-size-min: null /* `font-size` at SMALLEST viewport */,
+	$line-height-mobile: null /* `line-height` at SMALLEST viewport */,
+	//
+	// >>>>> TYPOGRAPHY (DESKTOP) <<<<<
+	$font-size-max: null /* `font-size` at LARGEST viewport */,
+	$line-height-desktop: null /* `line-height` at LARGEST viewport */,
+	//
+	// >>>>> EXTRA SETTINGS <<<<<
+	$line-height-dynamic: false /* `true` enables traversing `line-height` */,
+	$important: null /* Optional `!important` toggle */
 ) {
-	// Fallback: if no designer widths, reuse the target ones
+	/////////////////////////
+	// ======================
+	// ## INPUT PREPROCESSING
+	// ======================
+	//
+	// Fallback: when a `$source-vw-*` value isn't declared, it reuses its respective `$target-vw-*` counterpart
 	$source-vw-min: if($source-vw-min == null, $target-vw-min, $source-vw-min);
 	$source-vw-max: if($source-vw-max == null, $target-vw-max, $source-vw-max);
-
-	// ---------------------------------
-	// 1. normalise viewport numbers
-	//    (turn any em into px so maths is easy)
-	// ---------------------------------
+	//
+	// Fallback: swap values when `$source-vw-min` < `$target-vw-min`
+	@if strip_unit(to_px($source-vw-min)) < strip_unit(to_px($target-vw-min)) {
+		$swap-vw-tmp: $source-vw-min;
+		$source-vw-min: $target-vw-min;
+		$target-vw-min: $swap-vw-tmp;
+	}
+	// Fallback: swap values when `$source-vw-max` > `$target-vw-max`
+	@if strip_unit(to_px($source-vw-max)) > strip_unit(to_px($target-vw-max)) {
+		$swap-vw-tmp: $source-vw-max;
+		$source-vw-max: $target-vw-max;
+		$target-vw-max: $swap-vw-tmp;
+	}
+	//
+	// Unit conversion for mathematical consistency
+	$target-px-min: strip_unit(to_px($target-vw-min));
+	$target-px-max: strip_unit(to_px($target-vw-max));
+	//
 	$source-px-min: if(
 		unit($source-vw-min) == "em" or unit($source-vw-min) == "rem",
 		strip_unit(to_px($source-vw-min)),
@@ -67,99 +84,104 @@
 		strip_unit(to_px($source-vw-max)),
 		strip_unit($source-vw-max)
 	);
-	$target-px-min: strip_unit(to_px($target-vw-min)); // target min is declared in em
-	$target-px-max: strip_unit(to_px($target-vw-max)); // target max is declared in em
-
-	// ===============================================
-	// ## ############################################
-	// ===============================================
-
-	// Option A – Pick a slope, compute matching multiplier
-	// $lh-desktop-slope: 0.290909;                         // your preferred slope (0.15–0.3 range)
-	// $F: $fs1 / ($fs0 - $Δfs * $lh-desktop-slope);        // computed multiplier (≈2.2)
-
-	// Option B – Pick a multiplier, compute matching slope
-	// $F: 2.2;                                          // your preferred multiplier
-	// $lh-desktop-slope: ($fs0 - $fs1 / $F) / $Δfs;        // computed slope (≈0.29)
 
 	/////////////////////
 	// ==================
-	// ## Viewport ranges
+	// ## VIEWPORT RANGES
 	// ==================
 	//
 	// Span from `$target-vw-min` to transition point (mobile breakpoint)
 	$target-vw-mobile: 576 - strip_unit(to_px($target-vw-min));
 	// Span from transition point to `$target-vw-max` (desktop breakpoint)
 	$target-vw-desktop: strip_unit(to_px($target-vw-max) - 576);
-	// Full viewport range from `$target-vw-min` to `$target-vw-max`
+	// Full viewport range from `$target-vw-min` to `$target-vw-max` (BASELINE values)
 	$target-vw-full: strip_unit(to_px($target-vw-max) - to_px($target-vw-min));
-
+	//
 	// Span from `$source-vw-min` to transition point (mobile breakpoint)
 	$source-vw-mobile: 576 - strip_unit(to_px($source-vw-min));
 	// Span from transition point to `$source-vw-max` (desktop breakpoint)
 	$source-vw-desktop: strip_unit(to_px($source-vw-max) - 576);
-	// Full viewport range from `$source-vw-min` to `$source-vw-max`
+	// Full viewport range from `$source-vw-min` to `$source-vw-max` (REFERENCE values)
 	$source-vw-full: strip_unit(to_px($source-vw-max) - to_px($source-vw-min));
-
-	///////////////////////////////////////
-	// ====================================
-	// ## Font-size progression & direction
-	// ====================================
 	//
-	// Signed delta (`font-size` difference)
+	// Progress from `$source-vw-min` to transition point (mobile-span ratio)
+	$source-vw-mobile-ratio: (576 - strip_unit(to_px($source-vw-min))) / $source-vw-full;
+
+	/////////////////
+	// ==============
+	// ## SCALE LOGIC
+	// ==============
+	//
+	// Signed `font-size` difference (± value — zero allowed)
 	$fs-delta: strip_unit(to_px($font-size-max) - to_px($font-size-min));
-	// Absolute `font-size` difference (always positive)
+	// Absolute `font-size` difference (≥ 0px)
 	$fs-range: abs($fs-delta);
-	// `font-size`: 1 = GROWING | -1 = SHRINKING
+	// Growth direction: 1 (GROWING), -1 (SHRINKING)
 	$fs-direction: if($fs-delta >= 0, 1, -1);
+	//
 	// `font-size` at transition point
 	$fs-threshold: strip_unit(to_px($font-size-min) + $fs-delta * ($target-vw-mobile / $target-vw-full));
-	// Mobile `font-size` slope
+	//
+	// Mobile `font-size` change rate
 	// prettier-ignore
 	$fs-scale-mobile: if(
 		$fs-direction == 1,                       // Adjust `font-size` scaling on mobile
 		$target-vw-full / $target-vw-mobile,      // - Growing: compress to match desktop pace (desktop > mobile)
 		($target-vw-full / $target-vw-mobile) / 2 // - Shrinking: reduce compression for smoother scale (mobile > desktop)
 	);
-
-	$fs-raw-min: to_px($font-size-min); // raw input before any adjustments
-	$fs-raw-max: to_px($font-size-max); // raw input before any adjustments
-
-	// $fs-delta-source: strip_unit(to_px($font-size-max) - $fs-raw-min);
-	// $fs-range-source: abs($fs-delta-source);
-	// $fs-direction-source: if($fs-delta-source >= 0, 1, -1);
-
-	// // Mobile `font-size` slope
-	// // prettier-ignore
-	// $fs-scale-mobile-source: if(
-	// 	$fs-direction-source == 1,
-	// 	$source-vw-full / $source-vw-mobile,
-	// 	$source-vw-full / $source-vw-mobile / 2,
-	// );
-
+	// Mobile range progress scaled by `font-size` change rate
+	$fs-progress-mobile: $source-vw-mobile-ratio * $fs-scale-mobile;
+	//
+	// Raw `font-size` values before conditions (necessary for handling `$target-vw-*` flow)
+	$fs-raw-min: to_px($font-size-min);
+	$fs-raw-max: to_px($font-size-max);
+	//
+	// Adjusted `font-size` values (necessary for handling `$source-vw-*` flow)
 	@if $source-vw-min != null {
 		$font-size-min: to_px($font-size-min) -
 			(($fs-range * $fs-direction) * (($source-px-min - $target-px-min) / $target-vw-full) * $fs-scale-mobile);
 	}
-
 	@if $source-vw-max != null {
 		$font-size-max: to_px($font-size-min) +
 			(($fs-range * $fs-direction) * (($target-px-max - $source-px-min) / $source-vw-full));
 	}
 
-	///////////////////////////////////
-	// ================================
-	// ## Line-height progression logic
-	// ================================
+	//////////////////////
+	// ===================
+	// ## VERTICAL SPACING
+	// ===================
 	//
-	// Target average `line-height` multiplier at transition point
-	$lh-target: ($line-height-mobile + $line-height-desktop) / 2; // 1.35
-	// `line-height` multiplier change across mobile range
-	$lh-mobile-slope: (strip_unit($fs-raw-min) - ($lh-target * strip_unit($fs-raw-max) / $line-height-mobile)) /
-		($fs-range * $fs-direction);
-	// `line-height` multiplier change across desktop range
-	$lh-desktop-slope: (strip_unit($fs-raw-max) - ($lh-target * $fs-threshold / $line-height-desktop)) /
-		($fs-range * $fs-direction);
+	// Absolute `line-height` difference (≥ 1px)
+	$lh-range: if($fs-range == 0, 1, $fs-range);
+	// Growth direction: 1 (GROWING), -1 (SHRINKING)
+	$lh-direction: if($fs-range == 0, 1, $fs-direction);
+	// Signed `line-height` difference (≠ 0px)
+	$lh-delta: $lh-range * $lh-direction;
+	//
+	// Target `line-height` at transition point (average of mobile & desktop)
+	$lh-target: ($line-height-mobile + $line-height-desktop) / 2;
+	//
+	// Placeholders for viewport-specific change rates (set below)
+	$lh-slope-mobile: null;
+	$lh-slope-desktop: null;
+	//
+	// Condition based on whether the `font-size` difference between viewports is 0px
+	@if $fs-range == 0 {
+		// `line-height` meets `$lh-target` (their average) at transition point when `font-size` is constant
+		$lh-slope-mobile: strip_unit($fs-raw-min) *
+			($line-height-mobile - $lh-target) /
+			($lh-delta * $fs-progress-mobile * $line-height-mobile);
+		$lh-slope-desktop: strip_unit($fs-raw-max) *
+			($line-height-desktop - $lh-target) /
+			($lh-delta * $line-height-desktop);
+	} @else {
+		// `line-height` scaling factor as `font-size` traverses viewports
+		$lh-slope-mobile: (
+				strip_unit($fs-raw-min) * ($line-height-mobile - $lh-target) - ($lh-delta * $fs-progress-mobile * $lh-target)
+			) /
+			($lh-delta * $fs-progress-mobile * $line-height-mobile);
+		$lh-slope-desktop: (strip_unit($fs-raw-max) - ($lh-target * $fs-threshold / $line-height-desktop)) / $fs-range;
+	}
 
 	// ################################################## //
 
@@ -167,75 +189,86 @@
 		line-height: $line-height-mobile #{$important};
 	}
 
-	@media (max-width: calc(#{$target-vw-min} - to_em(0.02px))) {
+	@media (max-width: calc(#{to_em($target-vw-min)} - to_em(0.02px))) {
 		font-size: $font-size-min #{$important};
 	}
 
-	@media (min-width: $target-vw-min) and (max-width: #{to_em(575.98px)}) {
-		font-size:
-			calc(
-				#{$fs-raw-min} +
+	@media (min-width: to_em($target-vw-min)) and (max-width: #{to_em(575.98px)}) {
+		font-size: calc(
+				#{to_rem($fs-raw-min)} +
 					(
 						(#{$fs-range} * #{$fs-direction}) *
 							(
-								((100vw - #{to_px($source-vw-min)}) / #{$source-vw-full}) * #{$fs-scale-mobile}
+								((100vw - #{to_rem($source-vw-min)}) / #{$source-vw-full}) * #{$fs-scale-mobile}
 									/* mobile slope */
 							)
 					)
-			),
+			)
 			#{$important};
 	}
 
 	@media (min-width: to_em($source-vw-min)) and (max-width: #{to_em(575.98px)}) {
-		// line-height: #{$line-height-mobile} #{$important};
-		line-height: calc(
-				(
-						#{$fs-raw-min} -
-							(
-								(#{$fs-range} * #{$fs-direction}) *
-									(
-										((100vw - #{to_px($source-vw-min)}) / #{$source-vw-full}) *
-											(#{$fs-scale-mobile} * #{$lh-mobile-slope}) /* mobile slope */
-									)
-							)
-					) *
-					(#{$line-height-mobile} * 1) /* keep the declared line-height at the smallest viewport */
-			)
-			#{$important};
+		@if $line-height-dynamic == false {
+			// line-height-dynamic
+			line-height: #{$line-height-mobile} #{$important};
+		} @else {
+			// line-height-dynamic
+			line-height: calc(
+					(
+							#{to_rem($fs-raw-min)} -
+								(
+									(#{$lh-range} * #{$lh-direction}) *
+										(
+											((100vw - #{to_rem($source-vw-min)}) / #{$source-vw-full}) *
+												(#{$fs-scale-mobile} * #{$lh-slope-mobile})
+												/* mobile slope */
+										)
+								)
+						) *
+						(#{$line-height-mobile} * 1)
+						/* keep the declared `line-height` at the smallest viewport */
+				)
+				#{$important};
+		}
 	}
 
-	@media (min-width: to_em(576px)) and (max-width: calc(#{$target-vw-max} - to_em(0.02px))) {
-		font-size:
-			calc(
-				#{$fs-raw-min} +
+	@media (min-width: to_em(576px)) and (max-width: calc(#{to_em($target-vw-max)} - to_em(0.02px))) {
+		font-size: calc(
+				#{to_rem($fs-raw-min)} +
 					(
 						(#{$fs-range} * #{$fs-direction}) *
-							(((100vw - #{to_px($source-vw-min)}) / #{$source-vw-full}) * 1 /* desktop slope */)
+							(((100vw - #{to_rem($source-vw-min)}) / #{$source-vw-full}) * 1 /* desktop slope */)
 					)
-			),
-			#{$important};
-		// line-height: #{$line-height-desktop} #{$important};
-		line-height: calc(
-				(
-						#{$fs-raw-max} -
-							(
-								(#{$fs-range} * #{$fs-direction}) *
-									(
-										(#{to_px($source-vw-max)} - 100vw) / #{$source-vw-desktop} *
-											(1 * #{$lh-desktop-slope}) /* desktop slope */
-									)
-							)
-					) *
-					(#{$line-height-desktop} * 1) /* keep the declared line-height at the largest viewport */
 			)
 			#{$important};
+		@if $line-height-dynamic == false {
+			line-height: #{$line-height-desktop} #{$important};
+		} @else {
+			line-height: calc(
+					(
+							#{to_rem($fs-raw-max)} -
+								(
+									#{$lh-range} *
+										(
+											(#{to_rem($source-vw-max)} - 100vw) /
+												#{$source-vw-desktop} *
+												(1 * #{$lh-slope-desktop})
+												/* desktop slope */
+										)
+								)
+						) *
+						(#{$line-height-desktop} * 1)
+						/* keep the declared `line-height` at the largest viewport */
+				)
+				#{$important};
+		}
 	}
 
 	@media (min-width: to_em($source-vw-max)) {
 		line-height: $line-height-desktop #{$important};
 	}
 
-	@media (min-width: $target-vw-max) {
+	@media (min-width: to_em($target-vw-max)) {
 		font-size: $font-size-max #{$important};
 	}
 }

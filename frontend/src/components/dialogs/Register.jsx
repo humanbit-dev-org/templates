@@ -1,33 +1,13 @@
 "use client";
 
-import { useAuth } from "@/hooks/auth";
-import { th } from "intl-tel-input/i18n";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
+import * as constants from "@/config/constants"; // Global constants shared across the app
+import { useClient } from "@/providers/Client"; // Provide client-only values to the current component {CSR}
+import { useTranslate } from "@/providers/Translate"; // Provides translation context and hook access for `lang` and `translates`
+import { fetchCsrf } from "@/hooks/fetchCsrf";
 
-const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL_CLIENT;
-
-async function fetchCsrf() {
-	try {
-		const fetchPath = BASE_URL + "/sanctum/csrf-cookie";
-		await fetch(fetchPath, {
-			method: "GET",
-			credentials: "include",
-		});
-		const xsrfToken = document.cookie
-			.split("; ")
-			.find((row) => row.startsWith("XSRF-TOKEN"))
-			?.split("=")[1];
-		return decodeURIComponent(xsrfToken);
-	} catch (error) {
-		console.error("Error fetching csrf:", error);
-	}
-}
-
-export function RegisterComponent({ lang }) {
-	const searchParams = useSearchParams();
-	const router = useRouter();
-
+export function RegisterComponent({}) {
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [username, setUsername] = useState("");
 	const [name, setName] = useState("");
@@ -35,10 +15,15 @@ export function RegisterComponent({ lang }) {
 	const [email, setEmail] = useState("");
 	const [invite, setInvite] = useState("no");
 	const [address, setAddress] = useState("");
+	const [phone, setPhone] = useState("");
 	const [password, setPassword] = useState("");
 	const [passwordConfirmation, setPasswordConfirmation] = useState("");
 	const [errors, setErrors] = useState([]);
 	const [warning, setWarning] = useState(null);
+	const lang = useTranslate()["lang"];
+	const translates = useTranslate()["translates"];
+
+	const searchParams = useSearchParams();
 
 	useEffect(() => {
 		const modalElement = document.getElementById("registerModal");
@@ -61,7 +46,7 @@ export function RegisterComponent({ lang }) {
 		setErrors([]);
 
 		const xsrfToken = await fetchCsrf();
-		const fetchPath = BASE_URL + "/register";
+		const fetchPath = `${constants.BACKEND_URL_CLIENT}/register`;
 
 		const registerRequest = new Request(fetchPath, {
 			method: "POST",
@@ -73,6 +58,8 @@ export function RegisterComponent({ lang }) {
 				email: email,
 				invite: invite,
 				address: address,
+				phone: phone,
+				lang: lang,
 				password: password,
 				password_confirmation: passwordConfirmation,
 			}),
@@ -87,12 +74,12 @@ export function RegisterComponent({ lang }) {
 
 		try {
 			const registerResponse = await fetch(registerRequest);
+			const registerResponseData = await registerResponse.json();
 			if (!registerResponse.ok) {
-				const errorData = await registerResponse.json();
-				setErrors(errorData.errors);
+				setErrors(registerResponseData.errors);
 				setIsSubmitting(false);
 			} else {
-				window.location.href = "/verify-email";
+				window.location.href = `/${lang}/verify-email/?request=${registerResponseData.id}`;
 			}
 		} catch (error) {
 			setIsSubmitting(false);
@@ -109,12 +96,12 @@ export function RegisterComponent({ lang }) {
 				aria-labelledby="registerModalLabel"
 				aria-hidden="true">
 				<div className="modal-dialog modal-dialog-centered">
-					<form className="modal-content color_white border border_color_third p-3 p-md-5" onSubmit={submitForm}>
+					<form className="modal-content color_first border border_color_third p-3 p-md-5" onSubmit={submitForm}>
 						{warning && <div className="mb-4 text-red-600">{warning}</div>}
 
 						<div className="modal-header mb-5">
 							<h5 className="modal-title big" id="registerModalLabel">
-								Register
+								{translates?.["all"]?.["sign_up"]?.[lang] ?? "Translate fallback"}
 							</h5>
 
 							<button
@@ -122,7 +109,7 @@ export function RegisterComponent({ lang }) {
 								className={`btn-close w-auto h-auto ${isSubmitting ? "pe-none opacity-50" : ""}`}
 								data-bs-dismiss="modal"
 								aria-label="Close">
-								<i className="fa-regular fa-rectangle-xmark fa-2xl color_white" />
+								<i className="fa-regular fa-rectangle-xmark fa-2xl color_first" />
 							</button>
 						</div>
 
@@ -138,11 +125,11 @@ export function RegisterComponent({ lang }) {
 										onChange={(event) => setName(event.target.value)}
 										required
 										autoFocus
-										placeholder="Enter your name"
+										placeholder={translates?.["all"]?.["name"]?.[`text_${lang}`] ?? "Translate fallback"}
 									/>
 
 									<label className="label" htmlFor="RegisterName">
-										Name
+										{translates?.["all"]?.["name"]?.[lang] ?? "Translate fallback"}
 									</label>
 									<p>{errors.name}</p>
 									{/* <InputError messages={errors.name} className="mt-2" /> */}
@@ -160,11 +147,13 @@ export function RegisterComponent({ lang }) {
 										onChange={(event) => setSurname(event.target.value)}
 										required
 										autoFocus
-										placeholder="Enter your surname"
+										placeholder={
+											translates?.["all"]?.["surname"]?.[`text_${lang}`] ?? "Translate fallback"
+										}
 									/>
 
 									<label className="label" htmlFor="RegisterSurname">
-										Surname
+										{translates?.["all"]?.["surname"]?.[lang] ?? "Translate fallback"}
 									</label>
 									<p>{errors.surname}</p>
 									{/* <InputError messages={errors.surname} className="mt-2" /> */}
@@ -182,11 +171,13 @@ export function RegisterComponent({ lang }) {
 										onChange={(event) => setUsername(event.target.value)}
 										required
 										autoFocus
-										placeholder="Enter your username"
+										placeholder={
+											translates?.["all"]?.["username"]?.[`text_${lang}`] ?? "Translate fallback"
+										}
 									/>
 
 									<label className="label" htmlFor="RegisterUsername">
-										Username
+										{translates?.["all"]?.["username"]?.[lang] ?? "Translate fallback"}
 									</label>
 									<p>{errors.username}</p>
 									{/* <InputError messages={errors.name} className="mt-2" /> */}
@@ -206,11 +197,13 @@ export function RegisterComponent({ lang }) {
 										value={email}
 										onChange={(event) => setEmail(event.target.value)}
 										required
-										placeholder="Enter your email"
+										placeholder={
+											translates?.[`all`]?.["email"]?.[`text_${lang}`] ?? "Translate fallback"
+										}
 									/>
 
 									<label className="label" htmlFor="RegisterEmail">
-										Email
+										{translates?.[`all`]?.["email"]?.[lang] ?? "Translate fallback"}
 									</label>
 									<p>{errors.email}</p>
 									{/* <InputError messages={errors.email} className="mt-2" /> */}
@@ -228,14 +221,40 @@ export function RegisterComponent({ lang }) {
 										onChange={(event) => setAddress(event.target.value)}
 										required
 										autoFocus
-										placeholder="Enter your address"
+										placeholder={
+											translates?.["all"]?.["address"]?.[`text_${lang}`] ?? "Translate fallback"
+										}
 									/>
 
 									<label className="label" htmlFor="RegisterAddress">
-										Address
+										{translates?.["all"]?.["address"]?.[lang] ?? "Translate fallback"}
 									</label>
 									<p>{errors.address}</p>
 									{/* <InputError messages={errors.address} className="mt-2" /> */}
+								</div>
+							</div>
+
+							{/* Phone */}
+
+							<div className="input_wrapper_spacing col-12 col-lg-6 mb-3">
+								<div className="form-floating">
+									<input
+										className="form-control"
+										id="RegisterPhone"
+										type="text"
+										value={phone}
+										onChange={(event) => setPhone(event.target.value)}
+										required
+										placeholder={
+											translates?.["all"]?.["phone"]?.[`text_${lang}`] ?? "Translate fallback"
+										}
+									/>
+
+									<label className="label" htmlFor="RegisterPhone">
+										{translates?.["all"]?.["phone"]?.[lang] ?? "Translate fallback"}
+									</label>
+									<p>{errors.phone}</p>
+									{/* <InputError messages={errors.phone} className="mt-2" /> */}
 								</div>
 							</div>
 
@@ -250,11 +269,13 @@ export function RegisterComponent({ lang }) {
 										onChange={(event) => setPassword(event.target.value)}
 										required
 										autoComplete="new-password"
-										placeholder="Enter your password"
+										placeholder={
+											translates?.["all"]?.["password"]?.[`text_${lang}`] ?? "Translate fallback"
+										}
 									/>
 
 									<label className="label" htmlFor="RegisterPassword">
-										Password
+										{translates?.["all"]?.["password"]?.[lang] ?? "Translate fallback"}
 									</label>
 									<p>{errors.password}</p>
 									{/* <InputError messages={errors.password} className="mt-2" /> */}
@@ -271,11 +292,14 @@ export function RegisterComponent({ lang }) {
 										value={passwordConfirmation}
 										onChange={(event) => setPasswordConfirmation(event.target.value)}
 										required
-										placeholder="Retype your password"
+										placeholder={
+											translates?.["all"]?.["confirm_password"]?.[`text_${lang}`] ??
+											"Translate fallback"
+										}
 									/>
 
 									<label className="label" htmlFor="passwordConfirmation">
-										Confirm password
+										{translates?.["all"]?.["confirm_password"]?.[lang] ?? "Translate fallback"}
 									</label>
 									<p>{errors.password_confirmation}</p>
 									{/* <InputError messages={errors.password_confirmation} className="mt-2" /> */}
@@ -285,10 +309,10 @@ export function RegisterComponent({ lang }) {
 							{/* Submit */}
 							<div className="input_wrapper_spacing d-flex flex-wrap justify-content-end">
 								<button
-									className={`btn_bg_first ${isSubmitting ? "pe-none opacity-50" : ""}`}
+									className={`btn_bg_second ${isSubmitting ? "pe-none opacity-50" : ""}`}
 									type="submit"
 									disabled={isSubmitting}>
-									Submit
+									{translates?.["all"]?.["send"]?.[lang] ?? "Translate fallback"}
 								</button>
 							</div>
 						</fieldset>
@@ -299,7 +323,9 @@ export function RegisterComponent({ lang }) {
 								type="button"
 								data-bs-toggle="modal"
 								href="#forgotPasswordModal">
-								<div className="fx_fill service pb-2">Forgot your password?</div>
+								<div className="fx_fill service pb-2">
+									{translates?.["all"]?.["forgot_your_password"]?.[lang] ?? "Translate fallback"}
+								</div>
 							</a>
 
 							<a
@@ -307,7 +333,9 @@ export function RegisterComponent({ lang }) {
 								type="button"
 								data-bs-toggle="modal"
 								href="#signInModal">
-								<div className="fx_fill main pb-2">Already registered?</div>
+								<div className="fx_fill main pb-2">
+									{translates?.["all"]?.["already_registered"]?.[lang] ?? "Translate fallback"}
+								</div>
 							</a>
 						</div>
 					</form>

@@ -170,7 +170,16 @@
 	// General transition values
 	//
 
-	// Parent selectors.
+	// `.custom-caret`'s parent selector
+	*:has(> .custom-caret) {
+		&::before,
+		&::after,
+		& * {
+			transition: $transition; // `transition` clause required for `input[type="date"]`
+		}
+	}
+
+	// Parent selectors
 	input,
 	select,
 	.form-check,
@@ -178,10 +187,10 @@
 	.form-range,
 	.form-switch,
 	.input-group,
-	.select-chevron {
+	.custom-caret {
 		transition: $transition;
 
-		// Parent selectors on the `::after` pseudo-element and direct children selectors <<DURING>> transition.
+		// Parent selectors on the `::after` pseudo-element and direct children selectors <<DURING>> transition
 		&::before,
 		&::after,
 		> label,
@@ -194,12 +203,13 @@
 		> .form-select,
 		> .input-group-text,
 		> ::before,
-		> ::after {
+		> ::after,
+		> ::placeholder {
 			transition: $transition;
 		}
 	}
 
-	// Direct children selectors <<DURING>> `:hover` transition.
+	// Direct children selectors <<DURING>> `:hover` transition
 	label,
 	.form-check-label,
 	.form-label,
@@ -209,7 +219,7 @@
 		}
 	}
 
-	// Direct children selectors <<DURING>> `:active` transition.
+	// Direct children selectors <<DURING>> `:active` transition
 	label,
 	.form-check-input,
 	.form-check-label,
@@ -327,6 +337,7 @@
 			// Pseudo-element <<BEFORE/AFTER>> `:focus` transition.
 			&::placeholder {
 				color: $body-color-default;
+				visibility: visible;
 			}
 
 			// Element <<DURING>> `:focus` transition (necessary to reset state).
@@ -338,6 +349,7 @@
 				// Pseudo-element <<DURING>> `:focus` transition.
 				&::placeholder {
 					color: $body-color-transformed;
+					visibility: visible;
 				}
 			}
 
@@ -464,9 +476,9 @@
 		// 	background-color: gray;
 		// }
 
-		> input.form-control:-webkit-autofill:not([type="file"], :placeholder-shown), // WebKit specific
-		> textarea:-webkit-autofill,
-		> select.form-select:-webkit-autofill {
+		> input.form-control:autofill:not([type="file"], :placeholder-shown), // WebKit specific
+		> textarea:autofill,
+		> select.form-select:autofill {
 			// WebKit specific
 			// > select.form-select:-internal-autofill-selected { // WebKit specific
 			// > input.form-control:-internal-autofill-previewed { // WebKit specific
@@ -477,17 +489,17 @@
 
 			&:focus {
 				-webkit-text-fill-color: $body-color-transformed; // WebKit specific
-				//   color: $body-color-transformed;
-				// background-color:		 $body-bg-color-transformed;
-				box-shadow: (inset 0 0 0 30px rgba($body-bg-color-transformed, 1), $box-shadow-focus) !important;
+				// color: $body-color-transformed;
+				background-color: $body-bg-color-transformed !important;
+				box-shadow: (inset 0 0 0 30px $body-bg-color-transformed, $box-shadow-focus) !important;
 			}
 
 			// Style <<DURING>> `:not(:focus)` transition.
 			&:not(:focus) {
 				-webkit-text-fill-color: $body-color-default; // WebKit specific
-				//   color: $body-color-default;
-				// background-color:		 $body-bg-color-default;
-				box-shadow: inset 0 0 0 30px rgba($body-bg-color-default, 1) !important;
+				// color: $body-color-default;
+				background-color: $body-bg-color-default !important;
+				box-shadow: inset 0 0 0 30px $body-bg-color-default !important;
 			}
 		}
 
@@ -728,9 +740,17 @@
 			// }
 
 			// `* > input[type="date"]`'s individual style <<DURING>> the `:focus` state.
-			&:focus {
-				border-color: $border-focus-color;
-				box-shadow: $box-shadow-focus;
+			&:focus-within {
+				background-color: $body-bg-color-transformed;
+
+				&:not(:active) {
+					border-color: $border-focus-color;
+					box-shadow: $box-shadow-focus;
+				}
+
+				&::-webkit-calendar-picker-indicator {
+					@include recolor($body-color-transformed, 1); // `filter` mixin
+				}
 			}
 
 			// `* > input[type="date"]`'s individual style <<DURING>> the `:focus-visible` state.
@@ -744,6 +764,10 @@
 			}
 			&::-webkit-datetime-edit-fields-wrapper {
 				background: $body-bg-color-default;
+
+				&:focus-within {
+					background: $body-bg-color-transformed;
+				}
 			}
 			&::-webkit-datetime-edit-text {
 				color: $body-color-default;
@@ -789,7 +813,7 @@
 
 			// `* > input[type="date"]`'s pseudo-elements' <<DURING>> transition.
 			&::-webkit-datetime-edit,
-			&::-webkit-datetime-edit-fields-wrapper,
+			// &::-webkit-datetime-edit-fields-wrapper,
 			&::-webkit-datetime-edit-text,
 			&::-webkit-datetime-edit-minute,
 			&::-webkit-datetime-edit-hour-field,
@@ -804,14 +828,16 @@
 
 				// Style <<DURING>> `:focus` transition.
 				&:focus {
-					color: $body-color-transformed;
-					background-color: $body-bg-color-transformed;
+					color: $body-color-default;
+					background-color: $body-bg-color-default;
 				}
 			}
 		}
 
 		// `[required]` field visual
-		&:has(> .form-control:not([type="file"], .d-none)[required], > .form-select:not(.d-none)[required]) {
+		// &:has(> .form-control:not([type="file"], .d-none)[required], > .form-select:not(.d-none)[required]) {
+		&:has(> .form-control:not([type="file"], .d-none)[required]),
+		&:has(> .form-select:not(.d-none)[required]) {
 			position: relative;
 
 			&::before {
@@ -836,34 +862,40 @@
 				border: $border;
 				border-color: $border-focus-color;
 				border-radius: 50%;
-				// transform: scale(.85) translateX(calc(0% - #{$label-transform} - (#{$label-transform} * (15 / 85)))) translateY(calc(50% + (#{$border-width} / 2) + ((#{$border-width} / 2) * (15 / 85))));
-				transform: scale(0.85) translateX(calc(0% - #{$label-transform} - (#{$label-transform} * 0.17647059)))
-					translateY(calc(50% + (#{$border-width} / 2) + ((#{$border-width} / 2) * 0.17647059)));
+				transform: scale(0.85) translateX(calc(0% - #{$label-transform} - (#{$label-transform} * (15 / 85))))
+					translateY(calc(50% + (#{$border-width} / 2) + ((#{$border-width} / 2) * (15 / 85))));
+				// transform: scale(0.85) translateX(calc(0% - #{$label-transform} - (#{$label-transform} * 0.17647059)))
+				// 	translateY(calc(50% + (#{$border-width} / 2) + ((#{$border-width} / 2) * 0.17647059)));
 				transform-origin: 100% 100%;
 				// transform: scale(.85) translateX(calc(0% - #{$label-transform})) translateY(calc(50% + (#{$border-width} / 2)));
 				// transform-origin: calc(100% - #{$label-transform}) calc(100% + (#{$border-width} / 2));
 			}
 		}
 
+		// `textarea[required]` override. Wrap the element itself if `.form-floating` is not used
+		&:has(> textarea.form-control[required]) {
+			&::before {
+				bottom: 100% !important;
+			}
+		}
+
 		// select chevron visual
-		// Wrapper class (used to overlap the default `.form-select`'s chevron set on `background-image` with a solid triangle).
-		&:has(> .select-chevron) {
+		// Wrapper class (used to overlap the default `.form-select` and `input[type="date"]`'s icons set on `background-image` with a solid triangle).
+		&:has(> .custom-caret) {
 			position: relative;
 
 			// Reset `background-image`.
-			> .form-select {
-				// > ::-webkit-calendar-picker-indicator {
-				// background-image: linear-gradient(to right, $border-color 0, $border-color calc(#{$border-width} * (85 / 100)), $body-bg-color-default calc(#{$border-width} * (85 / 100)), $body-bg-color-default);
+			> .form-select,
+			> input[type="date"] {
 				background-image: linear-gradient(
 					to right,
 					$border-color 0,
-					$border-color calc(#{$border-width} * 0.85),
-					$body-bg-color-default calc(#{$border-width} * 0.85),
+					$border-color calc(#{$border-width} * (85 / 100)),
+					$body-bg-color-default calc(#{$border-width} * (85 / 100)),
 					$body-bg-color-default
 				);
-				// background-size: calc((#{$body-padding-default-x} * 2) + (#{$border-width} * (85 / 100)) + min(calc((#{$label-font-size-transformed} + ((#{strip-unit($label-padding-transformed-y)} * 2) * #{$label-font-size-transformed}) + (#{$border-width} * 2)) * (85 / 100)), calc(#{$height-default} * (85 / 100)))) 100%;
 				background-size: calc(
-						(#{$body-padding-default-x} * 2) + (#{$border-width} * 0.85) +
+						(#{$body-padding-default-x} * 2) + (#{$border-width} * (85 / 100)) +
 							min(
 								calc(
 									(
@@ -874,9 +906,9 @@
 												) +
 												(#{$border-width} * 2)
 										) *
-										0.85
+										(85 / 100)
 								),
-								calc(#{$height-default} * 0.85)
+								calc(#{$height-default} * (85 / 100))
 							)
 					)
 					100%;
@@ -885,6 +917,75 @@
 				background-blend-mode: multiply;
 				appearance: none;
 				// appearance: none !important; // `!important` clause required
+
+				&:active {
+					background-image: linear-gradient(
+						to right,
+						$border-color 0,
+						$border-color calc(#{$border-width} * (85 / 100)),
+						$body-bg-color-transformed calc(#{$border-width} * (85 / 100)),
+						$body-bg-color-transformed
+					);
+				}
+
+				&:focus-within:not(:active) {
+					background-image: linear-gradient(
+						to right,
+						$border-focus-color 0,
+						$border-focus-color calc(#{$border-width} * (85 / 100)),
+						$body-bg-color-transformed calc(#{$border-width} * (85 / 100)),
+						$body-bg-color-transformed
+					);
+				}
+			}
+
+			// > .form-select {
+			// 	&:active {
+			// 		background-image: linear-gradient(
+			// 			to right,
+			// 			$border-color 0,
+			// 			$border-color calc(#{$border-width} * (85 / 100)),
+			// 			$body-bg-color-transformed calc(#{$border-width} * (85 / 100)),
+			// 			$body-bg-color-transformed
+			// 		);
+			// 	}
+
+			// 	&:focus-within:not(:active) {
+			// 		background-image: linear-gradient(
+			// 			to right,
+			// 			$border-focus-color 0,
+			// 			$border-focus-color calc(#{$border-width} * (85 / 100)),
+			// 			$body-bg-color-transformed calc(#{$border-width} * (85 / 100)),
+			// 			$body-bg-color-transformed
+			// 		);
+			// 	}
+			// }
+
+			// > input[type="date"] {
+			// 	&:active {
+			// 		background-image: linear-gradient(
+			// 			to right,
+			// 			$border-color 0,
+			// 			$border-color calc(#{$border-width} * (85 / 100)),
+			// 			$body-bg-color-transformed calc(#{$border-width} * (85 / 100)),
+			// 			$body-bg-color-transformed
+			// 		);
+			// 	}
+
+			// 	&:focus-within:not(:active) {
+			// 		background-image: linear-gradient(
+			// 			to right,
+			// 			$border-focus-color 0,
+			// 			$border-focus-color calc(#{$border-width} * (85 / 100)),
+			// 			$body-bg-color-transformed calc(#{$border-width} * (85 / 100)),
+			// 			$body-bg-color-transformed
+			// 		);
+			// 	}
+			// }
+
+			> input[type="date"]::-webkit-calendar-picker-indicator {
+				z-index: 1;
+				opacity: 0;
 			}
 
 			// Chevron <<BEFORE/AFTER>> transitioning.
@@ -899,16 +1000,20 @@
 				max-height: 100%;
 				font-size: $label-font-size-transformed;
 				line-height: 1em;
+				pointer-events: none;
 				background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 8'%3e%3cpath fill='%23#{str-slice(inspect($body-color-default), 2)}' d='M0.035 8l8-8 8 8z'/%3e%3c/svg%3e");
 				background-size: 100%;
 				background-repeat: no-repeat;
 				background-position: center;
+
 				// transform: scale(0.85) translateX(calc(((((15% / 2) * 85) / 100) + ((#{$border-width} * 100) / 85)) - ((#{$label-transform} * 100) / 85))) translateY(calc((50% * 100) / 85)) rotate(0deg);
 
-				// transform: scale(0.85) translateX(calc((50% * (15 / 85)) - #{$label-transform} - (#{$label-transform} * (15 / 85)))) translateY(calc(50% * (100 / 85))) rotate(0deg);
 				transform: scale(0.85)
-					translateX(calc((50% * 0.17647059) - #{$label-transform} - (#{$label-transform} * 0.17647059)))
-					translateY(calc(50% * 1.17647059)) rotate(0deg);
+					translateX(calc((50% * (15 / 85)) - #{$label-transform} - (#{$label-transform} * (15 / 85))))
+					translateY(calc(50% * (100 / 85))) rotate(0deg);
+				// transform: scale(0.85)
+				// 	translateX(calc((50% * 0.17647059) - #{$label-transform} - (#{$label-transform} * 0.17647059)))
+				// 	translateY(calc(50% * 1.17647059)) rotate(0deg);
 
 				// transform: scale(0.85) translateX(calc(((15% / 2) * (100 / 85)) - #{$label-transform} - (#{$label-transform} * (15 / 85)))) translateY(calc(50% * (100 / 85))) rotate(0deg); atual
 
@@ -921,10 +1026,12 @@
 			&:focus-within {
 				&::after {
 					background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 8'%3e%3cpath fill='%23#{str-slice(inspect($body-color-transformed), 2)}' d='M0.035 8l8-8 8 8z'/%3e%3c/svg%3e");
-					// transform: scale(0.85) translateX(calc(((15% / 2) * (100 / 85)) - #{$label-transform} - (#{$label-transform} * (15 / 85)))) translateY(calc(50% * (100 / 85))) rotate(180deg);
 					transform: scale(0.85)
-						translateX(calc((50% * 0.17647059) - #{$label-transform} - (#{$label-transform} * 0.17647059)))
-						translateY(calc(50% * 1.17647059)) rotate(180deg);
+						translateX(calc(((15% / 2) * (100 / 85)) - #{$label-transform} - (#{$label-transform} * (15 / 85))))
+						translateY(calc(50% * (100 / 85))) rotate(180deg);
+					// transform: scale(0.85)
+					// 	translateX(calc((50% * 0.17647059) - #{$label-transform} - (#{$label-transform} * 0.17647059)))
+					// 	translateY(calc(50% * 1.17647059)) rotate(180deg);
 				}
 			}
 
@@ -987,14 +1094,20 @@
 		> .form-control-plaintext,
 		> .form-select {
 			~ label {
-				// max-width: calc((100% + ((100% - 85%) * (100 / 85))) - (((#{$body-padding-default-x} * 3) + (#{$border-width} * 2)) * (100 / 85)) - min(calc(1em + (#{$label-padding-transformed-y} * 2) + (#{$border-width} * 2)), #{$height-default}));
 				max-width: calc(
-					(100% + ((100% - 85%) * 1.17647059)) -
-						(((#{$body-padding-default-x} * 3) + (#{$border-width} * 2)) * 1.17647059) - min(
+					(100% + ((100% - 85%) * (100 / 85))) -
+						(((#{$body-padding-default-x} * 3) + (#{$border-width} * 2)) * (100 / 85)) - min(
 							calc(1em + (#{$label-padding-transformed-y} * 2) + (#{$border-width} * 2)),
 							#{$height-default}
 						)
 				);
+				// max-width: calc(
+				// 	(100% + ((100% - 85%) * 1.17647059)) -
+				// 		(((#{$body-padding-default-x} * 3) + (#{$border-width} * 2)) * 1.17647059) - min(
+				// 			calc(1em + (#{$label-padding-transformed-y} * 2) + (#{$border-width} * 2)),
+				// 			#{$height-default}
+				// 		)
+				// );
 				font-size: $label-font-size-transformed;
 			}
 		}
@@ -1022,9 +1135,10 @@
 					border: $border;
 					border-radius: $radius-transformed;
 					box-shadow: none;
-					// transform: scale(.85) translateX(calc(#{$label-transform} + (#{$label-transform} * (15 / 85)))) translateY(calc((-50% + (#{$border-width} / 2)) + ((#{$border-width} / 2) * (15 / 85))));
-					transform: scale(0.85) translateX(calc(#{$label-transform} + (#{$label-transform} * 0.17647059)))
-						translateY(calc((-50% + (#{$border-width} / 2)) + ((#{$border-width} / 2) * 0.17647059)));
+					transform: scale(0.85) translateX(calc(#{$label-transform} + (#{$label-transform} * (15 / 85))))
+						translateY(calc((-50% + (#{$border-width} / 2)) + ((#{$border-width} / 2) * (15 / 85))));
+					// transform: scale(0.85) translateX(calc(#{$label-transform} + (#{$label-transform} * 0.17647059)))
+					// 	translateY(calc((-50% + (#{$border-width} / 2)) + ((#{$border-width} / 2) * 0.17647059)));
 				}
 			}
 		}
@@ -1039,6 +1153,7 @@
 			&:focus {
 				&::placeholder {
 					color: $body-color-transformed;
+					visibility: visible;
 				}
 			}
 
@@ -1061,14 +1176,16 @@
 						border: $border;
 						border-radius: $radius-transformed;
 						box-shadow: none;
-						// transform: scale(.85) translateX(calc(#{$label-transform} + (#{$label-transform} * (15 / 85)))) translateY(calc((-50% + (#{$border-width} / 2)) + ((#{$border-width} / 2) * (15 / 85))));
-						transform: scale(0.85) translateX(calc(#{$label-transform} + (#{$label-transform} * 0.17647059)))
-							translateY(calc((-50% + (#{$border-width} / 2)) + ((#{$border-width} / 2) * 0.17647059)));
+						transform: scale(0.85) translateX(calc(#{$label-transform} + (#{$label-transform} * (15 / 85))))
+							translateY(calc((-50% + (#{$border-width} / 2)) + ((#{$border-width} / 2) * (15 / 85))));
+						// transform: scale(0.85) translateX(calc(#{$label-transform} + (#{$label-transform} * 0.17647059)))
+						// 	translateY(calc((-50% + (#{$border-width} / 2)) + ((#{$border-width} / 2) * 0.17647059)));
 					}
 				}
 
 				&::placeholder {
 					color: transparent;
+					visibility: hidden;
 				}
 
 				// `<label>` <<DURING>> the `.form-floating .form-control:not(:placeholder-shown)` state.
@@ -1088,17 +1205,20 @@
 
 			&::placeholder {
 				color: transparent;
+				visibility: hidden;
 			}
 
 			&.label-placeholder {
 				// start w/ `::placeholder` and transformed `<label>`
 				&::placeholder {
 					color: $body-color-default;
+					visibility: visible;
 				}
 
 				&:focus {
 					&::placeholder {
 						color: $body-color-transformed;
+						visibility: visible;
 					}
 
 					// Element <<DURING>> parent's `:focus` transition.
@@ -1119,14 +1239,20 @@
 
 				// Element <<DURING>> parent's `:focus` transition.
 				~ label {
-					// max-width: calc((100% + ((100% - 85%) * (100 / 85))) - (((#{$body-padding-default-x} * 3) + (#{$border-width} * 2)) * (100 / 85)) - min(calc(1em + (#{$label-padding-transformed-y} * 2) + (#{$border-width} * 2)), #{$height-default}));
 					max-width: calc(
-						(100% + ((100% - 85%) * 1.17647059)) -
-							(((#{$body-padding-default-x} * 3) + (#{$border-width} * 2)) * 1.17647059) - min(
+						(100% + ((100% - 85%) * (100 / 85))) -
+							(((#{$body-padding-default-x} * 3) + (#{$border-width} * 2)) * (100 / 85)) - min(
 								calc(1em + (#{$label-padding-transformed-y} * 2) + (#{$border-width} * 2)),
 								#{$height-default}
 							)
 					);
+					// max-width: calc(
+					// 	(100% + ((100% - 85%) * 1.17647059)) -
+					// 		(((#{$body-padding-default-x} * 3) + (#{$border-width} * 2)) * 1.17647059) - min(
+					// 			calc(1em + (#{$label-padding-transformed-y} * 2) + (#{$border-width} * 2)),
+					// 			#{$height-default}
+					// 		)
+					// );
 					min-height: 0;
 					padding: $label-padding-transformed;
 					font-size: $label-font-size-transformed;
@@ -1136,9 +1262,10 @@
 					border: $border;
 					border-radius: $radius-transformed;
 					box-shadow: none;
-					// transform: scale(.85) translateX(calc(#{$label-transform} + (#{$label-transform} * (15 / 85)))) translateY(calc((-50% + (#{$border-width} / 2)) + ((#{$border-width} / 2) * (15 / 85))));
-					transform: scale(0.85) translateX(calc(#{$label-transform} + (#{$label-transform} * 0.17647059)))
-						translateY(calc((-50% + (#{$border-width} / 2)) + ((#{$border-width} / 2) * 0.17647059)));
+					transform: scale(0.85) translateX(calc(#{$label-transform} + (#{$label-transform} * (15 / 85))))
+						translateY(calc((-50% + (#{$border-width} / 2)) + ((#{$border-width} / 2) * (15 / 85))));
+					// transform: scale(0.85) translateX(calc(#{$label-transform} + (#{$label-transform} * 0.17647059)))
+					// 	translateY(calc((-50% + (#{$border-width} / 2)) + ((#{$border-width} / 2) * 0.17647059)));
 				}
 			}
 		}
@@ -1185,9 +1312,10 @@
 				border: $border;
 				border-radius: $radius-transformed;
 				box-shadow: none;
-				// transform: scale(.85) translateX(calc(#{$label-transform} + (#{$label-transform} * (15 / 85)))) translateY(calc((-50% + (#{$border-width} / 2)) + ((#{$border-width} / 2) * (15 / 85))));
-				transform: scale(0.85) translateX(calc(#{$label-transform} + (#{$label-transform} * 0.17647059)))
-					translateY(calc((-50% + (#{$border-width} / 2)) + ((#{$border-width} / 2) * 0.17647059)));
+				transform: scale(0.85) translateX(calc(#{$label-transform} + (#{$label-transform} * (15 / 85))))
+					translateY(calc((-50% + (#{$border-width} / 2)) + ((#{$border-width} / 2) * (15 / 85))));
+				// transform: scale(0.85) translateX(calc(#{$label-transform} + (#{$label-transform} * 0.17647059)))
+				// 	translateY(calc((-50% + (#{$border-width} / 2)) + ((#{$border-width} / 2) * 0.17647059)));
 			}
 		}
 
@@ -1468,7 +1596,7 @@
 
 		// `.form-range::-webkit-slider-runnable-track` pseudo-element <<BEFORE/AFTER>> the `:focus` state.
 		&::-webkit-slider-runnable-track {
-			background: $body-bg-color-default;
+			background: rgba($body-bg-color-default, 0.25);
 			border-radius: $check-radius-default;
 			transition: $transition;
 		}
