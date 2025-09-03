@@ -32,7 +32,9 @@ class Page extends Model
 		}
 
 		$projectRoot = base_path();
-		$directoryPath = $projectRoot . "/frontend/src/app/[lang]";
+		Log::info("projectRoot: " . $projectRoot);
+		$directoryPath = $projectRoot . "/../frontend/src/app/[lang]";
+		Log::info("directoryPath: " . $directoryPath);
 
 		// If directory doesn't exist, stop execution
 		if (!File::exists($directoryPath)) {

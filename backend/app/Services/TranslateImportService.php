@@ -23,8 +23,8 @@ class TranslateImportService
 		}
 
 		// Define file paths
-		$itPath = base_path("frontend/lang/it.json");
-		$enPath = base_path("frontend/lang/en.json");
+		$itPath = base_path("/../frontend/lang/it.json");
+		$enPath = base_path("/../frontend/lang/en.json");
 
 		// Check if both files exist
 		if (!File::exists($itPath) || !File::exists($enPath)) {
@@ -177,8 +177,8 @@ class TranslateImportService
 	 */
 	private static function shouldRunImport()
 	{
-		$itPath = base_path("frontend/lang/it.json");
-		$enPath = base_path("frontend/lang/en.json");
+		$itPath = base_path("/../frontend/lang/it.json");
+		$enPath = base_path("/../frontend/lang/en.json");
 
 		// Check if files exist
 		if (!File::exists($itPath) || !File::exists($enPath)) {
@@ -212,8 +212,8 @@ class TranslateImportService
 			return false;
 		}
 
-		$itPath = base_path("frontend/lang/it.json");
-		$enPath = base_path("frontend/lang/en.json");
+		$itPath = base_path("/../frontend/lang/it.json");
+		$enPath = base_path("/../frontend/lang/en.json");
 
 		// Get last modification time of JSON files
 		$jsonLastModified = max(File::lastModified($itPath), File::lastModified($enPath));
@@ -277,8 +277,8 @@ class TranslateImportService
 		$latestEn = collect($enBackups)->sort()->last();
 
 		// Restore files
-		File::copy($latestIt, base_path("frontend/lang/it.json"));
-		File::copy($latestEn, base_path("frontend/lang/en.json"));
+		File::copy($latestIt, base_path("/../frontend/lang/it.json"));
+		File::copy($latestEn, base_path("/../frontend/lang/en.json"));
 
 		Log::info("JSON files restored from backup");
 	}

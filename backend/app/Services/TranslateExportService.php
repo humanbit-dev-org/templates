@@ -51,8 +51,8 @@ class TranslateExportService
 		}
 
 		// Define file paths
-		$itPath = base_path("frontend/lang/it.json");
-		$enPath = base_path("frontend/lang/en.json");
+		$itPath = base_path("/../frontend/lang/it.json");
+		$enPath = base_path("/../frontend/lang/en.json");
 
 		// Ensure directories exist
 		File::ensureDirectoryExists(dirname($itPath));

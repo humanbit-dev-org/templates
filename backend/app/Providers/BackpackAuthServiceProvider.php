@@ -17,8 +17,6 @@ class BackpackAuthServiceProvider extends ServiceProvider
 
 	public function boot(): void
 	{
-		Log::info("BackpackAuthServiceProvider boot chiamato");
-
 		// Verify if user has access to a specific model and action
 		Gate::define("backpack-access-model", function (User $user, string $modelName, string $action) {
 			// If user doesn't have a backpack role, they don't have access
