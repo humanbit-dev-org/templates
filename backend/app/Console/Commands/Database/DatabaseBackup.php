@@ -227,8 +227,6 @@ class DatabaseBackup extends Command
 		return $this->mysqlBackupWithPHP($backupPath);
 	}
 
-
-
 	/**
 	 * Create a MySQL backup using PHP
 	 */

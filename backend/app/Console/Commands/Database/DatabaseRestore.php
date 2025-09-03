@@ -398,8 +398,6 @@ class DatabaseRestore extends Command
 
 		$this->components->info("Restoring database from backup: " . $filename);
 
-
-
 		// Final confirmation
 		$confirmStyle = new ConfirmStyle($this->input, $this->output);
 
@@ -479,7 +477,7 @@ class DatabaseRestore extends Command
 			$executedStatements = 0;
 			foreach ($statements as $statement) {
 				$statement = trim($statement);
-				if (empty($statement) || strpos($statement, '--') === 0) {
+				if (empty($statement) || strpos($statement, "--") === 0) {
 					$progress->advance();
 					continue;
 				}
@@ -489,9 +487,12 @@ class DatabaseRestore extends Command
 					$executedStatements++;
 				} catch (\PDOException $e) {
 					// Skip some common non-critical errors
-					if (strpos($e->getMessage(), 'Table') !== false && strpos($e->getMessage(), 'already exists') !== false) {
+					if (
+						strpos($e->getMessage(), "Table") !== false &&
+						strpos($e->getMessage(), "already exists") !== false
+					) {
 						// Table already exists - continue
-					} elseif (strpos($e->getMessage(), 'Unknown table') !== false) {
+					} elseif (strpos($e->getMessage(), "Unknown table") !== false) {
 						// Table doesn't exist - continue
 					} else {
 						// For other errors, show warning but continue
@@ -515,7 +516,6 @@ class DatabaseRestore extends Command
 			$this->line("<fg=gray>Executed {$executedStatements} out of {$totalStatements} statements</>");
 
 			return Command::SUCCESS;
-
 		} catch (\Exception $e) {
 			$this->line($this->formatLine("Restoring database", "FAILED", "red"));
 			$this->components->error("Failed to restore database: " . $e->getMessage());
@@ -531,53 +531,53 @@ class DatabaseRestore extends Command
 		// Remove comments (lines starting with --)
 		$lines = explode("\n", $sqlContent);
 		$cleanLines = [];
-		
+
 		foreach ($lines as $line) {
 			$line = trim($line);
-			if (!empty($line) && strpos($line, '--') !== 0) {
+			if (!empty($line) && strpos($line, "--") !== 0) {
 				$cleanLines[] = $line;
 			}
 		}
-		
+
 		$cleanSql = implode("\n", $cleanLines);
-		
+
 		// Split by semicolon, but be careful with quotes
 		$statements = [];
-		$currentStatement = '';
+		$currentStatement = "";
 		$inQuotes = false;
-		$quoteChar = '';
-		
+		$quoteChar = "";
+
 		for ($i = 0; $i < strlen($cleanSql); $i++) {
 			$char = $cleanSql[$i];
-			
+
 			if (!$inQuotes && ($char === '"' || $char === "'")) {
 				$inQuotes = true;
 				$quoteChar = $char;
 			} elseif ($inQuotes && $char === $quoteChar) {
 				// Check if it's escaped
-				if ($i > 0 && $cleanSql[$i-1] !== '\\') {
+				if ($i > 0 && $cleanSql[$i - 1] !== "\\") {
 					$inQuotes = false;
-					$quoteChar = '';
+					$quoteChar = "";
 				}
 			}
-			
-			if (!$inQuotes && $char === ';') {
+
+			if (!$inQuotes && $char === ";") {
 				$statement = trim($currentStatement);
 				if (!empty($statement)) {
 					$statements[] = $statement;
 				}
-				$currentStatement = '';
+				$currentStatement = "";
 			} else {
 				$currentStatement .= $char;
 			}
 		}
-		
+
 		// Add the last statement if it doesn't end with semicolon
 		$statement = trim($currentStatement);
 		if (!empty($statement)) {
 			$statements[] = $statement;
 		}
-		
+
 		return $statements;
 	}
 
@@ -654,6 +654,4 @@ class DatabaseRestore extends Command
 
 		return $width;
 	}
-
-
 }

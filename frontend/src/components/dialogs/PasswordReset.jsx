@@ -84,7 +84,7 @@ export function PasswordResetComponent({ lang }) {
 				setErrors(responseData.errors);
 				setIsSubmitting(false);
 			} else {
-				(router.push("/?reset=" + btoa(responseData.status)), setStatus(responseData.status));
+				router.push("/?reset=" + btoa(responseData.status)), setStatus(responseData.status);
 				const fetchPath = `${constants.BACKEND_URL_CLIENT}/login`;
 
 				const loginRequest = new Request(fetchPath, {

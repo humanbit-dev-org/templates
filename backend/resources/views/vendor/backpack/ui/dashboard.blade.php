@@ -13,10 +13,10 @@
             // 'button_text' => trans('backpack::base.logout'),
         ];
 
-        $widgets['before_content'][] = [
-            'type'        => 'view',
-            'view'        => backpack_view('inc.getting_started'),
-        ];
+        // $widgets['before_content'][] = [
+        //     'type'        => 'view',
+        //     'view'        => backpack_view('inc.getting_started'),
+        // ];
 
         // if(Auth::guard('backpack')->user()->getAttribute('backpack_role') == "developer") {
         //     $repository = 'humanbit-dev-org/all-together-pay';

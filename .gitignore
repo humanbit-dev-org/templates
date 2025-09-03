@@ -1,29 +1,28 @@
-/.phpunit.cache
-/node_modules
-/public/build
-/public/fonts
-/public/images
-/public/uploads
-/public/hot
-/public/storage
-/storage/*.key
-/storage/backups
-/vendor
-.env
-.env.backup
-.env.production
-.phpunit.result.cache
-Homestead.json
-Homestead.yaml
-auth.json
-npm-debug.log
-yarn-error.log
+# backend
+/backend/.phpunit.cache
+/backend/public/storage
+/backend/storage/*.key
+/backend/storage/backups
+/backend/vendor
+/backend/.env
+/backend/.env.backup
+/backend/.env.production
+/backend/.phpunit.result.cache
+/backend/config/custom_cors_domains.php
+
+# future implementations
+/backend/Homestead.json
+/backend/Homestead.yaml
+/backend/auth.json
+/backend/npm-debug.log
+/backend/yarn-error.log
+
 /.fleet
 /.idea
 /.vscode
-.pnpm-store/
+
+# pnpm store
 /frontend/.pnpm-store/
-/config/custom_cors_domains.php
 
 # dependencies
 /frontend/node_modules

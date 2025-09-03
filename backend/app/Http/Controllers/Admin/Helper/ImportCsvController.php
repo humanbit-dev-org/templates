@@ -85,8 +85,8 @@ class ImportCsvController extends Controller
 	{
 		// Increase execution time and memory for large imports
 		set_time_limit(0); // No timeout
-		ini_set('memory_limit', '512M'); // Increase memory limit
-		
+		ini_set("memory_limit", "512M"); // Increase memory limit
+
 		$request->validate([
 			"csv_file" => "required|file|mimes:csv,txt", // Removed max:200000 limit
 		]);
@@ -202,8 +202,8 @@ class ImportCsvController extends Controller
 	{
 		// Increase execution time and memory for large imports
 		set_time_limit(0); // No timeout
-		ini_set('memory_limit', '512M'); // Increase memory limit
-		
+		ini_set("memory_limit", "512M"); // Increase memory limit
+
 		// Inizializzazione del buffer di output
 		if (ob_get_level() == 0) {
 			ob_start();
@@ -462,18 +462,20 @@ class ImportCsvController extends Controller
 
 		// Clean old backups (keep only last 3)
 		$backupFiles = Storage::disk("backups")->files($backupDir);
-		$tableBackups = array_filter($backupFiles, function($file) use ($tableName) {
-			return strpos($file, $tableName . '_') === 0;
+		$tableBackups = array_filter($backupFiles, function ($file) use ($tableName) {
+			return strpos($file, $tableName . "_") === 0;
 		});
-		
+
 		if (count($tableBackups) > 3) {
 			// Sort by modification time and keep only the 3 most recent
-			$sortedBackups = collect($tableBackups)->sortBy(function($file) {
-				return Storage::disk("backups")->lastModified($file);
-			})->reverse();
-			
+			$sortedBackups = collect($tableBackups)
+				->sortBy(function ($file) {
+					return Storage::disk("backups")->lastModified($file);
+				})
+				->reverse();
+
 			// Delete old backups
-			$sortedBackups->slice(3)->each(function($file) {
+			$sortedBackups->slice(3)->each(function ($file) {
 				Storage::disk("backups")->delete($file);
 			});
 		}
@@ -563,7 +565,6 @@ class ImportCsvController extends Controller
 
 			// Write backup file
 			file_put_contents($path, $sql);
-
 		} catch (\Exception $e) {
 			// Fallback to the simple method if PDO fails
 			$this->createSimpleBackup($tableName, $path);

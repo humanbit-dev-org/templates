@@ -19,14 +19,14 @@ import { klaroConfig } from "@/config/klaro-config"; // cookie configuration
 import { KlaroCookieConsent } from "@/config/klaro-cookie-consent"; // cookie handling
 
 // USER PROMPTS (modals | toasts)
-import { ForgotPasswordComponent } from "@/components/dialogs/ForgotPasswordComponent";
-import { PasswordResetComponent } from "@/components/dialogs/PasswordResetComponent";
-import { RegisterComponent } from "@/components/dialogs/RegisterComponent";
-import { SignInComponent } from "@/components/dialogs/SignInComponent";
+import { ForgotPasswordComponent } from "@/components/dialogs/ForgotPassword";
+import { PasswordResetComponent } from "@/components/dialogs/PasswordReset";
+import { RegisterComponent } from "@/components/dialogs/Register";
+import { SignInComponent } from "@/components/dialogs/SignIn";
 
 // INTERNAL RESOURCES
 // import { NavSlideTopComponent } from "@/navbars/NavSlideTop";
-import { NavSideBurgerComponent } from "@/navbars/NavSideBurger";
+import { NavSideBurgerComponent } from "@/navbars/Navbar";
 import "./layout.scss";
 
 // ===============================================

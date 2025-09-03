@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import * as constants from "@/config/constants";
-import { PlusComponent } from "@/components/blocks/Plus";
+// import { PlusComponent } from "@/components/blocks/Plus";
 import { usePathname } from "next/navigation";
 import { useTranslate } from "@/providers/Translate"; // Provides translation context and hook access for `lang` and `translates`
 import { fetchCsrf } from "@/hooks/fetchCsrf";
