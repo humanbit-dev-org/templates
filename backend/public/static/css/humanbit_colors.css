@@ -208,7 +208,7 @@
     --tblr-form-valid-border-color: #93c29a;
     --tblr-form-invalid-color: #d69090;
     --tblr-form-invalid-border-color: #d69090;
-    --tblr-bg-surface: #221e26;
+    --tblr-bg-surface: rebeccapurple;
     --tblr-navbar-bg: var(--tblr-bg-surface);
     --tblr-dark-mode-border-color: #302b33;
     --tblr-bg-main-color: #181818;
