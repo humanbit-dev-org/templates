@@ -26,8 +26,8 @@ window.onload = (function ($, window, document, undefined) {
 		initialize: function (options, elem) {
 			this.elem = elem;
 			this.$elem = $(elem);
-			(this.accessToken = $.fn.instApi.accessData.accessToken),
-				(this.options = $.extend({}, $.fn.instApi.options, options));
+			((this.accessToken = $.fn.instApi.accessData.accessToken),
+				(this.options = $.extend({}, $.fn.instApi.options, options)));
 
 			this.messages = {
 				defaultImageAltText: "Instagram Photo",

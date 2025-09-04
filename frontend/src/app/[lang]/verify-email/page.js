@@ -1,4 +1,4 @@
-import { EmailVerificationComponent } from "@/components/blocks/EmailVerificationComponent";
+import { EmailVerificationComponent } from "@/components/dialogs/EmailVerification";
 
 export default async function VerifyEmailPage({ params }) {
 	const { lang } = await params;
@@ -8,6 +8,7 @@ export default async function VerifyEmailPage({ params }) {
 			<div className="cont_mw_1">
 				<main>
 					<h1 className="h2 fw-600 mb-4">Email Verification</h1>
+
 					<EmailVerificationComponent lang={lang} />
 				</main>
 			</div>

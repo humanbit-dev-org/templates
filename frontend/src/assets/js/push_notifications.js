@@ -164,10 +164,10 @@ $(document).ready(function () {
 		if (subscription) {
 			if (!isSafari) {
 				key = subscription.getKey("p256dh");
-				(publicKey = key ? btoa(String.fromCharCode.apply(null, new Uint8Array(key))) : null),
-					(token = subscription.getKey("auth"));
-				(authToken = token ? btoa(String.fromCharCode.apply(null, new Uint8Array(token))) : null),
-					(endpoint = subscription.endpoint);
+				((publicKey = key ? btoa(String.fromCharCode.apply(null, new Uint8Array(key))) : null),
+					(token = subscription.getKey("auth")));
+				((authToken = token ? btoa(String.fromCharCode.apply(null, new Uint8Array(token))) : null),
+					(endpoint = subscription.endpoint));
 				contentEncoding = (PushManager.supportedContentEncodings || ["aesgcm"])[0];
 				// console.log(subscription.endpoint);
 				// console.log(key ? btoa(String.fromCharCode.apply(null, new Uint8Array(key))) : null,);
@@ -205,7 +205,7 @@ $(document).ready(function () {
 				alert("Chiamata fallita, si prega di riprovare...");
 			},
 			success: function () {
-				(values = $(ref).serializeArray()), (value = {});
+				((values = $(ref).serializeArray()), (value = {}));
 				$(values).each(function (i, field) {
 					value[field.name] = field.value;
 				});

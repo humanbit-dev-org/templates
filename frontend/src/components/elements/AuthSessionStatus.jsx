@@ -1,4 +1,4 @@
-const AuthSessionStatus = ({ status, className, ...props }) => (
+const AuthSessionStatusComponent = ({ status, className, ...props }) => (
 	<>
 		{status && (
 			<div className={`${className} font-medium text-sm text-green-600`} {...props}>
@@ -8,4 +8,4 @@ const AuthSessionStatus = ({ status, className, ...props }) => (
 	</>
 );
 
-export default AuthSessionStatus;
+export default AuthSessionStatusComponent;

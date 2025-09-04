@@ -15,10 +15,6 @@
 // import { NamedExportModule } from "@/<path>/NamedExports";
 import * as constants from "@/config/constants"; // Global constants shared across the app
 import { cookies } from "next/headers";
-import { SelectedInviteProvider } from "@/providers/SelectedInvite";
-import { InvitesProvider } from "@/providers/Invites";
-import { ManageInvites } from "@/components/dialogs/ManageInvites";
-import { EventMessageProvider } from "@/providers/EventMessage";
 import { ToastsComponent } from "@/components/alerts/events/Toasts";
 
 // 4. Relative internal (same directory)
@@ -47,15 +43,5 @@ export default async function ProfileLayout({ children, params }) {
 	});
 	const invites = await invitesResponse.json();
 
-	return (
-		<EventMessageProvider>
-			<InvitesProvider invites={invites}>
-				<SelectedInviteProvider>
-					<div className="profile_layout grid_cont content">{children}</div>
-					<ManageInvites />
-				</SelectedInviteProvider>
-			</InvitesProvider>
-			<ToastsComponent />
-		</EventMessageProvider>
-	);
+	return <ToastsComponent />;
 }

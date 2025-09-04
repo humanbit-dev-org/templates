@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import * as constants from "@/config/constants";
-import { useTranslate } from "@/providers/Translate"; // Provides translation context and hook access for `lang` and `translates`
 import { fetchCsrf } from "@/hooks/fetchCsrf";
+import { useTranslate } from "@/providers/Translate"; // Provides translation context and hook access for `lang` and `translates`
 
 export function SignInComponent({ preventClose = false }) {
 	const [errors, setErrors] = useState([]);
@@ -106,8 +106,10 @@ export function SignInComponent({ preventClose = false }) {
 									<label className="label" htmlFor="signInEmail">
 										{translates?.["all"]?.["email"]?.[lang] ?? "Translate fallback"}
 									</label>
-									<p>{errors.email}</p>
-									{/* <InputError messages={errors.email} className="mt-2" /> */}
+
+									<p>{errors?.email}</p>
+
+									{/* <InputError messages={errors?.email} className="mt-2" /> */}
 								</div>
 							</div>
 
@@ -131,8 +133,9 @@ export function SignInComponent({ preventClose = false }) {
 										{translates?.["all"]?.["password"]?.[lang] ?? "Translate fallback"}
 									</label>
 
-									{/* <InputError messages={errors.password} className="mt-2" /> */}
-									<p>{errors.password}</p>
+									{/* <InputError messages={errors?.password} className="mt-2" /> */}
+
+									<p>{errors?.password}</p>
 								</div>
 							</div>
 

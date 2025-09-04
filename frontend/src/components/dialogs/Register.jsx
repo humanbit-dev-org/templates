@@ -131,8 +131,10 @@ export function RegisterComponent({}) {
 									<label className="label" htmlFor="RegisterName">
 										{translates?.["all"]?.["name"]?.[lang] ?? "Translate fallback"}
 									</label>
-									<p>{errors.name}</p>
-									{/* <InputError messages={errors.name} className="mt-2" /> */}
+
+									<p>{errors?.name}</p>
+
+									{/* <InputError messages={errors?.name} className="mt-2" /> */}
 								</div>
 							</div>
 
@@ -155,8 +157,10 @@ export function RegisterComponent({}) {
 									<label className="label" htmlFor="RegisterSurname">
 										{translates?.["all"]?.["surname"]?.[lang] ?? "Translate fallback"}
 									</label>
-									<p>{errors.surname}</p>
-									{/* <InputError messages={errors.surname} className="mt-2" /> */}
+
+									<p>{errors?.surname}</p>
+
+									{/* <InputError messages={errors?.surname} className="mt-2" /> */}
 								</div>
 							</div>
 
@@ -179,8 +183,10 @@ export function RegisterComponent({}) {
 									<label className="label" htmlFor="RegisterUsername">
 										{translates?.["all"]?.["username"]?.[lang] ?? "Translate fallback"}
 									</label>
-									<p>{errors.username}</p>
-									{/* <InputError messages={errors.name} className="mt-2" /> */}
+
+									<p>{errors?.username}</p>
+
+									{/* <InputError messages={errors?.name} className="mt-2" /> */}
 								</div>
 							</div>
 
@@ -205,8 +211,10 @@ export function RegisterComponent({}) {
 									<label className="label" htmlFor="RegisterEmail">
 										{translates?.[`all`]?.["email"]?.[lang] ?? "Translate fallback"}
 									</label>
-									<p>{errors.email}</p>
-									{/* <InputError messages={errors.email} className="mt-2" /> */}
+
+									<p>{errors?.email}</p>
+
+									{/* <InputError messages={errors?.email} className="mt-2" /> */}
 								</div>
 							</div>
 
@@ -229,8 +237,10 @@ export function RegisterComponent({}) {
 									<label className="label" htmlFor="RegisterAddress">
 										{translates?.["all"]?.["address"]?.[lang] ?? "Translate fallback"}
 									</label>
-									<p>{errors.address}</p>
-									{/* <InputError messages={errors.address} className="mt-2" /> */}
+
+									<p>{errors?.address}</p>
+
+									{/* <InputError messages={errors?.address} className="mt-2" /> */}
 								</div>
 							</div>
 
@@ -253,8 +263,10 @@ export function RegisterComponent({}) {
 									<label className="label" htmlFor="RegisterPhone">
 										{translates?.["all"]?.["phone"]?.[lang] ?? "Translate fallback"}
 									</label>
-									<p>{errors.phone}</p>
-									{/* <InputError messages={errors.phone} className="mt-2" /> */}
+
+									<p>{errors?.phone}</p>
+
+									{/* <InputError messages={errors?.phone} className="mt-2" /> */}
 								</div>
 							</div>
 
@@ -277,8 +289,10 @@ export function RegisterComponent({}) {
 									<label className="label" htmlFor="RegisterPassword">
 										{translates?.["all"]?.["password"]?.[lang] ?? "Translate fallback"}
 									</label>
-									<p>{errors.password}</p>
-									{/* <InputError messages={errors.password} className="mt-2" /> */}
+
+									<p>{errors?.password}</p>
+
+									{/* <InputError messages={errors?.password} className="mt-2" /> */}
 								</div>
 							</div>
 
@@ -301,8 +315,10 @@ export function RegisterComponent({}) {
 									<label className="label" htmlFor="passwordConfirmation">
 										{translates?.["all"]?.["confirm_password"]?.[lang] ?? "Translate fallback"}
 									</label>
-									<p>{errors.password_confirmation}</p>
-									{/* <InputError messages={errors.password_confirmation} className="mt-2" /> */}
+
+									<p>{errors?.password_confirmation}</p>
+
+									{/* <InputError messages={errors?.password_confirmation} className="mt-2" /> */}
 								</div>
 							</div>
 

@@ -2,7 +2,7 @@
 // "use client"; // marks module for full browser rendering
 
 // File import statements:
-// import { ShimmerTxtComponent } from "@/components/blocks/ShimmerTxt";
+// import { ShimmerTxtComponent } from "@/components/elements/ShimmerTxt";
 
 // 1. Core imports (React & Next.js)
 // import React, { createContext, useCallback, useContext, useEffect, useMemo, useReducer, useRef, useState } from "react";
@@ -25,15 +25,15 @@
 // ## ############################################
 // ===============================================
 
-export function ShimmerTxt() {
+export function ShimmerTxtComponent() {
 	return (
-		<div role="status" className="tw_max-w-sm tw_animate-pulse">
-			<div className="tw_h-2 tw_bg-gray-200 tw_rounded-full dark:tw_bg-gray-700 tw_max-w-[360px] tw_mb-2.5"></div>
-			<div className="tw_h-2 tw_bg-gray-200 tw_rounded-full dark:tw_bg-gray-700 tw_mb-2.5"></div>
-			<div className="tw_h-2 tw_bg-gray-200 tw_rounded-full dark:tw_bg-gray-700 tw_max-w-[330px] tw_mb-2.5"></div>
-			<div className="tw_h-2 tw_bg-gray-200 tw_rounded-full dark:tw_bg-gray-700 tw_max-w-[300px] tw_mb-2.5"></div>
-			<div className="tw_h-2 tw_bg-gray-200 tw_rounded-full dark:tw_bg-gray-700 tw_max-w-[360px]"></div>
-			<span className="tw_sr-only">Loading...</span>
+		<div role="status" className="tw:max-w-sm tw:animate-pulse">
+			<div className="tw:h-2 tw:bg-gray-200 tw:rounded-full dark:tw:bg-gray-700 tw:max-w-[360px] tw:mb-2.5"></div>
+			<div className="tw:h-2 tw:bg-gray-200 tw:rounded-full dark:tw:bg-gray-700 tw:mb-2.5"></div>
+			<div className="tw:h-2 tw:bg-gray-200 tw:rounded-full dark:tw:bg-gray-700 tw:max-w-[330px] tw:mb-2.5"></div>
+			<div className="tw:h-2 tw:bg-gray-200 tw:rounded-full dark:tw:bg-gray-700 tw:max-w-[300px] tw:mb-2.5"></div>
+			<div className="tw:h-2 tw:bg-gray-200 tw:rounded-full dark:tw:bg-gray-700 tw:max-w-[360px]"></div>
+			<span className="tw:sr-only">Loading...</span>
 		</div>
 	);
 }

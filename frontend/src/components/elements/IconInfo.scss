@@ -1,5 +1,5 @@
 // File import statement:
-// @extend %icon_info_element;
+// @extend %icon_info_component;
 
 // >>> Controllers — START
 @use "@/scss/controllers/dynamics" as *; // controllers for mixins and variables
@@ -9,7 +9,7 @@
 // @use "./Example" as *;
 // <<<<<< Components — END
 
-.icon_info_element {
+.icon_info_component {
 }
 
 /////
@@ -22,12 +22,12 @@
 ////////////////////////
 
 @media (max-width: 1399.98px) {
-	.icon_info_element {
+	.icon_info_component {
 	}
 }
 
 @media (max-width: 1199.98px) {
-	.icon_info_element {
+	.icon_info_component {
 		border-radius: 50rem;
 
 		.bg_color_section {
@@ -41,17 +41,17 @@
 }
 
 @media (max-width: 991.98px) {
-	.icon_info_element {
+	.icon_info_component {
 	}
 }
 
 @media (max-width: 767.98px) {
-	.icon_info_element {
+	.icon_info_component {
 	}
 }
 
 @media (max-width: 575.98px) {
-	.icon_info_element {
+	.icon_info_component {
 	}
 }
 
@@ -62,27 +62,27 @@
 ////////////////////
 
 @media (min-width: 576px) and (max-width: 767.98px) {
-	.icon_info_element {
+	.icon_info_component {
 	}
 }
 
 @media (min-width: 576px) and (max-width: 991.98px) {
-	.icon_info_element {
+	.icon_info_component {
 	}
 }
 
 @media (min-width: 768px) and (max-width: 991.98px) {
-	.icon_info_element {
+	.icon_info_component {
 	}
 }
 
 @media (min-width: 992px) and (max-width: 1199.98px) {
-	.icon_info_element {
+	.icon_info_component {
 	}
 }
 
 @media (min-width: 1200px) and (max-width: 1399.98px) {
-	.icon_info_element {
+	.icon_info_component {
 	}
 }
 
@@ -93,27 +93,27 @@
 ////////////////////////
 
 @media (min-width: 576px) {
-	.icon_info_element {
+	.icon_info_component {
 	}
 }
 
 @media (min-width: 768px) {
-	.icon_info_element {
+	.icon_info_component {
 	}
 }
 
 @media (min-width: 992px) {
-	.icon_info_element {
+	.icon_info_component {
 	}
 }
 
 @media (min-width: 1200px) {
-	.icon_info_element {
+	.icon_info_component {
 	}
 }
 
 @media (min-width: 1400px) {
-	.icon_info_element {
+	.icon_info_component {
 	}
 }
 
@@ -124,7 +124,7 @@
 //////////////////////
 
 @media (max-height: 400px) and (orientation: landscape) {
-	.icon_info_element {
+	.icon_info_component {
 	}
 }
 
@@ -135,6 +135,6 @@
 ///////////////////////
 
 @media (width: 1024px) and (height: 1366px) {
-	.icon_info_element {
+	.icon_info_component {
 	}
 }
