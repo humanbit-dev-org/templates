@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Eloquent\Model;
 use Backpack\CRUD\app\Library\Widget;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
+use App\Http\Controllers\Admin\Helper\Core\FieldConfigHandler;
 
 class FilterHandler
 {
@@ -22,52 +23,88 @@ class FilterHandler
 	public static function applyFilters(Model $model)
 	{
 		$request = request();
-		$filters = $request->except("page"); // Don't remove default page parameter, as it's handled separately
 
-		// Add filter for page_filter
+		// Get filters from both GET parameters and DataTables search parameters
+		// Exclude page parameter to reset pagination when applying filters
+		$getFilters = $request->except(
+			"page",
+			"persistent-table",
+			"_token",
+			"draw",
+			"columns",
+			"order",
+			"start",
+			"length",
+			"search"
+		);
+		$datatableSearch = $request->get("search", []);
+
+		// Apply GET filters (from our custom form)
+		foreach ($getFilters as $key => $value) {
+			// Skip empty values, arrays, and null values
+			if ($value === "" || $value === null || is_array($value)) {
+				continue;
+			}
+
+			// Also skip if it's just whitespace
+			if (is_string($value) && trim($value) === "") {
+				continue;
+			}
+
+			self::applyFilter($model, $key, $value);
+		}
+
+		// Also handle special page_filter
 		if ($pageFilter = $request->get("page_filter")) {
 			CRUD::addClause("where", "page", "=", $pageFilter);
 		}
 
-		foreach ($filters as $key => $value) {
-			// Skip completely empty values but allow "0"
-			if ($value === "" || is_array($value)) {
-				continue;
-			}
+		self::configureButtons();
+	}
 
-			// Special handling for path fields
-			if (strpos($key, "_path") !== false) {
-				self::handlePathFieldFilter($key, $value);
-				continue;
-			}
-
-			if (Schema::hasColumn($model->getTable(), $key)) {
-				// Get column type
-				$columnType = Schema::getColumnType($model->getTable(), $key);
-
-				// Check if column is nullable
-				$table = $model->getTable();
-				$database = env("DB_DATABASE");
-				$isNullable =
-					DB::table("INFORMATION_SCHEMA.COLUMNS")
-						->where("TABLE_SCHEMA", $database)
-						->where("TABLE_NAME", $table)
-						->where("COLUMN_NAME", $key)
-						->value("IS_NULLABLE") === "YES";
-
-				if ($columnType === "boolean" || $columnType === "tinyint") {
-					// Explicitly check for "0" and "1", allowing null if field is nullable
-					if ($value === "1" || $value === "0") {
-						CRUD::addClause("where", $key, "=", $isNullable && $value === "0" ? null : (int) $value);
-					}
-				} else {
-					// Apply LIKE filter for text fields
-					CRUD::addClause("where", $key, "LIKE", "%" . $value . "%");
-				}
-			}
+	/**
+	 * Apply a single filter to the CRUD query
+	 */
+	private static function applyFilter(Model $model, string $key, $value)
+	{
+		// Special handling for path fields
+		if (strpos($key, "_path") !== false) {
+			self::handlePathFieldFilter($key, $value);
+			return;
 		}
 
-		self::configureButtons();
+		if (!Schema::hasColumn($model->getTable(), $key)) {
+			return;
+		}
+
+		// Get table and column type
+		$table = $model->getTable();
+		$columnType = Schema::getColumnType($table, $key);
+
+		// Check if column is nullable
+		$database = env("DB_DATABASE");
+		$isNullable =
+			DB::table("INFORMATION_SCHEMA.COLUMNS")
+				->where("TABLE_SCHEMA", $database)
+				->where("TABLE_NAME", $table)
+				->where("COLUMN_NAME", $key)
+				->value("IS_NULLABLE") === "YES";
+
+		// Check if this is a select field (status, enum, etc.) - use exact match
+		if (FieldConfigHandler::isSelectField($key, $table)) {
+			CRUD::addClause("where", $key, "=", $value);
+		} elseif ($columnType === "boolean" || $columnType === "tinyint") {
+			// Explicitly check for "0" and "1", allowing null if field is nullable
+			if ($value === "1" || $value === "0") {
+				CRUD::addClause("where", $key, "=", $isNullable && $value === "0" ? null : (int) $value);
+			}
+		} elseif (str_ends_with($key, "_id") || $key === "page" || $key === "id") {
+			// Apply exact match for relation fields (foreign keys), page field, and ID field
+			CRUD::addClause("where", $key, "=", (int) $value);
+		} else {
+			// Apply LIKE filter for text fields
+			CRUD::addClause("where", $key, "LIKE", "%" . $value . "%");
+		}
 	}
 
 	/**

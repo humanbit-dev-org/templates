@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin\Helper\Core;
 use Illuminate\Support\Facades\DB;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 use App\Http\Controllers\Admin\Helper\Core\MediaHandler;
+use App\Http\Controllers\Admin\Helper\Core\FieldConfigHandler;
 
 class FieldTypeHandler
 {
@@ -36,9 +37,9 @@ class FieldTypeHandler
 				return "textarea";
 			case "int":
 			case "smallint":
+			case "decimal":
 			case "float":
 			case "double":
-			case "decimal":
 				return "number";
 			case "tinyint":
 				return "switch";
@@ -67,9 +68,27 @@ class FieldTypeHandler
 	 * @param \Backpack\CRUD\app\Library\CrudPanel\CrudColumn $field Field to modify
 	 * @param string $column Column name
 	 */
-	public static function handleSpecificTypeView($field, $column)
+	public static function handleSpecificTypeView($field, $columnType, $column)
 	{
-		if (str_contains($column, "import")) {
+		$field->thousands_sep(".");
+		$field->dec_point(",");
+
+		if ($columnType == "decimal" || $columnType == "float") {
+			$field->decimals(2);
+			if ($column == "tan" || $column == "taeg") {
+				$field->decimals(3);
+			}
+		}
+
+		if (
+			str_contains($column, "importo") ||
+			str_contains($column, "transato") ||
+			str_contains($column, "trattenuta") ||
+			str_contains($column, "interessi") ||
+			str_contains($column, "costo") ||
+			str_contains($column, "max_atp") ||
+			str_contains($column, "min_atp")
+		) {
 			$field->prefix("€");
 		}
 
@@ -77,7 +96,7 @@ class FieldTypeHandler
 			CRUD::orderBy("order", "asc");
 		}
 
-		if (str_contains($column, "percentage")) {
+		if (str_contains($column, "percentuale") || str_contains($column, "tan") || str_contains($column, "taeg")) {
 			$field->suffix("%");
 		}
 	}
@@ -102,7 +121,7 @@ class FieldTypeHandler
 	 * @param string $table Table name
 	 * @return string Updated field type
 	 */
-	public static function handleSpecificType($field, $fieldType, $column, $table)
+	public static function handleSpecificType($field, $fieldType, $columnType, $column, $table)
 	{
 		$isUploadField = MediaHandler::configureUploadField($column, $field);
 
@@ -117,33 +136,44 @@ class FieldTypeHandler
 			$field->type($fieldType);
 		} elseif (str_contains($column, "url")) {
 			$fieldType = "url";
-		} elseif (str_contains($column, "import")) {
+		} elseif (
+			str_contains($column, "importo") ||
+			str_contains($column, "transato") ||
+			str_contains($column, "trattenuta") ||
+			str_contains($column, "interessi") ||
+			str_contains($column, "costo") ||
+			str_contains($column, "max_atp") ||
+			str_contains($column, "min_atp")
+		) {
 			$field->prefix("€");
 		} elseif (str_contains($column, "hide_")) {
 			$field->hint(trans("backpack::crud.hint_hide") . str_replace("hide_", "", $column));
 		} elseif (str_contains($column, "percentage")) {
 			$field->suffix("%");
 			$field->attributes(["min" => 0, "max" => 100]);
-		} elseif (str_contains($column, "backpack_role")) {
-			$fieldType = "radio";
-			$field->options(["admin" => "Admin"]);
-			$field->default("admin");
 		} elseif ($column == "order") {
 			$field->attributes(["step" => 1, "min" => 1, "max" => DB::table($table)->max("order") + 1]);
 			$field->default(DB::table($table)->max("order") + 1);
-		} elseif ($table == "metadata" && str_contains($column, "code")) {
-			$fieldType = "select_from_array";
-			$field->options([
-				"title" => "title",
-				"description" => "description",
-				"og_url" => "og:url",
-				"og_site_name" => "og:site_name",
-				"og_title" => "og:title",
-				"og_description" => "og:description",
-				"og_image" => "og:image",
-				"og_locale" => "og:locale",
-			]);
 		}
+
+		// Check if this field has a custom select configuration
+		$selectConfig = FieldConfigHandler::getSelectFieldConfig($column, $table);
+		if ($selectConfig !== null) {
+			$fieldType = $selectConfig["type"];
+			$field->options($selectConfig["options"]);
+			if (isset($selectConfig["default"])) {
+				$field->default($selectConfig["default"]);
+			}
+		}
+
+		if ($columnType == "decimal" || $columnType == "float") {
+			$field->attributes(["step" => 0.01]);
+			if ($column == "tan" || $column == "taeg") {
+				$field->attributes(["step" => 0.001]);
+			}
+		}
+
+		$field->dec_point(",");
 
 		// Set wrapper and field type
 		$field->wrapper(["class" => "form-group col-md-6"]);
