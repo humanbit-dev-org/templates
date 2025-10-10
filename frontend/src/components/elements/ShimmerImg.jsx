@@ -2,7 +2,7 @@
 // "use client"; // marks module for full browser rendering
 
 // File import statements:
-// import { ShimmerImgComponent } from "@/components/blocks/ShimmerImg";
+// import { ShimmerImgComponent } from "@/components/elements/ShimmerImg";
 
 // 1. Core imports (React & Next.js)
 // import React, { createContext, useCallback, useContext, useEffect, useMemo, useReducer, useRef, useState } from "react";
@@ -25,7 +25,7 @@
 // ## ############################################
 // ===============================================
 
-export function ShimmerImg(w, h, c) {
+export function ShimmerImgComponent(w, h, c) {
 	const lightenColor = (color) => {
 		let r = parseInt(color.substring(1, 3), 16);
 		let g = parseInt(color.substring(3, 5), 16);

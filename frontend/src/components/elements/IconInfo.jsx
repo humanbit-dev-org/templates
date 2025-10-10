@@ -2,7 +2,7 @@
 // "use client"; // marks module for full browser rendering
 
 // File import statements:
-// import { IconInfoElement } from "@/components/elements/IconInfo";
+// import { IconInfoComponent } from "@/components/elements/IconInfo";
 
 // 1. Core imports (React & Next.js)
 // import React, { createContext, useCallback, useContext, useEffect, useMemo, useReducer, useRef, useState } from "react";
@@ -25,10 +25,10 @@ import "./IconInfo.scss";
 // ## ############################################
 // ===============================================
 
-export function IconInfoElement() {
+export function IconInfoComponent() {
 	return (
 		<svg
-			className="icon_info_element"
+			className="icon_info_component"
 			width="34"
 			height="34"
 			viewBox="0 0 34 34"

@@ -1,13 +1,13 @@
 import Link from "next/link";
 import { cookies } from "next/headers";
 import * as constants from "@/config/constants";
-import { getServer } from "@/lib/server";
-import { UpdateInformationComponent } from "@/components/blocks/UpdateInformation";
-import { UpdatePasswordComponent } from "@/components/blocks/UpdatePassword";
-import { VerifiedEmailComponent } from "@/components/dialogs/VerifiedEmail";
-import { PasswordChangedMessageComponent } from "@/components/blocks/PasswordChangedMessage";
-// import { sanitize } from "isomorphic-dompurify";
 import { getDictionary } from "@/app/dictionaries";
+import { getServer } from "@/lib/server";
+import { PasswordChangedMsgComponent } from "@/components/alerts/registration/PasswordChangedMsg";
+// import { sanitize } from "isomorphic-dompurify";
+import { UpdateInfoComponent } from "@/components/dialogs/UpdateInfo";
+import { UpdatePasswordComponent } from "@/components/dialogs/UpdatePassword";
+import { VerifiedEmailComponent } from "@/components/dialogs/VerifiedEmail";
 
 import "./page.scss";
 
@@ -43,13 +43,13 @@ export default async function Profile({ params }) {
 
 			<div className="cont_space_1 pb-5">
 				<div className="cont_mw_1">
-					<PasswordChangedMessageComponent isLoggedIn={ssr.isLoggedIn} />
+					<PasswordChangedMsgComponent isLoggedIn={ssr.isLoggedIn} />
 
 					{ssr.isLoggedIn && (
 						<>
 							<div className="block_cont d-flex flex-wrap justify-content-between mb-6">
 								<div className="block_wrap row col-12 col-lg-6">
-									<UpdateInformationComponent user={user} />
+									<UpdateInfoComponent user={user} />
 								</div>
 
 								<div className="block_wrap row col-12 col-lg-6">

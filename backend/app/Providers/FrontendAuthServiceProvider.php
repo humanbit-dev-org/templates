@@ -17,8 +17,6 @@ class FrontendAuthServiceProvider extends ServiceProvider
 
 	public function boot(): void
 	{
-		Log::info("FrontendAuthServiceProvider boot chiamato");
-
 		// Verify if user has access to a specific model and action
 		Gate::define("frontend-access-model", function (User $user, string $modelName, string $action) {
 			// If user doesn't have a role, they don't have access

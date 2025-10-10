@@ -6,7 +6,6 @@ import { createContext, useContext, useEffect, useState } from "react"; // Core 
 import * as constants from "@/config/constants"; // Global constants shared across the app
 import { useDeviceInfo } from "@/hooks/deviceInfo"; // Track window width and compute device flags
 import { usePathInfo } from "@/hooks/pathInfo"; // Extract structured path info from the current URL
-import { fetchCsrf } from "@/hooks/fetchCsrf"; // Fetch CSRF token for secure requests
 
 // ===============================================
 // ## ############################################
@@ -18,31 +17,37 @@ const ClientContext = createContext();
 // Fetch the current authenticated user from the Laravel API (with XSRF protection)
 async function fetchUser(lang) {
 	try {
-		// Extract the XSRF token from browser cookies
-		const xsrfToken = document.cookie
+
+		// Extract the XSRF token from browser cookies (Session Cookie Authentication)
+		// const xsrfToken = document.cookie
+		// 	.split("; ")
+		// 	.find((row) => row.startsWith("XSRF-TOKEN"))
+		// 	?.split("=")[1];
+
+		// Extract the API token from browser cookies (API Token Authentication)
+		const apiToken = document.cookie
 			.split("; ")
-			.find((row) => row.startsWith("XSRF-TOKEN"))
+			.find((row) => row.startsWith("apiToken"))
 			?.split("=")[1];
 
 		// If no token is found, log a warning and return early
-		if (!xsrfToken) {
-			console.warn("XSRF token is missing");
+		if (!apiToken) {
+			console.warn("API token is missing");
 			return undefined;
 		}
 
 		// Make a secure request to the Laravel API to get the current user credentials
 		const userResponse = await fetch(`${constants.BACKEND_URL_CLIENT}/api/user`, {
 			method: "GET",
-			credentials: "include",
+			//credentials: "include", // Session Cookie Authentication
 			headers: {
 				"Accept": "application/json",
-				"Referer": constants.APP_URL,
-				"X-Requested-With": "XMLHttpRequest",
 				"Content-Type": "application/json",
-				"X-XSRF-TOKEN": xsrfToken, // Pass XSRF token for CSRF protection
-				"locale": lang, // Pass user locale
+				//"Referer": constants.APP_URL, // Session Cookie Authentication
+				"Authorization": "Bearer " + apiToken, // API Token Authentication
+				//"X-XSRF-TOKEN": xsrfToken, // Pass XSRF token for CSRF protection (Session Cookie Authentication)
+				"X-Locale": lang, // Pass user locale
 			},
-			credentials: "include", // Include cookies/session data
 		});
 
 		// Handle failed response (unauthenticated or other errors)

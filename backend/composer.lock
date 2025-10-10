@@ -82,16 +82,16 @@
         },
         {
             "name": "backpack/crud",
-            "version": "6.8.0",
+            "version": "6.8.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Laravel-Backpack/CRUD.git",
-                "reference": "11437410b15499e2572048713e1d07542c227e7e"
+                "reference": "752c34200abf7be311f2d8360e065d513c719dd0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Laravel-Backpack/CRUD/zipball/11437410b15499e2572048713e1d07542c227e7e",
-                "reference": "11437410b15499e2572048713e1d07542c227e7e",
+                "url": "https://api.github.com/repos/Laravel-Backpack/CRUD/zipball/752c34200abf7be311f2d8360e065d513c719dd0",
+                "reference": "752c34200abf7be311f2d8360e065d513c719dd0",
                 "shasum": ""
             },
             "require": {
@@ -170,9 +170,9 @@
             ],
             "support": {
                 "issues": "https://github.com/Laravel-Backpack/CRUD/issues",
-                "source": "https://github.com/Laravel-Backpack/CRUD/tree/6.8.0"
+                "source": "https://github.com/Laravel-Backpack/CRUD/tree/6.8.6"
             },
-            "time": "2025-02-24T16:21:55+00:00"
+            "time": "2025-08-22T10:42:06+00:00"
         },
         {
             "name": "backpack/language-switcher",

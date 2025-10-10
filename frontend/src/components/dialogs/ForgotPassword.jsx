@@ -1,6 +1,6 @@
 "use client";
 
-import AuthSessionStatus from "@/components/elements/AuthSessionStatus";
+import AuthSessionStatusComponent from "@/components/elements/AuthSessionStatus";
 import { useState } from "react";
 
 async function fetchCsrf() {
@@ -100,7 +100,7 @@ export function ForgotPasswordComponent({ lang }) {
 						</div>
 
 						{/* Session status */}
-						<AuthSessionStatus className="mb-4" status={status} />
+						<AuthSessionStatusComponent className="mb-4" status={status} />
 
 						<fieldset className="modal-body mx-n2 mb-5">
 							<div className="px-2">
@@ -130,8 +130,9 @@ export function ForgotPasswordComponent({ lang }) {
 									<label className="label" htmlFor="ForgotPasswordEmail">
 										Email
 									</label>
-									<p>{errors.email}</p>
-									{/* <InputError messages={errors.email} className="mt-2" /> */}
+
+									<p>{errors?.email}</p>
+									{/* <InputError messages={errors?.email} className="mt-2" /> */}
 								</div>
 							</div>
 

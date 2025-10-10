@@ -3,13 +3,12 @@
 import { useState } from "react";
 import * as constants from "@/config/constants";
 import { useTranslate } from "@/providers/Translate"; // Provides translation context and hook access for `lang` and `translates`
-import { fetchCsrf } from "@/hooks/fetchCsrf";
+import { fetchCsrf } from "@/hooks/fetchCsrf"; // Fetch CSRF Token
 
 export function SignInComponent({ preventClose = false }) {
 	const [errors, setErrors] = useState([]);
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [password, setPassword] = useState("");
-	const [shouldRemember, setShouldRemember] = useState(false);
 	const [email, setEmail] = useState("");
 	const lang = useTranslate()["lang"];
 	const translates = useTranslate()["translates"];
@@ -19,37 +18,38 @@ export function SignInComponent({ preventClose = false }) {
 
 		setIsSubmitting(true);
 
+		//const xsrfToken = await fetchCsrf(); // CSRF Token
+
 		setErrors([]);
 
-		const xsrfToken = await fetchCsrf();
+		const fetchPath = `${constants.BACKEND_URL_CLIENT}/api/auth`; // API Token Authentication
+		//const fetchPath = `${constants.BACKEND_URL_CLIENT}/login`; // Session Cookie Authentication
 
-		const fetchPath = `${constants.BACKEND_URL_CLIENT}/login`;
-
-		const loginRequest = new Request(fetchPath, {
+		const authRequest = new Request(fetchPath, {
 			method: "POST",
-			credentials: "include",
+			// credentials: "include", // Session Cookie Authentication
 			body: JSON.stringify({
 				email: email,
 				password: password,
-				remember: shouldRemember,
 			}),
 			headers: {
 				"Accept": "application/json",
-				"Referer": constants.APP_URL,
-				"X-Requested-With": "XMLHttpRequest",
 				"Content-Type": "application/json",
-				"X-XSRF-TOKEN": xsrfToken,
-				"locale": lang,
+				//"Referer": constants.APP_URL, // Session Cookie Authentication
+				//"X-XSRF-TOKEN": xsrfToken, // CSRF Token (Session Cookie Authentication)
+				"X-Locale": lang,
 			},
 		});
 
 		try {
-			const loginResponse = await fetch(loginRequest);
-			if (!loginResponse.ok) {
-				const errorData = await loginResponse.json();
-				setErrors(errorData.errors);
+			const authResponse = await fetch(authRequest);
+			if (!authResponse.ok) {
+				const errorData = await authResponse.json();
+				setErrors(errorData.error);
 				setIsSubmitting(false);
 			} else {
+				const responseData = await authResponse.json();
+				document.cookie = `apiToken=${responseData.apiToken}; Path=/; Max-Age=${60 * 60 * 24 * 30}; SameSite=Lax`;
 				window.location.reload();
 			}
 		} catch (error) {
@@ -106,8 +106,10 @@ export function SignInComponent({ preventClose = false }) {
 									<label className="label" htmlFor="signInEmail">
 										{translates?.["all"]?.["email"]?.[lang] ?? "Translate fallback"}
 									</label>
-									<p>{errors.email}</p>
-									{/* <InputError messages={errors.email} className="mt-2" /> */}
+
+									<p>{errors?.email}</p>
+
+									{/* <InputError messages={errors?.email} className="mt-2" /> */}
 								</div>
 							</div>
 
@@ -131,27 +133,14 @@ export function SignInComponent({ preventClose = false }) {
 										{translates?.["all"]?.["password"]?.[lang] ?? "Translate fallback"}
 									</label>
 
-									{/* <InputError messages={errors.password} className="mt-2" /> */}
-									<p>{errors.password}</p>
+									{/* <InputError messages={errors?.password} className="mt-2" /> */}
+
+									<p>{errors?.password}</p>
 								</div>
 							</div>
 
 							{/* Remember me */}
 							<div className="input_wrapper_spacing d-flex flex-wrap justify-content-between mb-3">
-								<div className="form-check">
-									<label className="form-check-label color_first" htmlFor="signInRememberMe">
-										{translates?.["all"]?.["remember_me"]?.[lang] ?? "Translate fallback"}
-									</label>
-
-									<input
-										className="form-check-input"
-										id="signInRememberMe"
-										type="checkbox"
-										name="remember"
-										onChange={(event) => setShouldRemember(event.target.checked)}
-									/>
-								</div>
-
 								<button
 									className={`btn_bg_second ${isSubmitting ? "pe-none opacity-50" : ""}`}
 									type="submit"

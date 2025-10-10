@@ -10,23 +10,23 @@
  * <https://github.com/mozilla/vtt.js/blob/master/LICENSE>
  */
 
-!(function (t, e) {
+(!(function (t, e) {
 	"object" == typeof exports && "undefined" != typeof module
 		? (module.exports = e(require("global/document"), require("global/window")))
 		: "function" == typeof define && define.amd
 			? define(["global/document", "global/window"], e)
 			: (t.videojs = e(t.document, t.window));
 })(this, function (t, e) {
-	(t = t && t.hasOwnProperty("default") ? t.default : t), (e = e && e.hasOwnProperty("default") ? e.default : e);
+	((t = t && t.hasOwnProperty("default") ? t.default : t), (e = e && e.hasOwnProperty("default") ? e.default : e));
 	var i = "7.4.1";
 	function n(t, e) {
-		(t.prototype = Object.create(e.prototype)), (t.prototype.constructor = t), (t.__proto__ = e);
+		((t.prototype = Object.create(e.prototype)), (t.prototype.constructor = t), (t.__proto__ = e));
 	}
 	function r(t, e) {
 		return (r =
 			Object.setPrototypeOf ||
 			function (t, e) {
-				return (t.__proto__ = e), t;
+				return ((t.__proto__ = e), t);
 			})(t, e);
 	}
 	function a(t, e, i) {
@@ -35,7 +35,7 @@
 			if (Reflect.construct.sham) return !1;
 			if ("function" == typeof Proxy) return !0;
 			try {
-				return Date.prototype.toString.call(Reflect.construct(Date, [], function () {})), !0;
+				return (Date.prototype.toString.call(Reflect.construct(Date, [], function () {})), !0);
 			} catch (t) {
 				return !1;
 			}
@@ -45,7 +45,7 @@
 					var n = [null];
 					n.push.apply(n, e);
 					var a = new (Function.bind.apply(t, n))();
-					return i && r(a, i.prototype), a;
+					return (i && r(a, i.prototype), a);
 				}).apply(null, arguments);
 	}
 	function s(t) {
@@ -53,7 +53,7 @@
 		return t;
 	}
 	function o(t, e) {
-		return e || (e = t.slice(0)), (t.raw = e), t;
+		return (e || (e = t.slice(0)), (t.raw = e), t);
 	}
 	var u = [],
 		l = function (t, i) {
@@ -67,8 +67,8 @@
 					e.console)
 				) {
 					var l = e.console[n];
-					l || "debug" !== n || (l = e.console.info || e.console.log),
-						l && s && o.test(n) && l[Array.isArray(a) ? "apply" : "call"](e.console, a);
+					(l || "debug" !== n || (l = e.console.info || e.console.log),
+						l && s && o.test(n) && l[Array.isArray(a) ? "apply" : "call"](e.console, a));
 				}
 			};
 		};
@@ -215,7 +215,7 @@
 		};
 	}
 	function L(e, i, n, r) {
-		void 0 === e && (e = "div"), void 0 === i && (i = {}), void 0 === n && (n = {});
+		(void 0 === e && (e = "div"), void 0 === i && (i = {}), void 0 === n && (n = {}));
 		var a = t.createElement(e);
 		return (
 			Object.getOwnPropertyNames(i).forEach(function (t) {
@@ -234,19 +234,20 @@
 		);
 	}
 	function O(t, e) {
-		return void 0 === t.textContent ? (t.innerText = e) : (t.textContent = e), t;
+		return (void 0 === t.textContent ? (t.innerText = e) : (t.textContent = e), t);
 	}
 	function P(t, e) {
 		e.firstChild ? e.insertBefore(t, e.firstChild) : e.appendChild(t);
 	}
 	function U(t, e) {
 		return (
-			k(e), t.classList ? t.classList.contains(e) : ((i = e), new RegExp("(^|\\s)" + i + "($|\\s)")).test(t.className)
+			k(e),
+			t.classList ? t.classList.contains(e) : ((i = e), new RegExp("(^|\\s)" + i + "($|\\s)")).test(t.className)
 		);
 		var i;
 	}
 	function I(t, e) {
-		return t.classList ? t.classList.add(e) : U(t, e) || (t.className = (t.className + " " + e).trim()), t;
+		return (t.classList ? t.classList.add(e) : U(t, e) || (t.className = (t.className + " " + e).trim()), t);
 	}
 	function x(t, e) {
 		return (
@@ -265,7 +266,7 @@
 	function D(t, e, i) {
 		var n = U(t, e);
 		if (("function" == typeof i && (i = i(t, e)), "boolean" != typeof i && (i = !n), i !== n))
-			return i ? I(t, e) : x(t, e), t;
+			return (i ? I(t, e) : x(t, e), t);
 	}
 	function R(t, e) {
 		Object.getOwnPropertyNames(e).forEach(function (i) {
@@ -280,7 +281,7 @@
 			for (var n = t.attributes, r = n.length - 1; r >= 0; r--) {
 				var a = n[r].name,
 					s = n[r].value;
-				("boolean" != typeof t[a] && -1 === i.indexOf("," + a + ",")) || (s = null !== s), (e[a] = s);
+				(("boolean" != typeof t[a] && -1 === i.indexOf("," + a + ",")) || (s = null !== s), (e[a] = s));
 			}
 		return e;
 	}
@@ -294,10 +295,10 @@
 		t.removeAttribute(e);
 	}
 	function F() {
-		t.body.focus(),
+		(t.body.focus(),
 			(t.onselectstart = function () {
 				return !1;
-			});
+			}));
 	}
 	function V() {
 		t.onselectstart = function () {
@@ -427,7 +428,7 @@
 		nt = "vdata" + new Date().getTime();
 	function rt(t) {
 		var e = t[nt];
-		return e || (e = t[nt] = et()), it[e] || (it[e] = {}), it[e];
+		return (e || (e = t[nt] = et()), it[e] || (it[e] = {}), it[e]);
 	}
 	function at(t) {
 		var e = t[nt];
@@ -446,14 +447,14 @@
 	}
 	function ot(t, e) {
 		var i = rt(t);
-		0 === i.handlers[e].length &&
+		(0 === i.handlers[e].length &&
 			(delete i.handlers[e],
 			t.removeEventListener
 				? t.removeEventListener(e, i.dispatcher, !1)
 				: t.detachEvent && t.detachEvent("on" + e, i.dispatcher)),
 			Object.getOwnPropertyNames(i.handlers).length <= 0 &&
 				(delete i.handlers, delete i.dispatcher, delete i.disabled),
-			0 === Object.getOwnPropertyNames(i).length && st(t);
+			0 === Object.getOwnPropertyNames(i).length && st(t));
 	}
 	function ut(t, e, i, n) {
 		i.forEach(function (i) {
@@ -480,42 +481,42 @@
 				(i.target || (i.target = i.srcElement || t),
 				i.relatedTarget || (i.relatedTarget = i.fromElement === i.target ? i.toElement : i.fromElement),
 				(i.preventDefault = function () {
-					a.preventDefault && a.preventDefault(),
+					(a.preventDefault && a.preventDefault(),
 						(i.returnValue = !1),
 						(a.returnValue = !1),
-						(i.defaultPrevented = !0);
+						(i.defaultPrevented = !0));
 				}),
 				(i.defaultPrevented = !1),
 				(i.stopPropagation = function () {
-					a.stopPropagation && a.stopPropagation(),
+					(a.stopPropagation && a.stopPropagation(),
 						(i.cancelBubble = !0),
 						(a.cancelBubble = !0),
-						(i.isPropagationStopped = n);
+						(i.isPropagationStopped = n));
 				}),
 				(i.isPropagationStopped = r),
 				(i.stopImmediatePropagation = function () {
-					a.stopImmediatePropagation && a.stopImmediatePropagation(),
+					(a.stopImmediatePropagation && a.stopImmediatePropagation(),
 						(i.isImmediatePropagationStopped = n),
-						i.stopPropagation();
+						i.stopPropagation());
 				}),
 				(i.isImmediatePropagationStopped = r),
 				null !== i.clientX && void 0 !== i.clientX)
 			) {
 				var o = t.documentElement,
 					u = t.body;
-				(i.pageX =
+				((i.pageX =
 					i.clientX +
 					((o && o.scrollLeft) || (u && u.scrollLeft) || 0) -
 					((o && o.clientLeft) || (u && u.clientLeft) || 0)),
 					(i.pageY =
 						i.clientY +
 						((o && o.scrollTop) || (u && u.scrollTop) || 0) -
-						((o && o.clientTop) || (u && u.clientTop) || 0));
+						((o && o.clientTop) || (u && u.clientTop) || 0)));
 			}
-			(i.which = i.charCode || i.keyCode),
+			((i.which = i.charCode || i.keyCode),
 				null !== i.button &&
 					void 0 !== i.button &&
-					(i.button = 1 & i.button ? 0 : 4 & i.button ? 1 : 2 & i.button ? 2 : 0);
+					(i.button = 1 & i.button ? 0 : 4 & i.button ? 1 : 2 & i.button ? 2 : 0));
 		}
 		return i;
 	}
@@ -527,7 +528,7 @@
 					ct = !0;
 				},
 			});
-			e.addEventListener("test", null, t), e.removeEventListener("test", null, t);
+			(e.addEventListener("test", null, t), e.removeEventListener("test", null, t));
 		} catch (t) {}
 	})();
 	var ht = ["touchstart", "touchmove"];
@@ -558,7 +559,7 @@
 		)
 			if (t.addEventListener) {
 				var r = !1;
-				ct && ht.indexOf(e) > -1 && (r = { passive: !0 }), t.addEventListener(e, n.dispatcher, r);
+				(ct && ht.indexOf(e) > -1 && (r = { passive: !0 }), t.addEventListener(e, n.dispatcher, r));
 			} else t.attachEvent && t.attachEvent("on" + e, n.dispatcher);
 	}
 	function pt(t, e, i) {
@@ -567,7 +568,7 @@
 			if (n.handlers) {
 				if (Array.isArray(e)) return ut(pt, t, e, i);
 				var r = function (t, e) {
-					(n.handlers[e] = []), ot(t, e);
+					((n.handlers[e] = []), ot(t, e));
 				};
 				if (void 0 !== e) {
 					var a = n.handlers[e];
@@ -600,9 +601,9 @@
 	function mt(t, e, i) {
 		if (Array.isArray(e)) return ut(mt, t, e, i);
 		var n = function n() {
-			pt(t, e, n), i.apply(this, arguments);
+			(pt(t, e, n), i.apply(this, arguments));
 		};
-		(n.guid = i.guid = i.guid || et()), dt(t, e, n);
+		((n.guid = i.guid = i.guid || et()), dt(t, e, n));
 	}
 	var gt,
 		yt = Object.freeze({ fixEvent: lt, on: dt, off: pt, trigger: ft, one: mt }),
@@ -626,7 +627,7 @@
 			}
 		};
 	function bt(t, i) {
-		i && (gt = i), e.setTimeout(_t, t);
+		(i && (gt = i), e.setTimeout(_t, t));
 	}
 	w() && "complete" === t.readyState
 		? (vt = !0)
@@ -636,7 +637,7 @@
 	var Tt,
 		St = function (e) {
 			var i = t.createElement("style");
-			return (i.className = e), i;
+			return ((i.className = e), i);
 		},
 		kt = function (t, e) {
 			t.styleSheet ? (t.styleSheet.cssText = e) : (t.textContent = e);
@@ -646,7 +647,7 @@
 			var n = function () {
 				return e.apply(t, arguments);
 			};
-			return (n.guid = i ? i + "_" + e.guid : e.guid), n;
+			return ((n.guid = i ? i + "_" + e.guid : e.guid), n);
 		},
 		Ct = function (t, e) {
 			var i = Date.now();
@@ -662,22 +663,22 @@
 				var e = this,
 					s = arguments,
 					o = function () {
-						(a = null), (o = null), n || t.apply(e, s);
+						((a = null), (o = null), n || t.apply(e, s));
 					};
-				!a && n && t.apply(e, s), r.clearTimeout(a), (a = r.setTimeout(o, i));
+				(!a && n && t.apply(e, s), r.clearTimeout(a), (a = r.setTimeout(o, i)));
 			};
 			return (
 				(s.cancel = function () {
-					r.clearTimeout(a), (a = null);
+					(r.clearTimeout(a), (a = null));
 				}),
 				s
 			);
 		},
 		At = function () {};
-	(At.prototype.allowedEvents_ = {}),
+	((At.prototype.allowedEvents_ = {}),
 		(At.prototype.on = function (t, e) {
 			var i = this.addEventListener;
-			(this.addEventListener = function () {}), dt(this, t, e), (this.addEventListener = i);
+			((this.addEventListener = function () {}), dt(this, t, e), (this.addEventListener = i));
 		}),
 		(At.prototype.addEventListener = At.prototype.on),
 		(At.prototype.off = function (t, e) {
@@ -686,14 +687,14 @@
 		(At.prototype.removeEventListener = At.prototype.off),
 		(At.prototype.one = function (t, e) {
 			var i = this.addEventListener;
-			(this.addEventListener = function () {}), mt(this, t, e), (this.addEventListener = i);
+			((this.addEventListener = function () {}), mt(this, t, e), (this.addEventListener = i));
 		}),
 		(At.prototype.trigger = function (t) {
 			var e = t.type || t;
-			"string" == typeof t && (t = { type: e }),
+			("string" == typeof t && (t = { type: e }),
 				(t = lt(t)),
 				this.allowedEvents_[e] && this["on" + e] && this["on" + e](t),
-				ft(this, t);
+				ft(this, t));
 		}),
 		(At.prototype.dispatchEvent = At.prototype.trigger),
 		(At.prototype.queueTrigger = function (t) {
@@ -703,12 +704,12 @@
 				r = Tt.get(this);
 			r || ((r = new Map()), Tt.set(this, r));
 			var a = r.get(n);
-			r.delete(n), e.clearTimeout(a);
+			(r.delete(n), e.clearTimeout(a));
 			var s = e.setTimeout(function () {
-				0 === r.size && ((r = null), Tt.delete(i)), i.trigger(t);
+				(0 === r.size && ((r = null), Tt.delete(i)), i.trigger(t));
 			}, 0);
 			r.set(n, s);
-		});
+		}));
 	var Lt = function (t) {
 			return (
 				t instanceof At ||
@@ -746,7 +747,7 @@
 			);
 		},
 		Dt = function (t, e, i, n) {
-			Pt(t), t.nodeName ? yt[e](t, i, n) : t[e](i, n);
+			(Pt(t), t.nodeName ? yt[e](t, i, n) : t[e](i, n));
 		},
 		Rt = {
 			on: function () {
@@ -764,7 +765,7 @@
 					var c = function () {
 						return t.off("dispose", l);
 					};
-					(c.guid = u.guid), Dt(this, "on", "dispose", l), Dt(s, "on", "dispose", c);
+					((c.guid = u.guid), Dt(this, "on", "dispose", l), Dt(s, "on", "dispose", c));
 				}
 			},
 			one: function () {
@@ -781,7 +782,7 @@
 						for (var i = arguments.length, n = new Array(i), r = 0; r < i; r++) n[r] = arguments[r];
 						u.apply(null, n);
 					};
-					(l.guid = u.guid), Dt(s, "one", o, l);
+					((l.guid = u.guid), Dt(s, "one", o, l));
 				}
 			},
 			off: function (t, e, i) {
@@ -789,12 +790,12 @@
 				else {
 					var n = t,
 						r = e;
-					Pt(n),
+					(Pt(n),
 						Ut(r),
 						It(i),
 						(i = wt(this, i)),
 						this.off("dispose", i),
-						n.nodeName ? (pt(n, r, i), pt(n, "dispose", i)) : Lt(n) && (n.off(r, i), n.off("dispose", i));
+						n.nodeName ? (pt(n, r, i), pt(n, "dispose", i)) : Lt(n) && (n.off(r, i), n.off("dispose", i)));
 				}
 			},
 			trigger: function (t, e) {
@@ -815,10 +816,10 @@
 					t();
 				}),
 			t.on("dispose", function () {
-				t.off(),
+				(t.off(),
 					e.setTimeout(function () {
 						t.eventBusEl_ = null;
-					}, 0);
+					}, 0));
 			}),
 			t
 		);
@@ -831,7 +832,7 @@
 			return (
 				"function" == typeof t && (t = t()),
 				g(t, function (t, n) {
-					i.state[n] !== t && ((e = e || {})[n] = { from: i.state[n], to: t }), (i.state[n] = t);
+					(i.state[n] !== t && ((e = e || {})[n] = { from: i.state[n], to: t }), (i.state[n] = t));
 				}),
 				e && Lt(this) && this.trigger({ changes: e, type: "statechanged" }),
 				e
@@ -873,7 +874,7 @@
 				var n = (t && t.id && t.id()) || "no_player";
 				this.id_ = n + "_component_" + et();
 			}
-			(this.name_ = e.name || null),
+			((this.name_ = e.name || null),
 				e.el ? (this.el_ = e.el) : !1 !== e.createEl && (this.el_ = this.createEl()),
 				!1 !== e.evented && Mt(this, { eventBusKey: this.el_ ? "el_" : null }),
 				Nt(this, this.constructor.defaultState),
@@ -882,7 +883,7 @@
 				(this.childNameIndex_ = {}),
 				!1 !== e.initChildren && this.initChildren(),
 				this.ready(i),
-				!1 !== e.reportTouchActivity && this.enableTouchActivity();
+				!1 !== e.reportTouchActivity && this.enableTouchActivity());
 		}
 		var i = t.prototype;
 		return (
@@ -890,12 +891,12 @@
 				if ((this.trigger({ type: "dispose", bubbles: !1 }), this.children_))
 					for (var t = this.children_.length - 1; t >= 0; t--)
 						this.children_[t].dispose && this.children_[t].dispose();
-				(this.children_ = null),
+				((this.children_ = null),
 					(this.childIndex_ = null),
 					(this.childNameIndex_ = null),
 					this.el_ &&
 						(this.el_.parentNode && this.el_.parentNode.removeChild(this.el_), st(this.el_), (this.el_ = null)),
-					(this.player_ = null);
+					(this.player_ = null));
 			}),
 			(i.player = function () {
 				return this.player_;
@@ -926,7 +927,7 @@
 						(u = u.replace(/\{(\d+)\}/g, function (t, i) {
 							var n = e[i - 1],
 								r = n;
-							return void 0 === n && (r = t), r;
+							return (void 0 === n && (r = t), r);
 						})),
 					u
 				);
@@ -947,7 +948,7 @@
 				return this.childIndex_[t];
 			}),
 			(i.getChild = function (t) {
-				if (t) return (t = jt(t)), this.childNameIndex_[t];
+				if (t) return ((t = jt(t)), this.childNameIndex_[t]);
 			}),
 			(i.addChild = function (e, i, n) {
 				var r, a;
@@ -975,11 +976,11 @@
 				if (("string" == typeof t && (t = this.getChild(t)), t && this.children_)) {
 					for (var e = !1, i = this.children_.length - 1; i >= 0; i--)
 						if (this.children_[i] === t) {
-							(e = !0), this.children_.splice(i, 1);
+							((e = !0), this.children_.splice(i, 1));
 							break;
 						}
 					if (e) {
-						(this.childIndex_[t.id()] = null), (this.childNameIndex_[t.name()] = null);
+						((this.childIndex_[t.id()] = null), (this.childNameIndex_[t.name()] = null));
 						var n = t.el();
 						n && n.parentNode === this.contentEl() && this.contentEl().removeChild(t.el());
 					}
@@ -1015,7 +1016,7 @@
 							var i = t.name,
 								n = t.opts;
 							if ((void 0 !== r[i] && (n = r[i]), !1 !== n)) {
-								!0 === n && (n = {}), (n.playerOptions = e.options_.playerOptions);
+								(!0 === n && (n = {}), (n.playerOptions = e.options_.playerOptions));
 								var a = e.addChild(i, n);
 								a && (e[i] = a);
 							}
@@ -1032,17 +1033,17 @@
 						: ((this.readyQueue_ = this.readyQueue_ || []), void this.readyQueue_.push(t));
 			}),
 			(i.triggerReady = function () {
-				(this.isReady_ = !0),
+				((this.isReady_ = !0),
 					this.setTimeout(function () {
 						var t = this.readyQueue_;
-						(this.readyQueue_ = []),
+						((this.readyQueue_ = []),
 							t &&
 								t.length > 0 &&
 								t.forEach(function (t) {
 									t.call(this);
 								}, this),
-							this.trigger("ready");
-					}, 1);
+							this.trigger("ready"));
+					}, 1));
 			}),
 			(i.$ = function (t, e) {
 				return Q(t, e || this.contentEl());
@@ -1090,7 +1091,7 @@
 				return this.dimension("height", t, e);
 			}),
 			(i.dimensions = function (t, e) {
-				this.width(t, !0), this.height(e);
+				(this.width(t, !0), this.height(e));
 			}),
 			(i.dimension = function (t, e, i) {
 				if (void 0 !== e)
@@ -1138,7 +1139,7 @@
 				var t,
 					e = 0,
 					i = null;
-				this.on("touchstart", function (n) {
+				(this.on("touchstart", function (n) {
 					1 === n.touches.length &&
 						((i = { pageX: n.touches[0].pageX, pageY: n.touches[0].pageY }),
 						(e = new Date().getTime()),
@@ -1151,29 +1152,29 @@
 								r = e.touches[0].pageY - i.pageY;
 							Math.sqrt(n * n + r * r) > 10 && (t = !1);
 						}
-					});
+					}));
 				var n = function () {
 					t = !1;
 				};
-				this.on("touchleave", n),
+				(this.on("touchleave", n),
 					this.on("touchcancel", n),
 					this.on("touchend", function (n) {
 						((i = null), !0 === t) &&
 							new Date().getTime() - e < 200 &&
 							(n.preventDefault(), this.trigger("tap"));
-					});
+					}));
 			}),
 			(i.enableTouchActivity = function () {
 				if (this.player() && this.player().reportUserActivity) {
 					var t,
 						e = wt(this.player(), this.player().reportUserActivity);
 					this.on("touchstart", function () {
-						e(), this.clearInterval(t), (t = this.setInterval(e, 250));
+						(e(), this.clearInterval(t), (t = this.setInterval(e, 250)));
 					});
 					var i = function (i) {
-						e(), this.clearInterval(t);
+						(e(), this.clearInterval(t));
 					};
-					this.on("touchmove", e), this.on("touchend", i), this.on("touchcancel", i);
+					(this.on("touchmove", e), this.on("touchend", i), this.on("touchcancel", i));
 				}
 			}),
 			(i.setTimeout = function (t, i) {
@@ -1183,7 +1184,7 @@
 				return (
 					(t = wt(this, t)),
 					(n = e.setTimeout(function () {
-						a.off("dispose", r), t();
+						(a.off("dispose", r), t());
 					}, i)),
 					((r = function () {
 						return a.clearTimeout(n);
@@ -1195,7 +1196,7 @@
 			(i.clearTimeout = function (t) {
 				e.clearTimeout(t);
 				var i = function () {};
-				return (i.guid = "vjs-timeout-" + t), this.off("dispose", i), t;
+				return ((i.guid = "vjs-timeout-" + t), this.off("dispose", i), t);
 			}),
 			(i.setInterval = function (t, i) {
 				var n = this;
@@ -1204,12 +1205,12 @@
 					a = function () {
 						return n.clearInterval(r);
 					};
-				return (a.guid = "vjs-interval-" + r), this.on("dispose", a), r;
+				return ((a.guid = "vjs-interval-" + r), this.on("dispose", a), r);
 			}),
 			(i.clearInterval = function (t) {
 				e.clearInterval(t);
 				var i = function () {};
-				return (i.guid = "vjs-interval-" + t), this.off("dispose", i), t;
+				return ((i.guid = "vjs-interval-" + t), this.off("dispose", i), t);
 			}),
 			(i.requestAnimationFrame = function (t) {
 				var i,
@@ -1218,7 +1219,7 @@
 				return this.supportsRaf_
 					? ((t = wt(this, t)),
 						(i = e.requestAnimationFrame(function () {
-							r.off("dispose", n), t();
+							(r.off("dispose", n), t());
 						})),
 						((n = function () {
 							return r.cancelAnimationFrame(i);
@@ -1231,7 +1232,7 @@
 				if (this.supportsRaf_) {
 					e.cancelAnimationFrame(t);
 					var i = function () {};
-					return (i.guid = "vjs-raf-" + t), this.off("dispose", i), t;
+					return ((i.guid = "vjs-raf-" + t), this.off("dispose", i), t);
 				}
 				return this.clearTimeout(t);
 			}),
@@ -1244,10 +1245,10 @@
 					s = t === i || t.prototype.isPrototypeOf(i.prototype);
 				if (a || !s)
 					throw (
-						((n = a ? "techs must be registered using Tech.registerTech()" : "must be a Component subclass"),
-						new Error('Illegal component, "' + e + '"; ' + n + "."))
+						(n = a ? "techs must be registered using Tech.registerTech()" : "must be a Component subclass"),
+						new Error('Illegal component, "' + e + '"; ' + n + ".")
 					);
-				(e = jt(e)), t.components_ || (t.components_ = {});
+				((e = jt(e)), t.components_ || (t.components_ = {}));
 				var o = t.getComponent("Player");
 				if ("Player" === e && o && o.players) {
 					var u = o.players,
@@ -1263,17 +1264,17 @@
 					)
 						throw new Error("Can not register Player component after player has been created.");
 				}
-				return (t.components_[e] = i), i;
+				return ((t.components_[e] = i), i);
 			}),
 			(t.getComponent = function (e) {
-				if (e) return (e = jt(e)), t.components_ && t.components_[e] ? t.components_[e] : void 0;
+				if (e) return ((e = jt(e)), t.components_ && t.components_[e] ? t.components_[e] : void 0);
 			}),
 			t
 		);
 	})();
-	(Vt.prototype.supportsRaf_ =
+	((Vt.prototype.supportsRaf_ =
 		"function" == typeof e.requestAnimationFrame && "function" == typeof e.cancelAnimationFrame),
-		Vt.registerComponent("Component", Vt);
+		Vt.registerComponent("Component", Vt));
 	var Ht,
 		qt = (e.navigator && e.navigator.userAgent) || "",
 		zt = /AppleWebKit\/([\d.]+)/i.exec(qt),
@@ -1302,7 +1303,7 @@
 		re = (function () {
 			var t = /MSIE\s(\d+)\.\d/.exec(qt),
 				e = t && parseFloat(t[1]);
-			return !e && /Trident\/7.0/i.test(qt) && /rv:11.0/.test(qt) && (e = 11), e;
+			return (!e && /Trident\/7.0/i.test(qt) && /rv:11.0/.test(qt) && (e = 11), e);
 		})(),
 		ae = /Safari/i.test(qt) && !ie && !Qt && !ee,
 		se = (ae || $t) && !ie,
@@ -1368,7 +1369,7 @@
 			r = 0;
 		if (!e) return 0;
 		(t && t.length) || (t = he(0, 0));
-		for (var a = 0; a < t.length; a++) (i = t.start(a)), (n = t.end(a)) > e && (n = e), (r += n - i);
+		for (var a = 0; a < t.length; a++) ((i = t.start(a)), (n = t.end(a)) > e && (n = e), (r += n - i));
 		return r / e;
 	}
 	for (
@@ -1428,14 +1429,14 @@
 	if (pe) for (var ve = 0; ve < pe.length; ve++) fe[ge[ve]] = pe[ve];
 	function _e(t) {
 		if (t instanceof _e) return t;
-		"number" == typeof t
+		("number" == typeof t
 			? (this.code = t)
 			: "string" == typeof t
 				? (this.message = t)
 				: v(t) && ("number" == typeof t.code && (this.code = t.code), y(this, t)),
-			this.message || (this.message = _e.defaultMessages[this.code] || "");
+			this.message || (this.message = _e.defaultMessages[this.code] || ""));
 	}
-	(_e.prototype.code = 0),
+	((_e.prototype.code = 0),
 		(_e.prototype.message = ""),
 		(_e.prototype.status = null),
 		(_e.errorTypes = [
@@ -1452,8 +1453,8 @@
 			3: "The media playback was aborted due to a corruption problem or because the media used features your browser did not support.",
 			4: "The media could not be loaded, either because the server or network failed or because the format is not supported.",
 			5: "The media is encrypted and we do not have the keys to decrypt it.",
-		});
-	for (var be = 0; be < _e.errorTypes.length; be++) (_e[_e.errorTypes[be]] = be), (_e.prototype[_e.errorTypes[be]] = be);
+		}));
+	for (var be = 0; be < _e.errorTypes.length; be++) ((_e[_e.errorTypes[be]] = be), (_e.prototype[_e.errorTypes[be]] = be));
 	var Te = function (t, e) {
 		var i,
 			n = null;
@@ -1473,7 +1474,7 @@
 	var we = function (t) {
 			return ["kind", "label", "language", "id", "inBandMetadataTrackDispatchType", "mode", "src"].reduce(
 				function (e, i, n) {
-					return t[i] && (e[i] = t[i]), e;
+					return (t[i] && (e[i] = t[i]), e);
 				},
 				{
 					cues:
@@ -1492,7 +1493,7 @@
 			return Array.prototype.map
 				.call(e, function (t) {
 					var e = we(t.track);
-					return t.src && (e.src = t.src), e;
+					return (t.src && (e.src = t.src), e);
 				})
 				.concat(
 					Array.prototype.filter
@@ -1551,10 +1552,10 @@
 					);
 				}),
 				(a.dispose = function () {
-					(this.contentEl_ = null),
+					((this.contentEl_ = null),
 						(this.descEl_ = null),
 						(this.previouslyActiveEl_ = null),
-						i.prototype.dispose.call(this);
+						i.prototype.dispose.call(this));
 				}),
 				(a.buildCSSClass = function () {
 					return Ae + " vjs-hidden " + i.prototype.buildCSSClass.call(this);
@@ -1580,7 +1581,7 @@
 				(a.open = function () {
 					if (!this.opened_) {
 						var t = this.player();
-						this.trigger("beforemodalopen"),
+						(this.trigger("beforemodalopen"),
 							(this.opened_ = !0),
 							(this.options_.fillAlways || (!this.hasBeenOpened_ && !this.hasBeenFilled_)) && this.fill(),
 							(this.wasPlaying_ = !t.paused()),
@@ -1592,16 +1593,16 @@
 							this.conditionalFocus_(),
 							this.el().setAttribute("aria-hidden", "false"),
 							this.trigger("modalopen"),
-							(this.hasBeenOpened_ = !0);
+							(this.hasBeenOpened_ = !0));
 					}
 				}),
 				(a.opened = function (t) {
-					return "boolean" == typeof t && this[t ? "open" : "close"](), this.opened_;
+					return ("boolean" == typeof t && this[t ? "open" : "close"](), this.opened_);
 				}),
 				(a.close = function () {
 					if (this.opened_) {
 						var t = this.player();
-						this.trigger("beforemodalclose"),
+						(this.trigger("beforemodalclose"),
 							(this.opened_ = !1),
 							this.wasPlaying_ && this.options_.pauseOnOpen && t.play(),
 							this.closeable() && this.off(this.el_.ownerDocument, "keydown", wt(this, this.handleKeyPress)),
@@ -1610,7 +1611,7 @@
 							this.el().setAttribute("aria-hidden", "true"),
 							this.trigger("modalclose"),
 							this.conditionalBlur_(),
-							this.options_.temporary && this.dispose();
+							this.options_.temporary && this.dispose());
 					}
 				}),
 				(a.closeable = function (t) {
@@ -1619,10 +1620,10 @@
 							i = this.getChild("closeButton");
 						if (e && !i) {
 							var n = this.contentEl_;
-							(this.contentEl_ = this.el_),
+							((this.contentEl_ = this.el_),
 								(i = this.addChild("closeButton", { controlText: "Close Modal Dialog" })),
 								(this.contentEl_ = n),
-								this.on(i, "close", this.close);
+								this.on(i, "close", this.close));
 						}
 						!e && i && (this.off(i, "close", this.close), this.removeChild(i), i.dispose());
 					}
@@ -1635,32 +1636,32 @@
 					var e = this.contentEl(),
 						i = e.parentNode,
 						n = e.nextSibling;
-					this.trigger("beforemodalfill"),
+					(this.trigger("beforemodalfill"),
 						(this.hasBeenFilled_ = !0),
 						i.removeChild(e),
 						this.empty(),
 						$(e, t),
 						this.trigger("modalfill"),
-						n ? i.insertBefore(e, n) : i.appendChild(e);
+						n ? i.insertBefore(e, n) : i.appendChild(e));
 					var r = this.getChild("closeButton");
 					r && i.appendChild(r.el_);
 				}),
 				(a.empty = function () {
-					this.trigger("beforemodalempty"), G(this.contentEl()), this.trigger("modalempty");
+					(this.trigger("beforemodalempty"), G(this.contentEl()), this.trigger("modalempty"));
 				}),
 				(a.content = function (t) {
-					return void 0 !== t && (this.content_ = t), this.content_;
+					return (void 0 !== t && (this.content_ = t), this.content_);
 				}),
 				(a.conditionalFocus_ = function () {
 					var e = t.activeElement,
 						i = this.player_.el_;
-					(this.previouslyActiveEl_ = null),
+					((this.previouslyActiveEl_ = null),
 						(i.contains(e) || i === e) &&
-							((this.previouslyActiveEl_ = e), this.focus(), this.on(t, "keydown", this.handleKeyDown));
+							((this.previouslyActiveEl_ = e), this.focus(), this.on(t, "keydown", this.handleKeyDown)));
 				}),
 				(a.conditionalBlur_ = function () {
-					this.previouslyActiveEl_ && (this.previouslyActiveEl_.focus(), (this.previouslyActiveEl_ = null)),
-						this.off(t, "keydown", this.handleKeyDown);
+					(this.previouslyActiveEl_ && (this.previouslyActiveEl_.focus(), (this.previouslyActiveEl_ = null)),
+						this.off(t, "keydown", this.handleKeyDown));
 				}),
 				(a.handleKeyDown = function (e) {
 					if (9 === e.which) {
@@ -1669,10 +1670,10 @@
 								i = a;
 								break;
 							}
-						t.activeElement === this.el_ && (i = 0),
+						(t.activeElement === this.el_ && (i = 0),
 							e.shiftKey && 0 === i
 								? (n[n.length - 1].focus(), e.preventDefault())
-								: e.shiftKey || i !== n.length - 1 || (n[0].focus(), e.preventDefault());
+								: e.shiftKey || i !== n.length - 1 || (n[0].focus(), e.preventDefault()));
 					}
 				}),
 				(a.focusableEls_ = function () {
@@ -1697,17 +1698,17 @@
 				r
 			);
 		})(Vt);
-	(Le.prototype.options_ = { pauseOnOpen: !0, temporary: !0 }), Vt.registerComponent("ModalDialog", Le);
+	((Le.prototype.options_ = { pauseOnOpen: !0, temporary: !0 }), Vt.registerComponent("ModalDialog", Le));
 	var Oe = (function (t) {
 		function e(e) {
 			var i;
-			void 0 === e && (e = []),
+			(void 0 === e && (e = []),
 				((i = t.call(this) || this).tracks_ = []),
 				Object.defineProperty(s(s(i)), "length", {
 					get: function () {
 						return this.tracks_.length;
 					},
-				});
+				}));
 			for (var n = 0; n < e.length; n++) i.addTrack(e[n]);
 			return i;
 		}
@@ -1716,18 +1717,18 @@
 		return (
 			(i.addTrack = function (t) {
 				var e = this.tracks_.length;
-				"" + e in this ||
+				("" + e in this ||
 					Object.defineProperty(this, e, {
 						get: function () {
 							return this.tracks_[e];
 						},
 					}),
-					-1 === this.tracks_.indexOf(t) && (this.tracks_.push(t), this.trigger({ track: t, type: "addtrack" }));
+					-1 === this.tracks_.indexOf(t) && (this.tracks_.push(t), this.trigger({ track: t, type: "addtrack" })));
 			}),
 			(i.removeTrack = function (t) {
 				for (var e, i = 0, n = this.length; i < n; i++)
 					if (this[i] === t) {
-						(e = this[i]).off && e.off(), this.tracks_.splice(i, 1);
+						((e = this[i]).off && e.off(), this.tracks_.splice(i, 1));
 						break;
 					}
 				e && this.trigger({ track: e, type: "removetrack" });
@@ -1760,18 +1761,18 @@
 						Ue(e, e[n]);
 						break;
 					}
-				return ((i = t.call(this, e) || this).changing_ = !1), i;
+				return (((i = t.call(this, e) || this).changing_ = !1), i);
 			}
 			return (
 				n(e, t),
 				(e.prototype.addTrack = function (e) {
 					var i = this;
-					e.enabled && Ue(this, e),
+					(e.enabled && Ue(this, e),
 						t.prototype.addTrack.call(this, e),
 						e.addEventListener &&
 							e.addEventListener("enabledchange", function () {
 								i.changing_ || ((i.changing_ = !0), Ue(i, e), (i.changing_ = !1), i.trigger("change"));
-							});
+							}));
 				}),
 				e
 			);
@@ -1804,12 +1805,12 @@
 				n(e, t),
 				(e.prototype.addTrack = function (e) {
 					var i = this;
-					e.selected && xe(this, e),
+					(e.selected && xe(this, e),
 						t.prototype.addTrack.call(this, e),
 						e.addEventListener &&
 							e.addEventListener("selectedchange", function () {
 								i.changing_ || ((i.changing_ = !0), xe(i, e), (i.changing_ = !1), i.trigger("change"));
-							});
+							}));
 				}),
 				e
 			);
@@ -1821,13 +1822,13 @@
 			return (
 				n(e, t),
 				(e.prototype.addTrack = function (e) {
-					t.prototype.addTrack.call(this, e),
+					(t.prototype.addTrack.call(this, e),
 						e.addEventListener(
 							"modechange",
 							wt(this, function () {
 								this.queueTrigger("change");
 							})
-						);
+						));
 					-1 === ["metadata", "chapters"].indexOf(e.kind) &&
 						e.addEventListener(
 							"modechange",
@@ -1841,26 +1842,26 @@
 		})(Oe),
 		Me = (function () {
 			function t(t) {
-				void 0 === t && (t = []),
+				(void 0 === t && (t = []),
 					(this.trackElements_ = []),
 					Object.defineProperty(this, "length", {
 						get: function () {
 							return this.trackElements_.length;
 						},
-					});
+					}));
 				for (var e = 0, i = t.length; e < i; e++) this.addTrackElement_(t[e]);
 			}
 			var e = t.prototype;
 			return (
 				(e.addTrackElement_ = function (t) {
 					var e = this.trackElements_.length;
-					"" + e in this ||
+					("" + e in this ||
 						Object.defineProperty(this, e, {
 							get: function () {
 								return this.trackElements_[e];
 							},
 						}),
-						-1 === this.trackElements_.indexOf(t) && this.trackElements_.push(t);
+						-1 === this.trackElements_.indexOf(t) && this.trackElements_.push(t));
 				}),
 				(e.getTrackElementByTrack_ = function (t) {
 					for (var e, i = 0, n = this.trackElements_.length; i < n; i++)
@@ -1882,12 +1883,12 @@
 		})(),
 		Be = (function () {
 			function t(e) {
-				t.prototype.setCues_.call(this, e),
+				(t.prototype.setCues_.call(this, e),
 					Object.defineProperty(this, "length", {
 						get: function () {
 							return this.length_;
 						},
-					});
+					}));
 			}
 			var e = t.prototype;
 			return (
@@ -1895,7 +1896,7 @@
 					var e = this.length || 0,
 						i = 0,
 						n = t.length;
-					(this.cues_ = t), (this.length_ = t.length);
+					((this.cues_ = t), (this.length_ = t.length));
 					var r = function (t) {
 						"" + t in this ||
 							Object.defineProperty(this, "" + t, {
@@ -1946,7 +1947,7 @@
 		He = (function (t) {
 			function e(e) {
 				var i;
-				void 0 === e && (e = {}), (i = t.call(this) || this);
+				(void 0 === e && (e = {}), (i = t.call(this) || this));
 				var n = {
 						id: e.id || "vjs_track_" + et(),
 						kind: e.kind || "",
@@ -1964,7 +1965,7 @@
 				for (var a in n) r(a);
 				return i;
 			}
-			return n(e, t), e;
+			return (n(e, t), e);
 		})(At),
 		qe = function (i) {
 			var n = ["protocol", "hostname", "port", "pathname", "search", "hash", "host"],
@@ -1989,7 +1990,7 @@
 		ze = function (e) {
 			if (!e.match(/^https?:\/\//)) {
 				var i = t.createElement("div");
-				(i.innerHTML = '<a href="' + e + '">x</a>'), (e = i.firstChild.href);
+				((i.innerHTML = '<a href="' + e + '">x</a>'), (e = i.firstChild.href));
 			}
 			return e;
 		},
@@ -2018,10 +2019,10 @@
 		$e = Object.prototype.toString;
 	"undefined" != typeof window ? window : "undefined" != typeof global ? global : "undefined" != typeof self && self;
 	function Ke(t, e) {
-		return t((e = { exports: {} }), e.exports), e.exports;
+		return (t((e = { exports: {} }), e.exports), e.exports);
 	}
 	var Qe = Ke(function (t, e) {
-			((e = t.exports =
+			(((e = t.exports =
 				function (t) {
 					return t.replace(/^\s*|\s*$/g, "");
 				}).left = function (t) {
@@ -2029,7 +2030,7 @@
 			}),
 				(e.right = function (t) {
 					return t.replace(/\s*$/, "");
-				});
+				}));
 		}),
 		Je = (Qe.left, Qe.right, Function.prototype.toString),
 		Ze = /^\s*class\b/,
@@ -2064,7 +2065,7 @@
 		si = function (t, e, i) {
 			if (!ni(e)) throw new TypeError("iterator must be a function");
 			var n;
-			arguments.length >= 3 && (n = i),
+			(arguments.length >= 3 && (n = i),
 				"[object Array]" === ri.call(t)
 					? (function (t, e, i) {
 							for (var n = 0, r = t.length; n < r; n++)
@@ -2077,7 +2078,7 @@
 							})(t, e, n)
 						: (function (t, e, i) {
 								for (var n in t) ai.call(t, n) && (null == i ? e(t[n], n, t) : e.call(i, t[n], n, t));
-							})(t, e, n);
+							})(t, e, n));
 		},
 		oi = function (t) {
 			if (!t) return {};
@@ -2107,7 +2108,7 @@
 	var ci = di;
 	function hi(t, e, i) {
 		var n = t;
-		return Ye(e) ? ((i = e), "string" == typeof t && (n = { uri: t })) : (n = ui(e, { uri: t })), (n.callback = i), n;
+		return (Ye(e) ? ((i = e), "string" == typeof t && (n = { uri: t })) : (n = ui(e, { uri: t })), (n.callback = i), n);
 	}
 	function di(t, e, i) {
 		return pi((e = hi(t, e, i)));
@@ -2148,7 +2149,7 @@
 		function a() {
 			if (!o) {
 				var e;
-				clearTimeout(l), (e = t.useXDR && void 0 === u.status ? 200 : 1223 === u.status ? 204 : u.status);
+				(clearTimeout(l), (e = t.useXDR && void 0 === u.status ? 200 : 1223 === u.status ? 204 : u.status));
 				var r = g,
 					a = null;
 				return (
@@ -2197,9 +2198,9 @@
 				t.timeout > 0 &&
 				(l = setTimeout(function () {
 					if (!o) {
-						(o = !0), u.abort("timeout");
+						((o = !0), u.abort("timeout"));
 						var t = new Error("XMLHttpRequest timeout");
-						(t.code = "ETIMEDOUT"), r(t);
+						((t.code = "ETIMEDOUT"), r(t));
 					}
 				}, t.timeout)),
 			u.setRequestHeader)
@@ -2220,19 +2221,19 @@
 			u
 		);
 	}
-	(di.XMLHttpRequest = e.XMLHttpRequest || function () {}),
+	((di.XMLHttpRequest = e.XMLHttpRequest || function () {}),
 		(di.XDomainRequest = "withCredentials" in new di.XMLHttpRequest() ? di.XMLHttpRequest : e.XDomainRequest),
 		(function (t, e) {
 			for (var i = 0; i < t.length; i++) e(t[i]);
 		})(["get", "put", "post", "patch", "head", "delete"], function (t) {
 			di["delete" === t ? "del" : t] = function (e, i, n) {
-				return ((i = hi(e, i, n)).method = t.toUpperCase()), pi(i);
+				return (((i = hi(e, i, n)).method = t.toUpperCase()), pi(i));
 			};
-		});
+		}));
 	var fi = function (t, i) {
 			var n = new e.WebVTT.Parser(e, e.vttjs, e.WebVTT.StringDecoder()),
 				r = [];
-			(n.oncue = function (t) {
+			((n.oncue = function (t) {
 				i.addCue(t);
 			}),
 				(n.onparsingerror = function (t) {
@@ -2250,12 +2251,12 @@
 						return c.error(t);
 					}),
 					e.console && e.console.groupEnd && e.console.groupEnd()),
-				n.flush();
+				n.flush());
 		},
 		mi = function (t, i) {
 			var n = { uri: t },
 				r = Ge(t);
-			r && (n.cors = r),
+			(r && (n.cors = r),
 				ci(
 					n,
 					wt(this, function (t, n, r) {
@@ -2265,15 +2266,15 @@
 								var a = function () {
 									return fi(r, i);
 								};
-								i.tech_.on("vttjsloaded", a),
+								(i.tech_.on("vttjsloaded", a),
 									i.tech_.on("vttjserror", function () {
-										c.error("vttjs failed to load, stopping trying to process " + i.src),
-											i.tech_.off("vttjsloaded", a);
-									});
+										(c.error("vttjs failed to load, stopping trying to process " + i.src),
+											i.tech_.off("vttjsloaded", a));
+									}));
 							}
 						} else fi(r, i);
 					})
-				);
+				));
 		},
 		gi = (function (t) {
 			function i(e) {
@@ -2282,15 +2283,15 @@
 				var n = Ft(e, { kind: Fe[e.kind] || "subtitles", language: e.language || e.srclang || "" }),
 					r = Ve[n.mode] || "disabled",
 					a = n.default;
-				("metadata" !== n.kind && "chapters" !== n.kind) || (r = "hidden"),
+				(("metadata" !== n.kind && "chapters" !== n.kind) || (r = "hidden"),
 					((i = t.call(this, n) || this).tech_ = n.tech),
 					(i.cues_ = []),
-					(i.activeCues_ = []);
+					(i.activeCues_ = []));
 				var o = new Be(i.cues_),
 					u = new Be(i.activeCues_),
 					l = !1,
 					c = wt(s(s(i)), function () {
-						(this.activeCues = this.activeCues), l && (this.trigger("cuechange"), (l = !1));
+						((this.activeCues = this.activeCues), l && (this.trigger("cuechange"), (l = !1)));
 					});
 				return (
 					"disabled" !== r &&
@@ -2340,7 +2341,7 @@
 								}
 								if (((l = !1), e.length !== this.activeCues_.length)) l = !0;
 								else for (var a = 0; a < e.length; a++) -1 === this.activeCues_.indexOf(e[a]) && (l = !0);
-								return (this.activeCues_ = e), u.setCues_(this.activeCues_), u;
+								return ((this.activeCues_ = e), u.setCues_(this.activeCues_), u);
 							},
 							set: function () {},
 						},
@@ -2356,16 +2357,16 @@
 					var i = t;
 					if (e.vttjs && !(t instanceof e.vttjs.VTTCue)) {
 						for (var n in ((i = new e.vttjs.VTTCue(t.startTime, t.endTime, t.text)), t)) n in i || (i[n] = t[n]);
-						(i.id = t.id), (i.originalCue_ = t);
+						((i.id = t.id), (i.originalCue_ = t));
 					}
 					for (var r = this.tech_.textTracks(), a = 0; a < r.length; a++) r[a] !== this && r[a].removeCue(i);
-					this.cues_.push(i), this.cues.setCues_(this.cues_);
+					(this.cues_.push(i), this.cues.setCues_(this.cues_));
 				}),
 				(r.removeCue = function (t) {
 					for (var e = this.cues_.length; e--; ) {
 						var i = this.cues_[e];
 						if (i === t || (i.originalCue_ && i.originalCue_ === t)) {
-							this.cues_.splice(e, 1), this.cues.setCues_(this.cues_);
+							(this.cues_.splice(e, 1), this.cues.setCues_(this.cues_));
 							break;
 						}
 					}
@@ -2395,7 +2396,7 @@
 					i
 				);
 			}
-			return n(e, t), e;
+			return (n(e, t), e);
 		})(He),
 		vi = (function (t) {
 			function e(e) {
@@ -2417,14 +2418,14 @@
 					i
 				);
 			}
-			return n(e, t), e;
+			return (n(e, t), e);
 		})(He),
 		_i = 0,
 		bi = 2,
 		Ti = (function (t) {
 			function e(e) {
 				var i, n;
-				void 0 === e && (e = {}), (i = t.call(this) || this);
+				(void 0 === e && (e = {}), (i = t.call(this) || this));
 				var r = new gi(e);
 				return (
 					(i.kind = r.kind),
@@ -2446,21 +2447,21 @@
 					}),
 					(n = _i),
 					r.addEventListener("loadeddata", function () {
-						(n = bi), i.trigger({ type: "load", target: s(s(i)) });
+						((n = bi), i.trigger({ type: "load", target: s(s(i)) }));
 					}),
 					i
 				);
 			}
-			return n(e, t), e;
+			return (n(e, t), e);
 		})(At);
-	(Ti.prototype.allowedEvents_ = { load: "load" }), (Ti.NONE = _i), (Ti.LOADING = 1), (Ti.LOADED = bi), (Ti.ERROR = 3);
+	((Ti.prototype.allowedEvents_ = { load: "load" }), (Ti.NONE = _i), (Ti.LOADING = 1), (Ti.LOADED = bi), (Ti.ERROR = 3));
 	var Si = {
 		audio: { ListClass: Ie, TrackClass: yi, capitalName: "Audio" },
 		video: { ListClass: De, TrackClass: vi, capitalName: "Video" },
 		text: { ListClass: Re, TrackClass: gi, capitalName: "Text" },
 	};
 	Object.keys(Si).forEach(function (t) {
-		(Si[t].getterName = t + "Tracks"), (Si[t].privateName = t + "Tracks_");
+		((Si[t].getterName = t + "Tracks"), (Si[t].privateName = t + "Tracks_"));
 	});
 	var ki = {
 			remoteText: {
@@ -2479,18 +2480,18 @@
 			},
 		},
 		wi = Ft(Si, ki);
-	(ki.names = Object.keys(ki)), (Si.names = Object.keys(Si)), (wi.names = [].concat(ki.names).concat(Si.names));
+	((ki.names = Object.keys(ki)), (Si.names = Object.keys(Si)), (wi.names = [].concat(ki.names).concat(Si.names)));
 	var Ci =
 		Object.create ||
 		(function () {
 			function t() {}
 			return function (e) {
 				if (1 !== arguments.length) throw new Error("Object.create shim only accepts one parameter.");
-				return (t.prototype = e), new t();
+				return ((t.prototype = e), new t());
 			};
 		})();
 	function Ei(t, e) {
-		(this.name = "ParsingError"), (this.code = t.code), (this.message = e || t.message);
+		((this.name = "ParsingError"), (this.code = t.code), (this.message = e || t.message));
 	}
 	function Ai(t) {
 		function e(t, e, i, n) {
@@ -2521,20 +2522,20 @@
 		function r() {
 			var e = Ai(t);
 			if (null === e) throw new Ei(Ei.Errors.BadTimeStamp, "Malformed timestamp: " + n);
-			return (t = t.replace(/^[^\sa-zA-Z-]+/, "")), e;
+			return ((t = t.replace(/^[^\sa-zA-Z-]+/, "")), e);
 		}
 		function a() {
 			t = t.replace(/^\s+/, "");
 		}
 		if ((a(), (e.startTime = r()), a(), "--\x3e" !== t.substr(0, 3)))
 			throw new Ei(Ei.Errors.BadTimeStamp, "Malformed time stamp (time stamps must be separated by '--\x3e'): " + n);
-		(t = t.substr(3)),
+		((t = t.substr(3)),
 			a(),
 			(e.endTime = r()),
 			a(),
 			(function (t, e) {
 				var n = new Li();
-				Oi(
+				(Oi(
 					t,
 					function (t, e) {
 						switch (t) {
@@ -2551,15 +2552,15 @@
 							case "line":
 								var a = e.split(","),
 									s = a[0];
-								n.integer(t, s),
+								(n.integer(t, s),
 									n.percent(t, s) && n.set("snapToLines", !1),
 									n.alt(t, s, ["auto"]),
-									2 === a.length && n.alt("lineAlign", a[1], ["start", "middle", "end"]);
+									2 === a.length && n.alt("lineAlign", a[1], ["start", "middle", "end"]));
 								break;
 							case "position":
-								(a = e.split(",")),
+								((a = e.split(",")),
 									n.percent(t, a[0]),
-									2 === a.length && n.alt("positionAlign", a[1], ["start", "middle", "end"]);
+									2 === a.length && n.alt("positionAlign", a[1], ["start", "middle", "end"]));
 								break;
 							case "size":
 								n.percent(t, e);
@@ -2583,10 +2584,10 @@
 						"positionAlign",
 						{ start: "start", left: "start", middle: "middle", end: "end", right: "end" },
 						e.align
-					));
-			})(t, e);
+					)));
+			})(t, e));
 	}
-	(Ei.prototype = Ci(Error.prototype)),
+	((Ei.prototype = Ci(Error.prototype)),
 		(Ei.prototype.constructor = Ei),
 		(Ei.Errors = {
 			BadSignature: { code: 0, message: "Malformed WebVTT signature." },
@@ -2617,7 +2618,7 @@
 					!!(e.match(/^([\d]{1,3})(\.[\d]*)?%$/) && (e = parseFloat(e)) >= 0 && e <= 100) && (this.set(t, e), !0)
 				);
 			},
-		});
+		}));
 	var Ui = { "&amp;": "&", "&lt;": "<", "&gt;": ">", "&lrm;": "‎", "&rlm;": "‏", "&nbsp;": " " },
 		Ii = { c: "span", i: "i", b: "b", u: "u", ruby: "ruby", rt: "rt", v: "span", lang: "span" },
 		xi = { v: "title", lang: "lang" },
@@ -2627,7 +2628,7 @@
 			if (!e) return null;
 			var t,
 				i = e.match(/^([^<]*)(<[^>]*>?)?/);
-			return (t = i[1] ? i[1] : i[2]), (e = e.substr(t.length)), t;
+			return ((t = i[1] ? i[1] : i[2]), (e = e.substr(t.length)), t);
 		}
 		function n(t) {
 			return Ui[t];
@@ -2645,7 +2646,7 @@
 			var r = t.document.createElement(n);
 			r.localName = n;
 			var a = xi[e];
-			return a && i && (r[a] = i.trim()), r;
+			return (a && i && (r[a] = i.trim()), r);
 		}
 		for (var o, u = t.document.createElement("div"), l = u, c = []; null !== (o = i()); )
 			if ("<" !== o[0]) l.appendChild(t.document.createTextNode(r(o)));
@@ -2657,14 +2658,14 @@
 				var h,
 					d = Ai(o.substr(1, o.length - 2));
 				if (d) {
-					(h = t.document.createProcessingInstruction("timestamp", d)), l.appendChild(h);
+					((h = t.document.createProcessingInstruction("timestamp", d)), l.appendChild(h));
 					continue;
 				}
 				var p = o.match(/^<([^.\s\/0-9>]+)(\.[^\s\\>]+)?([^>\\]+)?(\\?)>?$/);
 				if (!p) continue;
 				if (!(h = s(p[1], p[3]))) continue;
 				if (!a(l, h)) continue;
-				p[2] && (h.className = p[2].substr(1).replace(".", " ")), c.push(p[1]), l.appendChild(h), (l = h);
+				(p[2] && (h.className = p[2].substr(1).replace(".", " ")), c.push(p[1]), l.appendChild(h), (l = h));
 			}
 		return u;
 	}
@@ -2804,7 +2805,7 @@
 	}
 	function ji() {}
 	function Fi(t, e, i) {
-		ji.call(this), (this.cue = e), (this.cueDiv = Ri(t, e.text));
+		(ji.call(this), (this.cue = e), (this.cueDiv = Ri(t, e.text)));
 		var n = {
 			color: "rgba(255, 255, 255, 1)",
 			backgroundColor: "rgba(0, 0, 0, 0.8)",
@@ -2817,7 +2818,7 @@
 			writingMode: "" === e.vertical ? "horizontal-tb" : "lr" === e.vertical ? "vertical-lr" : "vertical-rl",
 			unicodeBidi: "plaintext",
 		};
-		this.applyStyles(n, this.cueDiv),
+		(this.applyStyles(n, this.cueDiv),
 			(this.div = t.document.createElement("div")),
 			(n = {
 				direction: Ni(this.cueDiv),
@@ -2829,7 +2830,7 @@
 				position: "absolute",
 			}),
 			this.applyStyles(n),
-			this.div.appendChild(this.cueDiv);
+			this.div.appendChild(this.cueDiv));
 		var r = 0;
 		switch (e.positionAlign) {
 			case "start":
@@ -2841,7 +2842,7 @@
 			case "end":
 				r = e.position - e.size;
 		}
-		"" === e.vertical
+		("" === e.vertical
 			? this.applyStyles({ left: this.formatStyle(r, "%"), width: this.formatStyle(e.size, "%") })
 			: this.applyStyles({ top: this.formatStyle(r, "%"), height: this.formatStyle(e.size, "%") }),
 			(this.move = function (t) {
@@ -2853,22 +2854,22 @@
 					height: this.formatStyle(t.height, "px"),
 					width: this.formatStyle(t.width, "px"),
 				});
-			});
+			}));
 	}
 	function Vi(t) {
 		var e, i, n, r;
 		if (t.div) {
-			(i = t.div.offsetHeight), (n = t.div.offsetWidth), (r = t.div.offsetTop);
+			((i = t.div.offsetHeight), (n = t.div.offsetWidth), (r = t.div.offsetTop));
 			var a = (a = t.div.childNodes) && (a = a[0]) && a.getClientRects && a.getClientRects();
-			(t = t.div.getBoundingClientRect()), (e = a ? Math.max((a[0] && a[0].height) || 0, t.height / a.length) : 0);
+			((t = t.div.getBoundingClientRect()), (e = a ? Math.max((a[0] && a[0].height) || 0, t.height / a.length) : 0));
 		}
-		(this.left = t.left),
+		((this.left = t.left),
 			(this.right = t.right),
 			(this.top = t.top || r),
 			(this.height = t.height || i),
 			(this.bottom = t.bottom || r + (t.height || i)),
 			(this.width = t.width || n),
-			(this.lineHeight = void 0 !== e ? e : t.lineHeight);
+			(this.lineHeight = void 0 !== e ? e : t.lineHeight));
 	}
 	function Hi(t, e, i, n) {
 		var r = new Vi(e),
@@ -2885,21 +2886,21 @@
 			var u;
 			switch (a.vertical) {
 				case "":
-					(o = ["+y", "-y"]), (u = "height");
+					((o = ["+y", "-y"]), (u = "height"));
 					break;
 				case "rl":
-					(o = ["+x", "-x"]), (u = "width");
+					((o = ["+x", "-x"]), (u = "width"));
 					break;
 				case "lr":
-					(o = ["-x", "+x"]), (u = "width");
+					((o = ["-x", "+x"]), (u = "width"));
 			}
 			var l = r.lineHeight,
 				c = l * Math.round(s),
 				h = i[u] + l,
 				d = o[0];
-			Math.abs(c) > h && ((c = c < 0 ? -1 : 1), (c *= Math.ceil(h / l) * l)),
+			(Math.abs(c) > h && ((c = c < 0 ? -1 : 1), (c *= Math.ceil(h / l) * l)),
 				s < 0 && ((c += "" === a.vertical ? i.height : i.width), (o = o.reverse())),
-				r.move(d, c);
+				r.move(d, c));
 		} else {
 			var p = (r.lineHeight / i.height) * 100;
 			switch (a.lineAlign) {
@@ -2919,21 +2920,21 @@
 				case "lr":
 					e.applyStyles({ right: e.formatStyle(s, "%") });
 			}
-			(o = ["+y", "-x", "+x", "-y"]), (r = new Vi(e));
+			((o = ["+y", "-x", "+x", "-y"]), (r = new Vi(e)));
 		}
 		var f = (function (t, e) {
 			for (var r, a = new Vi(t), s = 1, o = 0; o < e.length; o++) {
 				for (; t.overlapsOppositeAxis(i, e[o]) || (t.within(i) && t.overlapsAny(n)); ) t.move(e[o]);
 				if (t.within(i)) return t;
 				var u = t.intersectPercentage(i);
-				s > u && ((r = new Vi(t)), (s = u)), (t = new Vi(a));
+				(s > u && ((r = new Vi(t)), (s = u)), (t = new Vi(a)));
 			}
 			return r || a;
 		})(r, o);
 		e.move(f.toCSSCompatValues(i));
 	}
 	function qi() {}
-	(ji.prototype.applyStyles = function (t, e) {
+	((ji.prototype.applyStyles = function (t, e) {
 		for (var i in ((e = e || this.div), t)) t.hasOwnProperty(i) && (e.style[i] = t[i]);
 	}),
 		(ji.prototype.formatStyle = function (t, e) {
@@ -2944,16 +2945,16 @@
 		(Vi.prototype.move = function (t, e) {
 			switch (((e = void 0 !== e ? e : this.lineHeight), t)) {
 				case "+x":
-					(this.left += e), (this.right += e);
+					((this.left += e), (this.right += e));
 					break;
 				case "-x":
-					(this.left -= e), (this.right -= e);
+					((this.left -= e), (this.right -= e));
 					break;
 				case "+y":
-					(this.top += e), (this.bottom += e);
+					((this.top += e), (this.bottom += e));
 					break;
 				case "-y":
-					(this.top -= e), (this.bottom -= e);
+					((this.top -= e), (this.bottom -= e));
 			}
 		}),
 		(Vi.prototype.overlaps = function (t) {
@@ -3019,8 +3020,8 @@
 		}),
 		(qi.convertCueToDOMTree = function (t, e) {
 			return t && e ? Ri(t, e) : null;
-		});
-	(qi.processCues = function (t, e, i) {
+		}));
+	((qi.processCues = function (t, e, i) {
 		if (!t || !e || !i) return null;
 		for (; i.firstChild; ) i.removeChild(i.firstChild);
 		var n = t.document.createElement("div");
@@ -3042,24 +3043,24 @@
 				s = { font: Math.round(0.05 * a.height * 100) / 100 + "px sans-serif" };
 			!(function () {
 				for (var i, o, u = 0; u < e.length; u++)
-					(o = e[u]),
+					((o = e[u]),
 						(i = new Fi(t, o, s)),
 						n.appendChild(i.div),
 						Hi(0, i, a, r),
 						(o.displayState = i.div),
-						r.push(Vi.getSimpleBoxPosition(i));
+						r.push(Vi.getSimpleBoxPosition(i)));
 			})();
 		} else for (var o = 0; o < e.length; o++) n.appendChild(e[o].displayState);
 	}),
 		(qi.Parser = function (t, e, i) {
-			i || ((i = e), (e = {})),
+			(i || ((i = e), (e = {})),
 				e || (e = {}),
 				(this.window = t),
 				(this.vttjs = e),
 				(this.state = "INITIAL"),
 				(this.buffer = ""),
 				(this.decoder = i || new TextDecoder("utf8")),
-				(this.regionList = []);
+				(this.regionList = []));
 		}),
 		(qi.Parser.prototype = {
 			reportOrThrowError: function (t) {
@@ -3071,7 +3072,7 @@
 				function i() {
 					for (var t = e.buffer, i = 0; i < t.length && "\r" !== t[i] && "\n" !== t[i]; ) ++i;
 					var n = t.substr(0, i);
-					return "\r" === t[i] && ++i, "\n" === t[i] && ++i, (e.buffer = t.substr(i)), n;
+					return ("\r" === t[i] && ++i, "\n" === t[i] && ++i, (e.buffer = t.substr(i)), n);
 				}
 				function n(t) {
 					t.match(/X-TIMESTAMP-MAP/)
@@ -3080,7 +3081,7 @@
 								function (t, i) {
 									switch (t) {
 										case "X-TIMESTAMP-MAP":
-											(n = i),
+											((n = i),
 												(r = new Li()),
 												Oi(
 													n,
@@ -3097,7 +3098,7 @@
 													/,/
 												),
 												e.ontimestampmap &&
-													e.ontimestampmap({ MPEGTS: r.get("MPEGTS"), LOCAL: r.get("LOCAL") });
+													e.ontimestampmap({ MPEGTS: r.get("MPEGTS"), LOCAL: r.get("LOCAL") }));
 									}
 									var n, r;
 								},
@@ -3135,7 +3136,7 @@
 																		!r.has("x") || !r.has("y"))
 																	)
 																		break;
-																	i.set(t + "X", r.get("x")), i.set(t + "Y", r.get("y"));
+																	(i.set(t + "X", r.get("x")), i.set(t + "Y", r.get("y")));
 																	break;
 																case "scroll":
 																	i.alt(t, e, ["up"]);
@@ -3147,7 +3148,7 @@
 													i.has("id"))
 												) {
 													var n = new (e.vttjs.VTTRegion || e.window.VTTRegion)();
-													(n.width = i.get("width", 100)),
+													((n.width = i.get("width", 100)),
 														(n.lines = i.get("lines", 3)),
 														(n.regionAnchorX = i.get("regionanchorX", 0)),
 														(n.regionAnchorY = i.get("regionanchorY", 100)),
@@ -3155,7 +3156,7 @@
 														(n.viewportAnchorY = i.get("viewportanchorY", 100)),
 														(n.scroll = i.get("scroll", "")),
 														e.onregion && e.onregion(n),
-														e.regionList.push({ id: i.get("id"), region: n });
+														e.regionList.push({ id: i.get("id"), region: n }));
 												}
 											})(i);
 									}
@@ -3199,7 +3200,7 @@
 								try {
 									Pi(r, e.cue, e.regionList);
 								} catch (t) {
-									e.reportOrThrowError(t), (e.cue = null), (e.state = "BADCUE");
+									(e.reportOrThrowError(t), (e.cue = null), (e.state = "BADCUE"));
 									continue;
 								}
 								e.state = "CUETEXT";
@@ -3207,10 +3208,10 @@
 							case "CUETEXT":
 								var o = -1 !== r.indexOf("--\x3e");
 								if (!r || (o && (s = !0))) {
-									e.oncue && e.oncue(e.cue), (e.cue = null), (e.state = "ID");
+									(e.oncue && e.oncue(e.cue), (e.cue = null), (e.state = "ID"));
 									continue;
 								}
-								e.cue.text && (e.cue.text += "\n"), (e.cue.text += r);
+								(e.cue.text && (e.cue.text += "\n"), (e.cue.text += r));
 								continue;
 							case "BADCUE":
 								r || (e.state = "ID");
@@ -3218,10 +3219,10 @@
 						}
 					}
 				} catch (t) {
-					e.reportOrThrowError(t),
+					(e.reportOrThrowError(t),
 						"CUETEXT" === e.state && e.cue && e.oncue && e.oncue(e.cue),
 						(e.cue = null),
-						(e.state = "INITIAL" === e.state ? "BADWEBVTT" : "BADCUE");
+						(e.state = "INITIAL" === e.state ? "BADWEBVTT" : "BADCUE"));
 				}
 				return this;
 			},
@@ -3236,9 +3237,9 @@
 				} catch (t) {
 					this.reportOrThrowError(t);
 				}
-				return this.onflush && this.onflush(), this;
+				return (this.onflush && this.onflush(), this);
 			},
-		});
+		}));
 	var zi = qi,
 		Wi = "auto",
 		Gi = { "": 1, "lr": 1, "rl": 1 },
@@ -3262,7 +3263,7 @@
 			f = "middle",
 			m = 50,
 			g = "middle";
-		Object.defineProperties(this, {
+		(Object.defineProperties(this, {
 			id: {
 				enumerable: !0,
 				get: function () {
@@ -3288,7 +3289,7 @@
 				},
 				set: function (t) {
 					if ("number" != typeof t) throw new TypeError("Start time must be set to a number.");
-					(a = t), (this.hasBeenReset = !0);
+					((a = t), (this.hasBeenReset = !0));
 				},
 			},
 			endTime: {
@@ -3298,7 +3299,7 @@
 				},
 				set: function (t) {
 					if ("number" != typeof t) throw new TypeError("End time must be set to a number.");
-					(s = t), (this.hasBeenReset = !0);
+					((s = t), (this.hasBeenReset = !0));
 				},
 			},
 			text: {
@@ -3307,7 +3308,7 @@
 					return o;
 				},
 				set: function (t) {
-					(o = "" + t), (this.hasBeenReset = !0);
+					((o = "" + t), (this.hasBeenReset = !0));
 				},
 			},
 			region: {
@@ -3316,7 +3317,7 @@
 					return u;
 				},
 				set: function (t) {
-					(u = t), (this.hasBeenReset = !0);
+					((u = t), (this.hasBeenReset = !0));
 				},
 			},
 			vertical: {
@@ -3329,7 +3330,7 @@
 						return "string" == typeof t && !!Gi[t.toLowerCase()] && t.toLowerCase();
 					})(t);
 					if (!1 === e) throw new SyntaxError("An invalid or illegal string was specified.");
-					(l = e), (this.hasBeenReset = !0);
+					((l = e), (this.hasBeenReset = !0));
 				},
 			},
 			snapToLines: {
@@ -3338,7 +3339,7 @@
 					return c;
 				},
 				set: function (t) {
-					(c = !!t), (this.hasBeenReset = !0);
+					((c = !!t), (this.hasBeenReset = !0));
 				},
 			},
 			line: {
@@ -3349,7 +3350,7 @@
 				set: function (t) {
 					if ("number" != typeof t && t !== Wi)
 						throw new SyntaxError("An invalid number or illegal string was specified.");
-					(h = t), (this.hasBeenReset = !0);
+					((h = t), (this.hasBeenReset = !0));
 				},
 			},
 			lineAlign: {
@@ -3360,7 +3361,7 @@
 				set: function (t) {
 					var e = Yi(t);
 					if (!e) throw new SyntaxError("An invalid or illegal string was specified.");
-					(d = e), (this.hasBeenReset = !0);
+					((d = e), (this.hasBeenReset = !0));
 				},
 			},
 			position: {
@@ -3370,7 +3371,7 @@
 				},
 				set: function (t) {
 					if (t < 0 || t > 100) throw new Error("Position must be between 0 and 100.");
-					(p = t), (this.hasBeenReset = !0);
+					((p = t), (this.hasBeenReset = !0));
 				},
 			},
 			positionAlign: {
@@ -3381,7 +3382,7 @@
 				set: function (t) {
 					var e = Yi(t);
 					if (!e) throw new SyntaxError("An invalid or illegal string was specified.");
-					(f = e), (this.hasBeenReset = !0);
+					((f = e), (this.hasBeenReset = !0));
 				},
 			},
 			size: {
@@ -3391,7 +3392,7 @@
 				},
 				set: function (t) {
 					if (t < 0 || t > 100) throw new Error("Size must be between 0 and 100.");
-					(m = t), (this.hasBeenReset = !0);
+					((m = t), (this.hasBeenReset = !0));
 				},
 			},
 			align: {
@@ -3402,11 +3403,11 @@
 				set: function (t) {
 					var e = Yi(t);
 					if (!e) throw new SyntaxError("An invalid or illegal string was specified.");
-					(g = e), (this.hasBeenReset = !0);
+					((g = e), (this.hasBeenReset = !0));
 				},
 			},
 		}),
-			(this.displayState = void 0);
+			(this.displayState = void 0));
 	}
 	$i.prototype.getCueAsHTML = function () {
 		return WebVTT.convertCueToDOMTree(window, this.text);
@@ -3502,20 +3503,20 @@
 		},
 		tn = Ke(function (t) {
 			var i = (t.exports = { WebVTT: zi, VTTCue: Ki, VTTRegion: Zi });
-			(e.vttjs = i), (e.WebVTT = i.WebVTT);
+			((e.vttjs = i), (e.WebVTT = i.WebVTT));
 			var n = i.VTTCue,
 				r = i.VTTRegion,
 				a = e.VTTCue,
 				s = e.VTTRegion;
-			(i.shim = function () {
-				(e.VTTCue = n), (e.VTTRegion = r);
+			((i.shim = function () {
+				((e.VTTCue = n), (e.VTTRegion = r));
 			}),
 				(i.restore = function () {
-					(e.VTTCue = a), (e.VTTRegion = s);
+					((e.VTTCue = a), (e.VTTRegion = s));
 				}),
-				e.VTTCue || i.shim();
+				e.VTTCue || i.shim());
 		});
-	tn.WebVTT, tn.VTTCue, tn.VTTRegion;
+	(tn.WebVTT, tn.VTTCue, tn.VTTRegion);
 	var en = (function (i) {
 		function r(t, e) {
 			var n;
@@ -3555,33 +3556,33 @@
 		return (
 			(a.triggerSourceset = function (t) {
 				var e = this;
-				this.isReady_ ||
+				(this.isReady_ ||
 					this.one("ready", function () {
 						return e.setTimeout(function () {
 							return e.triggerSourceset(t);
 						}, 1);
 					}),
-					this.trigger({ src: t, type: "sourceset" });
+					this.trigger({ src: t, type: "sourceset" }));
 			}),
 			(a.manualProgressOn = function () {
-				this.on("durationchange", this.onDurationChange),
+				(this.on("durationchange", this.onDurationChange),
 					(this.manualProgress = !0),
-					this.one("ready", this.trackProgress);
+					this.one("ready", this.trackProgress));
 			}),
 			(a.manualProgressOff = function () {
-				(this.manualProgress = !1), this.stopTrackingProgress(), this.off("durationchange", this.onDurationChange);
+				((this.manualProgress = !1), this.stopTrackingProgress(), this.off("durationchange", this.onDurationChange));
 			}),
 			(a.trackProgress = function (t) {
-				this.stopTrackingProgress(),
+				(this.stopTrackingProgress(),
 					(this.progressInterval = this.setInterval(
 						wt(this, function () {
 							var t = this.bufferedPercent();
-							this.bufferedPercent_ !== t && this.trigger("progress"),
+							(this.bufferedPercent_ !== t && this.trigger("progress"),
 								(this.bufferedPercent_ = t),
-								1 === t && this.stopTrackingProgress();
+								1 === t && this.stopTrackingProgress());
 						}),
 						500
-					));
+					)));
 			}),
 			(a.onDurationChange = function (t) {
 				this.duration_ = this.duration();
@@ -3596,38 +3597,38 @@
 				this.clearInterval(this.progressInterval);
 			}),
 			(a.manualTimeUpdatesOn = function () {
-				(this.manualTimeUpdates = !0),
+				((this.manualTimeUpdates = !0),
 					this.on("play", this.trackCurrentTime),
-					this.on("pause", this.stopTrackingCurrentTime);
+					this.on("pause", this.stopTrackingCurrentTime));
 			}),
 			(a.manualTimeUpdatesOff = function () {
-				(this.manualTimeUpdates = !1),
+				((this.manualTimeUpdates = !1),
 					this.stopTrackingCurrentTime(),
 					this.off("play", this.trackCurrentTime),
-					this.off("pause", this.stopTrackingCurrentTime);
+					this.off("pause", this.stopTrackingCurrentTime));
 			}),
 			(a.trackCurrentTime = function () {
-				this.currentTimeInterval && this.stopTrackingCurrentTime(),
+				(this.currentTimeInterval && this.stopTrackingCurrentTime(),
 					(this.currentTimeInterval = this.setInterval(function () {
 						this.trigger({ type: "timeupdate", target: this, manuallyTriggered: !0 });
-					}, 250));
+					}, 250)));
 			}),
 			(a.stopTrackingCurrentTime = function () {
-				this.clearInterval(this.currentTimeInterval),
-					this.trigger({ type: "timeupdate", target: this, manuallyTriggered: !0 });
+				(this.clearInterval(this.currentTimeInterval),
+					this.trigger({ type: "timeupdate", target: this, manuallyTriggered: !0 }));
 			}),
 			(a.dispose = function () {
-				this.clearTracks(Si.names),
+				(this.clearTracks(Si.names),
 					this.manualProgress && this.manualProgressOff(),
 					this.manualTimeUpdates && this.manualTimeUpdatesOff(),
-					i.prototype.dispose.call(this);
+					i.prototype.dispose.call(this));
 			}),
 			(a.clearTracks = function (t) {
 				var e = this;
 				(t = [].concat(t)).forEach(function (t) {
 					for (var i = e[t + "Tracks"]() || [], n = i.length; n--; ) {
 						var r = i[n];
-						"text" === t && e.removeRemoteTextTrack(r), i.removeTrack(r);
+						("text" === t && e.removeRemoteTextTrack(r), i.removeTrack(r));
 					}
 				});
 			}),
@@ -3639,7 +3640,7 @@
 			}),
 			(a.reset = function () {}),
 			(a.error = function (t) {
-				return void 0 !== t && ((this.error_ = new _e(t)), this.trigger("error")), this.error_;
+				return (void 0 !== t && ((this.error_ = new _e(t)), this.trigger("error")), this.error_);
 			}),
 			(a.played = function () {
 				return this.hasStarted_ ? he(0, 0) : he();
@@ -3655,11 +3656,11 @@
 							t.trigger(e + "trackchange");
 						},
 						r = t[i.getterName]();
-					r.addEventListener("removetrack", n),
+					(r.addEventListener("removetrack", n),
 						r.addEventListener("addtrack", n),
 						t.on("dispose", function () {
-							r.removeEventListener("removetrack", n), r.removeEventListener("addtrack", n);
-						});
+							(r.removeEventListener("removetrack", n), r.removeEventListener("addtrack", n));
+						}));
 				});
 			}),
 			(a.addWebVttScript_ = function () {
@@ -3669,7 +3670,7 @@
 						if (!this.options_["vtt.js"] && _(tn) && Object.keys(tn).length > 0)
 							return void this.trigger("vttjsloaded");
 						var n = t.createElement("script");
-						(n.src = this.options_["vtt.js"] || "https://vjs.zencdn.net/vttjs/0.14.1/vtt.min.js"),
+						((n.src = this.options_["vtt.js"] || "https://vjs.zencdn.net/vttjs/0.14.1/vtt.min.js"),
 							(n.onload = function () {
 								i.trigger("vttjsloaded");
 							}),
@@ -3677,10 +3678,10 @@
 								i.trigger("vttjserror");
 							}),
 							this.on("dispose", function () {
-								(n.onload = null), (n.onerror = null);
+								((n.onload = null), (n.onerror = null));
 							}),
 							(e.WebVTT = !0),
-							this.el().parentNode.appendChild(n);
+							this.el().parentNode.appendChild(n));
 					} else this.ready(this.addWebVttScript_);
 			}),
 			(a.emulateTextTracks = function () {
@@ -3693,7 +3694,7 @@
 					r = function (t) {
 						return e.removeTrack(t.track);
 					};
-				i.on("addtrack", n), i.on("removetrack", r), this.addWebVttScript_();
+				(i.on("addtrack", n), i.on("removetrack", r), this.addWebVttScript_());
 				var a = function () {
 						return t.trigger("texttrackchange");
 					},
@@ -3701,33 +3702,33 @@
 						a();
 						for (var t = 0; t < e.length; t++) {
 							var i = e[t];
-							i.removeEventListener("cuechange", a),
-								"showing" === i.mode && i.addEventListener("cuechange", a);
+							(i.removeEventListener("cuechange", a),
+								"showing" === i.mode && i.addEventListener("cuechange", a));
 						}
 					};
-				s(),
+				(s(),
 					e.addEventListener("change", s),
 					e.addEventListener("addtrack", s),
 					e.addEventListener("removetrack", s),
 					this.on("dispose", function () {
-						i.off("addtrack", n),
+						(i.off("addtrack", n),
 							i.off("removetrack", r),
 							e.removeEventListener("change", s),
 							e.removeEventListener("addtrack", s),
-							e.removeEventListener("removetrack", s);
+							e.removeEventListener("removetrack", s));
 						for (var t = 0; t < e.length; t++) {
 							e[t].removeEventListener("cuechange", a);
 						}
-					});
+					}));
 			}),
 			(a.addTextTrack = function (t, e, i) {
 				if (!t) throw new Error("TextTrack kind is required but was not provided");
 				return (function (t, e, i, n, r) {
 					void 0 === r && (r = {});
 					var a = t.textTracks();
-					(r.kind = e), i && (r.label = i), n && (r.language = n), (r.tech = t);
+					((r.kind = e), i && (r.label = i), n && (r.language = n), (r.tech = t));
 					var s = new wi.text.TrackClass(r);
-					return a.addTrack(s), s;
+					return (a.addTrack(s), s);
 				})(this, t, e, i);
 			}),
 			(a.createRemoteTextTrack = function (t) {
@@ -3756,9 +3757,9 @@
 			}),
 			(a.removeRemoteTextTrack = function (t) {
 				var e = this.remoteTextTrackEls().getTrackElementByTrack_(t);
-				this.remoteTextTrackEls().removeTrackElement_(e),
+				(this.remoteTextTrackEls().removeTrackElement_(e),
 					this.remoteTextTracks().removeTrack(t),
-					this.autoRemoteTextTracks_.removeTrack(t);
+					this.autoRemoteTextTracks_.removeTrack(t));
 			}),
 			(a.getVideoPlaybackQuality = function () {
 				return {};
@@ -3784,7 +3785,7 @@
 				if ((r.techs_ || (r.techs_ = {}), !r.isTech(e))) throw new Error("Tech " + t + " must be a Tech");
 				if (!r.canPlayType) throw new Error("Techs must have a static canPlayType method on them");
 				if (!r.canPlaySource) throw new Error("Techs must have a static canPlaySource method on them");
-				return (t = jt(t)), (r.techs_[t] = e), "Tech" !== t && r.defaultTechOrder_.push(t), e;
+				return ((t = jt(t)), (r.techs_[t] = e), "Tech" !== t && r.defaultTechOrder_.push(t), e);
 			}),
 			(r.getTech = function (t) {
 				if (t)
@@ -3805,10 +3806,10 @@
 			r
 		);
 	})(Vt);
-	wi.names.forEach(function (t) {
+	(wi.names.forEach(function (t) {
 		var e = wi[t];
 		en.prototype[e.getterName] = function () {
-			return (this[e.privateName] = this[e.privateName] || new e.ListClass()), this[e.privateName];
+			return ((this[e.privateName] = this[e.privateName] || new e.ListClass()), this[e.privateName]);
 		};
 	}),
 		(en.prototype.featuresVolumeControl = !0),
@@ -3820,9 +3821,9 @@
 		(en.prototype.featuresTimeupdateEvents = !1),
 		(en.prototype.featuresNativeTextTracks = !1),
 		(en.withSourceHandlers = function (t) {
-			(t.registerSourceHandler = function (e, i) {
+			((t.registerSourceHandler = function (e, i) {
 				var n = t.sourceHandlers;
-				n || (n = t.sourceHandlers = []), void 0 === i && (i = n.length), n.splice(i, 0, e);
+				(n || (n = t.sourceHandlers = []), void 0 === i && (i = n.length), n.splice(i, 0, e));
 			}),
 				(t.canPlayType = function (e) {
 					for (var i, n = t.sourceHandlers || [], r = 0; r < n.length; r++)
@@ -3837,8 +3838,8 @@
 				(t.canPlaySource = function (e, i) {
 					var n = t.selectSourceHandler(e, i);
 					return n ? n.canHandleSource(e, i) : "";
-				});
-			["seekable", "seeking", "duration"].forEach(function (t) {
+				}));
+			(["seekable", "seeking", "duration"].forEach(function (t) {
 				var e = this[t];
 				"function" == typeof e &&
 					(this[t] = function () {
@@ -3849,7 +3850,7 @@
 			}, t.prototype),
 				(t.prototype.setSource = function (e) {
 					var i = t.selectSourceHandler(e, this.options_);
-					i ||
+					(i ||
 						(t.nativeSourceHandler
 							? (i = t.nativeSourceHandler)
 							: c.error("No source handler found for the current source.")),
@@ -3857,18 +3858,18 @@
 						this.off("dispose", this.disposeSourceHandler),
 						i !== t.nativeSourceHandler && (this.currentSource_ = e),
 						(this.sourceHandler_ = i.handleSource(e, this, this.options_)),
-						this.on("dispose", this.disposeSourceHandler);
+						this.on("dispose", this.disposeSourceHandler));
 				}),
 				(t.prototype.disposeSourceHandler = function () {
-					this.currentSource_ && (this.clearTracks(["audio", "video"]), (this.currentSource_ = null)),
+					(this.currentSource_ && (this.clearTracks(["audio", "video"]), (this.currentSource_ = null)),
 						this.cleanupAutoTextTracks(),
 						this.sourceHandler_ &&
-							(this.sourceHandler_.dispose && this.sourceHandler_.dispose(), (this.sourceHandler_ = null));
-				});
+							(this.sourceHandler_.dispose && this.sourceHandler_.dispose(), (this.sourceHandler_ = null)));
+				}));
 		}),
 		Vt.registerComponent("Tech", en),
 		en.registerTech("Tech", en),
-		(en.defaultTechOrder_ = []);
+		(en.defaultTechOrder_ = []));
 	var nn = {},
 		rn = {},
 		an = {};
@@ -3887,7 +3888,7 @@
 					var c = (function (t, e) {
 						var i = rn[t.id()],
 							n = null;
-						if (null == i) return (n = e(t)), (rn[t.id()] = [[e, n]]), n;
+						if (null == i) return ((n = e(t)), (rn[t.id()] = [[e, n]]), n);
 						for (var r = 0; r < i.length; r++) {
 							var a = i[r],
 								s = a[0],
@@ -3897,10 +3898,10 @@
 						null === n && ((n = e(t)), i.push([e, n]));
 						return n;
 					})(r, u);
-					if (!c.setSource) return a.push(c), t(e, l, n, r, a, s);
+					if (!c.setSource) return (a.push(c), t(e, l, n, r, a, s));
 					c.setSource(y({}, e), function (i, o) {
 						if (i) return t(e, l, n, r, a, s);
-						a.push(c), t(o, e.type === o.type ? l : nn[o.type], n, r, a, s);
+						(a.push(c), t(o, e.type === o.type ? l : nn[o.type], n, r, a, s));
 					});
 				} else l.length ? t(e, l, n, r, a, s) : s ? n(e, a) : t(e, nn["*"], n, r, a, !0);
 			})(e, nn[e.type], i, t);
@@ -3949,7 +3950,7 @@
 		};
 	function fn(t) {
 		var e = pn(t.src);
-		return !t.type && e && (t.type = e), t;
+		return (!t.type && e && (t.type = e), t);
 	}
 	var mn = (function (t) {
 		function e(e, i, n) {
@@ -3968,19 +3969,19 @@
 				}
 			return r;
 		}
-		return n(e, t), e;
+		return (n(e, t), e);
 	})(Vt);
 	Vt.registerComponent("MediaLoader", mn);
 	var gn = (function (e) {
 		function i(t, i) {
 			var n;
-			return (n = e.call(this, t, i) || this).emitTapEvents(), n.enable(), n;
+			return ((n = e.call(this, t, i) || this).emitTapEvents(), n.enable(), n);
 		}
 		n(i, e);
 		var r = i.prototype;
 		return (
 			(r.createEl = function (t, i, n) {
-				void 0 === t && (t = "div"),
+				(void 0 === t && (t = "div"),
 					void 0 === i && (i = {}),
 					void 0 === n && (n = {}),
 					(i = y(
@@ -3998,12 +3999,12 @@
 								" is not supported; use a Button instead."
 						),
 					(n = y({ role: "button" }, n)),
-					(this.tabIndex_ = i.tabIndex);
+					(this.tabIndex_ = i.tabIndex));
 				var r = e.prototype.createEl.call(this, t, i, n);
-				return this.createControlTextEl(r), r;
+				return (this.createControlTextEl(r), r);
 			}),
 			(r.dispose = function () {
-				(this.controlTextEl_ = null), e.prototype.dispose.call(this);
+				((this.controlTextEl_ = null), e.prototype.dispose.call(this));
 			}),
 			(r.createControlTextEl = function (t) {
 				return (
@@ -4016,7 +4017,7 @@
 			(r.controlText = function (t, e) {
 				if ((void 0 === e && (e = this.el()), void 0 === t)) return this.controlText_ || "Need Text";
 				var i = this.localize(t);
-				(this.controlText_ = t), O(this.controlTextEl_, i), this.nonIconControl || e.setAttribute("title", i);
+				((this.controlText_ = t), O(this.controlTextEl_, i), this.nonIconControl || e.setAttribute("title", i));
 			}),
 			(r.buildCSSClass = function () {
 				return "vjs-control vjs-button " + e.prototype.buildCSSClass.call(this);
@@ -4032,13 +4033,13 @@
 					this.on("blur", this.handleBlur));
 			}),
 			(r.disable = function () {
-				(this.enabled_ = !1),
+				((this.enabled_ = !1),
 					this.addClass("vjs-disabled"),
 					this.el_.setAttribute("aria-disabled", "true"),
 					void 0 !== this.tabIndex_ && this.el_.removeAttribute("tabIndex"),
 					this.off(["tap", "click"], this.handleClick),
 					this.off("focus", this.handleFocus),
-					this.off("blur", this.handleBlur);
+					this.off("blur", this.handleBlur));
 			}),
 			(r.handleClick = function (t) {}),
 			(r.handleFocus = function (e) {
@@ -4059,24 +4060,24 @@
 	var yn = (function (t) {
 		function e(e, i) {
 			var n;
-			return (n = t.call(this, e, i) || this).update(), e.on("posterchange", wt(s(s(n)), n.update)), n;
+			return ((n = t.call(this, e, i) || this).update(), e.on("posterchange", wt(s(s(n)), n.update)), n);
 		}
 		n(e, t);
 		var i = e.prototype;
 		return (
 			(i.dispose = function () {
-				this.player().off("posterchange", this.update), t.prototype.dispose.call(this);
+				(this.player().off("posterchange", this.update), t.prototype.dispose.call(this));
 			}),
 			(i.createEl = function () {
 				return L("div", { className: "vjs-poster", tabIndex: -1 });
 			}),
 			(i.update = function (t) {
 				var e = this.player().poster();
-				this.setSrc(e), e ? this.show() : this.hide();
+				(this.setSrc(e), e ? this.show() : this.hide());
 			}),
 			(i.setSrc = function (t) {
 				var e = "";
-				t && (e = 'url("' + t + '")'), (this.el_.style.backgroundImage = e);
+				(t && (e = 'url("' + t + '")'), (this.el_.style.backgroundImage = e));
 			}),
 			(i.handleClick = function (t) {
 				this.player_.controls() && (this.player_.paused() ? ke(this.player_.play()) : this.player_.pause());
@@ -4137,12 +4138,12 @@
 					wt(s(s(a)), function () {
 						if (i.tech_ && i.tech_.featuresNativeTextTracks) this.hide();
 						else {
-							i.on("fullscreenchange", o),
+							(i.on("fullscreenchange", o),
 								i.on("playerresize", o),
 								e.addEventListener("orientationchange", o),
 								i.on("dispose", function () {
 									return e.removeEventListener("orientationchange", o);
-								});
+								}));
 							for (var t = this.options_.playerOptions.tracks || [], n = 0; n < t.length; n++)
 								this.player_.addRemoteTextTrack(t[n], !0);
 							this.preselectTrack();
@@ -4244,10 +4245,10 @@
 									r.fontPercent && 1 !== r.fontPercent)
 								) {
 									var u = e.parseFloat(o.style.fontSize);
-									(o.style.fontSize = u * r.fontPercent + "px"),
+									((o.style.fontSize = u * r.fontPercent + "px"),
 										(o.style.height = "auto"),
 										(o.style.top = "auto"),
-										(o.style.bottom = "2px");
+										(o.style.bottom = "2px"));
 								}
 								r.fontFamily &&
 									"default" !== r.fontFamily &&
@@ -4273,7 +4274,7 @@
 					i = this.localize(e ? "Audio Player" : "Video Player"),
 					n = L("span", { className: "vjs-control-text", innerHTML: this.localize("{1} is loading.", [i]) }),
 					r = t.prototype.createEl.call(this, "div", { className: "vjs-loading-spinner", dir: "ltr" });
-				return r.appendChild(n), r;
+				return (r.appendChild(n), r);
 			}),
 			e
 		);
@@ -4287,7 +4288,7 @@
 		var i = e.prototype;
 		return (
 			(i.createEl = function (t, e, i) {
-				void 0 === e && (e = {}),
+				(void 0 === e && (e = {}),
 					void 0 === i && (i = {}),
 					(e = y(
 						{
@@ -4296,9 +4297,9 @@
 						},
 						e
 					)),
-					(i = y({ type: "button" }, i));
+					(i = y({ type: "button" }, i)));
 				var n = Vt.prototype.createEl.call(this, "button", e, i);
-				return this.createControlTextEl(n), n;
+				return (this.createControlTextEl(n), n);
 			}),
 			(i.addChild = function (t, e) {
 				void 0 === e && (e = {});
@@ -4313,10 +4314,10 @@
 				);
 			}),
 			(i.enable = function () {
-				t.prototype.enable.call(this), this.el_.removeAttribute("disabled");
+				(t.prototype.enable.call(this), this.el_.removeAttribute("disabled"));
 			}),
 			(i.disable = function () {
-				t.prototype.disable.call(this), this.el_.setAttribute("disabled", "disabled");
+				(t.prototype.disable.call(this), this.el_.setAttribute("disabled", "disabled"));
 			}),
 			(i.handleKeyPress = function (e) {
 				32 !== e.which && 13 !== e.which && t.prototype.handleKeyPress.call(this, e);
@@ -4328,7 +4329,7 @@
 	var wn = (function (t) {
 		function e(e, i) {
 			var n;
-			return ((n = t.call(this, e, i) || this).mouseused_ = !1), n.on("mousedown", n.handleMouseDown), n;
+			return (((n = t.call(this, e, i) || this).mouseused_ = !1), n.on("mousedown", n.handleMouseDown), n);
 		}
 		n(e, t);
 		var i = e.prototype;
@@ -4351,7 +4352,7 @@
 				}
 			}),
 			(i.handleKeyPress = function (e) {
-				(this.mouseused_ = !1), t.prototype.handleKeyPress.call(this, e);
+				((this.mouseused_ = !1), t.prototype.handleKeyPress.call(this, e));
 			}),
 			(i.handleMouseDown = function (t) {
 				this.mouseused_ = !0;
@@ -4359,11 +4360,11 @@
 			e
 		);
 	})(kn);
-	(wn.prototype.controlText_ = "Play Video"), Vt.registerComponent("BigPlayButton", wn);
+	((wn.prototype.controlText_ = "Play Video"), Vt.registerComponent("BigPlayButton", wn));
 	var Cn = (function (t) {
 		function e(e, i) {
 			var n;
-			return (n = t.call(this, e, i) || this).controlText((i && i.controlText) || n.localize("Close")), n;
+			return ((n = t.call(this, e, i) || this).controlText((i && i.controlText) || n.localize("Close")), n);
 		}
 		n(e, t);
 		var i = e.prototype;
@@ -4401,27 +4402,27 @@
 				this.player_.paused() ? this.player_.play() : this.player_.pause();
 			}),
 			(i.handleSeeked = function (t) {
-				this.removeClass("vjs-ended"), this.player_.paused() ? this.handlePause(t) : this.handlePlay(t);
+				(this.removeClass("vjs-ended"), this.player_.paused() ? this.handlePause(t) : this.handlePlay(t));
 			}),
 			(i.handlePlay = function (t) {
-				this.removeClass("vjs-ended"),
+				(this.removeClass("vjs-ended"),
 					this.removeClass("vjs-paused"),
 					this.addClass("vjs-playing"),
-					this.controlText("Pause");
+					this.controlText("Pause"));
 			}),
 			(i.handlePause = function (t) {
-				this.removeClass("vjs-playing"), this.addClass("vjs-paused"), this.controlText("Play");
+				(this.removeClass("vjs-playing"), this.addClass("vjs-paused"), this.controlText("Play"));
 			}),
 			(i.handleEnded = function (t) {
-				this.removeClass("vjs-playing"),
+				(this.removeClass("vjs-playing"),
 					this.addClass("vjs-ended"),
 					this.controlText("Replay"),
-					this.one(this.player_, "seeked", this.handleSeeked);
+					this.one(this.player_, "seeked", this.handleSeeked));
 			}),
 			e
 		);
 	})(kn);
-	(En.prototype.controlText_ = "Play"), Vt.registerComponent("PlayToggle", En);
+	((En.prototype.controlText_ = "Play"), Vt.registerComponent("PlayToggle", En));
 	var An = function (t, e) {
 			t = t < 0 ? 0 : t;
 			var i = Math.floor(t % 60),
@@ -4438,7 +4439,7 @@
 		},
 		Ln = An;
 	function On(t, e) {
-		return void 0 === e && (e = t), Ln(t, e);
+		return (void 0 === e && (e = t), Ln(t, e));
 	}
 	var Pn = (function (e) {
 		function i(t, i) {
@@ -4473,13 +4474,13 @@
 				);
 			}),
 			(r.dispose = function () {
-				(this.contentEl_ = null), (this.textNode_ = null), e.prototype.dispose.call(this);
+				((this.contentEl_ = null), (this.textNode_ = null), e.prototype.dispose.call(this));
 			}),
 			(r.updateTextNode_ = function () {
 				if (this.contentEl_) {
 					for (; this.contentEl_.firstChild; ) this.contentEl_.removeChild(this.contentEl_.firstChild);
-					(this.textNode_ = t.createTextNode(this.formattedTime_ || this.formatTime_(0))),
-						this.contentEl_.appendChild(this.textNode_);
+					((this.textNode_ = t.createTextNode(this.formattedTime_ || this.formatTime_(0))),
+						this.contentEl_.appendChild(this.textNode_));
 				}
 			}),
 			(r.formatTime_ = function (t) {
@@ -4493,11 +4494,11 @@
 			i
 		);
 	})(Vt);
-	(Pn.prototype.labelText_ = "Time"), (Pn.prototype.controlText_ = "Time"), Vt.registerComponent("TimeDisplay", Pn);
+	((Pn.prototype.labelText_ = "Time"), (Pn.prototype.controlText_ = "Time"), Vt.registerComponent("TimeDisplay", Pn));
 	var Un = (function (t) {
 		function e(e, i) {
 			var n;
-			return (n = t.call(this, e, i) || this).on(e, "ended", n.handleEnded), n;
+			return ((n = t.call(this, e, i) || this).on(e, "ended", n.handleEnded), n);
 		}
 		n(e, t);
 		var i = e.prototype;
@@ -4515,9 +4516,9 @@
 			e
 		);
 	})(Pn);
-	(Un.prototype.labelText_ = "Current Time"),
+	((Un.prototype.labelText_ = "Current Time"),
 		(Un.prototype.controlText_ = "Current Time"),
-		Vt.registerComponent("CurrentTimeDisplay", Un);
+		Vt.registerComponent("CurrentTimeDisplay", Un));
 	var In = (function (t) {
 		function e(e, i) {
 			var n;
@@ -4541,9 +4542,9 @@
 			e
 		);
 	})(Pn);
-	(In.prototype.labelText_ = "Duration"),
+	((In.prototype.labelText_ = "Duration"),
 		(In.prototype.controlText_ = "Duration"),
-		Vt.registerComponent("DurationDisplay", In);
+		Vt.registerComponent("DurationDisplay", In));
 	var xn = (function (t) {
 		function e() {
 			return t.apply(this, arguments) || this;
@@ -4592,13 +4593,17 @@
 			e
 		);
 	})(Pn);
-	(Dn.prototype.labelText_ = "Remaining Time"),
+	((Dn.prototype.labelText_ = "Remaining Time"),
 		(Dn.prototype.controlText_ = "Remaining Time"),
-		Vt.registerComponent("RemainingTimeDisplay", Dn);
+		Vt.registerComponent("RemainingTimeDisplay", Dn));
 	var Rn = (function (t) {
 		function e(e, i) {
 			var n;
-			return (n = t.call(this, e, i) || this).updateShowing(), n.on(n.player(), "durationchange", n.updateShowing), n;
+			return (
+				(n = t.call(this, e, i) || this).updateShowing(),
+				n.on(n.player(), "durationchange", n.updateShowing),
+				n
+			);
 		}
 		n(e, t);
 		var i = e.prototype;
@@ -4623,7 +4628,7 @@
 				);
 			}),
 			(i.dispose = function () {
-				(this.contentEl_ = null), t.prototype.dispose.call(this);
+				((this.contentEl_ = null), t.prototype.dispose.call(this));
 			}),
 			(i.updateShowing = function (t) {
 				this.player().duration() === 1 / 0 ? this.show() : this.hide();
@@ -4669,14 +4674,14 @@
 				this.player_.liveTracker.seekToLiveEdge();
 			}),
 			(i.dispose = function () {
-				this.player_.liveTracker && this.off(this.player_.liveTracker, "liveedgechange", this.updateLiveEdgeStatus),
+				(this.player_.liveTracker && this.off(this.player_.liveTracker, "liveedgechange", this.updateLiveEdgeStatus),
 					(this.textEl_ = null),
-					t.prototype.dispose.call(this);
+					t.prototype.dispose.call(this));
 			}),
 			e
 		);
 	})(kn);
-	(Mn.prototype.controlText_ = "Seek to live, currently playing live"), Vt.registerComponent("SeekToLive", Mn);
+	((Mn.prototype.controlText_ = "Seek to live, currently playing live"), Vt.registerComponent("SeekToLive", Mn));
 	var Bn = (function (t) {
 		function e(e, i) {
 			var n;
@@ -4709,7 +4714,7 @@
 			(i.disable = function () {
 				if (this.enabled()) {
 					var t = this.bar.el_.ownerDocument;
-					this.off("mousedown", this.handleMouseDown),
+					(this.off("mousedown", this.handleMouseDown),
 						this.off("touchstart", this.handleMouseDown),
 						this.off("focus", this.handleFocus),
 						this.off("blur", this.handleBlur),
@@ -4722,7 +4727,7 @@
 						this.removeAttribute("tabindex"),
 						this.addClass("disabled"),
 						this.playerEvent && this.off(this.player_, this.playerEvent, this.update),
-						(this.enabled_ = !1);
+						(this.enabled_ = !1));
 				}
 			}),
 			(i.createEl = function (e, i, n) {
@@ -4740,7 +4745,7 @@
 			}),
 			(i.handleMouseDown = function (t) {
 				var e = this.bar.el_.ownerDocument;
-				"mousedown" === t.type && t.preventDefault(),
+				("mousedown" === t.type && t.preventDefault(),
 					"touchstart" !== t.type || ie || t.preventDefault(),
 					F(),
 					this.addClass("vjs-sliding"),
@@ -4749,19 +4754,19 @@
 					this.on(e, "mouseup", this.handleMouseUp),
 					this.on(e, "touchmove", this.handleMouseMove),
 					this.on(e, "touchend", this.handleMouseUp),
-					this.handleMouseMove(t);
+					this.handleMouseMove(t));
 			}),
 			(i.handleMouseMove = function (t) {}),
 			(i.handleMouseUp = function () {
 				var t = this.bar.el_.ownerDocument;
-				V(),
+				(V(),
 					this.removeClass("vjs-sliding"),
 					this.trigger("sliderinactive"),
 					this.off(t, "mousemove", this.handleMouseMove),
 					this.off(t, "mouseup", this.handleMouseUp),
 					this.off(t, "touchmove", this.handleMouseMove),
 					this.off(t, "touchend", this.handleMouseUp),
-					this.update();
+					this.update());
 			}),
 			(i.update = function () {
 				if (this.el_) {
@@ -4771,7 +4776,7 @@
 						("number" != typeof t || t != t || t < 0 || t === 1 / 0) && (t = 0);
 						var i = (100 * t).toFixed(2) + "%",
 							n = e.el().style;
-						return this.vertical() ? (n.height = i) : (n.width = i), t;
+						return (this.vertical() ? (n.height = i) : (n.width = i), t);
 					}
 				}
 			}),
@@ -4791,12 +4796,12 @@
 				this.off(this.bar.el_.ownerDocument, "keydown", this.handleKeyPress);
 			}),
 			(i.handleClick = function (t) {
-				t.stopImmediatePropagation(), t.preventDefault();
+				(t.stopImmediatePropagation(), t.preventDefault());
 			}),
 			(i.vertical = function (t) {
 				if (void 0 === t) return this.vertical_ || !1;
-				(this.vertical_ = !!t),
-					this.vertical_ ? this.addClass("vjs-slider-vertical") : this.addClass("vjs-slider-horizontal");
+				((this.vertical_ = !!t),
+					this.vertical_ ? this.addClass("vjs-slider-vertical") : this.addClass("vjs-slider-horizontal"));
 			}),
 			e
 		);
@@ -4805,7 +4810,7 @@
 	var Nn = (function (t) {
 		function e(e, i) {
 			var n;
-			return ((n = t.call(this, e, i) || this).partEls_ = []), n.on(e, "progress", n.update), n;
+			return (((n = t.call(this, e, i) || this).partEls_ = []), n.on(e, "progress", n.update), n);
 		}
 		n(e, t);
 		var i = e.prototype;
@@ -4820,7 +4825,7 @@
 				});
 			}),
 			(i.dispose = function () {
-				(this.partEls_ = null), t.prototype.dispose.call(this);
+				((this.partEls_ = null), t.prototype.dispose.call(this));
 			}),
 			(i.update = function (t) {
 				var e = this.player_.liveTracker,
@@ -4831,16 +4836,16 @@
 					s = this.$(".vjs-control-text-loaded-percentage"),
 					o = function (t, e, i) {
 						var n = t / e || 0;
-						return (n = 100 * (n >= 1 ? 1 : n)), i && (n = n.toFixed(2)), n + "%";
+						return ((n = 100 * (n >= 1 ? 1 : n)), i && (n = n.toFixed(2)), n + "%");
 					};
-				(this.el_.style.width = o(r, n)), O(s, o(r, n, !0));
+				((this.el_.style.width = o(r, n)), O(s, o(r, n, !0)));
 				for (var u = 0; u < i.length; u++) {
 					var l = i.start(u),
 						c = i.end(u),
 						h = a[u];
-					h || ((h = this.el_.appendChild(L())), (a[u] = h)),
+					(h || ((h = this.el_.appendChild(L())), (a[u] = h)),
 						(h.style.left = o(l, r)),
-						(h.style.width = o(c - l, r));
+						(h.style.width = o(c - l, r)));
 				}
 				for (var d = a.length; d > i.length; d--) this.el_.removeChild(a[d - 1]);
 				a.length = i.length;
@@ -4867,15 +4872,15 @@
 					var s = t.left - r.left + a,
 						o = t.width - a + (r.right - t.right),
 						u = n.width / 2;
-					s < u ? (u += u - s) : o < u && (u = o),
+					(s < u ? (u += u - s) : o < u && (u = o),
 						u < 0 ? (u = 0) : u > n.width && (u = n.width),
 						(this.el_.style.right = "-" + u + "px"),
-						O(this.el_, i);
+						O(this.el_, i));
 				}
 			}),
 			(i.updateTime = function (t, e, i, n) {
 				var r = this;
-				this.rafId_ && this.cancelAnimationFrame(this.rafId_),
+				(this.rafId_ && this.cancelAnimationFrame(this.rafId_),
 					(this.rafId_ = this.requestAnimationFrame(function () {
 						var a,
 							s = r.player_.duration();
@@ -4884,8 +4889,8 @@
 								u = o - e * o;
 							a = (u < 1 ? "" : "-") + On(u, o);
 						} else a = On(i, s);
-						r.update(t, e, a), n && n();
-					}));
+						(r.update(t, e, a), n && n());
+					})));
 			}),
 			e
 		);
@@ -4916,13 +4921,13 @@
 			e
 		);
 	})(Vt);
-	(Fn.prototype.options_ = { children: [] }),
+	((Fn.prototype.options_ = { children: [] }),
 		$t || Qt || Fn.prototype.options_.children.push("timeTooltip"),
-		Vt.registerComponent("PlayProgressBar", Fn);
+		Vt.registerComponent("PlayProgressBar", Fn));
 	var Vn = (function (t) {
 		function e(e, i) {
 			var n;
-			return ((n = t.call(this, e, i) || this).update = Ct(wt(s(s(n)), n.update), 25)), n;
+			return (((n = t.call(this, e, i) || this).update = Ct(wt(s(s(n)), n.update), 25)), n);
 		}
 		n(e, t);
 		var i = e.prototype;
@@ -4940,36 +4945,36 @@
 			e
 		);
 	})(Vt);
-	(Vn.prototype.options_ = { children: ["timeTooltip"] }), Vt.registerComponent("MouseTimeDisplay", Vn);
+	((Vn.prototype.options_ = { children: ["timeTooltip"] }), Vt.registerComponent("MouseTimeDisplay", Vn));
 	var Hn = (function (t) {
 		function e(e, i) {
 			var n;
-			return (n = t.call(this, e, i) || this).setEventHandlers_(), n;
+			return ((n = t.call(this, e, i) || this).setEventHandlers_(), n);
 		}
 		n(e, t);
 		var i = e.prototype;
 		return (
 			(i.setEventHandlers_ = function () {
 				var t = this;
-				(this.update = Ct(wt(this, this.update), 30)),
+				((this.update = Ct(wt(this, this.update), 30)),
 					this.on(this.player_, "timeupdate", this.update),
 					this.on(this.player_, "ended", this.handleEnded),
 					this.on(this.player_, "durationchange", this.update),
 					this.player_.liveTracker && this.on(this.player_.liveTracker, "liveedgechange", this.update),
 					(this.updateInterval = null),
 					this.on(this.player_, ["playing"], function () {
-						t.clearInterval(t.updateInterval),
+						(t.clearInterval(t.updateInterval),
 							(t.updateInterval = t.setInterval(function () {
 								t.requestAnimationFrame(function () {
 									t.update();
 								});
-							}, 30));
+							}, 30)));
 					}),
 					this.on(this.player_, ["ended", "pause", "waiting"], function (e) {
 						(t.player_.liveTracker && t.player_.liveTracker.isLive() && "ended" !== e.type) ||
 							t.clearInterval(t.updateInterval);
 					}),
-					this.on(this.player_, ["timeupdate", "ended"], this.update);
+					this.on(this.player_, ["timeupdate", "ended"], this.update));
 			}),
 			(i.createEl = function () {
 				return t.prototype.createEl.call(
@@ -4982,7 +4987,7 @@
 			(i.update_ = function (t, e) {
 				var i = this.player_.liveTracker,
 					n = this.player_.duration();
-				i && i.isLive() && (n = this.player_.liveTracker.liveCurrentTime()),
+				(i && i.isLive() && (n = this.player_.liveTracker.liveCurrentTime()),
 					i && i.seekableEnd() === 1 / 0 ? this.disable() : this.enable(),
 					this.el_.setAttribute("aria-valuenow", (100 * e).toFixed(2)),
 					this.el_.setAttribute(
@@ -4993,11 +4998,11 @@
 							"{1} of {2}"
 						)
 					),
-					this.bar.update(H(this.el_), e);
+					this.bar.update(H(this.el_), e));
 			}),
 			(i.update = function (e) {
 				var i = t.prototype.update.call(this);
-				return this.update_(this.getCurrentTime_(), i), i;
+				return (this.update_(this.getCurrentTime_(), i), i);
 			}),
 			(i.getCurrentTime_ = function () {
 				return this.player_.scrubbing() ? this.player_.getCache().currentTime : this.player_.currentTime();
@@ -5048,11 +5053,11 @@
 				e && e.hide();
 			}),
 			(i.handleMouseUp = function (e) {
-				t.prototype.handleMouseUp.call(this, e),
+				(t.prototype.handleMouseUp.call(this, e),
 					e && e.stopPropagation(),
 					this.player_.scrubbing(!1),
 					this.player_.trigger({ type: "timeupdate", target: this, manuallyTriggered: !0 }),
-					this.videoWasPlaying && ke(this.player_.play());
+					this.videoWasPlaying && ke(this.player_.play()));
 			}),
 			(i.stepForward = function () {
 				this.player_.currentTime(this.player_.currentTime() + 5);
@@ -5071,10 +5076,10 @@
 			e
 		);
 	})(Bn);
-	(Hn.prototype.options_ = { children: ["loadProgressBar", "playProgressBar"], barName: "playProgressBar" }),
+	((Hn.prototype.options_ = { children: ["loadProgressBar", "playProgressBar"], barName: "playProgressBar" }),
 		$t || Qt || Hn.prototype.options_.children.splice(1, 0, "mouseTimeDisplay"),
 		(Hn.prototype.playerEvent = "timeupdate"),
-		Vt.registerComponent("SeekBar", Hn);
+		Vt.registerComponent("SeekBar", Hn));
 	var qn = (function (t) {
 		function e(e, i) {
 			var n;
@@ -5098,7 +5103,7 @@
 						n = e.el(),
 						r = H(n),
 						a = z(n, t).x;
-					a > 1 ? (a = 1) : a < 0 && (a = 0), i && i.update(r, a);
+					(a > 1 ? (a = 1) : a < 0 && (a = 0), i && i.update(r, a));
 				}
 			}),
 			(i.handleMouseSeek = function (t) {
@@ -5109,7 +5114,7 @@
 				return this.enabled_;
 			}),
 			(i.disable = function () {
-				this.children().forEach(function (t) {
+				(this.children().forEach(function (t) {
 					return t.disable && t.disable();
 				}),
 					this.enabled() &&
@@ -5117,40 +5122,40 @@
 						this.off(this.el_, "mousemove", this.handleMouseMove),
 						this.handleMouseUp(),
 						this.addClass("disabled"),
-						(this.enabled_ = !1));
+						(this.enabled_ = !1)));
 			}),
 			(i.enable = function () {
-				this.children().forEach(function (t) {
+				(this.children().forEach(function (t) {
 					return t.enable && t.enable();
 				}),
 					this.enabled() ||
 						(this.on(["mousedown", "touchstart"], this.handleMouseDown),
 						this.on(this.el_, "mousemove", this.handleMouseMove),
 						this.removeClass("disabled"),
-						(this.enabled_ = !0));
+						(this.enabled_ = !0)));
 			}),
 			(i.handleMouseDown = function (t) {
 				var e = this.el_.ownerDocument,
 					i = this.getChild("seekBar");
-				i && i.handleMouseDown(t),
+				(i && i.handleMouseDown(t),
 					this.on(e, "mousemove", this.throttledHandleMouseSeek),
 					this.on(e, "touchmove", this.throttledHandleMouseSeek),
 					this.on(e, "mouseup", this.handleMouseUp),
-					this.on(e, "touchend", this.handleMouseUp);
+					this.on(e, "touchend", this.handleMouseUp));
 			}),
 			(i.handleMouseUp = function (t) {
 				var e = this.el_.ownerDocument,
 					i = this.getChild("seekBar");
-				i && i.handleMouseUp(t),
+				(i && i.handleMouseUp(t),
 					this.off(e, "mousemove", this.throttledHandleMouseSeek),
 					this.off(e, "touchmove", this.throttledHandleMouseSeek),
 					this.off(e, "mouseup", this.handleMouseUp),
-					this.off(e, "touchend", this.handleMouseUp);
+					this.off(e, "touchend", this.handleMouseUp));
 			}),
 			e
 		);
 	})(Vt);
-	(qn.prototype.options_ = { children: ["seekBar"] }), Vt.registerComponent("ProgressControl", qn);
+	((qn.prototype.options_ = { children: ["seekBar"] }), Vt.registerComponent("ProgressControl", qn));
 	var zn = (function (e) {
 		function i(i, n) {
 			var r;
@@ -5175,12 +5180,12 @@
 			i
 		);
 	})(kn);
-	(zn.prototype.controlText_ = "Fullscreen"), Vt.registerComponent("FullscreenToggle", zn);
+	((zn.prototype.controlText_ = "Fullscreen"), Vt.registerComponent("FullscreenToggle", zn));
 	var Wn = function (t, e) {
-			e.tech_ && !e.tech_.featuresVolumeControl && t.addClass("vjs-hidden"),
+			(e.tech_ && !e.tech_.featuresVolumeControl && t.addClass("vjs-hidden"),
 				t.on(e, "loadstart", function () {
 					e.tech_.featuresVolumeControl ? t.removeClass("vjs-hidden") : t.addClass("vjs-hidden");
-				});
+				}));
 		},
 		Gn = (function (t) {
 			function e() {
@@ -5234,14 +5239,14 @@
 				return this.player_.muted() ? 0 : this.player_.volume();
 			}),
 			(i.stepForward = function () {
-				this.checkMuted(), this.player_.volume(this.player_.volume() + 0.1);
+				(this.checkMuted(), this.player_.volume(this.player_.volume() + 0.1));
 			}),
 			(i.stepBack = function () {
-				this.checkMuted(), this.player_.volume(this.player_.volume() - 0.1);
+				(this.checkMuted(), this.player_.volume(this.player_.volume() - 0.1));
 			}),
 			(i.updateARIAAttributes = function (t) {
 				var e = this.player_.muted() ? 0 : this.volumeAsPercentage_();
-				this.el_.setAttribute("aria-valuenow", e), this.el_.setAttribute("aria-valuetext", e + "%");
+				(this.el_.setAttribute("aria-valuenow", e), this.el_.setAttribute("aria-valuetext", e + "%"));
 			}),
 			(i.volumeAsPercentage_ = function () {
 				return Math.round(100 * this.player_.volume());
@@ -5256,9 +5261,9 @@
 			e
 		);
 	})(Bn);
-	(Xn.prototype.options_ = { children: ["volumeLevel"], barName: "volumeLevel" }),
+	((Xn.prototype.options_ = { children: ["volumeLevel"], barName: "volumeLevel" }),
 		(Xn.prototype.playerEvent = "volumechange"),
-		Vt.registerComponent("VolumeBar", Xn);
+		Vt.registerComponent("VolumeBar", Xn));
 	var Yn = (function (t) {
 		function e(e, i) {
 			var n;
@@ -5273,12 +5278,12 @@
 				n.on("mousedown", n.handleMouseDown),
 				n.on("touchstart", n.handleMouseDown),
 				n.on(n.volumeBar, ["focus", "slideractive"], function () {
-					n.volumeBar.addClass("vjs-slider-active"), n.addClass("vjs-slider-active"), n.trigger("slideractive");
+					(n.volumeBar.addClass("vjs-slider-active"), n.addClass("vjs-slider-active"), n.trigger("slideractive"));
 				}),
 				n.on(n.volumeBar, ["blur", "sliderinactive"], function () {
-					n.volumeBar.removeClass("vjs-slider-active"),
+					(n.volumeBar.removeClass("vjs-slider-active"),
 						n.removeClass("vjs-slider-active"),
-						n.trigger("sliderinactive");
+						n.trigger("sliderinactive"));
 				}),
 				n
 			);
@@ -5295,17 +5300,17 @@
 			}),
 			(i.handleMouseDown = function (t) {
 				var e = this.el_.ownerDocument;
-				this.on(e, "mousemove", this.throttledHandleMouseMove),
+				(this.on(e, "mousemove", this.throttledHandleMouseMove),
 					this.on(e, "touchmove", this.throttledHandleMouseMove),
 					this.on(e, "mouseup", this.handleMouseUp),
-					this.on(e, "touchend", this.handleMouseUp);
+					this.on(e, "touchend", this.handleMouseUp));
 			}),
 			(i.handleMouseUp = function (t) {
 				var e = this.el_.ownerDocument;
-				this.off(e, "mousemove", this.throttledHandleMouseMove),
+				(this.off(e, "mousemove", this.throttledHandleMouseMove),
 					this.off(e, "touchmove", this.throttledHandleMouseMove),
 					this.off(e, "mouseup", this.handleMouseUp),
-					this.off(e, "touchend", this.handleMouseUp);
+					this.off(e, "touchend", this.handleMouseUp));
 			}),
 			(i.handleMouseMove = function (t) {
 				this.volumeBar.handleMouseMove(t);
@@ -5313,17 +5318,22 @@
 			e
 		);
 	})(Vt);
-	(Yn.prototype.options_ = { children: ["volumeBar"] }), Vt.registerComponent("VolumeControl", Yn);
+	((Yn.prototype.options_ = { children: ["volumeBar"] }), Vt.registerComponent("VolumeControl", Yn));
 	var $n = function (t, e) {
-			e.tech_ && !e.tech_.featuresMuteControl && t.addClass("vjs-hidden"),
+			(e.tech_ && !e.tech_.featuresMuteControl && t.addClass("vjs-hidden"),
 				t.on(e, "loadstart", function () {
 					e.tech_.featuresMuteControl ? t.removeClass("vjs-hidden") : t.addClass("vjs-hidden");
-				});
+				}));
 		},
 		Kn = (function (t) {
 			function e(e, i) {
 				var n;
-				return (n = t.call(this, e, i) || this), $n(s(s(n)), e), n.on(e, ["loadstart", "volumechange"], n.update), n;
+				return (
+					(n = t.call(this, e, i) || this),
+					$n(s(s(n)), e),
+					n.on(e, ["loadstart", "volumechange"], n.update),
+					n
+				);
 			}
 			n(e, t);
 			var i = e.prototype;
@@ -5336,17 +5346,17 @@
 						i = this.player_.lastVolume_();
 					if (0 === e) {
 						var n = i < 0.1 ? 0.1 : i;
-						this.player_.volume(n), this.player_.muted(!1);
+						(this.player_.volume(n), this.player_.muted(!1));
 					} else this.player_.muted(!this.player_.muted());
 				}),
 				(i.update = function (t) {
-					this.updateIcon_(), this.updateControlText_();
+					(this.updateIcon_(), this.updateControlText_());
 				}),
 				(i.updateIcon_ = function () {
 					var t = this.player_.volume(),
 						e = 3;
-					$t && this.player_.muted(this.player_.tech_.el_.muted),
-						0 === t || this.player_.muted() ? (e = 0) : t < 0.33 ? (e = 1) : t < 0.67 && (e = 2);
+					($t && this.player_.muted(this.player_.tech_.el_.muted),
+						0 === t || this.player_.muted() ? (e = 0) : t < 0.33 ? (e = 1) : t < 0.67 && (e = 2));
 					for (var i = 0; i < 4; i++) x(this.el_, "vjs-vol-" + i);
 					I(this.el_, "vjs-vol-" + e);
 				}),
@@ -5357,7 +5367,7 @@
 				e
 			);
 		})(kn);
-	(Kn.prototype.controlText_ = "Mute"), Vt.registerComponent("MuteToggle", Kn);
+	((Kn.prototype.controlText_ = "Mute"), Vt.registerComponent("MuteToggle", Kn));
 	var Qn = (function (t) {
 		function e(e, i) {
 			var n;
@@ -5382,12 +5392,12 @@
 				this.removeClass("vjs-slider-active");
 			}),
 			(i.volumePanelState_ = function () {
-				this.volumeControl.hasClass("vjs-hidden") &&
+				(this.volumeControl.hasClass("vjs-hidden") &&
 					this.muteToggle.hasClass("vjs-hidden") &&
 					this.addClass("vjs-hidden"),
 					this.volumeControl.hasClass("vjs-hidden") &&
 						!this.muteToggle.hasClass("vjs-hidden") &&
-						this.addClass("vjs-mute-toggle-only");
+						this.addClass("vjs-mute-toggle-only"));
 			}),
 			(i.createEl = function () {
 				var e = "vjs-volume-panel-horizontal";
@@ -5399,7 +5409,7 @@
 			e
 		);
 	})(Vt);
-	(Qn.prototype.options_ = { children: ["muteToggle", "volumeControl"] }), Vt.registerComponent("VolumePanel", Qn);
+	((Qn.prototype.options_ = { children: ["muteToggle", "volumeControl"] }), Vt.registerComponent("VolumePanel", Qn));
 	var Jn = (function (e) {
 		function i(t, i) {
 			var n;
@@ -5415,7 +5425,7 @@
 		var r = i.prototype;
 		return (
 			(r.addItem = function (t) {
-				this.addChild(t),
+				(this.addChild(t),
 					t.on("blur", wt(this, this.handleBlur)),
 					t.on(
 						["tap", "click"],
@@ -5424,22 +5434,22 @@
 								(this.menuButton_.unpressButton(),
 								"CaptionSettingsMenuItem" !== t.name() && this.menuButton_.focus());
 						})
-					);
+					));
 			}),
 			(r.createEl = function () {
 				var t = this.options_.contentElType || "ul";
-				(this.contentEl_ = L(t, { className: "vjs-menu-content" })), this.contentEl_.setAttribute("role", "menu");
+				((this.contentEl_ = L(t, { className: "vjs-menu-content" })), this.contentEl_.setAttribute("role", "menu"));
 				var i = e.prototype.createEl.call(this, "div", { append: this.contentEl_, className: "vjs-menu" });
 				return (
 					i.appendChild(this.contentEl_),
 					dt(i, "click", function (t) {
-						t.preventDefault(), t.stopImmediatePropagation();
+						(t.preventDefault(), t.stopImmediatePropagation());
 					}),
 					i
 				);
 			}),
 			(r.dispose = function () {
-				(this.contentEl_ = null), e.prototype.dispose.call(this);
+				((this.contentEl_ = null), e.prototype.dispose.call(this));
 			}),
 			(r.handleBlur = function (e) {
 				var i = e.relatedTarget || t.activeElement;
@@ -5459,18 +5469,18 @@
 			}),
 			(r.stepForward = function () {
 				var t = 0;
-				void 0 !== this.focusedChild_ && (t = this.focusedChild_ + 1), this.focus(t);
+				(void 0 !== this.focusedChild_ && (t = this.focusedChild_ + 1), this.focus(t));
 			}),
 			(r.stepBack = function () {
 				var t = 0;
-				void 0 !== this.focusedChild_ && (t = this.focusedChild_ - 1), this.focus(t);
+				(void 0 !== this.focusedChild_ && (t = this.focusedChild_ - 1), this.focus(t));
 			}),
 			(r.focus = function (t) {
 				void 0 === t && (t = 0);
 				var e = this.children().slice();
-				e.length && e[0].className && /vjs-menu-title/.test(e[0].className) && e.shift(),
+				(e.length && e[0].className && /vjs-menu-title/.test(e[0].className) && e.shift(),
 					e.length > 0 &&
-						(t < 0 ? (t = 0) : t >= e.length && (t = e.length - 1), (this.focusedChild_ = t), e[t].el_.focus());
+						(t < 0 ? (t = 0) : t >= e.length && (t = e.length - 1), (this.focusedChild_ = t), e[t].el_.focus()));
 			}),
 			i
 		);
@@ -5479,10 +5489,10 @@
 	var Zn = (function (e) {
 		function i(t, i) {
 			var n;
-			void 0 === i && (i = {}),
+			(void 0 === i && (i = {}),
 				((n = e.call(this, t, i) || this).menuButton_ = new kn(t, i)),
 				n.menuButton_.controlText(n.controlText_),
-				n.menuButton_.el_.setAttribute("aria-haspopup", "true");
+				n.menuButton_.el_.setAttribute("aria-haspopup", "true"));
 			var r = kn.prototype.buildCSSClass();
 			return (
 				(n.menuButton_.el_.className = n.buildCSSClass() + " " + r),
@@ -5506,18 +5516,18 @@
 		return (
 			(r.update = function () {
 				var t = this.createMenu();
-				this.menu && (this.menu.dispose(), this.removeChild(this.menu)),
+				(this.menu && (this.menu.dispose(), this.removeChild(this.menu)),
 					(this.menu = t),
 					this.addChild(t),
 					(this.buttonPressed_ = !1),
 					this.menuButton_.el_.setAttribute("aria-expanded", "false"),
-					this.items && this.items.length <= this.hideThreshold_ ? this.hide() : this.show();
+					this.items && this.items.length <= this.hideThreshold_ ? this.hide() : this.show());
 			}),
 			(r.createMenu = function () {
 				var t = new Jn(this.player_, { menuButton: this });
 				if (((this.hideThreshold_ = 0), this.options_.title)) {
 					var e = L("li", { className: "vjs-menu-title", innerHTML: jt(this.options_.title), tabIndex: -1 });
-					(this.hideThreshold_ += 1), t.children_.unshift(e), P(e, t.contentEl());
+					((this.hideThreshold_ += 1), t.children_.unshift(e), P(e, t.contentEl()));
 				}
 				if (((this.items = this.createItems()), this.items))
 					for (var i = 0; i < this.items.length; i++) t.addItem(this.items[i]);
@@ -5542,7 +5552,7 @@
 				);
 			}),
 			(r.controlText = function (t, e) {
-				return void 0 === e && (e = this.menuButton_.el()), this.menuButton_.controlText(t, e);
+				return (void 0 === e && (e = this.menuButton_.el()), this.menuButton_.controlText(t, e));
 			}),
 			(r.handleClick = function (t) {
 				this.buttonPressed_ ? this.unpressButton() : this.pressButton();
@@ -5593,10 +5603,10 @@
 					this.menuButton_.el_.setAttribute("aria-expanded", "false"));
 			}),
 			(r.disable = function () {
-				this.unpressButton(), (this.enabled_ = !1), this.addClass("vjs-disabled"), this.menuButton_.disable();
+				(this.unpressButton(), (this.enabled_ = !1), this.addClass("vjs-disabled"), this.menuButton_.disable());
 			}),
 			(r.enable = function () {
-				(this.enabled_ = !0), this.removeClass("vjs-disabled"), this.menuButton_.enable();
+				((this.enabled_ = !0), this.removeClass("vjs-disabled"), this.menuButton_.enable());
 			}),
 			i
 		);
@@ -5613,12 +5623,12 @@
 				r.addEventListener("addtrack", a),
 				n.player_.on("ready", a),
 				n.player_.on("dispose", function () {
-					r.removeEventListener("removetrack", a), r.removeEventListener("addtrack", a);
+					(r.removeEventListener("removetrack", a), r.removeEventListener("addtrack", a));
 				}),
 				n
 			);
 		}
-		return n(e, t), e;
+		return (n(e, t), e);
 	})(Zn);
 	Vt.registerComponent("TrackButton", tr);
 	var er = (function (t) {
@@ -5683,9 +5693,9 @@
 			var a,
 				o = r.track,
 				u = n.textTracks();
-			(r.label = o.label || o.language || "Unknown"),
+			((r.label = o.label || o.language || "Unknown"),
 				(r.selected = "showing" === o.mode),
-				((a = i.call(this, n, r) || this).track = o);
+				((a = i.call(this, n, r) || this).track = o));
 			var l,
 				c = function () {
 					for (var t = arguments.length, e = new Array(t), i = 0; i < t; i++) e[i] = arguments[i];
@@ -5699,9 +5709,9 @@
 			u.addEventListener("change", c),
 			u.addEventListener("selectedlanguagechange", h),
 			a.on("dispose", function () {
-				n.off(["loadstart", "texttrackchange"], c),
+				(n.off(["loadstart", "texttrackchange"], c),
 					u.removeEventListener("change", c),
-					u.removeEventListener("selectedlanguagechange", h);
+					u.removeEventListener("selectedlanguagechange", h));
 			}),
 			void 0 === u.onchange) &&
 				a.on(["tap", "click"], function () {
@@ -5709,9 +5719,9 @@
 						try {
 							l = new e.Event("change");
 						} catch (t) {}
-					l || (l = t.createEvent("Event")).initEvent("change", !0, !0), u.dispatchEvent(l);
+					(l || (l = t.createEvent("Event")).initEvent("change", !0, !0), u.dispatchEvent(l));
 				});
-			return a.handleTracksChange(), a;
+			return (a.handleTracksChange(), a);
 		}
 		n(r, i);
 		var a = r.prototype;
@@ -5744,7 +5754,7 @@
 				}
 			}),
 			(a.dispose = function () {
-				(this.track = null), i.prototype.dispose.call(this);
+				((this.track = null), i.prototype.dispose.call(this));
 			}),
 			r
 		);
@@ -5790,24 +5800,24 @@
 	Vt.registerComponent("OffTextTrackMenuItem", nr);
 	var rr = (function (t) {
 		function e(e, i) {
-			return void 0 === i && (i = {}), (i.tracks = e.textTracks()), t.call(this, e, i) || this;
+			return (void 0 === i && (i = {}), (i.tracks = e.textTracks()), t.call(this, e, i) || this);
 		}
 		return (
 			n(e, t),
 			(e.prototype.createItems = function (t, e) {
 				var i;
-				void 0 === t && (t = []),
+				(void 0 === t && (t = []),
 					void 0 === e && (e = ir),
 					this.label_ && (i = this.label_ + " off"),
 					t.push(new nr(this.player_, { kinds: this.kinds_, kind: this.kind_, label: i })),
-					(this.hideThreshold_ += 1);
+					(this.hideThreshold_ += 1));
 				var n = this.player_.textTracks();
 				Array.isArray(this.kinds_) || (this.kinds_ = [this.kind_]);
 				for (var r = 0; r < n.length; r++) {
 					var a = n[r];
 					if (this.kinds_.indexOf(a.kind) > -1) {
 						var s = new e(this.player_, { track: a, selectable: !0, multiSelectable: !1 });
-						s.addClass("vjs-" + a.kind + "-menu-item"), t.push(s);
+						(s.addClass("vjs-" + a.kind + "-menu-item"), t.push(s));
 					}
 				}
 				return t;
@@ -5837,9 +5847,9 @@
 		var i = e.prototype;
 		return (
 			(i.handleClick = function (e) {
-				t.prototype.handleClick.call(this),
+				(t.prototype.handleClick.call(this),
 					this.player_.currentTime(this.cue.startTime),
-					this.update(this.cue.startTime);
+					this.update(this.cue.startTime));
 			}),
 			(i.update = function (t) {
 				var e = this.cue,
@@ -5864,15 +5874,15 @@
 				return "vjs-chapters-button " + t.prototype.buildWrapperCSSClass.call(this);
 			}),
 			(i.update = function (e) {
-				(this.track_ && (!e || ("addtrack" !== e.type && "removetrack" !== e.type))) ||
+				((this.track_ && (!e || ("addtrack" !== e.type && "removetrack" !== e.type))) ||
 					this.setTrack(this.findChaptersTrack()),
-					t.prototype.update.call(this);
+					t.prototype.update.call(this));
 			}),
 			(i.setTrack = function (t) {
 				if (this.track_ !== t) {
 					if ((this.updateHandler_ || (this.updateHandler_ = this.update.bind(this)), this.track_)) {
 						var e = this.player_.remoteTextTrackEls().getTrackElementByTrack_(this.track_);
-						e && e.removeEventListener("load", this.updateHandler_), (this.track_ = null);
+						(e && e.removeEventListener("load", this.updateHandler_), (this.track_ = null));
 					}
 					if (((this.track_ = t), this.track_)) {
 						this.track_.mode = "hidden";
@@ -5891,7 +5901,7 @@
 				return this.track_ && this.track_.label ? this.track_.label : this.localize(jt(this.kind_));
 			}),
 			(i.createMenu = function () {
-				return (this.options_.title = this.getMenuCaption()), t.prototype.createMenu.call(this);
+				return ((this.options_.title = this.getMenuCaption()), t.prototype.createMenu.call(this));
 			}),
 			(i.createItems = function () {
 				var t = [];
@@ -5908,7 +5918,9 @@
 			e
 		);
 	})(rr);
-	(sr.prototype.kind_ = "chapters"), (sr.prototype.controlText_ = "Chapters"), Vt.registerComponent("ChaptersButton", sr);
+	((sr.prototype.kind_ = "chapters"),
+		(sr.prototype.controlText_ = "Chapters"),
+		Vt.registerComponent("ChaptersButton", sr));
 	var or = (function (t) {
 		function e(e, i, n) {
 			var r;
@@ -5945,9 +5957,9 @@
 			e
 		);
 	})(rr);
-	(or.prototype.kind_ = "descriptions"),
+	((or.prototype.kind_ = "descriptions"),
 		(or.prototype.controlText_ = "Descriptions"),
-		Vt.registerComponent("DescriptionsButton", or);
+		Vt.registerComponent("DescriptionsButton", or));
 	var ur = (function (t) {
 		function e(e, i, n) {
 			return t.call(this, e, i, n) || this;
@@ -5964,9 +5976,9 @@
 			e
 		);
 	})(rr);
-	(ur.prototype.kind_ = "subtitles"),
+	((ur.prototype.kind_ = "subtitles"),
 		(ur.prototype.controlText_ = "Subtitles"),
-		Vt.registerComponent("SubtitlesButton", ur);
+		Vt.registerComponent("SubtitlesButton", ur));
 	var lr = (function (t) {
 		function e(e, i) {
 			var n;
@@ -6020,7 +6032,9 @@
 			e
 		);
 	})(rr);
-	(cr.prototype.kind_ = "captions"), (cr.prototype.controlText_ = "Captions"), Vt.registerComponent("CaptionsButton", cr);
+	((cr.prototype.kind_ = "captions"),
+		(cr.prototype.controlText_ = "Captions"),
+		Vt.registerComponent("CaptionsButton", cr));
 	var hr = (function (t) {
 		function e() {
 			return t.apply(this, arguments) || this;
@@ -6075,18 +6089,18 @@
 			e
 		);
 	})(rr);
-	(dr.prototype.kinds_ = ["captions", "subtitles"]),
+	((dr.prototype.kinds_ = ["captions", "subtitles"]),
 		(dr.prototype.controlText_ = "Subtitles"),
-		Vt.registerComponent("SubsCapsButton", dr);
+		Vt.registerComponent("SubsCapsButton", dr));
 	var pr = (function (t) {
 		function e(e, i) {
 			var n,
 				r = i.track,
 				a = e.audioTracks();
-			(i.label = r.label || r.language || "Unknown"),
+			((i.label = r.label || r.language || "Unknown"),
 				(i.selected = r.enabled),
 				((n = t.call(this, e, i) || this).track = r),
-				n.addClass("vjs-" + r.kind + "-menu-item");
+				n.addClass("vjs-" + r.kind + "-menu-item"));
 			var o = function () {
 				for (var t = arguments.length, e = new Array(t), i = 0; i < t; i++) e[i] = arguments[i];
 				n.handleTracksChange.apply(s(s(n)), e);
@@ -6131,7 +6145,7 @@
 	Vt.registerComponent("AudioTrackMenuItem", pr);
 	var fr = (function (t) {
 		function e(e, i) {
-			return void 0 === i && (i = {}), (i.tracks = e.audioTracks()), t.call(this, e, i) || this;
+			return (void 0 === i && (i = {}), (i.tracks = e.audioTracks()), t.call(this, e, i) || this);
 		}
 		n(e, t);
 		var i = e.prototype;
@@ -6143,7 +6157,7 @@
 				return "vjs-audio-button " + t.prototype.buildWrapperCSSClass.call(this);
 			}),
 			(i.createItems = function (t) {
-				void 0 === t && (t = []), (this.hideThreshold_ = 1);
+				(void 0 === t && (t = []), (this.hideThreshold_ = 1));
 				for (var e = this.player_.audioTracks(), i = 0; i < e.length; i++) {
 					var n = e[i];
 					t.push(new pr(this.player_, { track: n, selectable: !0, multiSelectable: !1 }));
@@ -6153,7 +6167,7 @@
 			e
 		);
 	})(tr);
-	(fr.prototype.controlText_ = "Audio Track"), Vt.registerComponent("AudioTrackButton", fr);
+	((fr.prototype.controlText_ = "Audio Track"), Vt.registerComponent("AudioTrackButton", fr));
 	var mr = (function (t) {
 		function e(e, i) {
 			var n,
@@ -6174,7 +6188,7 @@
 		var i = e.prototype;
 		return (
 			(i.handleClick = function (e) {
-				t.prototype.handleClick.call(this), this.player().playbackRate(this.rate);
+				(t.prototype.handleClick.call(this), this.player().playbackRate(this.rate));
 			}),
 			(i.update = function (t) {
 				this.selected(this.player().playbackRate() === this.rate);
@@ -6182,7 +6196,7 @@
 			e
 		);
 	})(er);
-	(mr.prototype.contentElType = "button"), Vt.registerComponent("PlaybackRateMenuItem", mr);
+	((mr.prototype.contentElType = "button"), Vt.registerComponent("PlaybackRateMenuItem", mr));
 	var gr = (function (t) {
 		function e(e, i) {
 			var n;
@@ -6206,7 +6220,7 @@
 				);
 			}),
 			(i.dispose = function () {
-				(this.labelEl_ = null), t.prototype.dispose.call(this);
+				((this.labelEl_ = null), t.prototype.dispose.call(this));
 			}),
 			(i.buildCSSClass = function () {
 				return "vjs-playback-rate " + t.prototype.buildCSSClass.call(this);
@@ -6253,7 +6267,7 @@
 			e
 		);
 	})(Zn);
-	(gr.prototype.controlText_ = "Playback Rate"), Vt.registerComponent("PlaybackRateMenuButton", gr);
+	((gr.prototype.controlText_ = "Playback Rate"), Vt.registerComponent("PlaybackRateMenuButton", gr));
 	var yr = (function (t) {
 		function e() {
 			return t.apply(this, arguments) || this;
@@ -6283,7 +6297,7 @@
 			}),
 			(i.createEl = function () {
 				var e = t.prototype.createEl.call(this, { className: this.buildCSSClass() });
-				return (e.innerHTML = " "), e;
+				return ((e.innerHTML = " "), e);
 			}),
 			e
 		);
@@ -6301,7 +6315,7 @@
 			e
 		);
 	})(Vt);
-	(_r.prototype.options_ = {
+	((_r.prototype.options_ = {
 		children: [
 			"playToggle",
 			"volumePanel",
@@ -6321,11 +6335,11 @@
 			"fullscreenToggle",
 		],
 	}),
-		Vt.registerComponent("ControlBar", _r);
+		Vt.registerComponent("ControlBar", _r));
 	var br = (function (t) {
 		function e(e, i) {
 			var n;
-			return (n = t.call(this, e, i) || this).on(e, "error", n.open), n;
+			return ((n = t.call(this, e, i) || this).on(e, "error", n.open), n);
 		}
 		n(e, t);
 		var i = e.prototype;
@@ -6340,8 +6354,13 @@
 			e
 		);
 	})(Le);
-	(br.prototype.options_ = Ft(Le.prototype.options_, { pauseOnOpen: !1, fillAlways: !0, temporary: !1, uncloseable: !0 })),
-		Vt.registerComponent("ErrorDisplay", br);
+	((br.prototype.options_ = Ft(Le.prototype.options_, {
+		pauseOnOpen: !1,
+		fillAlways: !0,
+		temporary: !1,
+		uncloseable: !0,
+	})),
+		Vt.registerComponent("ErrorDisplay", br));
 	var Tr = ["#000", "Black"],
 		Sr = ["#00F", "Blue"],
 		kr = ["#0FF", "Cyan"],
@@ -6450,10 +6469,10 @@
 				void 0 === e.persistTextTrackSettings &&
 					(n.options_.persistTextTrackSettings = n.options_.playerOptions.persistTextTrackSettings),
 				n.on(n.$(".vjs-done-button"), "click", function () {
-					n.saveSettings(), n.close();
+					(n.saveSettings(), n.close());
 				}),
 				n.on(n.$(".vjs-default-button"), "click", function () {
-					n.setDefaults(), n.updateDisplay();
+					(n.setDefaults(), n.updateDisplay());
 				}),
 				g(Ir, function (t) {
 					n.on(n.$(t.selector), "change", n.updateDisplay);
@@ -6466,11 +6485,11 @@
 		var a = r.prototype;
 		return (
 			(a.dispose = function () {
-				(this.endDialog = null), i.prototype.dispose.call(this);
+				((this.endDialog = null), i.prototype.dispose.call(this));
 			}),
 			(a.createElSelect_ = function (t, e, i) {
 				var n = this;
-				void 0 === e && (e = ""), void 0 === i && (i = "label");
+				(void 0 === e && (e = ""), void 0 === i && (i = "label"));
 				var r = Ir[t],
 					a = r.id.replace("%s", this.id_),
 					s = [e, a].join(" ").trim();
@@ -6593,7 +6612,7 @@
 						var r,
 							a,
 							s = ((r = n.$(e.selector)), (a = e.parser), xr(r.options[r.options.selectedIndex].value, a));
-						return void 0 !== s && (t[i] = s), t;
+						return (void 0 !== s && (t[i] = s), t);
 					}),
 					void 0 === (i = {}) && (i = 0),
 					m((t = Ir)).reduce(function (i, n) {
@@ -6647,7 +6666,7 @@
 				t && t.updateDisplay();
 			}),
 			(a.conditionalBlur_ = function () {
-				(this.previouslyActiveEl_ = null), this.off(t, "keydown", this.handleKeyDown);
+				((this.previouslyActiveEl_ = null), this.off(t, "keydown", this.handleKeyDown));
 				var e = this.player_.controlBar,
 					i = e && e.subsCapsButton,
 					n = e && e.captionsButton;
@@ -6694,7 +6713,7 @@
 				this.player_ && this.player_.trigger && this.player_.trigger("playerresize");
 			}),
 			(r.dispose = function () {
-				this.debouncedHandler_ && this.debouncedHandler_.cancel(),
+				(this.debouncedHandler_ && this.debouncedHandler_.cancel(),
 					this.resizeObserver_ &&
 						(this.player_.el() && this.resizeObserver_.unobserve(this.player_.el()),
 						this.resizeObserver_.disconnect()),
@@ -6703,7 +6722,7 @@
 					(this.ResizeObserver = null),
 					(this.resizeObserver = null),
 					(this.debouncedHandler_ = null),
-					(this.loadListener_ = null);
+					(this.loadListener_ = null));
 			}),
 			i
 		);
@@ -6713,7 +6732,7 @@
 		function e(e, i) {
 			var n,
 				r = Ft({ createEl: !1 }, i);
-			return (n = t.call(this, e, r) || this).reset_(), n.on(n.player_, "durationchange", n.handleDurationchange), n;
+			return ((n = t.call(this, e, r) || this).reset_(), n.on(n.player_, "durationchange", n.handleDurationchange), n);
 		}
 		n(e, t);
 		var i = e.prototype;
@@ -6730,14 +6749,14 @@
 				var t = this.player_.seekable();
 				if (t && t.length) {
 					var e = this.seekableEnd();
-					e !== this.lastSeekEnd_ &&
+					(e !== this.lastSeekEnd_ &&
 						(this.lastSeekEnd_ && (this.seekableIncrement_ = Math.abs(e - this.lastSeekEnd_)),
 						(this.pastSeekEnd_ = 0),
 						(this.lastSeekEnd_ = e),
 						this.trigger("seekableendchange")),
 						(this.pastSeekEnd_ = this.pastSeekEnd() + 0.03),
 						this.isBehind_() !== this.behindLiveEdge() &&
-							((this.behindLiveEdge_ = this.isBehind_()), this.trigger("liveedgechange"));
+							((this.behindLiveEdge_ = this.isBehind_()), this.trigger("liveedgechange")));
 				}
 			}),
 			(i.handleDurationchange = function () {
@@ -6753,7 +6772,7 @@
 					this.one(this.player_, "play", this.handlePlay),
 					this.timeupdateSeen_ ||
 						((this.handleTimeupdate = function () {
-							(t.timeupdateSeen_ = !0), (t.handleTimeupdate = null);
+							((t.timeupdateSeen_ = !0), (t.handleTimeupdate = null));
 						}),
 						this.one(this.player_, "timeupdate", this.handleTimeupdate)));
 			}),
@@ -6761,7 +6780,7 @@
 				this.one(this.player_, "timeupdate", this.seekToLiveEdge);
 			}),
 			(i.reset_ = function () {
-				(this.pastSeekEnd_ = 0),
+				((this.pastSeekEnd_ = 0),
 					(this.lastSeekEnd_ = null),
 					(this.behindLiveEdge_ = null),
 					(this.timeupdateSeen_ = !1),
@@ -6773,7 +6792,7 @@
 					this.off(this.player_, "play", this.handlePlay),
 					this.off(this.player_, "timeupdate", this.seekToLiveEdge),
 					this.handleTimeupdate &&
-						(this.off(this.player_, "timeupdate", this.handleTimeupdate), (this.handleTimeupdate = null));
+						(this.off(this.player_, "timeupdate", this.handleTimeupdate), (this.handleTimeupdate = null)));
 			}),
 			(i.stopTracking = function () {
 				this.isTracking() && this.reset_();
@@ -6813,7 +6832,7 @@
 					(this.player_.currentTime(this.liveCurrentTime()), this.player_.paused() && this.player_.play());
 			}),
 			(i.dispose = function () {
-				this.stopTracking(), t.prototype.dispose.call(this);
+				(this.stopTracking(), t.prototype.dispose.call(this));
 			}),
 			e
 		);
@@ -6821,7 +6840,7 @@
 	Vt.registerComponent("LiveTracker", Mr);
 	var Br = function (t) {
 			var e = t.el();
-			if (e.hasAttribute("src")) return t.triggerSourceset(e.src), !0;
+			if (e.hasAttribute("src")) return (t.triggerSourceset(e.src), !0);
 			var i = t.$$("source"),
 				n = [],
 				r = "";
@@ -6840,7 +6859,7 @@
 				var n = t.createElement(this.nodeName.toLowerCase());
 				n.innerHTML = i;
 				for (var r = t.createDocumentFragment(); n.childNodes.length; ) r.appendChild(n.childNodes[0]);
-				return (this.innerText = ""), e.Element.prototype.appendChild.call(this, r), this.innerHTML;
+				return ((this.innerText = ""), e.Element.prototype.appendChild.call(this, r), this.innerHTML);
 			},
 		}),
 		jr = function (t, e) {
@@ -6849,7 +6868,7 @@
 				n < t.length && !((i = Object.getOwnPropertyDescriptor(t[n], e)) && i.set && i.get);
 				n++
 			);
-			return (i.enumerable = !0), (i.configurable = !0), i;
+			return ((i.enumerable = !0), (i.configurable = !0), i);
 		},
 		Fr = function (t) {
 			var i = t.el();
@@ -6862,21 +6881,21 @@
 						return function () {
 							for (var n = arguments.length, r = new Array(n), a = 0; a < n; a++) r[a] = arguments[a];
 							var s = e.apply(i, r);
-							return Br(t), s;
+							return (Br(t), s);
 						};
 					};
-				["append", "appendChild", "insertAdjacentHTML"].forEach(function (t) {
+				(["append", "appendChild", "insertAdjacentHTML"].forEach(function (t) {
 					i[t] && ((n[t] = i[t]), (i[t] = a(n[t])));
 				}),
 					Object.defineProperty(i, "innerHTML", Ft(r, { set: a(r.set) })),
 					(i.resetSourceWatch_ = function () {
-						(i.resetSourceWatch_ = null),
+						((i.resetSourceWatch_ = null),
 							Object.keys(n).forEach(function (t) {
 								i[t] = n[t];
 							}),
-							Object.defineProperty(i, "innerHTML", r);
+							Object.defineProperty(i, "innerHTML", r));
 					}),
-					t.one("sourceset", i.resetSourceWatch_);
+					t.one("sourceset", i.resetSourceWatch_));
 			}
 		},
 		Vr = Object.defineProperty({}, "src", {
@@ -6884,7 +6903,7 @@
 				return this.hasAttribute("src") ? ze(e.Element.prototype.getAttribute.call(this, "src")) : "";
 			},
 			set: function (t) {
-				return e.Element.prototype.setAttribute.call(this, "src", t), t;
+				return (e.Element.prototype.setAttribute.call(this, "src", t), t);
 			},
 		}),
 		Hr = function (t) {
@@ -6896,32 +6915,32 @@
 						})(t),
 						r = i.setAttribute,
 						a = i.load;
-					Object.defineProperty(
+					(Object.defineProperty(
 						i,
 						"src",
 						Ft(n, {
 							set: function (e) {
 								var r = n.set.call(i, e);
-								return t.triggerSourceset(i.src), r;
+								return (t.triggerSourceset(i.src), r);
 							},
 						})
 					),
 						(i.setAttribute = function (e, n) {
 							var a = r.call(i, e, n);
-							return /src/i.test(e) && t.triggerSourceset(i.src), a;
+							return (/src/i.test(e) && t.triggerSourceset(i.src), a);
 						}),
 						(i.load = function () {
 							var e = a.call(i);
-							return Br(t) || (t.triggerSourceset(""), Fr(t)), e;
+							return (Br(t) || (t.triggerSourceset(""), Fr(t)), e);
 						}),
 						i.currentSrc ? t.triggerSourceset(i.currentSrc) : Br(t) || Fr(t),
 						(i.resetSourceset_ = function () {
-							(i.resetSourceset_ = null),
+							((i.resetSourceset_ = null),
 								(i.load = a),
 								(i.setAttribute = r),
 								Object.defineProperty(i, "src", n),
-								i.resetSourceWatch_ && i.resetSourceWatch_();
-						});
+								i.resetSourceWatch_ && i.resetSourceWatch_());
+						}));
 				}
 			}
 		};
@@ -6975,10 +6994,10 @@
 		var a = r.prototype;
 		return (
 			(a.dispose = function () {
-				this.el_ && this.el_.resetSourceset_ && this.el_.resetSourceset_(),
+				(this.el_ && this.el_.resetSourceset_ && this.el_.resetSourceset_(),
 					r.disposeMediaElement(this.el_),
 					(this.options_ = null),
-					i.prototype.dispose.call(this);
+					i.prototype.dispose.call(this));
 			}),
 			(a.setupSourcesetHandling_ = function () {
 				Hr(this);
@@ -6993,11 +7012,11 @@
 							"metadata" === n.kind && t.push({ track: n, storedMode: n.mode });
 						}
 					};
-				i(),
+				(i(),
 					e.addEventListener("change", i),
 					this.on("dispose", function () {
 						return e.removeEventListener("change", i);
-					});
+					}));
 				var n = function i() {
 					for (var n = 0; n < t.length; n++) {
 						var r = t[n];
@@ -7005,26 +7024,28 @@
 					}
 					e.removeEventListener("change", i);
 				};
-				this.on("webkitbeginfullscreen", function () {
-					e.removeEventListener("change", i), e.removeEventListener("change", n), e.addEventListener("change", n);
+				(this.on("webkitbeginfullscreen", function () {
+					(e.removeEventListener("change", i),
+						e.removeEventListener("change", n),
+						e.addEventListener("change", n));
 				}),
 					this.on("webkitendfullscreen", function () {
-						e.removeEventListener("change", i),
+						(e.removeEventListener("change", i),
 							e.addEventListener("change", i),
-							e.removeEventListener("change", n);
-					});
+							e.removeEventListener("change", n));
+					}));
 			}),
 			(a.overrideNative_ = function (t, e) {
 				var i = this;
 				if (e === this["featuresNative" + t + "Tracks"]) {
 					var n = t.toLowerCase();
-					this[n + "TracksListeners_"] &&
+					(this[n + "TracksListeners_"] &&
 						Object.keys(this[n + "TracksListeners_"]).forEach(function (t) {
 							i.el()[n + "Tracks"].removeEventListener(t, i[n + "TracksListeners_"][t]);
 						}),
 						(this["featuresNative" + t + "Tracks"] = !e),
 						(this[n + "TracksListeners_"] = null),
-						this.proxyNativeTracksForType_(n);
+						this.proxyNativeTracksForType_(n));
 				}
 			}),
 			(a.overrideNativeAudioTracks = function (t) {
@@ -7061,18 +7082,18 @@
 							}
 							for (; t.length; ) r.removeTrack(t.shift());
 						};
-					(this[i.getterName + "Listeners_"] = a),
+					((this[i.getterName + "Listeners_"] = a),
 						Object.keys(a).forEach(function (t) {
 							var i = a[t];
-							n.addEventListener(t, i),
+							(n.addEventListener(t, i),
 								e.on("dispose", function (e) {
 									return n.removeEventListener(t, i);
-								});
+								}));
 						}),
 						this.on("loadstart", s),
 						this.on("dispose", function (t) {
 							return e.off("loadstart", s);
-						});
+						}));
 				}
 			}),
 			(a.proxyNativeTracks_ = function () {
@@ -7086,12 +7107,12 @@
 				if (!e || (!this.options_.playerElIngest && !this.movingMediaElementInDOM)) {
 					if (e) {
 						var i = e.cloneNode(!0);
-						e.parentNode && e.parentNode.insertBefore(i, e), r.disposeMediaElement(e), (e = i);
+						(e.parentNode && e.parentNode.insertBefore(i, e), r.disposeMediaElement(e), (e = i));
 					} else {
 						e = t.createElement("video");
 						var n = Ft({}, this.options_.tag && M(this.options_.tag));
-						(oe && !0 === this.options_.nativeControlsForTouch) || delete n.controls,
-							R(e, y(n, { id: this.options_.techId, class: "vjs-tech" }));
+						((oe && !0 === this.options_.nativeControlsForTouch) || delete n.controls,
+							R(e, y(n, { id: this.options_.techId, class: "vjs-tech" })));
 					}
 					e.playerId = this.options_.playerId;
 				}
@@ -7117,12 +7138,12 @@
 						return (
 							this.on("loadedmetadata", n),
 							void this.ready(function () {
-								this.off("loadstart", i), this.off("loadedmetadata", n), e || this.trigger("loadstart");
+								(this.off("loadstart", i), this.off("loadedmetadata", n), e || this.trigger("loadstart"));
 							})
 						);
 					}
 					var r = ["loadstart"];
-					r.push("loadedmetadata"),
+					(r.push("loadedmetadata"),
 						t.readyState >= 2 && r.push("loadeddata"),
 						t.readyState >= 3 && r.push("canplay"),
 						t.readyState >= 4 && r.push("canplaythrough"),
@@ -7130,7 +7151,7 @@
 							r.forEach(function (t) {
 								this.trigger(t);
 							}, this);
-						});
+						}));
 				}
 			}),
 			(a.setCurrentTime = function (t) {
@@ -7170,10 +7191,10 @@
 								"picture-in-picture" !== this.el_.webkitPresentationMode &&
 								(this.one("webkitendfullscreen", e), this.trigger("fullscreenchange", { isFullscreen: !0 }));
 						};
-					this.on("webkitbeginfullscreen", i),
+					(this.on("webkitbeginfullscreen", i),
 						this.on("dispose", function () {
-							t.off("webkitbeginfullscreen", i), t.off("webkitendfullscreen", e);
-						});
+							(t.off("webkitbeginfullscreen", i), t.off("webkitendfullscreen", e));
+						}));
 				}
 			}),
 			(a.supportsFullScreen = function () {
@@ -7188,7 +7209,7 @@
 				t.paused && t.networkState <= t.HAVE_METADATA
 					? (this.el_.play(),
 						this.setTimeout(function () {
-							t.pause(), t.webkitEnterFullScreen();
+							(t.pause(), t.webkitEnterFullScreen());
 						}, 0))
 					: t.webkitEnterFullScreen();
 			}),
@@ -7228,7 +7249,7 @@
 			}),
 			(a.addRemoteTextTrack = function (t, e) {
 				var n = i.prototype.addRemoteTextTrack.call(this, t, e);
-				return this.featuresNativeTextTracks && this.el().appendChild(n), n;
+				return (this.featuresNativeTextTracks && this.el().appendChild(n), n);
 			}),
 			(a.removeRemoteTextTrack = function (t) {
 				if ((i.prototype.removeRemoteTextTrack.call(this, t), this.featuresNativeTextTracks))
@@ -7258,9 +7279,9 @@
 	if (w()) {
 		zr.TEST_VID = t.createElement("video");
 		var Wr = t.createElement("track");
-		(Wr.kind = "captions"), (Wr.srclang = "en"), (Wr.label = "English"), zr.TEST_VID.appendChild(Wr);
+		((Wr.kind = "captions"), (Wr.srclang = "en"), (Wr.label = "English"), zr.TEST_VID.appendChild(Wr));
 	}
-	(zr.isSupported = function () {
+	((zr.isSupported = function () {
 		try {
 			zr.TEST_VID.volume = 0.5;
 		} catch (t) {
@@ -7277,7 +7298,7 @@
 		(zr.canControlVolume = function () {
 			try {
 				var t = zr.TEST_VID.volume;
-				return (zr.TEST_VID.volume = t / 2 + 0.1), t !== zr.TEST_VID.volume;
+				return ((zr.TEST_VID.volume = t / 2 + 0.1), t !== zr.TEST_VID.volume);
 			} catch (t) {
 				return !1;
 			}
@@ -7298,7 +7319,7 @@
 			if (Qt && ie && ne < 58) return !1;
 			try {
 				var t = zr.TEST_VID.playbackRate;
-				return (zr.TEST_VID.playbackRate = t / 2 + 0.1), t !== zr.TEST_VID.playbackRate;
+				return ((zr.TEST_VID.playbackRate = t / 2 + 0.1), t !== zr.TEST_VID.playbackRate);
 			} catch (t) {
 				return !1;
 			}
@@ -7306,10 +7327,10 @@
 		(zr.canOverrideAttributes = function () {
 			try {
 				var e = function () {};
-				Object.defineProperty(t.createElement("video"), "src", { get: e, set: e }),
+				(Object.defineProperty(t.createElement("video"), "src", { get: e, set: e }),
 					Object.defineProperty(t.createElement("audio"), "src", { get: e, set: e }),
 					Object.defineProperty(t.createElement("video"), "innerHTML", { get: e, set: e }),
-					Object.defineProperty(t.createElement("audio"), "innerHTML", { get: e, set: e });
+					Object.defineProperty(t.createElement("audio"), "innerHTML", { get: e, set: e }));
 			} catch (t) {
 				return !1;
 			}
@@ -7359,7 +7380,7 @@
 		(zr.prototype.featuresTimeupdateEvents = !0),
 		(zr.prototype.featuresNativeTextTracks = zr.supportsNativeTextTracks()),
 		(zr.prototype.featuresNativeVideoTracks = zr.supportsNativeVideoTracks()),
-		(zr.prototype.featuresNativeAudioTracks = zr.supportsNativeAudioTracks());
+		(zr.prototype.featuresNativeAudioTracks = zr.supportsNativeAudioTracks()));
 	var Gr = zr.TEST_VID && zr.TEST_VID.constructor.prototype.canPlayType,
 		Xr = /^application\/(?:x-|vnd\.apple\.)mpegurl/i;
 	function Yr() {
@@ -7373,7 +7394,7 @@
 			t
 		);
 	}
-	(zr.patchCanPlayType = function () {
+	((zr.patchCanPlayType = function () {
 		Jt >= 4 &&
 			!te &&
 			!ie &&
@@ -7383,31 +7404,31 @@
 	}),
 		(zr.unpatchCanPlayType = function () {
 			var t = zr.TEST_VID.constructor.prototype.canPlayType;
-			return (zr.TEST_VID.constructor.prototype.canPlayType = Gr), t;
+			return ((zr.TEST_VID.constructor.prototype.canPlayType = Gr), t);
 		}),
 		zr.patchCanPlayType(),
 		(zr.disposeMediaElement = function (t) {
 			if (t) {
 				for (t.parentNode && t.parentNode.removeChild(t); t.hasChildNodes(); ) t.removeChild(t.firstChild);
-				t.removeAttribute("src"),
+				(t.removeAttribute("src"),
 					"function" == typeof t.load &&
 						(function () {
 							try {
 								t.load();
 							} catch (t) {}
-						})();
+						})());
 			}
 		}),
 		(zr.resetMediaElement = function (t) {
 			if (t) {
 				for (var e = t.querySelectorAll("source"), i = e.length; i--; ) t.removeChild(e[i]);
-				t.removeAttribute("src"),
+				(t.removeAttribute("src"),
 					"function" == typeof t.load &&
 						(function () {
 							try {
 								t.load();
 							} catch (t) {}
-						})();
+						})());
 			}
 		}),
 		["muted", "defaultMuted", "autoplay", "controls", "loop", "playsinline"].forEach(function (t) {
@@ -7417,7 +7438,7 @@
 		}),
 		["muted", "defaultMuted", "autoplay", "loop", "playsinline"].forEach(function (t) {
 			zr.prototype["set" + jt(t)] = function (e) {
-				(this.el_[t] = e), e ? this.el_.setAttribute(t, t) : this.el_.removeAttribute(t);
+				((this.el_[t] = e), e ? this.el_.setAttribute(t, t) : this.el_.removeAttribute(t));
 			};
 		}),
 		[
@@ -7475,7 +7496,7 @@
 		}),
 		(zr.nativeSourceHandler.dispose = function () {}),
 		zr.registerSourceHandler(zr.nativeSourceHandler),
-		en.registerTech("Html5", zr);
+		en.registerTech("Html5", zr));
 	var $r = [
 			"progress",
 			"abort",
@@ -7533,12 +7554,12 @@
 					);
 				if (((o.tag = t), (o.tagAttributes = t && M(t)), o.language(o.options_.language), e.languages)) {
 					var c = {};
-					Object.getOwnPropertyNames(e.languages).forEach(function (t) {
+					(Object.getOwnPropertyNames(e.languages).forEach(function (t) {
 						c[t.toLowerCase()] = e.languages[t];
 					}),
-						(o.languages_ = c);
+						(o.languages_ = c));
 				} else o.languages_ = a.prototype.options_.languages;
-				(o.cache_ = {}),
+				((o.cache_ = {}),
 					(o.poster_ = e.poster || ""),
 					(o.controls_ = !!e.controls),
 					(o.cache_.lastVolume = 1),
@@ -7549,7 +7570,7 @@
 					(o.el_ = o.createEl()),
 					(o.cache_.lastPlaybackRate = o.defaultPlaybackRate()),
 					Mt(s(s(o)), { eventBusKey: "el_" }),
-					o.fluid_ && o.on("playerreset", o.updateStyleEl_);
+					o.fluid_ && o.on("playerreset", o.updateStyleEl_));
 				var d = Ft(o.options_);
 				if (e.plugins) {
 					var p = e.plugins;
@@ -7561,7 +7582,7 @@
 						s(s(o))
 					);
 				}
-				(o.options_.playerOptions = d),
+				((o.options_.playerOptions = d),
 					(o.middleware_ = []),
 					o.initChildren(),
 					o.isAudio("audio" === t.nodeName.toLowerCase()),
@@ -7573,7 +7594,7 @@
 					o.isAudio() && o.addClass("vjs-audio"),
 					o.flexNotSupported_() && o.addClass("vjs-no-flex"),
 					$t || o.addClass("vjs-workinghover"),
-					(a.players[o.id_] = s(s(o)));
+					(a.players[o.id_] = s(s(o))));
 				var f = i.split(".")[0];
 				return (
 					o.addClass("vjs-v" + f),
@@ -7594,7 +7615,7 @@
 			var o = a.prototype;
 			return (
 				(o.dispose = function () {
-					this.trigger("dispose"),
+					(this.trigger("dispose"),
 						this.off("dispose"),
 						this.styleEl_ &&
 							this.styleEl_.parentNode &&
@@ -7606,7 +7627,7 @@
 						this.playerElIngest_ && (this.playerElIngest_ = null),
 						this.tag && (this.tag = null),
 						(rn[this.id()] = null),
-						r.prototype.dispose.call(this);
+						r.prototype.dispose.call(this));
 				}),
 				(o.createEl = function () {
 					var i,
@@ -7619,12 +7640,12 @@
 					if (s) {
 						for (i = this.el_ = n, n = this.tag = t.createElement("video"); i.children.length; )
 							n.appendChild(i.firstChild);
-						U(i, "video-js") || I(i, "video-js"),
+						(U(i, "video-js") || I(i, "video-js"),
 							i.appendChild(n),
 							(a = this.playerElIngest_ = i),
 							Object.keys(i).forEach(function (t) {
 								n[t] = i[t];
-							});
+							}));
 					}
 					if (
 						(n.setAttribute("tabindex", "-1"),
@@ -7635,7 +7656,7 @@
 						"width" in o && delete o.width,
 						"height" in o && delete o.height,
 						Object.getOwnPropertyNames(o).forEach(function (t) {
-							(s && "class" === t) || i.setAttribute(t, o[t]), s && n.setAttribute(t, o[t]);
+							((s && "class" === t) || i.setAttribute(t, o[t]), s && n.setAttribute(t, o[t]));
 						}),
 						(n.playerId = n.id),
 						(n.id += "_html5_api"),
@@ -7649,16 +7670,16 @@
 							l = Q("head");
 						l.insertBefore(this.styleEl_, u ? u.nextSibling : l.firstChild);
 					}
-					(this.fill_ = !1),
+					((this.fill_ = !1),
 						(this.fluid_ = !1),
 						this.width(this.options_.width),
 						this.height(this.options_.height),
 						this.fill(this.options_.fill),
 						this.fluid(this.options_.fluid),
-						this.aspectRatio(this.options_.aspectRatio);
+						this.aspectRatio(this.options_.aspectRatio));
 					for (var c = n.getElementsByTagName("a"), h = 0; h < c.length; h++) {
 						var d = c.item(h);
-						I(d, "vjs-hidden"), d.setAttribute("hidden", "hidden");
+						(I(d, "vjs-hidden"), d.setAttribute("hidden", "hidden"));
 					}
 					return (
 						(n.initNetworkState_ = n.networkState),
@@ -7679,7 +7700,7 @@
 				(o.dimension = function (t, e) {
 					var i = t + "_";
 					if (void 0 === e) return this[i] || 0;
-					if ("" === e) return (this[i] = void 0), void this.updateStyleEl_();
+					if ("" === e) return ((this[i] = void 0), void this.updateStyleEl_());
 					var n = parseFloat(e);
 					isNaN(n)
 						? c.error('Improper value "' + e + '" supplied for for ' + t)
@@ -7688,7 +7709,7 @@
 				(o.fluid = function (t) {
 					if (void 0 === t) return !!this.fluid_;
 					var e, i;
-					(this.fluid_ = !!t),
+					((this.fluid_ = !!t),
 						Lt(this) && this.off("playerreset", this.updateStyleEl_),
 						t
 							? (this.addClass("vjs-fluid"),
@@ -7701,11 +7722,11 @@
 									? i()
 									: (e.eventedCallbacks || (e.eventedCallbacks = []), e.eventedCallbacks.push(i)))
 							: this.removeClass("vjs-fluid"),
-						this.updateStyleEl_();
+						this.updateStyleEl_());
 				}),
 				(o.fill = function (t) {
 					if (void 0 === t) return !!this.fill_;
-					(this.fill_ = !!t), t ? (this.addClass("vjs-fill"), this.fluid(!1)) : this.removeClass("vjs-fill");
+					((this.fill_ = !!t), t ? (this.addClass("vjs-fill"), this.fluid(!1)) : this.removeClass("vjs-fill"));
 				}),
 				(o.aspectRatio = function (t) {
 					if (void 0 === t) return this.aspectRatio_;
@@ -7713,7 +7734,7 @@
 						throw new Error(
 							"Improper value supplied for aspect ratio. The format should be width:height, for example 16:9."
 						);
-					(this.aspectRatio_ = t), this.fluid(!0), this.updateStyleEl_();
+					((this.aspectRatio_ = t), this.fluid(!0), this.updateStyleEl_());
 				}),
 				(o.updateStyleEl_ = function () {
 					if (!0 !== e.VIDEOJS_NO_DYNAMIC_STYLE) {
@@ -7728,7 +7749,7 @@
 										: "16:9"
 							).split(":"),
 							a = r[1] / r[0];
-						(t =
+						((t =
 							void 0 !== this.width_
 								? this.width_
 								: void 0 !== this.height_
@@ -7750,7 +7771,7 @@
 									".vjs-fluid {\n        padding-top: " +
 									100 * a +
 									"%;\n      }\n    "
-							);
+							));
 					} else {
 						var s = "number" == typeof this.width_ ? this.width_ : this.options_.width,
 							o = "number" == typeof this.height_ ? this.height_ : this.options_.height,
@@ -7763,11 +7784,11 @@
 					this.tech_ && this.unloadTech_();
 					var n = jt(t),
 						r = t.charAt(0).toLowerCase() + t.slice(1);
-					"Html5" !== n &&
+					("Html5" !== n &&
 						this.tag &&
 						(en.getTech("Html5").disposeMediaElement(this.tag), (this.tag.player = null), (this.tag = null)),
 						(this.techName_ = n),
-						(this.isReady_ = !1);
+						(this.isReady_ = !1));
 					var a = {
 						"source": e,
 						"autoplay": "string" != typeof this.autoplay() && this.autoplay(),
@@ -7785,7 +7806,7 @@
 						"canOverridePoster": !!this.options_.techCanOverridePoster,
 						"enableSourceset": this.options_.enableSourceset,
 					};
-					wi.names.forEach(function (t) {
+					(wi.names.forEach(function (t) {
 						var e = wi[t];
 						a[e.getterName] = i[e.privateName];
 					}),
@@ -7796,7 +7817,7 @@
 						e &&
 							e.src === this.cache_.src &&
 							this.cache_.currentTime > 0 &&
-							(a.startTime = this.cache_.currentTime);
+							(a.startTime = this.cache_.currentTime));
 					var s = en.getTech(t);
 					if (!s)
 						throw new Error(
@@ -7806,7 +7827,7 @@
 								n +
 								"' should be registered using videojs.registerTech()'"
 						);
-					(this.tech_ = new s(a)),
+					((this.tech_ = new s(a)),
 						this.tech_.ready(wt(this, this.handleTechReady_), !0),
 						Ee(this.textTracksJson_ || [], this.tech_),
 						$r.forEach(function (t) {
@@ -7839,11 +7860,11 @@
 						this.tech_.el().parentNode === this.el() ||
 							("Html5" === n && this.tag) ||
 							P(this.tech_.el(), this.el()),
-						this.tag && ((this.tag.player = null), (this.tag = null));
+						this.tag && ((this.tag.player = null), (this.tag = null)));
 				}),
 				(o.unloadTech_ = function () {
 					var t = this;
-					wi.names.forEach(function (e) {
+					(wi.names.forEach(function (e) {
 						var i = wi[e];
 						t[i.privateName] = t[i.getterName]();
 					}),
@@ -7852,43 +7873,43 @@
 						this.tech_.dispose(),
 						(this.tech_ = !1),
 						this.isPosterFromTech_ && ((this.poster_ = ""), this.trigger("posterchange")),
-						(this.isPosterFromTech_ = !1);
+						(this.isPosterFromTech_ = !1));
 				}),
 				(o.tech = function (t) {
-					return void 0 === t && c.warn(p(Yr())), this.tech_;
+					return (void 0 === t && c.warn(p(Yr())), this.tech_);
 				}),
 				(o.addTechControlsListeners_ = function () {
-					this.removeTechControlsListeners_(),
+					(this.removeTechControlsListeners_(),
 						this.on(this.tech_, "mousedown", this.handleTechClick_),
 						this.on(this.tech_, "dblclick", this.handleTechDoubleClick_),
 						this.on(this.tech_, "touchstart", this.handleTechTouchStart_),
 						this.on(this.tech_, "touchmove", this.handleTechTouchMove_),
 						this.on(this.tech_, "touchend", this.handleTechTouchEnd_),
-						this.on(this.tech_, "tap", this.handleTechTap_);
+						this.on(this.tech_, "tap", this.handleTechTap_));
 				}),
 				(o.removeTechControlsListeners_ = function () {
-					this.off(this.tech_, "tap", this.handleTechTap_),
+					(this.off(this.tech_, "tap", this.handleTechTap_),
 						this.off(this.tech_, "touchstart", this.handleTechTouchStart_),
 						this.off(this.tech_, "touchmove", this.handleTechTouchMove_),
 						this.off(this.tech_, "touchend", this.handleTechTouchEnd_),
 						this.off(this.tech_, "mousedown", this.handleTechClick_),
-						this.off(this.tech_, "dblclick", this.handleTechDoubleClick_);
+						this.off(this.tech_, "dblclick", this.handleTechDoubleClick_));
 				}),
 				(o.handleTechReady_ = function () {
-					this.triggerReady(),
+					(this.triggerReady(),
 						this.cache_.volume && this.techCall_("setVolume", this.cache_.volume),
 						this.handleTechPosterChange_(),
-						this.handleTechDurationChange_();
+						this.handleTechDurationChange_());
 				}),
 				(o.handleTechLoadStart_ = function () {
-					this.removeClass("vjs-ended"),
+					(this.removeClass("vjs-ended"),
 						this.removeClass("vjs-seeking"),
 						this.error(null),
 						this.handleTechDurationChange_(),
 						this.paused()
 							? (this.hasStarted(!1), this.trigger("loadstart"))
 							: (this.trigger("loadstart"), this.trigger("firstplay")),
-						this.manualAutoplay_(this.autoplay());
+						this.manualAutoplay_(this.autoplay()));
 				}),
 				(o.manualAutoplay_ = function (t) {
 					var e = this;
@@ -7927,7 +7948,7 @@
 					void 0 === t && (t = "");
 					var e = t,
 						i = "";
-					"string" != typeof e && ((e = t.src), (i = t.type)),
+					("string" != typeof e && ((e = t.src), (i = t.type)),
 						(this.cache_.source = this.cache_.source || {}),
 						(this.cache_.sources = this.cache_.sources || []),
 						e &&
@@ -7945,7 +7966,7 @@
 								}
 								return pn(e);
 							})(this, e)),
-						(this.cache_.source = Ft({}, t, { src: e, type: i }));
+						(this.cache_.source = Ft({}, t, { src: e, type: i })));
 					for (
 						var n = this.cache_.sources.filter(function (t) {
 								return t.src && t.src === e;
@@ -7958,12 +7979,12 @@
 						o++
 					) {
 						var u = M(a[o]);
-						r.push(u), u.src && u.src === e && s.push(u.src);
+						(r.push(u), u.src && u.src === e && s.push(u.src));
 					}
-					s.length && !n.length
+					(s.length && !n.length
 						? (this.cache_.sources = r)
 						: n.length || (this.cache_.sources = [this.cache_.source]),
-						(this.cache_.src = e);
+						(this.cache_.src = e));
 				}),
 				(o.handleTechSourceset_ = function (t) {
 					var e = this;
@@ -7985,14 +8006,14 @@
 							this.tech_.one(["sourceset", "loadstart"], function t(i) {
 								if ("sourceset" !== i.type) {
 									var n = e.techGet("currentSrc");
-									(e.lastSource_.tech = n), e.updateSourceCaches_(n);
+									((e.lastSource_.tech = n), e.updateSourceCaches_(n));
 								}
 								e.tech_.off(["sourceset", "loadstart"], t);
 							});
 						}
 					}
-					(this.lastSource_ = { player: this.currentSource().src, tech: t.src }),
-						this.trigger({ src: t.src, type: "sourceset" });
+					((this.lastSource_ = { player: this.currentSource().src, tech: t.src }),
+						this.trigger({ src: t.src, type: "sourceset" }));
 				}),
 				(o.hasStarted = function (t) {
 					if (void 0 === t) return this.hasStarted_;
@@ -8003,59 +8024,59 @@
 							: this.removeClass("vjs-has-started"));
 				}),
 				(o.handleTechPlay_ = function () {
-					this.removeClass("vjs-ended"),
+					(this.removeClass("vjs-ended"),
 						this.removeClass("vjs-paused"),
 						this.addClass("vjs-playing"),
 						this.hasStarted(!0),
-						this.trigger("play");
+						this.trigger("play"));
 				}),
 				(o.handleTechRateChange_ = function () {
-					this.tech_.playbackRate() > 0 &&
+					(this.tech_.playbackRate() > 0 &&
 						0 === this.cache_.lastPlaybackRate &&
 						(this.queuedCallbacks_.forEach(function (t) {
 							return t.callback(t.event);
 						}),
 						(this.queuedCallbacks_ = [])),
 						(this.cache_.lastPlaybackRate = this.tech_.playbackRate()),
-						this.trigger("ratechange");
+						this.trigger("ratechange"));
 				}),
 				(o.handleTechWaiting_ = function () {
 					var t = this;
-					this.addClass("vjs-waiting"), this.trigger("waiting");
+					(this.addClass("vjs-waiting"), this.trigger("waiting"));
 					var e = this.currentTime();
 					this.on("timeupdate", function i() {
 						e !== t.currentTime() && (t.removeClass("vjs-waiting"), t.off("timeupdate", i));
 					});
 				}),
 				(o.handleTechCanPlay_ = function () {
-					this.removeClass("vjs-waiting"), this.trigger("canplay");
+					(this.removeClass("vjs-waiting"), this.trigger("canplay"));
 				}),
 				(o.handleTechCanPlayThrough_ = function () {
-					this.removeClass("vjs-waiting"), this.trigger("canplaythrough");
+					(this.removeClass("vjs-waiting"), this.trigger("canplaythrough"));
 				}),
 				(o.handleTechPlaying_ = function () {
-					this.removeClass("vjs-waiting"), this.trigger("playing");
+					(this.removeClass("vjs-waiting"), this.trigger("playing"));
 				}),
 				(o.handleTechSeeking_ = function () {
-					this.addClass("vjs-seeking"), this.trigger("seeking");
+					(this.addClass("vjs-seeking"), this.trigger("seeking"));
 				}),
 				(o.handleTechSeeked_ = function () {
-					this.removeClass("vjs-seeking"), this.trigger("seeked");
+					(this.removeClass("vjs-seeking"), this.trigger("seeked"));
 				}),
 				(o.handleTechFirstPlay_ = function () {
-					this.options_.starttime &&
+					(this.options_.starttime &&
 						(c.warn("Passing the `starttime` option to the player will be deprecated in 6.0"),
 						this.currentTime(this.options_.starttime)),
 						this.addClass("vjs-has-started"),
-						this.trigger("firstplay");
+						this.trigger("firstplay"));
 				}),
 				(o.handleTechPause_ = function () {
-					this.removeClass("vjs-playing"), this.addClass("vjs-paused"), this.trigger("pause");
+					(this.removeClass("vjs-playing"), this.addClass("vjs-paused"), this.trigger("pause"));
 				}),
 				(o.handleTechEnded_ = function () {
-					this.addClass("vjs-ended"),
+					(this.addClass("vjs-ended"),
 						this.options_.loop ? (this.currentTime(0), this.play()) : this.paused() || this.pause(),
-						this.trigger("ended");
+						this.trigger("ended"));
 				}),
 				(o.handleTechDurationChange_ = function () {
 					this.duration(this.techGet_("duration"));
@@ -8089,7 +8110,7 @@
 					this.reportUserActivity();
 				}),
 				(o.handleTechFullscreenChange_ = function (t, e) {
-					e && this.isFullscreen(e.isFullscreen), this.trigger("fullscreenchange");
+					(e && this.isFullscreen(e.isFullscreen), this.trigger("fullscreenchange"));
 				}),
 				(o.handleTechError_ = function () {
 					var t = this.tech_.error();
@@ -8097,7 +8118,7 @@
 				}),
 				(o.handleTechTextData_ = function () {
 					var t = null;
-					arguments.length > 1 && (t = arguments[1]), this.trigger("textdata", t);
+					(arguments.length > 1 && (t = arguments[1]), this.trigger("textdata", t));
 				}),
 				(o.getCache = function () {
 					return this.cache_;
@@ -8128,7 +8149,7 @@
 						} catch (e) {
 							if (void 0 === this.tech_[t])
 								throw (
-									(c(
+									c(
 										"Video.js: " +
 											t +
 											" method not defined for " +
@@ -8136,11 +8157,11 @@
 											" playback technology.",
 										e
 									),
-									e)
+									e
 								);
 							if ("TypeError" === e.name)
 								throw (
-									(c(
+									c(
 										"Video.js: " +
 											t +
 											" unavailable on " +
@@ -8149,7 +8170,7 @@
 										e
 									),
 									(this.tech_.isReady_ = !1),
-									e)
+									e
 								);
 							throw (c(e), e);
 						}
@@ -8172,16 +8193,16 @@
 						this.isReady_)
 					) {
 						if (!this.changingSrc_ && (this.src() || this.currentSrc())) return void t(this.techGet_("play"));
-						(this.playOnLoadstart_ = function () {
-							(e.playOnLoadstart_ = null), t(e.play());
+						((this.playOnLoadstart_ = function () {
+							((e.playOnLoadstart_ = null), t(e.play()));
 						}),
-							this.one("loadstart", this.playOnLoadstart_);
+							this.one("loadstart", this.playOnLoadstart_));
 					} else {
 						if (this.playWaitingForReady_) return;
-						(this.playWaitingForReady_ = !0),
+						((this.playWaitingForReady_ = !0),
 							this.ready(function () {
-								(e.playWaitingForReady_ = !1), t(e.play());
-							});
+								((e.playWaitingForReady_ = !1), t(e.play()));
+							}));
 					}
 				}),
 				(o.pause = function () {
@@ -8195,7 +8216,7 @@
 				}),
 				(o.scrubbing = function (t) {
 					if (void 0 === t) return this.scrubbing_;
-					(this.scrubbing_ = !!t), t ? this.addClass("vjs-scrubbing") : this.removeClass("vjs-scrubbing");
+					((this.scrubbing_ = !!t), t ? this.addClass("vjs-scrubbing") : this.removeClass("vjs-scrubbing"));
 				}),
 				(o.currentTime = function (t) {
 					return void 0 !== t
@@ -8204,14 +8225,14 @@
 				}),
 				(o.duration = function (t) {
 					if (void 0 === t) return void 0 !== this.cache_.duration ? this.cache_.duration : NaN;
-					(t = parseFloat(t)) < 0 && (t = 1 / 0),
+					((t = parseFloat(t)) < 0 && (t = 1 / 0),
 						t !== this.cache_.duration &&
 							((this.cache_.duration = t),
 							t === 1 / 0
 								? (this.addClass("vjs-live"),
 									this.options_.liveui && this.player_.liveTracker && this.addClass("vjs-liveui"))
 								: (this.removeClass("vjs-live"), this.removeClass("vjs-liveui")),
-							isNaN(t) || this.trigger("durationchange"));
+							isNaN(t) || this.trigger("durationchange")));
 				}),
 				(o.remainingTime = function () {
 					return this.duration() - this.currentTime();
@@ -8221,7 +8242,7 @@
 				}),
 				(o.buffered = function () {
 					var t = this.techGet_("buffered");
-					return (t && t.length) || (t = he(0, 0)), t;
+					return ((t && t.length) || (t = he(0, 0)), t);
 				}),
 				(o.bufferedPercent = function () {
 					return de(this.buffered(), this.duration());
@@ -8230,7 +8251,7 @@
 					var t = this.buffered(),
 						e = this.duration(),
 						i = t.end(t.length - 1);
-					return i > e && (i = e), i;
+					return (i > e && (i = e), i);
 				}),
 				(o.volume = function (t) {
 					var e;
@@ -8261,48 +8282,48 @@
 				}),
 				(o.requestFullscreen = function () {
 					var e = fe;
-					this.isFullscreen(!0),
+					(this.isFullscreen(!0),
 						e.requestFullscreen
 							? (dt(
 									t,
 									e.fullscreenchange,
 									wt(this, function i(n) {
-										this.isFullscreen(t[e.fullscreenElement]),
+										(this.isFullscreen(t[e.fullscreenElement]),
 											!1 === this.isFullscreen() && pt(t, e.fullscreenchange, i),
-											this.trigger("fullscreenchange");
+											this.trigger("fullscreenchange"));
 									})
 								),
 								this.el_[e.requestFullscreen]())
 							: this.tech_.supportsFullScreen()
 								? this.techCall_("enterFullScreen")
-								: (this.enterFullWindow(), this.trigger("fullscreenchange"));
+								: (this.enterFullWindow(), this.trigger("fullscreenchange")));
 				}),
 				(o.exitFullscreen = function () {
 					var e = fe;
-					this.isFullscreen(!1),
+					(this.isFullscreen(!1),
 						e.requestFullscreen
 							? t[e.exitFullscreen]()
 							: this.tech_.supportsFullScreen()
 								? this.techCall_("exitFullScreen")
-								: (this.exitFullWindow(), this.trigger("fullscreenchange"));
+								: (this.exitFullWindow(), this.trigger("fullscreenchange")));
 				}),
 				(o.enterFullWindow = function () {
-					(this.isFullWindow = !0),
+					((this.isFullWindow = !0),
 						(this.docOrigOverflow = t.documentElement.style.overflow),
 						dt(t, "keydown", wt(this, this.fullWindowOnEscKey)),
 						(t.documentElement.style.overflow = "hidden"),
 						I(t.body, "vjs-full-window"),
-						this.trigger("enterFullWindow");
+						this.trigger("enterFullWindow"));
 				}),
 				(o.fullWindowOnEscKey = function (t) {
 					27 === t.keyCode && (!0 === this.isFullscreen() ? this.exitFullscreen() : this.exitFullWindow());
 				}),
 				(o.exitFullWindow = function () {
-					(this.isFullWindow = !1),
+					((this.isFullWindow = !1),
 						pt(t, "keydown", this.fullWindowOnEscKey),
 						(t.documentElement.style.overflow = this.docOrigOverflow),
 						x(t.body, "vjs-full-window"),
-						this.trigger("exitFullWindow");
+						this.trigger("exitFullWindow"));
 				}),
 				(o.canPlayType = function (t) {
 					for (var e, i = 0, n = this.options_.techOrder; i < n.length; i++) {
@@ -8365,10 +8386,10 @@
 					var i = (function t(e) {
 						if (Array.isArray(e)) {
 							var i = [];
-							e.forEach(function (e) {
-								(e = t(e)), Array.isArray(e) ? (i = i.concat(e)) : v(e) && i.push(e);
+							(e.forEach(function (e) {
+								((e = t(e)), Array.isArray(e) ? (i = i.concat(e)) : v(e) && i.push(e));
 							}),
-								(e = i);
+								(e = i));
 						} else
 							e =
 								"string" == typeof e && e.trim()
@@ -8395,11 +8416,11 @@
 												});
 											}, 0),
 											void e.triggerReady());
-								(r = n),
+								((r = n),
 									(a = e.tech_),
 									r.forEach(function (t) {
 										return t.setTech && t.setTech(a);
-									});
+									}));
 							}))
 						: this.setTimeout(function () {
 								this.error({ code: 4, message: this.localize(this.options_.notSupportedMessage) });
@@ -8422,10 +8443,10 @@
 								}),
 								!1)
 							: (this.ready(function () {
-									this.tech_.constructor.prototype.hasOwnProperty("setSource")
+									(this.tech_.constructor.prototype.hasOwnProperty("setSource")
 										? this.techCall_("setSource", t)
 										: this.techCall_("src", t.src),
-										(this.changingSrc_ = !1);
+										(this.changingSrc_ = !1));
 								}, !0),
 								!1))
 					);
@@ -8434,15 +8455,15 @@
 					this.techCall_("load");
 				}),
 				(o.reset = function () {
-					this.tech_ && this.tech_.clearTracks("text"),
+					(this.tech_ && this.tech_.clearTracks("text"),
 						this.loadTech_(this.options_.techOrder[0], null),
 						this.techCall_("reset"),
-						Lt(this) && this.trigger("playerreset");
+						Lt(this) && this.trigger("playerreset"));
 				}),
 				(o.currentSources = function () {
 					var t = this.currentSource(),
 						e = [];
-					return 0 !== Object.keys(t).length && e.push(t), this.cache_.sources || e;
+					return (0 !== Object.keys(t).length && e.push(t), this.cache_.sources || e);
 				}),
 				(o.currentSource = function () {
 					return this.cache_.source || {};
@@ -8461,11 +8482,11 @@
 				(o.autoplay = function (t) {
 					if (void 0 === t) return this.options_.autoplay || !1;
 					var e;
-					"string" == typeof t && /(any|play|muted)/.test(t)
+					("string" == typeof t && /(any|play|muted)/.test(t)
 						? ((this.options_.autoplay = t), this.manualAutoplay_(t), (e = !1))
 						: (this.options_.autoplay = !!t),
 						(e = e || this.options_.autoplay),
-						this.tech_ && this.techCall_("setAutoplay", e);
+						this.tech_ && this.techCall_("setAutoplay", e));
 				}),
 				(o.playsinline = function (t) {
 					return void 0 !== t
@@ -8479,12 +8500,12 @@
 				}),
 				(o.poster = function (t) {
 					if (void 0 === t) return this.poster_;
-					t || (t = ""),
+					(t || (t = ""),
 						t !== this.poster_ &&
 							((this.poster_ = t),
 							this.techCall_("setPoster", t),
 							(this.isPosterFromTech_ = !1),
-							this.trigger("posterchange"));
+							this.trigger("posterchange")));
 				}),
 				(o.handleTechPosterChange_ = function () {
 					if ((!this.poster_ || this.options_.techCanOverridePoster) && this.tech_ && this.tech_.poster) {
@@ -8495,7 +8516,7 @@
 				}),
 				(o.controls = function (t) {
 					if (void 0 === t) return !!this.controls_;
-					(t = !!t),
+					((t = !!t),
 						this.controls_ !== t &&
 							((this.controls_ = t),
 							this.usingNativeControls() && this.techCall_("setControls", t),
@@ -8507,16 +8528,16 @@
 								: (this.removeClass("vjs-controls-enabled"),
 									this.addClass("vjs-controls-disabled"),
 									this.trigger("controlsdisabled"),
-									this.usingNativeControls() || this.removeTechControlsListeners_()));
+									this.usingNativeControls() || this.removeTechControlsListeners_())));
 				}),
 				(o.usingNativeControls = function (t) {
 					if (void 0 === t) return !!this.usingNativeControls_;
-					(t = !!t),
+					((t = !!t),
 						this.usingNativeControls_ !== t &&
 							((this.usingNativeControls_ = t),
 							this.usingNativeControls_
 								? (this.addClass("vjs-using-native-controls"), this.trigger("usingnativecontrols"))
-								: (this.removeClass("vjs-using-native-controls"), this.trigger("usingcustomcontrols")));
+								: (this.removeClass("vjs-using-native-controls"), this.trigger("usingcustomcontrols"))));
 				}),
 				(o.error = function (t) {
 					return void 0 === t
@@ -8547,14 +8568,14 @@
 								this.addClass("vjs-user-active"),
 								void this.trigger("useractive")
 							);
-						this.tech_ &&
+						(this.tech_ &&
 							this.tech_.one("mousemove", function (t) {
-								t.stopPropagation(), t.preventDefault();
+								(t.stopPropagation(), t.preventDefault());
 							}),
 							(this.userActivity_ = !1),
 							this.removeClass("vjs-user-active"),
 							this.addClass("vjs-user-inactive"),
-							this.trigger("userinactive");
+							this.trigger("userinactive"));
 					}
 				}),
 				(o.listenForUserActivity_ = function () {
@@ -8563,27 +8584,27 @@
 						i,
 						n,
 						r = wt(this, this.reportUserActivity);
-					this.on("mousedown", function () {
-						r(), this.clearInterval(t), (t = this.setInterval(r, 250));
+					(this.on("mousedown", function () {
+						(r(), this.clearInterval(t), (t = this.setInterval(r, 250)));
 					}),
 						this.on("mousemove", function (t) {
 							(t.screenX === e && t.screenY === i) || ((e = t.screenX), (i = t.screenY), r());
 						}),
 						this.on("mouseup", function (e) {
-							r(), this.clearInterval(t);
+							(r(), this.clearInterval(t));
 						}),
 						this.on("keydown", r),
 						this.on("keyup", r),
 						this.setInterval(function () {
 							if (this.userActivity_) {
-								(this.userActivity_ = !1), this.userActive(!0), this.clearTimeout(n);
+								((this.userActivity_ = !1), this.userActive(!0), this.clearTimeout(n));
 								var t = this.options_.inactivityTimeout;
 								t <= 0 ||
 									(n = this.setTimeout(function () {
 										this.userActivity_ || this.userActive(!1);
 									}, t));
 							}
-						}, 250);
+						}, 250));
 				}),
 				(o.playbackRate = function (t) {
 					if (void 0 === t)
@@ -8636,7 +8657,7 @@
 					t.tracks = [];
 					for (var i = 0; i < e.length; i++) {
 						var n = e[i];
-						((n = Ft(n)).player = void 0), (t.tracks[i] = n);
+						(((n = Ft(n)).player = void 0), (t.tracks[i] = n));
 					}
 					return t;
 				}),
@@ -8659,14 +8680,14 @@
 							var n = Qr[i];
 							if (e <= this.breakpoints_[n]) {
 								if (t === n) return;
-								t && this.removeClass(Jr[t]), this.addClass(Jr[n]), (this.breakpoint_ = n);
+								(t && this.removeClass(Jr[t]), this.addClass(Jr[n]), (this.breakpoint_ = n));
 								break;
 							}
 						}
 				}),
 				(o.removeCurrentBreakpoint_ = function () {
 					var t = this.currentBreakpointClass();
-					(this.breakpoint_ = ""), t && this.removeClass(t);
+					((this.breakpoint_ = ""), t && this.removeClass(t));
 				}),
 				(o.breakpoints = function (t) {
 					return void 0 === t
@@ -8703,7 +8724,7 @@
 						var r = Te(n || "{}"),
 							a = r[0],
 							s = r[1];
-						a && c.error(a), y(i, s);
+						(a && c.error(a), y(i, s));
 					}
 					if ((y(e, i), t.hasChildNodes()))
 						for (var o = t.childNodes, u = 0, l = o.length; u < l; u++) {
@@ -8726,7 +8747,7 @@
 				a
 			);
 		})(Vt);
-	wi.names.forEach(function (t) {
+	(wi.names.forEach(function (t) {
 		var e = wi[t];
 		ta.prototype[e.getterName] = function () {
 			return this.tech_
@@ -8734,9 +8755,9 @@
 				: ((this[e.privateName] = this[e.privateName] || new e.ListClass()), this[e.privateName]);
 		};
 	}),
-		(ta.players = {});
+		(ta.players = {}));
 	var ea = e.navigator;
-	(ta.prototype.options_ = {
+	((ta.prototype.options_ = {
 		techOrder: en.defaultTechOrder_,
 		html5: {},
 		flash: {},
@@ -8771,7 +8792,7 @@
 				return this.trigger(t);
 			};
 		}),
-		Vt.registerComponent("Player", ta);
+		Vt.registerComponent("Player", ta));
 	var ia = {},
 		na = function (t) {
 			return ia.hasOwnProperty(t);
@@ -8780,11 +8801,11 @@
 			return na(t) ? ia[t] : void 0;
 		},
 		aa = function (t, e) {
-			(t.activePlugins_ = t.activePlugins_ || {}), (t.activePlugins_[e] = !0);
+			((t.activePlugins_ = t.activePlugins_ || {}), (t.activePlugins_[e] = !0));
 		},
 		sa = function (t, e, i) {
 			var n = (i ? "before" : "") + "pluginsetup";
-			t.trigger(n, e), t.trigger(n + ":" + e.name, e);
+			(t.trigger(n, e), t.trigger(n + ":" + e.name, e));
 		},
 		oa = function (t, e) {
 			return (
@@ -8806,13 +8827,13 @@
 		ua = (function () {
 			function t(e) {
 				if (this.constructor === t) throw new Error("Plugin must be sub-classed; not directly instantiated.");
-				(this.player = e),
+				((this.player = e),
 					Mt(this),
 					delete this.trigger,
 					Nt(this, this.constructor.defaultState),
 					aa(e, this.name),
 					(this.dispose = wt(this, this.dispose)),
-					e.on("dispose", this.dispose);
+					e.on("dispose", this.dispose));
 			}
 			var e = t.prototype;
 			return (
@@ -8821,22 +8842,26 @@
 				}),
 				(e.getEventHash = function (t) {
 					return (
-						void 0 === t && (t = {}), (t.name = this.name), (t.plugin = this.constructor), (t.instance = this), t
+						void 0 === t && (t = {}),
+						(t.name = this.name),
+						(t.plugin = this.constructor),
+						(t.instance = this),
+						t
 					);
 				}),
 				(e.trigger = function (t, e) {
-					return void 0 === e && (e = {}), ft(this.eventBusEl_, t, this.getEventHash(e));
+					return (void 0 === e && (e = {}), ft(this.eventBusEl_, t, this.getEventHash(e)));
 				}),
 				(e.handleStateChanged = function (t) {}),
 				(e.dispose = function () {
 					var t = this.name,
 						e = this.player;
-					this.trigger("dispose"),
+					(this.trigger("dispose"),
 						this.off(),
 						e.off("dispose", this.dispose),
 						(e.activePlugins_[t] = !1),
 						(this.player = this.state = null),
-						(e[t] = oa(t, ia[t]));
+						(e[t] = oa(t, ia[t])));
 				}),
 				(t.isBasic = function (e) {
 					var i = "string" == typeof e ? ra(e) : e;
@@ -8861,7 +8886,7 @@
 										var i = function () {
 											sa(this, { name: t, plugin: e, instance: null }, !0);
 											var i = e.apply(this, arguments);
-											return aa(this, t), sa(this, { name: t, plugin: e, instance: i }), i;
+											return (aa(this, t), sa(this, { name: t, plugin: e, instance: i }), i);
 										};
 										return (
 											Object.keys(e).forEach(function (t) {
@@ -8896,7 +8921,7 @@
 				t
 			);
 		})();
-	(ua.getPlugin = ra),
+	((ua.getPlugin = ra),
 		(ua.BASE_PLUGIN_NAME = "plugin"),
 		ua.registerPlugin("plugin", ua),
 		(ta.prototype.usingPlugin = function (t) {
@@ -8904,7 +8929,7 @@
 		}),
 		(ta.prototype.hasPlugin = function (t) {
 			return !!na(t);
-		});
+		}));
 	var la = function (t) {
 		return 0 === t.indexOf("#") ? t.slice(1) : t;
 	};
@@ -8912,16 +8937,18 @@
 		var r = ca.getPlayer(e);
 		if (r)
 			return (
-				i && c.warn('Player "' + e + '" is already initialised. Options will not be applied.'), n && r.ready(n), r
+				i && c.warn('Player "' + e + '" is already initialised. Options will not be applied.'),
+				n && r.ready(n),
+				r
 			);
 		var a = "string" == typeof e ? Q("#" + la(e)) : e;
 		if (!C(a)) throw new TypeError("The element or ID supplied is not valid. (videojs)");
-		t.body.contains(a) || c.warn("The element supplied is not included in the DOM"),
+		(t.body.contains(a) || c.warn("The element supplied is not included in the DOM"),
 			(i = i || {}),
 			ca.hooks("beforesetup").forEach(function (t) {
 				var e = t(a, Ft(i));
 				v(e) && !Array.isArray(e) ? (i = Ft(i, e)) : c.error("please return an object in beforesetup hooks");
-			});
+			}));
 		var s = Vt.getComponent("Player");
 		return (
 			(r = new s(a, i, n)),
@@ -8934,7 +8961,7 @@
 	if (
 		((ca.hooks_ = {}),
 		(ca.hooks = function (t, e) {
-			return (ca.hooks_[t] = ca.hooks_[t] || []), e && (ca.hooks_[t] = ca.hooks_[t].concat(e)), ca.hooks_[t];
+			return ((ca.hooks_[t] = ca.hooks_[t] || []), e && (ca.hooks_[t] = ca.hooks_[t].concat(e)), ca.hooks_[t]);
 		}),
 		(ca.hook = function (t, e) {
 			ca.hooks(t, e);
@@ -8944,7 +8971,7 @@
 				t,
 				[].concat(e).map(function (e) {
 					return function i() {
-						return ca.removeHook(t, i), e.apply(void 0, arguments);
+						return (ca.removeHook(t, i), e.apply(void 0, arguments));
 					};
 				})
 			);
@@ -8959,14 +8986,14 @@
 		if (!ha) {
 			ha = St("vjs-styles-defaults");
 			var da = Q("head");
-			da && da.insertBefore(ha, da.firstChild),
+			(da && da.insertBefore(ha, da.firstChild),
 				kt(
 					ha,
 					"\n      .video-js {\n        width: 300px;\n        height: 150px;\n      }\n\n      .vjs-fluid {\n        padding-top: 56.25%\n      }\n    "
-				);
+				));
 		}
 	}
-	bt(1, ca),
+	(bt(1, ca),
 		(ca.VERSION = i),
 		(ca.options = ta.prototype.options_),
 		(ca.getPlayers = function () {
@@ -8998,18 +9025,18 @@
 		(ca.players = ta.players),
 		(ca.getComponent = Vt.getComponent),
 		(ca.registerComponent = function (t, e) {
-			en.isTech(e) &&
+			(en.isTech(e) &&
 				c.warn(
 					"The " +
 						t +
 						" tech was registered as a component. It should instead be registered using videojs.registerTech(name, tech)"
 				),
-				Vt.registerComponent.call(Vt, t, e);
+				Vt.registerComponent.call(Vt, t, e));
 		}),
 		(ca.getTech = en.getTech),
 		(ca.registerTech = en.registerTech),
 		(ca.use = function (t, e) {
-			(nn[t] = nn[t] || []), nn[t].push(e);
+			((nn[t] = nn[t] || []), nn[t].push(e));
 		}),
 		Object.defineProperty(ca, "middleware", { value: {}, writeable: !1, enumerable: !0 }),
 		Object.defineProperty(ca.middleware, "TERMINATOR", { value: an, writeable: !1, enumerable: !0 }),
@@ -9027,10 +9054,10 @@
 			(function (t, e) {
 				if ("function" != typeof e && null !== e)
 					throw new TypeError("Super expression must either be null or a function, not " + typeof e);
-				(t.prototype = Object.create(e && e.prototype, {
+				((t.prototype = Object.create(e && e.prototype, {
 					constructor: { value: t, enumerable: !1, writable: !0, configurable: !0 },
 				})),
-					e && (t.super_ = e);
+					e && (t.super_ = e));
 			})(i, t),
 			n))
 				n.hasOwnProperty(r) && (i.prototype[r] = n[r]);
@@ -9041,7 +9068,7 @@
 		(ca.registerPlugin = ua.registerPlugin),
 		(ca.deregisterPlugin = ua.deregisterPlugin),
 		(ca.plugin = function (t, e) {
-			return c.warn("videojs.plugin() is deprecated; use videojs.registerPlugin() instead"), ua.registerPlugin(t, e);
+			return (c.warn("videojs.plugin() is deprecated; use videojs.registerPlugin() instead"), ua.registerPlugin(t, e));
 		}),
 		(ca.getPlugins = ua.getPlugins),
 		(ca.getPlugin = ua.getPlugin),
@@ -9098,10 +9125,10 @@
 		}),
 		(ca.computedStyle = b),
 		(ca.dom = Z),
-		(ca.url = Xe);
+		(ca.url = Xe));
 	var pa = Ke(function (t, e) {
 			var i, n, r, a, s;
-			(i = /^((?:[a-zA-Z0-9+\-.]+:)?)(\/\/[^\/?#]*)?((?:[^\/\?#]*\/)*.*?)??(;.*?)?(\?.*?)?(#.*?)?$/),
+			((i = /^((?:[a-zA-Z0-9+\-.]+:)?)(\/\/[^\/?#]*)?((?:[^\/\?#]*\/)*.*?)??(;.*?)?(\?.*?)?(#.*?)?$/),
 				(n = /^([^\/?#]*)(.*)$/),
 				(r = /(?:\/|^)\.(?=\/)/g),
 				(a = /(?:\/|^)\.\.\/(?!\.\.\/).*?(?=\/)/g),
@@ -9111,7 +9138,7 @@
 							if (!i.alwaysNormalize) return t;
 							var r = s.parseURL(t);
 							if (!r) throw new Error("Error trying to parse base URL.");
-							return (r.path = s.normalizePath(r.path)), s.buildURLFromParts(r);
+							return ((r.path = s.normalizePath(r.path)), s.buildURLFromParts(r));
 						}
 						var a = s.parseURL(e);
 						if (!a) throw new Error("Error trying to parse relative URL.");
@@ -9121,7 +9148,7 @@
 						if (!o) throw new Error("Error trying to parse base URL.");
 						if (!o.netLoc && o.path && "/" !== o.path[0]) {
 							var u = n.exec(o.path);
-							(o.netLoc = u[1]), (o.path = u[2]);
+							((o.netLoc = u[1]), (o.path = u[2]));
 						}
 						o.netLoc && !o.path && (o.path = "/");
 						var l = {
@@ -9137,7 +9164,7 @@
 								var c = o.path,
 									h = c.substring(0, c.lastIndexOf("/") + 1) + a.path;
 								l.path = s.normalizePath(h);
-							} else (l.path = o.path), a.params || ((l.params = o.params), a.query || (l.query = o.query));
+							} else ((l.path = o.path), a.params || ((l.params = o.params), a.query || (l.query = o.query)));
 						return (
 							null === l.path && (l.path = i.alwaysNormalize ? s.normalizePath(a.path) : a.path),
 							s.buildURLFromParts(l)
@@ -9168,7 +9195,7 @@
 						return t.scheme + t.netLoc + t.path + t.params + t.query + t.fragment;
 					},
 				}),
-				(t.exports = s);
+				(t.exports = s));
 		}),
 		fa = function (t, e) {
 			if (!(t instanceof e)) throw new TypeError("Cannot call a class as a function");
@@ -9185,10 +9212,10 @@
 		ga = function (t, e) {
 			if ("function" != typeof e && null !== e)
 				throw new TypeError("Super expression must either be null or a function, not " + typeof e);
-			(t.prototype = Object.create(e && e.prototype, {
+			((t.prototype = Object.create(e && e.prototype, {
 				constructor: { value: t, enumerable: !1, writable: !0, configurable: !0 },
 			})),
-				e && (Object.setPrototypeOf ? Object.setPrototypeOf(t, e) : (t.__proto__ = e));
+				e && (Object.setPrototypeOf ? Object.setPrototypeOf(t, e) : (t.__proto__ = e)));
 		},
 		ya = function (t, e) {
 			if (!t) throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
@@ -9196,16 +9223,16 @@
 		},
 		va = (function () {
 			function t() {
-				fa(this, t), (this.listeners = {});
+				(fa(this, t), (this.listeners = {}));
 			}
 			return (
 				(t.prototype.on = function (t, e) {
-					this.listeners[t] || (this.listeners[t] = []), this.listeners[t].push(e);
+					(this.listeners[t] || (this.listeners[t] = []), this.listeners[t].push(e));
 				}),
 				(t.prototype.off = function (t, e) {
 					if (!this.listeners[t]) return !1;
 					var i = this.listeners[t].indexOf(e);
-					return this.listeners[t].splice(i, 1), i > -1;
+					return (this.listeners[t].splice(i, 1), i > -1);
 				}),
 				(t.prototype.trigger = function (t) {
 					var e = this.listeners[t],
@@ -9233,14 +9260,14 @@
 			function e() {
 				fa(this, e);
 				var i = ya(this, t.call(this));
-				return (i.buffer = ""), i;
+				return ((i.buffer = ""), i);
 			}
 			return (
 				ga(e, t),
 				(e.prototype.push = function (t) {
 					var e = void 0;
 					for (this.buffer += t, e = this.buffer.indexOf("\n"); e > -1; e = this.buffer.indexOf("\n"))
-						this.trigger("data", this.buffer.substring(0, e)), (this.buffer = this.buffer.substring(e + 1));
+						(this.trigger("data", this.buffer.substring(0, e)), (this.buffer = this.buffer.substring(e + 1)));
 				}),
 				e
 			);
@@ -9262,7 +9289,7 @@
 			function e() {
 				fa(this, e);
 				var i = ya(this, t.call(this));
-				return (i.customParsers = []), i;
+				return ((i.customParsers = []), i);
 			}
 			return (
 				ga(e, t),
@@ -9340,9 +9367,9 @@
 												var a = r.BYTERANGE.split("@"),
 													s = a[0],
 													o = a[1];
-												(i.byterange = {}),
+												((i.byterange = {}),
 													s && (i.byterange.length = parseInt(s, 10)),
-													o && (i.byterange.offset = parseInt(o, 10));
+													o && (i.byterange.offset = parseInt(o, 10)));
 											}
 										}
 										this.trigger("data", i);
@@ -9351,14 +9378,14 @@
 											if (((i.attributes = ba(e[1])), i.attributes.RESOLUTION)) {
 												var u = i.attributes.RESOLUTION.split("x"),
 													l = {};
-												u[0] && (l.width = parseInt(u[0], 10)),
+												(u[0] && (l.width = parseInt(u[0], 10)),
 													u[1] && (l.height = parseInt(u[1], 10)),
-													(i.attributes.RESOLUTION = l);
+													(i.attributes.RESOLUTION = l));
 											}
-											i.attributes.BANDWIDTH &&
+											(i.attributes.BANDWIDTH &&
 												(i.attributes.BANDWIDTH = parseInt(i.attributes.BANDWIDTH, 10)),
 												i.attributes["PROGRAM-ID"] &&
-													(i.attributes["PROGRAM-ID"] = parseInt(i.attributes["PROGRAM-ID"], 10));
+													(i.attributes["PROGRAM-ID"] = parseInt(i.attributes["PROGRAM-ID"], 10)));
 										}
 										this.trigger("data", i);
 									} else {
@@ -9437,14 +9464,14 @@
 						n = t.customType,
 						r = t.dataParser,
 						a = t.segment;
-					"function" != typeof r &&
+					("function" != typeof r &&
 						(r = function (t) {
 							return t;
 						}),
 						this.customParsers.push(function (t) {
 							if (i.exec(t))
-								return e.trigger("data", { type: "custom", data: r(t), customType: n, segment: a }), !0;
-						});
+								return (e.trigger("data", { type: "custom", data: r(t), customType: n, segment: a }), !0);
+						}));
 				}),
 				e
 			);
@@ -9453,7 +9480,7 @@
 			function e() {
 				fa(this, e);
 				var i = ya(this, t.call(this));
-				(i.lineStream = new _a()), (i.parseStream = new Ta()), i.lineStream.pipe(i.parseStream);
+				((i.lineStream = new _a()), (i.parseStream = new Ta()), i.lineStream.pipe(i.parseStream));
 				var n = i,
 					r = [],
 					a = {},
@@ -9471,26 +9498,26 @@
 								(
 									({
 										"allow-cache": function () {
-											(this.manifest.allowCache = t.allowed),
+											((this.manifest.allowCache = t.allowed),
 												"allowed" in t ||
 													(this.trigger("info", { message: "defaulting allowCache to YES" }),
-													(this.manifest.allowCache = !0));
+													(this.manifest.allowCache = !0)));
 										},
 										"byterange": function () {
 											var e = {};
-											"length" in t &&
+											("length" in t &&
 												((a.byterange = e),
 												(e.length = t.length),
 												"offset" in t ||
 													(this.trigger("info", { message: "defaulting offset to zero" }),
 													(t.offset = 0))),
-												"offset" in t && ((a.byterange = e), (e.offset = t.offset));
+												"offset" in t && ((a.byterange = e), (e.offset = t.offset)));
 										},
 										"endlist": function () {
 											this.manifest.endList = !0;
 										},
 										"inf": function () {
-											"mediaSequence" in this.manifest ||
+											("mediaSequence" in this.manifest ||
 												((this.manifest.mediaSequence = 0),
 												this.trigger("info", { message: "defaulting media sequence to zero" })),
 												"discontinuitySequence" in this.manifest ||
@@ -9504,7 +9531,7 @@
 													this.trigger("info", {
 														message: "updating zero segment duration to a small value",
 													})),
-												(this.manifest.segments = r);
+												(this.manifest.segments = r));
 										},
 										"key": function () {
 											t.attributes
@@ -9549,16 +9576,16 @@
 													});
 										},
 										"map": function () {
-											(s = {}), t.uri && (s.uri = t.uri), t.byterange && (s.byterange = t.byterange);
+											((s = {}), t.uri && (s.uri = t.uri), t.byterange && (s.byterange = t.byterange));
 										},
 										"stream-inf": function () {
-											(this.manifest.playlists = r),
+											((this.manifest.playlists = r),
 												(this.manifest.mediaGroups = this.manifest.mediaGroups || u),
 												t.attributes
 													? (a.attributes || (a.attributes = {}), ma(a.attributes, t.attributes))
 													: this.trigger("warn", {
 															message: "ignoring empty stream-inf attributes",
-														});
+														}));
 										},
 										"media": function () {
 											if (
@@ -9569,7 +9596,7 @@
 													t.attributes.NAME)
 											) {
 												var n = this.manifest.mediaGroups[t.attributes.TYPE];
-												(n[t.attributes["GROUP-ID"]] = n[t.attributes["GROUP-ID"]] || {}),
+												((n[t.attributes["GROUP-ID"]] = n[t.attributes["GROUP-ID"]] || {}),
 													(e = n[t.attributes["GROUP-ID"]]),
 													(i = { default: /yes/i.test(t.attributes.DEFAULT) }).default
 														? (i.autoselect = !0)
@@ -9581,23 +9608,23 @@
 													t.attributes.CHARACTERISTICS &&
 														(i.characteristics = t.attributes.CHARACTERISTICS),
 													t.attributes.FORCED && (i.forced = /yes/i.test(t.attributes.FORCED)),
-													(e[t.attributes.NAME] = i);
+													(e[t.attributes.NAME] = i));
 											} else
 												this.trigger("warn", {
 													message: "ignoring incomplete or missing media group",
 												});
 										},
 										"discontinuity": function () {
-											(l += 1),
+											((l += 1),
 												(a.discontinuity = !0),
-												this.manifest.discontinuityStarts.push(r.length);
+												this.manifest.discontinuityStarts.push(r.length));
 										},
 										"program-date-time": function () {
-											void 0 === this.manifest.dateTimeString &&
+											(void 0 === this.manifest.dateTimeString &&
 												((this.manifest.dateTimeString = t.dateTimeString),
 												(this.manifest.dateTimeObject = t.dateTimeObject)),
 												(a.dateTimeString = t.dateTimeString),
-												(a.dateTimeObject = t.dateTimeObject);
+												(a.dateTimeObject = t.dateTimeObject));
 										},
 										"targetduration": function () {
 											!isFinite(t.duration) || t.duration < 0
@@ -9637,7 +9664,7 @@
 								).call(n);
 							},
 							uri: function () {
-								(a.uri = t.uri),
+								((a.uri = t.uri),
 									r.push(a),
 									!this.manifest.targetDuration ||
 										"duration" in a ||
@@ -9648,7 +9675,7 @@
 									o && (a.key = o),
 									(a.timeline = l),
 									s && (a.map = s),
-									(a = {});
+									(a = {}));
 							},
 							comment: function () {},
 							custom: function () {
@@ -9726,7 +9753,7 @@
 						((e = t.segments),
 						(i = "discontinuity"),
 						e.reduce(function (t, e, n) {
-							return e[i] && t.push(n), t;
+							return (e[i] && t.push(n), t);
 						}, []))),
 					t
 				);
@@ -9746,7 +9773,7 @@
 					segments: n,
 					mediaSequence: n.length ? n[0].number : 1,
 				};
-			return i.contentProtection && (r.contentProtection = i.contentProtection), r;
+			return (i.contentProtection && (r.contentProtection = i.contentProtection), r);
 		},
 		Oa = function (t) {
 			var e,
@@ -9772,7 +9799,7 @@
 					segments: n,
 					mediaSequence: n.length ? n[0].number : 1,
 				};
-			return i.contentProtection && (r.contentProtection = i.contentProtection), r;
+			return (i.contentProtection && (r.contentProtection = i.contentProtection), r);
 		},
 		Pa = function (t) {
 			var e;
@@ -9882,7 +9909,7 @@
 		Ia =
 			((function (t, e) {
 				var i, n, r, a, s;
-				(i = /^((?:[a-zA-Z0-9+\-.]+:)?)(\/\/[^\/?#]*)?((?:[^\/\?#]*\/)*.*?)??(;.*?)?(\?.*?)?(#.*?)?$/),
+				((i = /^((?:[a-zA-Z0-9+\-.]+:)?)(\/\/[^\/?#]*)?((?:[^\/\?#]*\/)*.*?)??(;.*?)?(\?.*?)?(#.*?)?$/),
 					(n = /^([^\/?#]*)(.*)$/),
 					(r = /(?:\/|^)\.(?=\/)/g),
 					(a = /(?:\/|^)\.\.\/(?!\.\.\/).*?(?=\/)/g),
@@ -9892,7 +9919,7 @@
 								if (!i.alwaysNormalize) return t;
 								var r = s.parseURL(t);
 								if (!r) throw new Error("Error trying to parse base URL.");
-								return (r.path = s.normalizePath(r.path)), s.buildURLFromParts(r);
+								return ((r.path = s.normalizePath(r.path)), s.buildURLFromParts(r));
 							}
 							var a = s.parseURL(e);
 							if (!a) throw new Error("Error trying to parse relative URL.");
@@ -9902,7 +9929,7 @@
 							if (!o) throw new Error("Error trying to parse base URL.");
 							if (!o.netLoc && o.path && "/" !== o.path[0]) {
 								var u = n.exec(o.path);
-								(o.netLoc = u[1]), (o.path = u[2]);
+								((o.netLoc = u[1]), (o.path = u[2]));
 							}
 							o.netLoc && !o.path && (o.path = "/");
 							var l = {
@@ -9919,7 +9946,7 @@
 										h = c.substring(0, c.lastIndexOf("/") + 1) + a.path;
 									l.path = s.normalizePath(h);
 								} else
-									(l.path = o.path), a.params || ((l.params = o.params), a.query || (l.query = o.query));
+									((l.path = o.path), a.params || ((l.params = o.params), a.query || (l.query = o.query)));
 							return (
 								null === l.path && (l.path = i.alwaysNormalize ? s.normalizePath(a.path) : a.path),
 								s.buildURLFromParts(l)
@@ -9950,7 +9977,7 @@
 							return t.scheme + t.netLoc + t.path + t.params + t.query + t.fragment;
 						},
 					}),
-					(t.exports = s);
+					(t.exports = s));
 			})((Ua = { exports: {} }), Ua.exports),
 			Ua.exports),
 		xa = function (t, i) {
@@ -10010,7 +10037,7 @@
 					v = y.d,
 					_ = y.r || 0,
 					b = y.t || 0;
-				m < 0 && (m = b), b && b > m && (m = b);
+				(m < 0 && (m = b), b && b > m && (m = b));
 				var T = void 0;
 				if (_ < 0) {
 					var S = g + 1;
@@ -10022,7 +10049,7 @@
 							: (e[S].t - m) / v;
 				} else T = _ + 1;
 				for (var k = d + f.length + T, w = d + f.length; w < k; )
-					f.push({ number: w, duration: v / c, time: m, timeline: p }), (m += v), w++;
+					(f.push({ number: w, duration: v / c, time: m, timeline: p }), (m += v), w++);
 			}
 			return f;
 		},
@@ -10114,7 +10141,7 @@
 						: Ma(t, e)
 					: [{ number: t.startNumber || 1, duration: t.sourceDuration, time: 0, timeline: t.periodIndex }];
 			})(t, e).map(function (e) {
-				(i.Number = e.number), (i.Time = e.time);
+				((i.Number = e.number), (i.Time = e.time));
 				var n = Fa(t.media || "", i);
 				return {
 					uri: n,
@@ -10145,7 +10172,7 @@
 							r = void 0 === n ? {} : n,
 							a = Da({ baseUrl: i, source: r.sourceURL, range: r.range }),
 							s = Da({ baseUrl: i, source: e.media, range: e.mediaRange });
-						return (s.map = a), s;
+						return ((s.map = a), s);
 					})(t, e);
 				});
 			return (
@@ -10155,7 +10182,7 @@
 					.map(function (t, e) {
 						if (s[e]) {
 							var i = s[e];
-							return (i.timeline = t.timeline), (i.duration = t.duration), (i.number = t.number), i;
+							return ((i.timeline = t.timeline), (i.duration = t.duration), (i.number = t.number), i);
 						}
 					})
 					.filter(function (t) {
@@ -10180,7 +10207,7 @@
 				var d = Na(t);
 				d.length && ((h.duration = d[0].duration), (h.timeline = d[0].timeline));
 			} else r && ((h.duration = r / s), (h.timeline = 0));
-			return (h.number = 0), [h];
+			return ((h.number = 0), [h]);
 		},
 		Ka = function (t) {
 			var e,
@@ -10243,7 +10270,7 @@
 				return Za(t);
 			},
 			availabilityStartTime: function (t) {
-				return /^\d+-\d+-\d+T\d+:\d+:\d+(\.\d+)?$/.test((e = t)) && (e += "Z"), Date.parse(e) / 1e3;
+				return (/^\d+-\d+-\d+T\d+:\d+:\d+(\.\d+)?$/.test((e = t)) && (e += "Z"), Date.parse(e) / 1e3);
 				var e;
 			},
 			minimumUpdatePeriod: function (t) {
@@ -10291,7 +10318,7 @@
 			return t && t.attributes
 				? Ea(t.attributes).reduce(function (t, e) {
 						var i = ts[e.name] || ts.DEFAULT;
-						return (t[e.name] = i(e.value)), t;
+						return ((t[e.name] = i(e.value)), t);
 					}, {})
 				: {};
 		};
@@ -10465,7 +10492,7 @@
 						break;
 					case "urn:mpeg:dash:utc:direct:2014":
 					case "urn:mpeg:dash:utc:direct:2012":
-						(i.method = "DIRECT"), (i.value = Date.parse(i.value));
+						((i.method = "DIRECT"), (i.value = Date.parse(i.value)));
 						break;
 					case "urn:mpeg:dash:utc:http-ntp:2014":
 					case "urn:mpeg:dash:utc:ntp:2014":
@@ -10479,7 +10506,7 @@
 		gs = function (t) {
 			return t >>> 0;
 		};
-	(rs = function (t) {
+	((rs = function (t) {
 		return is(t, ["moov", "trak"]).reduce(function (t, e) {
 			var i, n, r, a, s;
 			return (i = is(e, ["tkhd"])[0])
@@ -10546,7 +10573,7 @@
 				}),
 				i
 			);
-		});
+		}));
 	var ys,
 		vs,
 		_s,
@@ -10597,14 +10624,14 @@
 					o = [];
 				if (!e.length) return null;
 				for (i = 0; i < t.byteLength; )
-					(n = gs((t[i] << 24) | (t[i + 1] << 16) | (t[i + 2] << 8) | t[i + 3])),
+					((n = gs((t[i] << 24) | (t[i + 1] << 16) | (t[i + 2] << 8) | t[i + 3])),
 						(r = ns(t.subarray(i + 4, i + 8))),
 						(a = n > 1 ? i + n : t.byteLength),
 						r === e[0] &&
 							(1 === e.length
 								? o.push(t.subarray(i + 8, a))
 								: (s = is(t.subarray(i + 8, a), e.slice(1))).length && (o = o.concat(s))),
-						(i = a);
+						(i = a));
 				return o;
 			}),
 			parseType: (ns = function (t) {
@@ -10621,7 +10648,7 @@
 			videoTrackIds: ss,
 		},
 		ro = Math.pow(2, 32) - 1;
-	!(function () {
+	(!(function () {
 		var t;
 		if (
 			((Ns = {
@@ -10665,7 +10692,7 @@
 		) {
 			for (t in Ns)
 				Ns.hasOwnProperty(t) && (Ns[t] = [t.charCodeAt(0), t.charCodeAt(1), t.charCodeAt(2), t.charCodeAt(3)]);
-			(js = new Uint8Array(["i".charCodeAt(0), "s".charCodeAt(0), "o".charCodeAt(0), "m".charCodeAt(0)])),
+			((js = new Uint8Array(["i".charCodeAt(0), "s".charCodeAt(0), "o".charCodeAt(0), "m".charCodeAt(0)])),
 				(Vs = new Uint8Array(["a".charCodeAt(0), "v".charCodeAt(0), "c".charCodeAt(0), "1".charCodeAt(0)])),
 				(Fs = new Uint8Array([0, 0, 0, 1])),
 				(Hs = new Uint8Array([
@@ -10683,7 +10710,7 @@
 				($s = Ys),
 				(Ks = new Uint8Array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])),
 				(Qs = Ys),
-				(Ws = new Uint8Array([0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0]));
+				(Ws = new Uint8Array([0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0])));
 		}
 	})(),
 		(ys = function (t) {
@@ -10702,7 +10729,7 @@
 				e < n.length;
 				e++
 			)
-				i.set(n[e], r), (r += n[e].byteLength);
+				(i.set(n[e], r), (r += n[e].byteLength));
 			return i;
 		}),
 		(vs = function () {
@@ -10920,7 +10947,7 @@
 				n = t.samples || [],
 				r = new Uint8Array(4 + n.length);
 			for (i = 0; i < n.length; i++)
-				(e = n[i].flags), (r[i + 4] = (e.dependsOn << 4) | (e.isDependedOn << 2) | e.hasRedundancy);
+				((e = n[i].flags), (r[i + 4] = (e.dependsOn << 4) | (e.isDependedOn << 2) | e.hasRedundancy));
 			return ys(Ns.sdtp, r);
 		}),
 		(xs = function (t) {
@@ -10936,13 +10963,13 @@
 				r = [],
 				a = [];
 			for (e = 0; e < i.length; e++)
-				r.push((65280 & i[e].byteLength) >>> 8),
+				(r.push((65280 & i[e].byteLength) >>> 8),
 					r.push(255 & i[e].byteLength),
-					(r = r.concat(Array.prototype.slice.call(i[e])));
+					(r = r.concat(Array.prototype.slice.call(i[e]))));
 			for (e = 0; e < n.length; e++)
-				a.push((65280 & n[e].byteLength) >>> 8),
+				(a.push((65280 & n[e].byteLength) >>> 8),
 					a.push(255 & n[e].byteLength),
-					(a = a.concat(Array.prototype.slice.call(n[e])));
+					(a = a.concat(Array.prototype.slice.call(n[e]))));
 			return ys(
 				Ns.avc1,
 				new Uint8Array([
@@ -11221,7 +11248,7 @@
 			);
 		}),
 		(As = function (t) {
-			return (t.duration = t.duration || 4294967295), ys(Ns.trak, Ls(t), Os(t));
+			return ((t.duration = t.duration || 4294967295), ys(Ns.trak, Ls(t), Os(t)));
 		}),
 		(Ms = function (t) {
 			var e = new Uint8Array([
@@ -11250,7 +11277,7 @@
 				0,
 				1,
 			]);
-			return "video" !== t.type && (e[e.length - 1] = 0), ys(Ns.trex, e);
+			return ("video" !== t.type && (e[e.length - 1] = 0), ys(Ns.trex, e));
 		}),
 		(io = function (t, e) {
 			var i = 0,
@@ -11282,7 +11309,7 @@
 		(eo = function (t, e) {
 			var i, n, r, a;
 			for (e += 20 + 16 * (n = t.samples || []).length, i = io(n, e), a = 0; a < n.length; a++)
-				(r = n[a]),
+				((r = n[a]),
 					(i = i.concat([
 						(4278190080 & r.duration) >>> 24,
 						(16711680 & r.duration) >>> 16,
@@ -11303,13 +11330,13 @@
 						(16711680 & r.compositionTimeOffset) >>> 16,
 						(65280 & r.compositionTimeOffset) >>> 8,
 						255 & r.compositionTimeOffset,
-					]));
+					])));
 			return ys(Ns.trun, new Uint8Array(i));
 		}),
 		(to = function (t, e) {
 			var i, n, r, a;
 			for (e += 20 + 8 * (n = t.samples || []).length, i = io(n, e), a = 0; a < n.length; a++)
-				(r = n[a]),
+				((r = n[a]),
 					(i = i.concat([
 						(4278190080 & r.duration) >>> 24,
 						(16711680 & r.duration) >>> 16,
@@ -11319,12 +11346,12 @@
 						(16711680 & r.size) >>> 16,
 						(65280 & r.size) >>> 8,
 						255 & r.size,
-					]));
+					])));
 			return ys(Ns.trun, new Uint8Array(i));
 		}),
 		(Bs = function (t, e) {
 			return "audio" === t.type ? to(t, e) : eo(t, e);
-		});
+		}));
 	var ao = {
 			ftyp: (bs = function () {
 				return ys(Ns.ftyp, js, Fs, js, Vs);
@@ -11338,14 +11365,14 @@
 				var e,
 					i = bs(),
 					n = ws(t);
-				return (e = new Uint8Array(i.byteLength + n.byteLength)).set(i), e.set(n, i.byteLength), e;
+				return ((e = new Uint8Array(i.byteLength + n.byteLength)).set(i), e.set(n, i.byteLength), e);
 			},
 		},
 		so = function () {
 			this.init = function () {
 				var t = {};
-				(this.on = function (e, i) {
-					t[e] || (t[e] = []), (t[e] = t[e].concat(i));
+				((this.on = function (e, i) {
+					(t[e] || (t[e] = []), (t[e] = t[e].concat(i)));
 				}),
 					(this.off = function (e, i) {
 						var n;
@@ -11362,10 +11389,10 @@
 					}),
 					(this.dispose = function () {
 						t = {};
-					});
+					}));
 			};
 		};
-	(so.prototype.pipe = function (t) {
+	((so.prototype.pipe = function (t) {
 		return (
 			this.on("data", function (e) {
 				t.push(e);
@@ -11381,7 +11408,7 @@
 		}),
 		(so.prototype.flush = function (t) {
 			this.trigger("done", t);
-		});
+		}));
 	var oo,
 		uo,
 		lo,
@@ -11427,7 +11454,7 @@
 						(n.duration = i.dts - n.dts),
 						(n.byteLength += i.data.byteLength),
 						n.push(i));
-			return r.length && (!n.duration || n.duration <= 0) && (n.duration = r[r.length - 1].duration), r.push(n), r;
+			return (r.length && (!n.duration || n.duration <= 0) && (n.duration = r[r.length - 1].duration), r.push(n), r);
 		},
 		vo = function (t) {
 			var e,
@@ -11493,7 +11520,7 @@
 				o = e || 0,
 				u = [];
 			for (i = 0; i < t.length; i++)
-				for (a = t[i], n = 0; n < a.length; n++) (s = a[n]), (o += (r = go(s, o)).size), u.push(r);
+				for (a = t[i], n = 0; n < a.length; n++) ((s = a[n]), (o += (r = go(s, o)).size), u.push(r));
 			return u;
 		},
 		To = function (t) {
@@ -11511,7 +11538,11 @@
 			for (e = 0; e < t.length; e++)
 				for (r = t[e], i = 0; i < r.length; i++)
 					for (a = r[i], n = 0; n < a.length; n++)
-						(s = a[n]), h.setUint32(o, s.data.byteLength), (o += 4), c.set(s.data, o), (o += s.data.byteLength);
+						((s = a[n]),
+							h.setUint32(o, s.data.byteLength),
+							(o += 4),
+							c.set(s.data, o),
+							(o += s.data.byteLength));
 			return c;
 		},
 		So = [33, 16, 5, 32, 164, 27],
@@ -11571,13 +11602,13 @@
 					t
 				);
 			}, {}));
-	(po = function (t, e) {
+	((po = function (t, e) {
 		return uo(ho(t, e));
 	}),
 		(fo = function (t, e) {
 			return lo(co(t), e);
-		});
-	(uo = function (t) {
+		}));
+	((uo = function (t) {
 		return 9e4 * t;
 	}),
 		(lo = function (t, e) {
@@ -11588,7 +11619,7 @@
 		}),
 		(ho = function (t, e) {
 			return t / e;
-		});
+		}));
 	var Ao = po,
 		Lo = fo,
 		Oo = function (t, e, i, n) {
@@ -11625,7 +11656,7 @@
 			var e,
 				i,
 				n = [];
-			for (e = 0; e < t.length; e++) (i = t[e]), n.push({ size: i.data.byteLength, duration: 1024 });
+			for (e = 0; e < t.length; e++) ((i = t[e]), n.push({ size: i.data.byteLength, duration: 1024 }));
 			return n;
 		},
 		Io = function (t) {
@@ -11640,11 +11671,11 @@
 						return i;
 					})(t)
 				);
-			for (e = 0; e < t.length; e++) (i = t[e]), r.set(i.data, n), (n += i.data.byteLength);
+			for (e = 0; e < t.length; e++) ((i = t[e]), r.set(i.data, n), (n += i.data.byteLength));
 			return r;
 		},
 		xo = function (t) {
-			delete t.minSegmentDts, delete t.maxSegmentDts, delete t.minSegmentPts, delete t.maxSegmentPts;
+			(delete t.minSegmentDts, delete t.maxSegmentDts, delete t.minSegmentPts, delete t.maxSegmentPts);
 		},
 		Do = function (t, e) {
 			var i,
@@ -11659,7 +11690,7 @@
 			);
 		},
 		Ro = function (t, e) {
-			"number" == typeof e.pts &&
+			("number" == typeof e.pts &&
 				(void 0 === t.timelineStartInfo.pts && (t.timelineStartInfo.pts = e.pts),
 				void 0 === t.minSegmentPts
 					? (t.minSegmentPts = e.pts)
@@ -11674,17 +11705,17 @@
 						: (t.minSegmentDts = Math.min(t.minSegmentDts, e.dts)),
 					void 0 === t.maxSegmentDts
 						? (t.maxSegmentDts = e.dts)
-						: (t.maxSegmentDts = Math.max(t.maxSegmentDts, e.dts)));
+						: (t.maxSegmentDts = Math.max(t.maxSegmentDts, e.dts))));
 		},
 		Mo = function (t) {
 			for (var e = 0, i = { payloadType: -1, payloadSize: 0 }, n = 0, r = 0; e < t.byteLength && 128 !== t[e]; ) {
-				for (; 255 === t[e]; ) (n += 255), e++;
-				for (n += t[e++]; 255 === t[e]; ) (r += 255), e++;
+				for (; 255 === t[e]; ) ((n += 255), e++);
+				for (n += t[e++]; 255 === t[e]; ) ((r += 255), e++);
 				if (((r += t[e++]), !i.payload && 4 === n)) {
-					(i.payloadType = n), (i.payloadSize = r), (i.payload = t.subarray(e, e + r));
+					((i.payloadType = n), (i.payloadSize = r), (i.payload = t.subarray(e, e + r)));
 					break;
 				}
-				(e += r), (n = 0), (r = 0);
+				((e += r), (n = 0), (r = 0));
 			}
 			return i;
 		},
@@ -11707,41 +11738,41 @@
 				s = [];
 			if (!(64 & e[0])) return s;
 			for (n = 31 & e[0], i = 0; i < n; i++)
-				(a = { type: 3 & e[2 + (r = 3 * i)], pts: t }),
-					4 & e[r + 2] && ((a.ccData = (e[r + 3] << 8) | e[r + 4]), s.push(a));
+				((a = { type: 3 & e[2 + (r = 3 * i)], pts: t }),
+					4 & e[r + 2] && ((a.ccData = (e[r + 3] << 8) | e[r + 4]), s.push(a)));
 			return s;
 		},
 		jo = function (t) {
 			for (var e, i, n = t.byteLength, r = [], a = 1; a < n - 2; )
 				0 === t[a] && 0 === t[a + 1] && 3 === t[a + 2] ? (r.push(a + 2), (a += 2)) : a++;
 			if (0 === r.length) return t;
-			(e = n - r.length), (i = new Uint8Array(e));
+			((e = n - r.length), (i = new Uint8Array(e)));
 			var s = 0;
-			for (a = 0; a < e; s++, a++) s === r[0] && (s++, r.shift()), (i[a] = t[s]);
+			for (a = 0; a < e; s++, a++) (s === r[0] && (s++, r.shift()), (i[a] = t[s]));
 			return i;
 		},
 		Fo = 4,
 		Vo = function t() {
-			t.prototype.init.call(this),
+			(t.prototype.init.call(this),
 				(this.captionPackets_ = []),
 				(this.ccStreams_ = [new Go(0, 0), new Go(0, 1), new Go(1, 0), new Go(1, 1)]),
 				this.reset(),
 				this.ccStreams_.forEach(function (t) {
-					t.on("data", this.trigger.bind(this, "data")), t.on("done", this.trigger.bind(this, "done"));
-				}, this);
+					(t.on("data", this.trigger.bind(this, "data")), t.on("done", this.trigger.bind(this, "done")));
+				}, this));
 		};
-	((Vo.prototype = new mo()).push = function (t) {
+	(((Vo.prototype = new mo()).push = function (t) {
 		var e, i, n;
 		if ("sei_rbsp" === t.nalUnitType && (e = Mo(t.escapedRBSP)).payloadType === Fo && (i = Bo(e)))
 			if (t.dts < this.latestDts_) this.ignoreNextEqualDts_ = !0;
 			else {
 				if (t.dts === this.latestDts_ && this.ignoreNextEqualDts_)
-					return this.numSameDts_--, void (this.numSameDts_ || (this.ignoreNextEqualDts_ = !1));
-				(n = No(t.pts, i)),
+					return (this.numSameDts_--, void (this.numSameDts_ || (this.ignoreNextEqualDts_ = !1)));
+				((n = No(t.pts, i)),
 					(this.captionPackets_ = this.captionPackets_.concat(n)),
 					this.latestDts_ !== t.dts && (this.numSameDts_ = 0),
 					this.numSameDts_++,
-					(this.latestDts_ = t.dts);
+					(this.latestDts_ = t.dts));
 			}
 	}),
 		(Vo.prototype.flush = function () {
@@ -11764,27 +11795,27 @@
 					}, this);
 		}),
 		(Vo.prototype.reset = function () {
-			(this.latestDts_ = null),
+			((this.latestDts_ = null),
 				(this.ignoreNextEqualDts_ = !1),
 				(this.numSameDts_ = 0),
 				(this.activeCea608Channel_ = [null, null]),
 				this.ccStreams_.forEach(function (t) {
 					t.reset();
-				});
+				}));
 		}),
 		(Vo.prototype.dispatchCea608Packet = function (t) {
-			this.setsChannel1Active(t)
+			(this.setsChannel1Active(t)
 				? (this.activeCea608Channel_[t.type] = 0)
 				: this.setsChannel2Active(t) && (this.activeCea608Channel_[t.type] = 1),
 				null !== this.activeCea608Channel_[t.type] &&
-					this.ccStreams_[(t.type << 1) + this.activeCea608Channel_[t.type]].push(t);
+					this.ccStreams_[(t.type << 1) + this.activeCea608Channel_[t.type]].push(t));
 		}),
 		(Vo.prototype.setsChannel1Active = function (t) {
 			return 4096 == (30720 & t.ccData);
 		}),
 		(Vo.prototype.setsChannel2Active = function (t) {
 			return 6144 == (30720 & t.ccData);
-		});
+		}));
 	var Ho = {
 			42: 225,
 			92: 233,
@@ -11886,7 +11917,7 @@
 			return t;
 		},
 		Go = function t(e, i) {
-			t.prototype.init.call(this),
+			(t.prototype.init.call(this),
 				(this.field_ = e || 0),
 				(this.dataChannel_ = i || 0),
 				(this.name_ = "CC" + (1 + ((this.field_ << 1) | this.dataChannel_))),
@@ -11905,56 +11936,56 @@
 						)
 							if (e === this.RESUME_CAPTION_LOADING_) this.mode_ = "popOn";
 							else if (e === this.END_OF_CAPTION_)
-								(this.mode_ = "popOn"),
+								((this.mode_ = "popOn"),
 									this.clearFormatting(t.pts),
 									this.flushDisplayed(t.pts),
 									(i = this.displayed_),
 									(this.displayed_ = this.nonDisplayed_),
 									(this.nonDisplayed_ = i),
-									(this.startPts_ = t.pts);
-							else if (e === this.ROLL_UP_2_ROWS_) (this.rollUpRows_ = 2), this.setRollUp(t.pts);
-							else if (e === this.ROLL_UP_3_ROWS_) (this.rollUpRows_ = 3), this.setRollUp(t.pts);
-							else if (e === this.ROLL_UP_4_ROWS_) (this.rollUpRows_ = 4), this.setRollUp(t.pts);
+									(this.startPts_ = t.pts));
+							else if (e === this.ROLL_UP_2_ROWS_) ((this.rollUpRows_ = 2), this.setRollUp(t.pts));
+							else if (e === this.ROLL_UP_3_ROWS_) ((this.rollUpRows_ = 3), this.setRollUp(t.pts));
+							else if (e === this.ROLL_UP_4_ROWS_) ((this.rollUpRows_ = 4), this.setRollUp(t.pts));
 							else if (e === this.CARRIAGE_RETURN_)
-								this.clearFormatting(t.pts),
+								(this.clearFormatting(t.pts),
 									this.flushDisplayed(t.pts),
 									this.shiftRowsUp_(),
-									(this.startPts_ = t.pts);
+									(this.startPts_ = t.pts));
 							else if (e === this.BACKSPACE_)
 								"popOn" === this.mode_
 									? (this.nonDisplayed_[this.row_] = this.nonDisplayed_[this.row_].slice(0, -1))
 									: (this.displayed_[this.row_] = this.displayed_[this.row_].slice(0, -1));
 							else if (e === this.ERASE_DISPLAYED_MEMORY_)
-								this.flushDisplayed(t.pts), (this.displayed_ = Wo());
+								(this.flushDisplayed(t.pts), (this.displayed_ = Wo()));
 							else if (e === this.ERASE_NON_DISPLAYED_MEMORY_) this.nonDisplayed_ = Wo();
 							else if (e === this.RESUME_DIRECT_CAPTIONING_)
-								"paintOn" !== this.mode_ && (this.flushDisplayed(t.pts), (this.displayed_ = Wo())),
+								("paintOn" !== this.mode_ && (this.flushDisplayed(t.pts), (this.displayed_ = Wo())),
 									(this.mode_ = "paintOn"),
-									(this.startPts_ = t.pts);
+									(this.startPts_ = t.pts));
 							else if (this.isSpecialCharacter(n, r))
-								(a = qo((n = (3 & n) << 8) | r)), this[this.mode_](t.pts, a), this.column_++;
+								((a = qo((n = (3 & n) << 8) | r)), this[this.mode_](t.pts, a), this.column_++);
 							else if (this.isExtCharacter(n, r))
-								"popOn" === this.mode_
+								("popOn" === this.mode_
 									? (this.nonDisplayed_[this.row_] = this.nonDisplayed_[this.row_].slice(0, -1))
 									: (this.displayed_[this.row_] = this.displayed_[this.row_].slice(0, -1)),
 									(a = qo((n = (3 & n) << 8) | r)),
 									this[this.mode_](t.pts, a),
-									this.column_++;
+									this.column_++);
 							else if (this.isMidRowCode(n, r))
-								this.clearFormatting(t.pts),
+								(this.clearFormatting(t.pts),
 									this[this.mode_](t.pts, " "),
 									this.column_++,
 									14 == (14 & r) && this.addFormatting(t.pts, ["i"]),
-									1 == (1 & r) && this.addFormatting(t.pts, ["u"]);
+									1 == (1 & r) && this.addFormatting(t.pts, ["u"]));
 							else if (this.isOffsetControlCode(n, r)) this.column_ += 3 & r;
 							else if (this.isPAC(n, r)) {
 								var s = zo.indexOf(7968 & e);
-								"rollUp" === this.mode_ &&
+								("rollUp" === this.mode_ &&
 									(s - this.rollUpRows_ + 1 < 0 && (s = this.rollUpRows_ - 1), this.setRollUp(t.pts, s)),
 									s !== this.row_ && (this.clearFormatting(t.pts), (this.row_ = s)),
 									1 & r && -1 === this.formatting_.indexOf("u") && this.addFormatting(t.pts, ["u"]),
 									16 == (16 & e) && (this.column_ = 4 * ((14 & e) >> 1)),
-									this.isColorPAC(r) && 14 == (14 & r) && this.addFormatting(t.pts, ["i"]);
+									this.isColorPAC(r) && 14 == (14 & r) && this.addFormatting(t.pts, ["i"]));
 							} else
 								this.isNormalChar(n) &&
 									(0 === r && (r = null),
@@ -11963,16 +11994,16 @@
 									this[this.mode_](t.pts, a),
 									(this.column_ += a.length));
 					} else this.lastControlCode_ = null;
-				});
+				}));
 		};
-	(Go.prototype = new mo()),
+	((Go.prototype = new mo()),
 		(Go.prototype.flushDisplayed = function (t) {
 			var e = this.displayed_
 				.map(function (t) {
 					try {
 						return t.trim();
 					} catch (t) {
-						return console.error("Skipping malformed caption."), "";
+						return (console.error("Skipping malformed caption."), "");
 					}
 				})
 				.join("\n")
@@ -11980,7 +12011,7 @@
 			e.length && this.trigger("data", { startPts: this.startPts_, endPts: t, text: e, stream: this.name_ });
 		}),
 		(Go.prototype.reset = function () {
-			(this.mode_ = "popOn"),
+			((this.mode_ = "popOn"),
 				(this.topRow_ = 0),
 				(this.startPts_ = 0),
 				(this.displayed_ = Wo()),
@@ -11989,10 +12020,10 @@
 				(this.column_ = 0),
 				(this.row_ = 14),
 				(this.rollUpRows_ = 2),
-				(this.formatting_ = []);
+				(this.formatting_ = []));
 		}),
 		(Go.prototype.setConstants = function () {
-			0 === this.dataChannel_
+			(0 === this.dataChannel_
 				? ((this.BASE_ = 16), (this.EXT_ = 17), (this.CONTROL_ = (20 | this.field_) << 8), (this.OFFSET_ = 23))
 				: 1 === this.dataChannel_ &&
 					((this.BASE_ = 24), (this.EXT_ = 25), (this.CONTROL_ = (28 | this.field_) << 8), (this.OFFSET_ = 31)),
@@ -12006,7 +12037,7 @@
 				(this.RESUME_DIRECT_CAPTIONING_ = 41 | this.CONTROL_),
 				(this.BACKSPACE_ = 33 | this.CONTROL_),
 				(this.ERASE_DISPLAYED_MEMORY_ = 44 | this.CONTROL_),
-				(this.ERASE_NON_DISPLAYED_MEMORY_ = 46 | this.CONTROL_);
+				(this.ERASE_NON_DISPLAYED_MEMORY_ = 46 | this.CONTROL_));
 		}),
 		(Go.prototype.isSpecialCharacter = function (t, e) {
 			return t === this.EXT_ && e >= 48 && e <= 63;
@@ -12040,8 +12071,8 @@
 				void 0 !== e && e !== this.row_)
 			)
 				for (var i = 0; i < this.rollUpRows_; i++)
-					(this.displayed_[e - i] = this.displayed_[this.row_ - i]), (this.displayed_[this.row_ - i] = "");
-			void 0 === e && (e = this.row_), (this.topRow_ = e - this.rollUpRows_ + 1);
+					((this.displayed_[e - i] = this.displayed_[this.row_ - i]), (this.displayed_[this.row_ - i] = ""));
+			(void 0 === e && (e = this.row_), (this.topRow_ = e - this.rollUpRows_ + 1));
 		}),
 		(Go.prototype.addFormatting = function (t, e) {
 			this.formatting_ = this.formatting_.concat(e);
@@ -12055,16 +12086,16 @@
 				var e = this.formatting_.reverse().reduce(function (t, e) {
 					return t + "</" + e + ">";
 				}, "");
-				(this.formatting_ = []), this[this.mode_](t, e);
+				((this.formatting_ = []), this[this.mode_](t, e));
 			}
 		}),
 		(Go.prototype.popOn = function (t, e) {
 			var i = this.nonDisplayed_[this.row_];
-			(i += e), (this.nonDisplayed_[this.row_] = i);
+			((i += e), (this.nonDisplayed_[this.row_] = i));
 		}),
 		(Go.prototype.rollUp = function (t, e) {
 			var i = this.displayed_[this.row_];
-			(i += e), (this.displayed_[this.row_] = i);
+			((i += e), (this.displayed_[this.row_] = i));
 		}),
 		(Go.prototype.shiftRowsUp_ = function () {
 			var t;
@@ -12075,8 +12106,8 @@
 		}),
 		(Go.prototype.paintOn = function (t, e) {
 			var i = this.displayed_[this.row_];
-			(i += e), (this.displayed_[this.row_] = i);
-		});
+			((i += e), (this.displayed_[this.row_] = i));
+		}));
 	var Xo = { CaptionStream: Vo, Cea608Stream: Go },
 		Yo = { H264_STREAM_TYPE: 27, ADTS_STREAM_TYPE: 15, METADATA_STREAM_TYPE: 21 },
 		$o = function (t, e) {
@@ -12086,7 +12117,7 @@
 		},
 		Ko = function t(e) {
 			var i, n;
-			t.prototype.init.call(this),
+			(t.prototype.init.call(this),
 				(this.type_ = e),
 				(this.push = function (t) {
 					t.type === this.type_ &&
@@ -12097,11 +12128,11 @@
 						this.trigger("data", t));
 				}),
 				(this.flush = function () {
-					(n = i), this.trigger("done");
+					((n = i), this.trigger("done"));
 				}),
 				(this.discontinuity = function () {
-					(n = void 0), (i = void 0);
-				});
+					((n = void 0), (i = void 0));
+				}));
 		};
 	Ko.prototype = new mo();
 	var Qo,
@@ -12125,8 +12156,8 @@
 				if (3 === t.data[0]) {
 					for (e = 1; e < t.data.length; e++)
 						if (0 === t.data[e]) {
-							(t.description = eu(t.data, 1, e)),
-								(t.value = eu(t.data, e + 1, t.data.length).replace(/\0*$/, ""));
+							((t.description = eu(t.data, 1, e)),
+								(t.value = eu(t.data, e + 1, t.data.length).replace(/\0*$/, "")));
 							break;
 						}
 					t.data = t.value;
@@ -12137,7 +12168,7 @@
 				if (3 === t.data[0])
 					for (e = 1; e < t.data.length; e++)
 						if (0 === t.data[e]) {
-							(t.description = eu(t.data, 1, e)), (t.url = eu(t.data, e + 1, t.data.length));
+							((t.description = eu(t.data, 1, e)), (t.url = eu(t.data, e + 1, t.data.length)));
 							break;
 						}
 			},
@@ -12148,7 +12179,7 @@
 						t.owner = ((i = t.data), unescape(tu(i, 0, e)));
 						break;
 					}
-				(t.privateData = t.data.subarray(e + 1)), (t.data = t.privateData);
+				((t.privateData = t.data.subarray(e + 1)), (t.data = t.privateData));
 			},
 		};
 	(Qo = function (t) {
@@ -12178,12 +12209,13 @@
 					!(a < n))
 				) {
 					for (e = { data: new Uint8Array(n), frames: [], pts: r[0].pts, dts: r[0].dts }, l = 0; l < n; )
-						e.data.set(r[0].data.subarray(0, n - l), l),
+						(e.data.set(r[0].data.subarray(0, n - l), l),
 							(l += r[0].data.byteLength),
 							(a -= r[0].data.byteLength),
-							r.shift();
-					(s = 10),
-						64 & e.data[5] && ((s += 4), (s += iu(e.data.subarray(10, 14))), (n -= iu(e.data.subarray(16, 20))));
+							r.shift());
+					((s = 10),
+						64 & e.data[5] &&
+							((s += 4), (s += iu(e.data.subarray(10, 14))), (n -= iu(e.data.subarray(16, 20)))));
 					do {
 						if ((o = iu(e.data.subarray(s + 4, s + 8))) < 1)
 							return console.log("Malformed ID3 frame encountered. Skipping metadata parsing.");
@@ -12196,13 +12228,13 @@
 						) {
 							var c = u.data,
 								h = ((1 & c[3]) << 30) | (c[4] << 22) | (c[5] << 14) | (c[6] << 6) | (c[7] >>> 2);
-							(h *= 4),
+							((h *= 4),
 								(h += 3 & c[7]),
 								(u.timeStamp = h),
 								void 0 === e.pts && void 0 === e.dts && ((e.pts = u.timeStamp), (e.dts = u.timeStamp)),
-								this.trigger("timestamp", u);
+								this.trigger("timestamp", u));
 						}
-						e.frames.push(u), (s += 10), (s += o);
+						(e.frames.push(u), (s += 10), (s += o));
 					} while (s < n);
 					this.trigger("data", e);
 				}
@@ -12213,10 +12245,10 @@
 		su,
 		ou = Qo,
 		uu = Jo;
-	((ru = function () {
+	(((ru = function () {
 		var t = new Uint8Array(188),
 			e = 0;
-		ru.prototype.init.call(this),
+		(ru.prototype.init.call(this),
 			(this.push = function (i) {
 				var n,
 					r = 0,
@@ -12232,25 +12264,25 @@
 				r < n.byteLength && (t.set(n.subarray(r), 0), (e = n.byteLength - r));
 			}),
 			(this.flush = function () {
-				188 === e && 71 === t[0] && (this.trigger("data", t), (e = 0)), this.trigger("done");
-			});
+				(188 === e && 71 === t[0] && (this.trigger("data", t), (e = 0)), this.trigger("done"));
+			}));
 	}).prototype = new mo()),
 		((au = function () {
 			var t, e, i, n;
-			au.prototype.init.call(this),
+			(au.prototype.init.call(this),
 				(n = this),
 				(this.packetsWaitingForPmt = []),
 				(this.programMapTable = void 0),
 				(t = function (t, n) {
 					var r = 0;
-					n.payloadUnitStartIndicator && (r += t[r] + 1),
-						"pat" === n.type ? e(t.subarray(r), n) : i(t.subarray(r), n);
+					(n.payloadUnitStartIndicator && (r += t[r] + 1),
+						"pat" === n.type ? e(t.subarray(r), n) : i(t.subarray(r), n));
 				}),
 				(e = function (t, e) {
-					(e.section_number = t[7]),
+					((e.section_number = t[7]),
 						(e.last_section_number = t[8]),
 						(n.pmtPid = ((31 & t[10]) << 8) | t[11]),
-						(e.pmtPid = n.pmtPid);
+						(e.pmtPid = n.pmtPid));
 				}),
 				(i = function (t, e) {
 					var i, r;
@@ -12264,12 +12296,12 @@
 						) {
 							var a = t[r],
 								s = ((31 & t[r + 1]) << 8) | t[r + 2];
-							a === Yo.H264_STREAM_TYPE && null === n.programMapTable.video
+							(a === Yo.H264_STREAM_TYPE && null === n.programMapTable.video
 								? (n.programMapTable.video = s)
 								: a === Yo.ADTS_STREAM_TYPE && null === n.programMapTable.audio
 									? (n.programMapTable.audio = s)
 									: a === Yo.METADATA_STREAM_TYPE && (n.programMapTable["timed-metadata"][s] = a),
-								(r += 5 + (((15 & t[r + 3]) << 8) | t[r + 4]));
+								(r += 5 + (((15 & t[r + 3]) << 8) | t[r + 4])));
 						}
 						e.programMapTable = n.programMapTable;
 					}
@@ -12285,7 +12317,7 @@
 						(48 & e[3]) >>> 4 > 1 && (n += e[n] + 1),
 						0 === i.pid)
 					)
-						(i.type = "pat"), t(e.subarray(n), i), this.trigger("data", i);
+						((i.type = "pat"), t(e.subarray(n), i), this.trigger("data", i));
 					else if (i.pid === this.pmtPid)
 						for (
 							i.type = "pmt", t(e.subarray(n), i), this.trigger("data", i);
@@ -12299,15 +12331,15 @@
 							: this.processPes_(e, n, i);
 				}),
 				(this.processPes_ = function (t, e, i) {
-					i.pid === this.programMapTable.video
+					(i.pid === this.programMapTable.video
 						? (i.streamType = Yo.H264_STREAM_TYPE)
 						: i.pid === this.programMapTable.audio
 							? (i.streamType = Yo.ADTS_STREAM_TYPE)
 							: (i.streamType = this.programMapTable["timed-metadata"][i.pid]),
 						(i.type = "pes"),
 						(i.data = t.subarray(e)),
-						this.trigger("data", i);
-				});
+						this.trigger("data", i));
+				}));
 		}).prototype = new mo()),
 		(au.STREAM_TYPES = { h264: 27, adts: 15 }),
 		((su = function () {
@@ -12324,9 +12356,9 @@
 						l = 0;
 					if (e.data.length && !(e.size < 9)) {
 						for (o.trackId = e.data[0].pid, u = 0; u < e.data.length; u++)
-							(a = e.data[u]), s.set(a.data, l), (l += a.data.byteLength);
+							((a = e.data[u]), s.set(a.data, l), (l += a.data.byteLength));
 						var c, h, d;
-						(c = s),
+						((c = s),
 							((h = o).packetLength = 6 + ((c[4] << 8) | c[5])),
 							(h.dataAlignmentIndicator = 0 != (4 & c[6])),
 							192 & (d = c[7]) &&
@@ -12351,10 +12383,10 @@
 							(h.data = c.subarray(9 + c[8])),
 							(r = "video" === i || o.packetLength <= e.size),
 							(n || r) && ((e.size = 0), (e.data.length = 0)),
-							r && t.trigger("data", o);
+							r && t.trigger("data", o));
 					}
 				};
-			su.prototype.init.call(this),
+			(su.prototype.init.call(this),
 				(this.push = function (a) {
 					({
 						pat: function () {},
@@ -12363,23 +12395,23 @@
 							switch (a.streamType) {
 								case Yo.H264_STREAM_TYPE:
 								case Yo.H264_STREAM_TYPE:
-									(t = e), (s = "video");
+									((t = e), (s = "video"));
 									break;
 								case Yo.ADTS_STREAM_TYPE:
-									(t = i), (s = "audio");
+									((t = i), (s = "audio"));
 									break;
 								case Yo.METADATA_STREAM_TYPE:
-									(t = n), (s = "timed-metadata");
+									((t = n), (s = "timed-metadata"));
 									break;
 								default:
 									return;
 							}
-							a.payloadUnitStartIndicator && r(t, s, !0), t.data.push(a), (t.size += a.data.byteLength);
+							(a.payloadUnitStartIndicator && r(t, s, !0), t.data.push(a), (t.size += a.data.byteLength));
 						},
 						pmt: function () {
 							var e = { type: "metadata", tracks: [] },
 								i = a.programMapTable;
-							null !== i.video &&
+							(null !== i.video &&
 								e.tracks.push({
 									timelineStartInfo: { baseMediaDecodeTime: 0 },
 									id: +i.video,
@@ -12393,14 +12425,14 @@
 										codec: "adts",
 										type: "audio",
 									}),
-								t.trigger("data", e);
+								t.trigger("data", e));
 						},
 					})[a.type]();
 				}),
 				(this.flush = function () {
-					r(e, "video"), r(i, "audio"), r(n, "timed-metadata"), this.trigger("done");
-				});
-		}).prototype = new mo());
+					(r(e, "video"), r(i, "audio"), r(n, "timed-metadata"), this.trigger("done"));
+				}));
+		}).prototype = new mo()));
 	var lu = {
 		PAT_PID: 0,
 		MP2T_PACKET_LENGTH: 188,
@@ -12418,7 +12450,7 @@
 		pu = [96e3, 88200, 64e3, 48e3, 44100, 32e3, 24e3, 22050, 16e3, 12e3, 11025, 8e3, 7350];
 	(hu = function () {
 		var t;
-		hu.prototype.init.call(this),
+		(hu.prototype.init.call(this),
 			(this.push = function (e) {
 				var i,
 					n,
@@ -12462,12 +12494,12 @@
 								t.byteLength === r)
 							)
 								return void (t = void 0);
-							l++, (t = t.subarray(r));
+							(l++, (t = t.subarray(r)));
 						} else u++;
 			}),
 			(this.flush = function () {
 				this.trigger("done");
-			});
+			}));
 	}).prototype = new mo();
 	var fu,
 		mu,
@@ -12477,7 +12509,7 @@
 			var e = t.byteLength,
 				i = 0,
 				n = 0;
-			(this.length = function () {
+			((this.length = function () {
 				return 8 * e;
 			}),
 				(this.bitsAvailable = function () {
@@ -12488,7 +12520,7 @@
 						a = new Uint8Array(4),
 						s = Math.min(4, e);
 					if (0 === s) throw new Error("no bytes available");
-					a.set(t.subarray(r, r + s)), (i = new DataView(a.buffer).getUint32(0)), (n = 8 * s), (e -= s);
+					(a.set(t.subarray(r, r + s)), (i = new DataView(a.buffer).getUint32(0)), (n = 8 * s), (e -= s));
 				}),
 				(this.skipBits = function (t) {
 					var r;
@@ -12506,8 +12538,8 @@
 				}),
 				(this.skipLeadingZeros = function () {
 					var t;
-					for (t = 0; t < n; ++t) if (0 != (i & (2147483648 >>> t))) return (i <<= t), (n -= t), t;
-					return this.loadWord(), t + this.skipLeadingZeros();
+					for (t = 0; t < n; ++t) if (0 != (i & (2147483648 >>> t))) return ((i <<= t), (n -= t), t);
+					return (this.loadWord(), t + this.skipLeadingZeros());
 				}),
 				(this.skipUnsignedExpGolomb = function () {
 					this.skipBits(1 + this.skipLeadingZeros());
@@ -12529,13 +12561,13 @@
 				(this.readUnsignedByte = function () {
 					return this.readBits(8);
 				}),
-				this.loadWord();
+				this.loadWord());
 		};
-	((mu = function () {
+	(((mu = function () {
 		var t,
 			e,
 			i = 0;
-		mu.prototype.init.call(this),
+		(mu.prototype.init.call(this),
 			(this.push = function (n) {
 				var r;
 				for (
@@ -12566,23 +12598,26 @@
 							do {
 								t++;
 							} while (1 !== e[t] && t < e.length);
-							(i = t - 2), (t += 3);
+							((i = t - 2), (t += 3));
 							break;
 						case 1:
 							if (0 !== e[t - 1] || 0 !== e[t - 2]) {
 								t += 3;
 								break;
 							}
-							this.trigger("data", e.subarray(i + 3, t - 2)), (i = t - 2), (t += 3);
+							(this.trigger("data", e.subarray(i + 3, t - 2)), (i = t - 2), (t += 3));
 							break;
 						default:
 							t += 3;
 					}
-				(e = e.subarray(i)), (t -= i), (i = 0);
+				((e = e.subarray(i)), (t -= i), (i = 0));
 			}),
 			(this.flush = function () {
-				e && e.byteLength > 3 && this.trigger("data", e.subarray(i + 3)), (e = null), (i = 0), this.trigger("done");
-			});
+				(e && e.byteLength > 3 && this.trigger("data", e.subarray(i + 3)),
+					(e = null),
+					(i = 0),
+					this.trigger("done"));
+			}));
 	}).prototype = new mo()),
 		(gu = { 100: !0, 110: !0, 122: !0, 244: !0, 44: !0, 83: !0, 86: !0, 118: !0, 128: !0, 138: !0, 139: !0, 134: !0 }),
 		((fu = function () {
@@ -12594,7 +12629,7 @@
 				a,
 				s,
 				o = new mu();
-			fu.prototype.init.call(this),
+			(fu.prototype.init.call(this),
 				(t = this),
 				(this.push = function (t) {
 					"video" === t.type && ((e = t.trackId), (i = t.pts), (n = t.dts), o.push(t));
@@ -12606,12 +12641,12 @@
 							o.nalUnitType = "slice_layer_without_partitioning_rbsp_idr";
 							break;
 						case 6:
-							(o.nalUnitType = "sei_rbsp"), (o.escapedRBSP = r(s.subarray(1)));
+							((o.nalUnitType = "sei_rbsp"), (o.escapedRBSP = r(s.subarray(1))));
 							break;
 						case 7:
-							(o.nalUnitType = "seq_parameter_set_rbsp"),
+							((o.nalUnitType = "seq_parameter_set_rbsp"),
 								(o.escapedRBSP = r(s.subarray(1))),
-								(o.config = a(o.escapedRBSP));
+								(o.config = a(o.escapedRBSP)));
 							break;
 						case 8:
 							o.nalUnitType = "pic_parameter_set_rbsp";
@@ -12631,15 +12666,15 @@
 					var i,
 						n = 8,
 						r = 8;
-					for (i = 0; i < t; i++) 0 !== r && (r = (n + e.readExpGolomb() + 256) % 256), (n = 0 === r ? n : r);
+					for (i = 0; i < t; i++) (0 !== r && (r = (n + e.readExpGolomb() + 256) % 256), (n = 0 === r ? n : r));
 				}),
 				(r = function (t) {
 					for (var e, i, n = t.byteLength, r = [], a = 1; a < n - 2; )
 						0 === t[a] && 0 === t[a + 1] && 3 === t[a + 2] ? (r.push(a + 2), (a += 2)) : a++;
 					if (0 === r.length) return t;
-					(e = n - r.length), (i = new Uint8Array(e));
+					((e = n - r.length), (i = new Uint8Array(e)));
 					var s = 0;
-					for (a = 0; a < e; s++, a++) s === r[0] && (s++, r.shift()), (i[a] = t[s]);
+					for (a = 0; a < e; s++, a++) (s === r[0] && (s++, r.shift()), (i[a] = t[s]));
 					return i;
 				}),
 				(a = function (t) {
@@ -12760,8 +12795,8 @@
 						width: Math.ceil((16 * (l + 1) - 2 * m - 2 * g) * _),
 						height: (2 - h) * (c + 1) * 16 - 2 * y - 2 * v,
 					};
-				});
-		}).prototype = new mo());
+				}));
+		}).prototype = new mo()));
 	var _u,
 		bu = { H264Stream: fu, NalByteStream: mu },
 		Tu = [96e3, 88200, 64e3, 48e3, 44100, 32e3, 24e3, 22050, 16e3, 12e3, 11025, 8e3, 7350],
@@ -12797,7 +12832,7 @@
 			},
 			parseAacTimestamp: function (t) {
 				var e, i, n;
-				(e = 10), 64 & t[5] && ((e += 4), (e += Su(t.subarray(10, 14))));
+				((e = 10), 64 & t[5] && ((e += 4), (e += Su(t.subarray(10, 14)))));
 				do {
 					if ((i = Su(t.subarray(e + 4, e + 8))) < 1) return null;
 					if ("PRIV" === String.fromCharCode(t[e], t[e + 1], t[e + 2], t[e + 3])) {
@@ -12817,12 +12852,12 @@
 								) {
 									var a = n.subarray(r + 1),
 										s = ((1 & a[3]) << 30) | (a[4] << 22) | (a[5] << 14) | (a[6] << 6) | (a[7] >>> 2);
-									return (s *= 4), (s += 3 & a[7]);
+									return ((s *= 4), (s += 3 & a[7]));
 								}
 								break;
 							}
 					}
-					(e += 10), (e += i);
+					((e += 10), (e += i));
 				} while (e < t.byteLength);
 				return null;
 			},
@@ -12830,7 +12865,7 @@
 	(_u = function () {
 		var t = new Uint8Array(),
 			e = 0;
-		_u.prototype.init.call(this),
+		(_u.prototype.init.call(this),
 			(this.setTimestamp = function (t) {
 				e = t;
 			}),
@@ -12853,17 +12888,17 @@
 						else {
 							if (t.length - u < 7) break;
 							if (u + (o = ku.parseAdtsSize(t, u)) > t.length) break;
-							(a = { type: "audio", data: t.subarray(u, u + o), pts: e, dts: e }),
+							((a = { type: "audio", data: t.subarray(u, u + o), pts: e, dts: e }),
 								this.trigger("data", a),
-								(u += o);
+								(u += o));
 						}
 					else {
 						if (t.length - u < 10) break;
 						if (u + (o = ku.parseId3TagSize(t, u)) > t.length) break;
-						(r = { type: "timed-metadata", data: t.subarray(u, u + o) }), this.trigger("data", r), (u += o);
+						((r = { type: "timed-metadata", data: t.subarray(u, u + o) }), this.trigger("data", r), (u += o));
 					}
-				(n = t.length - u), (t = n > 0 ? t.subarray(u) : new Uint8Array());
-			});
+				((n = t.length - u), (t = n > 0 ? t.subarray(u) : new Uint8Array()));
+			}));
 	}).prototype = new mo();
 	var wu,
 		Cu,
@@ -12880,21 +12915,21 @@
 			for (i = 0; i < t.length; i++) if (t[i] !== e[i]) return !1;
 			return !0;
 		};
-	((Cu = function (t, e) {
+	(((Cu = function (t, e) {
 		var i = [],
 			n = 0,
 			r = 0,
 			a = 0,
 			s = 1 / 0;
-		(e = e || {}),
+		((e = e || {}),
 			Cu.prototype.init.call(this),
 			(this.push = function (e) {
-				Ro(t, e),
+				(Ro(t, e),
 					t &&
 						Uu.forEach(function (i) {
 							t[i] = e[i];
 						}),
-					i.push(e);
+					i.push(e));
 			}),
 			(this.setEarliestDts = function (e) {
 				r = e - t.timelineStartInfo.baseMediaDecodeTime;
@@ -12923,7 +12958,7 @@
 						this.trigger("data", { track: t, boxes: c }),
 						this.trigger("done", "AudioSegmentStream"))
 					: this.trigger("done", "AudioSegmentStream");
-			});
+			}));
 	}).prototype = new mo()),
 		((wu = function (t, e) {
 			var i,
@@ -12931,12 +12966,12 @@
 				r = 0,
 				a = [],
 				s = [];
-			(e = e || {}),
+			((e = e || {}),
 				wu.prototype.init.call(this),
 				delete t.minPTS,
 				(this.gopCache_ = []),
 				(this.push = function (e) {
-					Ro(t, e),
+					(Ro(t, e),
 						"seq_parameter_set_rbsp" !== e.nalUnitType ||
 							i ||
 							((i = e.config),
@@ -12945,11 +12980,11 @@
 								t[e] = i[e];
 							}, this)),
 						"pic_parameter_set_rbsp" !== e.nalUnitType || n || ((n = e.data), (t.pps = [e.data])),
-						a.push(e);
+						a.push(e));
 				}),
 				(this.flush = function () {
 					for (var i, n, o, u, l, c; a.length && "access_unit_delimiter_rbsp" !== a[0].nalUnitType; ) a.shift();
-					if (0 === a.length) return this.resetStream_(), void this.trigger("done", "VideoSegmentStream");
+					if (0 === a.length) return (this.resetStream_(), void this.trigger("done", "VideoSegmentStream"));
 					if (
 						((i = yo(a)),
 						(o = vo(i))[0][0].keyFrame ||
@@ -12972,9 +13007,9 @@
 								this.resetStream_(),
 								void this.trigger("done", "VideoSegmentStream")
 							);
-						xo(t), (o = h);
+						(xo(t), (o = h));
 					}
-					Ro(t, o),
+					(Ro(t, o),
 						(t.samples = bo(o)),
 						(l = ao.mdat(To(o))),
 						(t.baseMediaDecodeTime = Do(t, e.keepOriginalTimestamps)),
@@ -12996,10 +13031,10 @@
 						c.set(l, u.byteLength),
 						this.trigger("data", { track: t, boxes: c }),
 						this.resetStream_(),
-						this.trigger("done", "VideoSegmentStream");
+						this.trigger("done", "VideoSegmentStream"));
 				}),
 				(this.resetStream_ = function () {
-					xo(t), (i = void 0), (n = void 0);
+					(xo(t), (i = void 0), (n = void 0));
 				}),
 				(this.getGopForFusion_ = function (e) {
 					var i,
@@ -13009,7 +13044,7 @@
 						s,
 						o = 1 / 0;
 					for (s = 0; s < this.gopCache_.length; s++)
-						(r = (a = this.gopCache_[s]).gop),
+						((r = (a = this.gopCache_[s]).gop),
 							t.pps &&
 								xu(t.pps[0], a.pps[0]) &&
 								t.sps &&
@@ -13018,7 +13053,7 @@
 									((i = e.dts - r.dts - r.duration) >= -1e4 &&
 										i <= 45e3 &&
 										(!n || o > i) &&
-										((n = a), (o = i))));
+										((n = a), (o = i)))));
 					return n ? n.gop : null;
 				}),
 				(this.alignGopsAtStart_ = function (t) {
@@ -13055,7 +13090,10 @@
 						c = l.reduce(
 							function (t, e) {
 								return (
-									(t.byteLength += e.byteLength), (t.duration += e.duration), (t.nalCount += e.nalCount), t
+									(t.byteLength += e.byteLength),
+									(t.duration += e.duration),
+									(t.nalCount += e.nalCount),
+									t
 								);
 							},
 							{ byteLength: 0, duration: 0, nalCount: 0 }
@@ -13071,10 +13109,10 @@
 				}),
 				(this.alignGopsWith = function (t) {
 					s = t;
-				});
+				}));
 		}).prototype = new mo()),
 		((Au = function (t, e) {
-			(this.numberOfTracks = 0),
+			((this.numberOfTracks = 0),
 				(this.metadataStream = e),
 				void 0 !== (t = t || {}).remux ? (this.remuxTracks = !!t.remux) : (this.remuxTracks = !0),
 				"boolean" == typeof t.keepOriginalTimestamps && (this.keepOriginalTimestamps = t.keepOriginalTimestamps),
@@ -13096,7 +13134,7 @@
 								(this.pendingBytes += t.boxes.byteLength),
 								"video" === t.track.type && (this.videoTrack = t.track),
 								void ("audio" === t.track.type && (this.audioTrack = t.track)));
-				});
+				}));
 		}).prototype = new mo()),
 		(Au.prototype.flush = function (t) {
 			var e,
@@ -13136,22 +13174,22 @@
 				r < this.pendingBoxes.length;
 				r++
 			)
-				s.data.set(this.pendingBoxes[r], a), (a += this.pendingBoxes[r].byteLength);
+				(s.data.set(this.pendingBoxes[r], a), (a += this.pendingBoxes[r].byteLength));
 			for (r = 0; r < this.pendingCaptions.length; r++)
-				((e = this.pendingCaptions[r]).startTime = e.startPts),
+				(((e = this.pendingCaptions[r]).startTime = e.startPts),
 					this.keepOriginalTimestamps || (e.startTime -= o),
 					(e.startTime /= 9e4),
 					(e.endTime = e.endPts),
 					this.keepOriginalTimestamps || (e.endTime -= o),
 					(e.endTime /= 9e4),
 					(s.captionStreams[e.stream] = !0),
-					s.captions.push(e);
+					s.captions.push(e));
 			for (r = 0; r < this.pendingMetadata.length; r++)
-				((i = this.pendingMetadata[r]).cueTime = i.pts),
+				(((i = this.pendingMetadata[r]).cueTime = i.pts),
 					this.keepOriginalTimestamps || (i.cueTime -= o),
 					(i.cueTime /= 9e4),
-					s.metadata.push(i);
-			(s.metadata.dispatchType = this.metadataStream.dispatchType),
+					s.metadata.push(i));
+			((s.metadata.dispatchType = this.metadataStream.dispatchType),
 				(this.pendingTracks.length = 0),
 				(this.videoTrack = null),
 				(this.pendingBoxes.length = 0),
@@ -13159,20 +13197,20 @@
 				(this.pendingBytes = 0),
 				(this.pendingMetadata.length = 0),
 				this.trigger("data", s),
-				this.emittedTracks >= this.numberOfTracks && (this.trigger("done"), (this.emittedTracks = 0));
+				this.emittedTracks >= this.numberOfTracks && (this.trigger("done"), (this.emittedTracks = 0)));
 		}),
 		((Eu = function (t) {
 			var e,
 				i,
 				n = this,
 				r = !0;
-			Eu.prototype.init.call(this),
+			(Eu.prototype.init.call(this),
 				(t = t || {}),
 				(this.baseMediaDecodeTime = t.baseMediaDecodeTime || 0),
 				(this.transmuxPipeline_ = {}),
 				(this.setupAacPipeline = function () {
 					var e = {};
-					(this.transmuxPipeline_ = e),
+					((this.transmuxPipeline_ = e),
 						(e.type = "aac"),
 						(e.metadataStream = new du.MetadataStream()),
 						(e.aacStream = new Lu()),
@@ -13202,11 +13240,11 @@
 								e.adtsStream.pipe(e.audioSegmentStream).pipe(e.coalesceStream));
 						}),
 						e.coalesceStream.on("data", this.trigger.bind(this, "data")),
-						e.coalesceStream.on("done", this.trigger.bind(this, "done"));
+						e.coalesceStream.on("done", this.trigger.bind(this, "done")));
 				}),
 				(this.setupTsPipeline = function () {
 					var r = {};
-					(this.transmuxPipeline_ = r),
+					((this.transmuxPipeline_ = r),
 						(r.type = "ts"),
 						(r.metadataStream = new du.MetadataStream()),
 						(r.packetStream = new du.TransportPacketStream()),
@@ -13237,7 +13275,7 @@
 											"audio" !== a.tracks[s].type ||
 											((i = a.tracks[s]).timelineStartInfo.baseMediaDecodeTime = n.baseMediaDecodeTime)
 										: ((e = a.tracks[s]).timelineStartInfo.baseMediaDecodeTime = n.baseMediaDecodeTime);
-								e &&
+								(e &&
 									!r.videoSegmentStream &&
 									(r.coalesceStream.numberOfTracks++,
 									(r.videoSegmentStream = new wu(e, t)),
@@ -13253,15 +13291,15 @@
 										!r.audioSegmentStream &&
 										(r.coalesceStream.numberOfTracks++,
 										(r.audioSegmentStream = new Cu(i, t)),
-										r.adtsStream.pipe(r.audioSegmentStream).pipe(r.coalesceStream));
+										r.adtsStream.pipe(r.audioSegmentStream).pipe(r.coalesceStream)));
 							}
 						}),
 						r.coalesceStream.on("data", this.trigger.bind(this, "data")),
-						r.coalesceStream.on("done", this.trigger.bind(this, "done"));
+						r.coalesceStream.on("done", this.trigger.bind(this, "done")));
 				}),
 				(this.setBaseMediaDecodeTime = function (n) {
 					var r = this.transmuxPipeline_;
-					t.keepOriginalTimestamps || (this.baseMediaDecodeTime = n),
+					(t.keepOriginalTimestamps || (this.baseMediaDecodeTime = n),
 						i &&
 							((i.timelineStartInfo.dts = void 0),
 							(i.timelineStartInfo.pts = void 0),
@@ -13276,7 +13314,7 @@
 							xo(e),
 							r.captionStream.reset(),
 							t.keepOriginalTimestamps || (e.timelineStartInfo.baseMediaDecodeTime = n)),
-						r.timedMetadataTimestampRolloverStream && r.timedMetadataTimestampRolloverStream.discontinuity();
+						r.timedMetadataTimestampRolloverStream && r.timedMetadataTimestampRolloverStream.discontinuity());
 				}),
 				(this.setAudioAppendStart = function (t) {
 					i && this.transmuxPipeline_.audioSegmentStream.setAudioAppendStart(t);
@@ -13289,20 +13327,20 @@
 				(this.push = function (t) {
 					if (r) {
 						var e = Pu(t);
-						e && "aac" !== this.transmuxPipeline_.type
+						(e && "aac" !== this.transmuxPipeline_.type
 							? this.setupAacPipeline()
 							: e || "ts" === this.transmuxPipeline_.type || this.setupTsPipeline(),
-							(r = !1);
+							(r = !1));
 					}
 					this.transmuxPipeline_.headOfPipeline.push(t);
 				}),
 				(this.flush = function () {
-					(r = !0), this.transmuxPipeline_.headOfPipeline.flush();
+					((r = !0), this.transmuxPipeline_.headOfPipeline.flush());
 				}),
 				(this.resetCaptions = function () {
 					this.transmuxPipeline_.captionStream && this.transmuxPipeline_.captionStream.reset();
-				});
-		}).prototype = new mo());
+				}));
+		}).prototype = new mo()));
 	var Du,
 		Ru,
 		Mu = { Transmuxer: Eu, VideoSegmentStream: wu, AudioSegmentStream: Cu, AUDIO_PROPERTIES: Uu, VIDEO_PROPERTIES: Iu },
@@ -13384,9 +13422,9 @@
 					},
 					o = 31 & t[5];
 				for (n = 6, r = 0; r < o; r++)
-					(i = a.getUint16(n)), (n += 2), s.sps.push(new Uint8Array(t.subarray(n, n + i))), (n += i);
+					((i = a.getUint16(n)), (n += 2), s.sps.push(new Uint8Array(t.subarray(n, n + i))), (n += i));
 				for (e = t[n], n++, r = 0; r < e; r++)
-					(i = a.getUint16(n)), (n += 2), s.pps.push(new Uint8Array(t.subarray(n, n + i))), (n += i);
+					((i = a.getUint16(n)), (n += 2), s.pps.push(new Uint8Array(t.subarray(n, n + i))), (n += i));
 				return s;
 			},
 			"btrt": function (t) {
@@ -13423,7 +13461,7 @@
 					n < t.byteLength;
 
 				)
-					i.compatibleBrands.push(Bu(t.subarray(n, n + 4))), (n += 4);
+					(i.compatibleBrands.push(Bu(t.subarray(n, n + 4))), (n += 4));
 				return i;
 			},
 			"dinf": function (t) {
@@ -13447,7 +13485,7 @@
 					}
 					e.name += String.fromCharCode(t[i]);
 				}
-				return (e.name = decodeURIComponent(escape(e.name))), e;
+				return ((e.name = decodeURIComponent(escape(e.name))), e);
 			},
 			"mdat": function (t) {
 				return { byteLength: t.byteLength, nals: Fu(t) };
@@ -13503,7 +13541,7 @@
 						samplesize: e.getUint16(18),
 						samplerate: e.getUint16(24) + e.getUint16(26) / 65536,
 					};
-				return t.byteLength > 28 && (i.streamDescriptor = Du(t.subarray(28))[0]), i;
+				return (t.byteLength > 28 && (i.streamDescriptor = Du(t.subarray(28))[0]), i);
 			},
 			"moof": function (t) {
 				return { boxes: Du(t) };
@@ -13763,12 +13801,12 @@
 					c--;
 
 				)
-					(e = {}),
+					((e = {}),
 						s && ((e.duration = n.getUint32(h)), (h += 4)),
 						o && ((e.size = n.getUint32(h)), (h += 4)),
 						u && ((e.flags = ju(t.subarray(h, h + 4))), (h += 4)),
 						l && ((e.compositionTimeOffset = n.getUint32(h)), (h += 4)),
-						i.samples.push(e);
+						i.samples.push(e));
 				return i;
 			},
 			"url ": function (t) {
@@ -13793,7 +13831,7 @@
 				)
 					l[c] = t[c];
 				for (e = new DataView(u); s < t.byteLength; )
-					(i = e.getUint32(s)),
+					((i = e.getUint32(s)),
 						(n = Bu(t.subarray(s + 4, s + 8))),
 						(r = i > 1 ? s + i : t.byteLength),
 						((a = (
@@ -13804,7 +13842,7 @@
 						)(t.subarray(s + 8, r))).size = i),
 						(a.type = n),
 						o.push(a),
-						(s = r);
+						(s = r));
 				return o;
 			}),
 			textify: (Ru = function (t, e) {
@@ -13915,7 +13953,7 @@
 										case 6:
 											var l = t.subarray(r + 1, r + 1 + a),
 												c = Wu(r, e);
-											(n = {
+											((n = {
 												nalUnitType: "sei_rbsp",
 												size: a,
 												data: l,
@@ -13925,7 +13963,7 @@
 												c
 													? ((n.pts = c.pts), (n.dts = c.dts), (s = c))
 													: ((n.pts = s.pts), (n.dts = s.dts)),
-												u.push(n);
+												u.push(n));
 									}
 							return u;
 						})(
@@ -13939,16 +13977,16 @@
 								return (
 									t.forEach(function (t) {
 										var e = Hu.parseTrun(t).samples;
-										e.forEach(function (t) {
-											void 0 === t.duration && (t.duration = r),
+										(e.forEach(function (t) {
+											(void 0 === t.duration && (t.duration = r),
 												void 0 === t.size && (t.size = a),
 												(t.trackId = s),
 												(t.dts = n),
 												void 0 === t.compositionTimeOffset && (t.compositionTimeOffset = 0),
 												(t.pts = n + t.compositionTimeOffset),
-												(n += t.duration);
+												(n += t.duration));
 										}),
-											(o = o.concat(e));
+											(o = o.concat(e)));
 									}),
 									o
 								);
@@ -13974,18 +14012,18 @@
 					n,
 					r,
 					a = !1;
-				(this.isInitialized = function () {
+				((this.isInitialized = function () {
 					return a;
 				}),
 					(this.init = function () {
-						(t = new zu()),
+						((t = new zu()),
 							(a = !0),
 							t.on("data", function (t) {
-								(t.startTime = t.startPts / n),
+								((t.startTime = t.startPts / n),
 									(t.endTime = t.endPts / n),
 									r.captions.push(t),
-									(r.captionStreams[t.stream] = !0);
-							});
+									(r.captionStreams[t.stream] = !0));
+							}));
 					}),
 					(this.isNewInit = function (t, e) {
 						return !(
@@ -13998,8 +14036,8 @@
 						var o;
 						if (!this.isInitialized()) return null;
 						if (!a || !s) return null;
-						if (this.isNewInit(a, s)) (i = a[0]), (n = s[i]);
-						else if (!i || !n) return e.push(t), null;
+						if (this.isNewInit(a, s)) ((i = a[0]), (n = s[i]));
+						else if (!i || !n) return (e.push(t), null);
 						for (; e.length > 0; ) {
 							var u = e.shift();
 							this.parse(u, a, s);
@@ -14022,35 +14060,35 @@
 						t.flush();
 					}),
 					(this.clearParsedCaptions = function () {
-						(r.captions = []), (r.captionStreams = {});
+						((r.captions = []), (r.captionStreams = {}));
 					}),
 					(this.resetCaptionStream = function () {
 						if (!this.isInitialized()) return null;
 						t.reset();
 					}),
 					(this.clearAllCaptions = function () {
-						this.clearParsedCaptions(), this.resetCaptionStream();
+						(this.clearParsedCaptions(), this.resetCaptionStream());
 					}),
 					(this.reset = function () {
-						(e = []),
+						((e = []),
 							(i = null),
 							(n = null),
 							r ? this.clearParsedCaptions() : (r = { captions: [], captionStreams: {} }),
-							this.resetCaptionStream();
+							this.resetCaptionStream());
 					}),
-					this.reset();
+					this.reset());
 			},
 		}.CaptionParser,
 		Yu = function (t) {
 			var e = 31 & t[1];
-			return (e <<= 8), (e |= t[2]);
+			return ((e <<= 8), (e |= t[2]));
 		},
 		$u = function (t) {
 			return !!(64 & t[1]);
 		},
 		Ku = function (t) {
 			var e = 0;
-			return (48 & t[3]) >>> 4 > 1 && (e += t[4] + 1), e;
+			return ((48 & t[3]) >>> 4 > 1 && (e += t[4] + 1), e);
 		},
 		Qu = function (t) {
 			switch (t) {
@@ -14076,7 +14114,7 @@
 			parsePat: function (t) {
 				var e = $u(t),
 					i = 4 + Ku(t);
-				return e && (i += t[i] + 1), ((31 & t[i + 10]) << 8) | t[i + 11];
+				return (e && (i += t[i] + 1), ((31 & t[i + 10]) << 8) | t[i + 11]);
 			},
 			parsePmt: function (t) {
 				var e = {},
@@ -14087,7 +14125,7 @@
 					r = 3 + (((15 & t[n + 1]) << 8) | t[n + 2]) - 4;
 					for (var a = 12 + (((15 & t[n + 10]) << 8) | t[n + 11]); a < r; ) {
 						var s = n + a;
-						(e[((31 & t[s + 1]) << 8) | t[s + 2]] = t[s]), (a += 5 + (((15 & t[s + 3]) << 8) | t[s + 4]));
+						((e[((31 & t[s + 1]) << 8) | t[s + 2]] = t[s]), (a += 5 + (((15 & t[s + 3]) << 8) | t[s + 4])));
 					}
 					return e;
 				}
@@ -14155,16 +14193,16 @@
 							do {
 								n++;
 							} while (1 !== i[n] && n < i.length);
-							(r = n - 2), (n += 3);
+							((r = n - 2), (n += 3));
 							break;
 						case 1:
 							if (0 !== i[n - 1] || 0 !== i[n - 2]) {
 								n += 3;
 								break;
 							}
-							"slice_layer_without_partitioning_rbsp_idr" === Qu(31 & i[r + 3]) && (a = !0),
+							("slice_layer_without_partitioning_rbsp_idr" === Qu(31 & i[r + 3]) && (a = !0),
 								(r = n - 2),
-								(n += 3);
+								(n += 3));
 							break;
 						default:
 							n += 3;
@@ -14180,42 +14218,42 @@
 		},
 		Zu = Zo,
 		tl = {};
-	(tl.ts = Ju), (tl.aac = ku);
+	((tl.ts = Ju), (tl.aac = ku));
 	var el = function (t, e, i) {
 			for (var n, r, a, s, o = 0, u = 188, l = !1; u <= t.byteLength; )
-				if (71 !== t[o] || (71 !== t[u] && u !== t.byteLength)) o++, u++;
+				if (71 !== t[o] || (71 !== t[u] && u !== t.byteLength)) (o++, u++);
 				else {
 					switch (((n = t.subarray(o, u)), tl.ts.parseType(n, e.pid))) {
 						case "pes":
-							(r = tl.ts.parsePesType(n, e.table)),
+							((r = tl.ts.parsePesType(n, e.table)),
 								(a = tl.ts.parsePayloadUnitStartIndicator(n)),
 								"audio" === r &&
 									a &&
 									(s = tl.ts.parsePesTime(n)) &&
-									((s.type = "audio"), i.audio.push(s), (l = !0));
+									((s.type = "audio"), i.audio.push(s), (l = !0)));
 					}
 					if (l) break;
-					(o += 188), (u += 188);
+					((o += 188), (u += 188));
 				}
 			for (o = (u = t.byteLength) - 188, l = !1; o >= 0; )
-				if (71 !== t[o] || (71 !== t[u] && u !== t.byteLength)) o--, u--;
+				if (71 !== t[o] || (71 !== t[u] && u !== t.byteLength)) (o--, u--);
 				else {
 					switch (((n = t.subarray(o, u)), tl.ts.parseType(n, e.pid))) {
 						case "pes":
-							(r = tl.ts.parsePesType(n, e.table)),
+							((r = tl.ts.parsePesType(n, e.table)),
 								(a = tl.ts.parsePayloadUnitStartIndicator(n)),
 								"audio" === r &&
 									a &&
 									(s = tl.ts.parsePesTime(n)) &&
-									((s.type = "audio"), i.audio.push(s), (l = !0));
+									((s.type = "audio"), i.audio.push(s), (l = !0)));
 					}
 					if (l) break;
-					(o -= 188), (u -= 188);
+					((o -= 188), (u -= 188));
 				}
 		},
 		il = function (t, e, i) {
 			for (var n, r, a, s, o, u, l, c = 0, h = 188, d = !1, p = { data: [], size: 0 }; h < t.byteLength; )
-				if (71 !== t[c] || 71 !== t[h]) c++, h++;
+				if (71 !== t[c] || 71 !== t[h]) (c++, h++);
 				else {
 					switch (((n = t.subarray(c, h)), tl.ts.parseType(n, e.pid))) {
 						case "pes":
@@ -14231,31 +14269,31 @@
 							) {
 								if (a && 0 !== p.size) {
 									for (o = new Uint8Array(p.size), u = 0; p.data.length; )
-										(l = p.data.shift()), o.set(l, u), (u += l.byteLength);
-									tl.ts.videoPacketContainsKeyFrame(o) &&
+										((l = p.data.shift()), o.set(l, u), (u += l.byteLength));
+									(tl.ts.videoPacketContainsKeyFrame(o) &&
 										((i.firstKeyFrame = tl.ts.parsePesTime(o)), (i.firstKeyFrame.type = "video")),
-										(p.size = 0);
+										(p.size = 0));
 								}
-								p.data.push(n), (p.size += n.byteLength);
+								(p.data.push(n), (p.size += n.byteLength));
 							}
 					}
 					if (d && i.firstKeyFrame) break;
-					(c += 188), (h += 188);
+					((c += 188), (h += 188));
 				}
 			for (c = (h = t.byteLength) - 188, d = !1; c >= 0; )
-				if (71 !== t[c] || 71 !== t[h]) c--, h--;
+				if (71 !== t[c] || 71 !== t[h]) (c--, h--);
 				else {
 					switch (((n = t.subarray(c, h)), tl.ts.parseType(n, e.pid))) {
 						case "pes":
-							(r = tl.ts.parsePesType(n, e.table)),
+							((r = tl.ts.parsePesType(n, e.table)),
 								(a = tl.ts.parsePayloadUnitStartIndicator(n)),
 								"video" === r &&
 									a &&
 									(s = tl.ts.parsePesTime(n)) &&
-									((s.type = "video"), i.video.push(s), (d = !0));
+									((s.type = "video"), i.video.push(s), (d = !0)));
 					}
 					if (d) break;
-					(c -= 188), (h -= 188);
+					((c -= 188), (h -= 188));
 				}
 		},
 		nl = function (t) {
@@ -14263,7 +14301,7 @@
 				i = {};
 			for (var n in ((function (t, e) {
 				for (var i, n = 0, r = 188; r < t.byteLength; )
-					if (71 !== t[n] || 71 !== t[r]) n++, r++;
+					if (71 !== t[n] || 71 !== t[r]) (n++, r++);
 					else {
 						switch (((i = t.subarray(n, r)), tl.ts.parseType(i, e.pid))) {
 							case "pat":
@@ -14273,17 +14311,17 @@
 								e.table || (e.table = tl.ts.parsePmt(i));
 						}
 						if (e.pid && e.table) return;
-						(n += 188), (r += 188);
+						((n += 188), (r += 188));
 					}
 			})(t, e),
 			e.table)) {
 				if (e.table.hasOwnProperty(n))
 					switch (e.table[n]) {
 						case Yo.H264_STREAM_TYPE:
-							(i.video = []), il(t, e, i), 0 === i.video.length && delete i.video;
+							((i.video = []), il(t, e, i), 0 === i.video.length && delete i.video);
 							break;
 						case Yo.ADTS_STREAM_TYPE:
-							(i.audio = []), el(t, e, i), 0 === i.audio.length && delete i.audio;
+							((i.audio = []), el(t, e, i), 0 === i.audio.length && delete i.audio);
 					}
 			}
 			return i;
@@ -14303,7 +14341,8 @@
 										i = !0;
 										break;
 									}
-									null === a && ((e = t.subarray(o, o + s)), (a = tl.aac.parseAacTimestamp(e))), (o += s);
+									(null === a && ((e = t.subarray(o, o + s)), (a = tl.aac.parseAacTimestamp(e))),
+										(o += s));
 									break;
 								case "audio":
 									if (t.length - o < 7) {
@@ -14314,9 +14353,9 @@
 										i = !0;
 										break;
 									}
-									null === r && ((e = t.subarray(o, o + s)), (r = tl.aac.parseSampleRate(e))),
+									(null === r && ((e = t.subarray(o, o + s)), (r = tl.aac.parseSampleRate(e))),
 										n++,
-										(o += s);
+										(o += s));
 									break;
 								default:
 									o++;
@@ -14337,31 +14376,31 @@
 				? ((function (t, e) {
 						if (t.audio && t.audio.length) {
 							var i = e;
-							void 0 === i && (i = t.audio[0].dts),
+							(void 0 === i && (i = t.audio[0].dts),
 								t.audio.forEach(function (t) {
-									(t.dts = Zu(t.dts, i)),
+									((t.dts = Zu(t.dts, i)),
 										(t.pts = Zu(t.pts, i)),
 										(t.dtsTime = t.dts / 9e4),
-										(t.ptsTime = t.pts / 9e4);
-								});
+										(t.ptsTime = t.pts / 9e4));
+								}));
 						}
 						if (t.video && t.video.length) {
 							var n = e;
 							if (
 								(void 0 === n && (n = t.video[0].dts),
 								t.video.forEach(function (t) {
-									(t.dts = Zu(t.dts, n)),
+									((t.dts = Zu(t.dts, n)),
 										(t.pts = Zu(t.pts, n)),
 										(t.dtsTime = t.dts / 9e4),
-										(t.ptsTime = t.pts / 9e4);
+										(t.ptsTime = t.pts / 9e4));
 								}),
 								t.firstKeyFrame)
 							) {
 								var r = t.firstKeyFrame;
-								(r.dts = Zu(r.dts, n)),
+								((r.dts = Zu(r.dts, n)),
 									(r.pts = Zu(r.pts, n)),
 									(r.dtsTime = r.dts / 9e4),
-									(r.ptsTime = r.dts / 9e4);
+									(r.ptsTime = r.dts / 9e4));
 							}
 						}
 					})(i, e),
@@ -14375,14 +14414,14 @@
 			function t(t, e) {
 				for (var i = 0; i < e.length; i++) {
 					var n = e[i];
-					(n.enumerable = n.enumerable || !1),
+					((n.enumerable = n.enumerable || !1),
 						(n.configurable = !0),
 						"value" in n && (n.writable = !0),
-						Object.defineProperty(t, n.key, n);
+						Object.defineProperty(t, n.key, n));
 				}
 			}
 			return function (e, i, n) {
-				return i && t(e.prototype, i), n && t(e, n), e;
+				return (i && t(e.prototype, i), n && t(e, n), e);
 			};
 		})(),
 		ol = function (t, e) {
@@ -14420,19 +14459,19 @@
 					a < 4;
 					a++
 				)
-					(e[a][s] = p = (p << 24) ^ (p >>> 8)), (i[a][d] = f = (f << 24) ^ (f >>> 8));
-			for (a = 0; a < 5; a++) (e[a] = e[a].slice(0)), (i[a] = i[a].slice(0));
+					((e[a][s] = p = (p << 24) ^ (p >>> 8)), (i[a][d] = f = (f << 24) ^ (f >>> 8)));
+			for (a = 0; a < 5; a++) ((e[a] = e[a].slice(0)), (i[a] = i[a].slice(0)));
 			return t;
 		},
 		ll = null,
 		cl = (function () {
 			function t(e) {
-				al(this, t),
+				(al(this, t),
 					ll || (ll = ul()),
 					(this._tables = [
 						[ll[0][0].slice(), ll[0][1].slice(), ll[0][2].slice(), ll[0][3].slice(), ll[0][4].slice()],
 						[ll[1][0].slice(), ll[1][1].slice(), ll[1][2].slice(), ll[1][3].slice(), ll[1][4].slice()],
-					]);
+					]));
 				var i = void 0,
 					n = void 0,
 					r = void 0,
@@ -14444,17 +14483,20 @@
 					c = 1;
 				if (4 !== l && 6 !== l && 8 !== l) throw new Error("Invalid aes key size");
 				for (a = e.slice(0), s = [], this._key = [a, s], i = l; i < 4 * l + 28; i++)
-					(r = a[i - 1]),
+					((r = a[i - 1]),
 						(i % l == 0 || (8 === l && i % l == 4)) &&
 							((r = (o[r >>> 24] << 24) ^ (o[(r >> 16) & 255] << 16) ^ (o[(r >> 8) & 255] << 8) ^ o[255 & r]),
 							i % l == 0 && ((r = (r << 8) ^ (r >>> 24) ^ (c << 24)), (c = (c << 1) ^ (283 * (c >> 7))))),
-						(a[i] = a[i - l] ^ r);
+						(a[i] = a[i - l] ^ r));
 				for (n = 0; i; n++, i--)
-					(r = a[3 & n ? i : i - 4]),
+					((r = a[3 & n ? i : i - 4]),
 						(s[n] =
 							i <= 4 || n < 4
 								? r
-								: u[0][o[r >>> 24]] ^ u[1][o[(r >> 16) & 255]] ^ u[2][o[(r >> 8) & 255]] ^ u[3][o[255 & r]]);
+								: u[0][o[r >>> 24]] ^
+									u[1][o[(r >> 16) & 255]] ^
+									u[2][o[(r >> 8) & 255]] ^
+									u[3][o[255 & r]]));
 			}
 			return (
 				(t.prototype.decrypt = function (t, e, i, n, r, a) {
@@ -14476,16 +14518,16 @@
 						T = y[3],
 						S = y[4];
 					for (m = 0; m < f; m++)
-						(h = v[o >>> 24] ^ _[(u >> 16) & 255] ^ b[(l >> 8) & 255] ^ T[255 & c] ^ s[g]),
+						((h = v[o >>> 24] ^ _[(u >> 16) & 255] ^ b[(l >> 8) & 255] ^ T[255 & c] ^ s[g]),
 							(d = v[u >>> 24] ^ _[(l >> 16) & 255] ^ b[(c >> 8) & 255] ^ T[255 & o] ^ s[g + 1]),
 							(p = v[l >>> 24] ^ _[(c >> 16) & 255] ^ b[(o >> 8) & 255] ^ T[255 & u] ^ s[g + 2]),
 							(c = v[c >>> 24] ^ _[(o >> 16) & 255] ^ b[(u >> 8) & 255] ^ T[255 & l] ^ s[g + 3]),
 							(g += 4),
 							(o = h),
 							(u = d),
-							(l = p);
+							(l = p));
 					for (m = 0; m < 4; m++)
-						(r[(3 & -m) + a] =
+						((r[(3 & -m) + a] =
 							(S[o >>> 24] << 24) ^
 							(S[(u >> 16) & 255] << 16) ^
 							(S[(l >> 8) & 255] << 8) ^
@@ -14495,23 +14537,23 @@
 							(o = u),
 							(u = l),
 							(l = c),
-							(c = h);
+							(c = h));
 				}),
 				t
 			);
 		})(),
 		hl = (function () {
 			function t() {
-				al(this, t), (this.listeners = {});
+				(al(this, t), (this.listeners = {}));
 			}
 			return (
 				(t.prototype.on = function (t, e) {
-					this.listeners[t] || (this.listeners[t] = []), this.listeners[t].push(e);
+					(this.listeners[t] || (this.listeners[t] = []), this.listeners[t].push(e));
 				}),
 				(t.prototype.off = function (t, e) {
 					if (!this.listeners[t]) return !1;
 					var i = this.listeners[t].indexOf(e);
-					return this.listeners[t].splice(i, 1), i > -1;
+					return (this.listeners[t].splice(i, 1), i > -1);
 				}),
 				(t.prototype.trigger = function (t) {
 					var e = this.listeners[t];
@@ -14536,26 +14578,26 @@
 			function e() {
 				al(this, e);
 				var i = ol(this, t.call(this, hl));
-				return (i.jobs = []), (i.delay = 1), (i.timeout_ = null), i;
+				return ((i.jobs = []), (i.delay = 1), (i.timeout_ = null), i);
 			}
 			return (
 				(function (t, e) {
 					if ("function" != typeof e && null !== e)
 						throw new TypeError("Super expression must either be null or a function, not " + typeof e);
-					(t.prototype = Object.create(e && e.prototype, {
+					((t.prototype = Object.create(e && e.prototype, {
 						constructor: { value: t, enumerable: !1, writable: !0, configurable: !0 },
 					})),
-						e && (Object.setPrototypeOf ? Object.setPrototypeOf(t, e) : (t.__proto__ = e));
+						e && (Object.setPrototypeOf ? Object.setPrototypeOf(t, e) : (t.__proto__ = e)));
 				})(e, t),
 				(e.prototype.processJob_ = function () {
-					this.jobs.shift()(),
+					(this.jobs.shift()(),
 						this.jobs.length
 							? (this.timeout_ = setTimeout(this.processJob_.bind(this), this.delay))
-							: (this.timeout_ = null);
+							: (this.timeout_ = null));
 				}),
 				(e.prototype.push = function (t) {
-					this.jobs.push(t),
-						this.timeout_ || (this.timeout_ = setTimeout(this.processJob_.bind(this), this.delay));
+					(this.jobs.push(t),
+						this.timeout_ || (this.timeout_ = setTimeout(this.processJob_.bind(this), this.delay)));
 				}),
 				e
 			);
@@ -14578,7 +14620,7 @@
 				f = void 0,
 				m = void 0;
 			for (o = i[0], u = i[1], l = i[2], c = i[3], m = 0; m < n.length; m += 4)
-				(h = pl(n[m])),
+				((h = pl(n[m])),
 					(d = pl(n[m + 1])),
 					(p = pl(n[m + 2])),
 					(f = pl(n[m + 3])),
@@ -14590,7 +14632,7 @@
 					(o = h),
 					(u = d),
 					(l = p),
-					(c = f);
+					(c = f));
 			return a;
 		},
 		ml = (function () {
@@ -14607,8 +14649,8 @@
 					u < s.length;
 					u += a
 				)
-					(n = new Uint32Array([pl(s[u - 4]), pl(s[u - 3]), pl(s[u - 2]), pl(s[u - 1])])),
-						this.asyncStream_.push(this.decryptChunk_(s.subarray(u, u + a), i, n, o));
+					((n = new Uint32Array([pl(s[u - 4]), pl(s[u - 3]), pl(s[u - 2]), pl(s[u - 1])])),
+						this.asyncStream_.push(this.decryptChunk_(s.subarray(u, u + a), i, n, o)));
 				this.asyncStream_.push(function () {
 					var t;
 					r(null, (t = o).subarray(0, t.byteLength - t[t.byteLength - 1]));
@@ -14644,23 +14686,23 @@
 			function t(t, e) {
 				for (var i = 0; i < e.length; i++) {
 					var n = e[i];
-					(n.enumerable = n.enumerable || !1),
+					((n.enumerable = n.enumerable || !1),
 						(n.configurable = !0),
 						"value" in n && (n.writable = !0),
-						Object.defineProperty(t, n.key, n);
+						Object.defineProperty(t, n.key, n));
 				}
 			}
 			return function (e, i, n) {
-				return i && t(e.prototype, i), n && t(e, n), e;
+				return (i && t(e.prototype, i), n && t(e, n), e);
 			};
 		})(),
 		_l = function (t, e) {
 			if ("function" != typeof e && null !== e)
 				throw new TypeError("Super expression must either be null or a function, not " + typeof e);
-			(t.prototype = Object.create(e && e.prototype, {
+			((t.prototype = Object.create(e && e.prototype, {
 				constructor: { value: t, enumerable: !1, writable: !0, configurable: !0 },
 			})),
-				e && (Object.setPrototypeOf ? Object.setPrototypeOf(t, e) : (t.__proto__ = e));
+				e && (Object.setPrototypeOf ? Object.setPrototypeOf(t, e) : (t.__proto__ = e)));
 		},
 		bl = function (t, e) {
 			if (!t) throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
@@ -14682,7 +14724,7 @@
 								n = !0
 							);
 						} catch (t) {
-							(r = !0), (a = t);
+							((r = !0), (a = t));
 						} finally {
 							try {
 								!n && o.return && o.return();
@@ -14714,7 +14756,7 @@
 			if (n.segments && e.segments && n.segments.length === e.segments.length && n.mediaSequence === e.mediaSequence)
 				return null;
 			var r = Sl(n, e);
-			n.segments &&
+			(n.segments &&
 				(r.segments = (function (t, e, i) {
 					var n = e.slice();
 					i = i || 0;
@@ -14723,22 +14765,23 @@
 				})(n.segments, e.segments, e.mediaSequence - n.mediaSequence)),
 				r.segments.forEach(function (t) {
 					!(function (t, e) {
-						t.resolvedUri || (t.resolvedUri = gl(e, t.uri)),
+						(t.resolvedUri || (t.resolvedUri = gl(e, t.uri)),
 							t.key && !t.key.resolvedUri && (t.key.resolvedUri = gl(e, t.key.uri)),
-							t.map && !t.map.resolvedUri && (t.map.resolvedUri = gl(e, t.map.uri));
+							t.map && !t.map.resolvedUri && (t.map.resolvedUri = gl(e, t.map.uri)));
 					})(t, r.resolvedUri);
-				});
+				}));
 			for (var a = 0; a < i.playlists.length; a++) i.playlists[a].uri === e.uri && (i.playlists[a] = r);
-			return (i.playlists[e.uri] = r), i;
+			return ((i.playlists[e.uri] = r), i);
 		},
 		Al = function (t) {
 			for (var e = t.playlists.length; e--; ) {
 				var i = t.playlists[e];
-				(t.playlists[i.uri] = i),
+				((t.playlists[i.uri] = i),
 					(i.resolvedUri = gl(t.uri, i.uri)),
 					(i.id = e),
 					i.attributes ||
-						((i.attributes = {}), wl.warn("Invalid playlist STREAM-INF detected. Missing BANDWIDTH attribute."));
+						((i.attributes = {}),
+						wl.warn("Invalid playlist STREAM-INF detected. Missing BANDWIDTH attribute.")));
 			}
 		},
 		Ll = function (t) {
@@ -14780,7 +14823,7 @@
 					{
 						key: "playlistRequestError",
 						value: function (t, e, i) {
-							(this.request = null),
+							((this.request = null),
 								i && (this.state = i),
 								(this.error = {
 									playlist: this.master.playlists[e],
@@ -14789,21 +14832,21 @@
 									responseText: t.responseText,
 									code: t.status >= 500 ? 4 : 2,
 								}),
-								this.trigger("error");
+								this.trigger("error"));
 						},
 					},
 					{
 						key: "haveMetadata",
 						value: function (t, i) {
 							var n = this;
-							(this.request = null), (this.state = "HAVE_METADATA");
+							((this.request = null), (this.state = "HAVE_METADATA"));
 							var r = new Sa();
-							r.push(t.responseText),
+							(r.push(t.responseText),
 								r.end(),
 								(r.manifest.uri = i),
-								(r.manifest.attributes = r.manifest.attributes || {});
+								(r.manifest.attributes = r.manifest.attributes || {}));
 							var a = El(this.master, r.manifest);
-							(this.targetDuration = r.manifest.targetDuration),
+							((this.targetDuration = r.manifest.targetDuration),
 								a
 									? ((this.master = a), (this.media_ = this.master.playlists[r.manifest.uri]))
 									: this.trigger("playlistunchanged"),
@@ -14815,13 +14858,13 @@
 										},
 										Ol(this.media(), !!a)
 									))),
-								this.trigger("loadedplaylist");
+								this.trigger("loadedplaylist"));
 						},
 					},
 					{
 						key: "dispose",
 						value: function () {
-							this.stopRequest(), e.clearTimeout(this.mediaUpdateTimeout);
+							(this.stopRequest(), e.clearTimeout(this.mediaUpdateTimeout));
 						},
 					},
 					{
@@ -14829,7 +14872,7 @@
 						value: function () {
 							if (this.request) {
 								var t = this.request;
-								(this.request = null), (t.onreadystatechange = null), t.abort();
+								((this.request = null), (t.onreadystatechange = null), t.abort());
 							}
 						},
 					},
@@ -14859,35 +14902,35 @@
 							if (n) {
 								if (((this.state = "SWITCHING_MEDIA"), this.request)) {
 									if (gl(this.master.uri, t.uri) === this.request.url) return;
-									(this.request.onreadystatechange = null), this.request.abort(), (this.request = null);
+									((this.request.onreadystatechange = null), this.request.abort(), (this.request = null));
 								}
-								this.media_ && this.trigger("mediachanging"),
+								(this.media_ && this.trigger("mediachanging"),
 									(this.request = this.hls_.xhr(
 										{ uri: gl(this.master.uri, t.uri), withCredentials: this.withCredentials },
 										function (n, r) {
 											if (e.request) {
 												if (n) return e.playlistRequestError(e.request, t.uri, i);
-												e.haveMetadata(r, t.uri),
+												(e.haveMetadata(r, t.uri),
 													"HAVE_MASTER" === i
 														? e.trigger("loadedmetadata")
-														: e.trigger("mediachange");
+														: e.trigger("mediachange"));
 											}
 										}
-									));
+									)));
 							}
 						},
 					},
 					{
 						key: "pause",
 						value: function () {
-							this.stopRequest(),
+							(this.stopRequest(),
 								e.clearTimeout(this.mediaUpdateTimeout),
 								"HAVE_NOTHING" === this.state && (this.started = !1),
 								"SWITCHING_MEDIA" === this.state
 									? this.media_
 										? (this.state = "HAVE_METADATA")
 										: (this.state = "HAVE_MASTER")
-									: "HAVE_CURRENT_METADATA" === this.state && (this.state = "HAVE_METADATA");
+									: "HAVE_CURRENT_METADATA" === this.state && (this.state = "HAVE_METADATA"));
 						},
 					},
 					{
@@ -14913,7 +14956,7 @@
 						key: "start",
 						value: function () {
 							var t = this;
-							(this.started = !0),
+							((this.started = !0),
 								(this.request = this.hls_.xhr(
 									{ uri: this.srcUrl, withCredentials: this.withCredentials },
 									function (i, n) {
@@ -14960,7 +15003,7 @@
 											);
 										}
 									}
-								));
+								)));
 						},
 					},
 				]),
@@ -15013,7 +15056,7 @@
 			var n = 0;
 			if (e > i) {
 				var r = [i, e];
-				(e = r[0]), (i = r[1]);
+				((e = r[0]), (i = r[1]));
 			}
 			if (e < 0) {
 				for (var a = e; a < Math.min(0, i); a++) n += t.targetDuration;
@@ -15138,7 +15181,7 @@
 				}
 				var a = Xl(e, function (t, e) {
 						var n = a.response;
-						!t &&
+						(!t &&
 							n &&
 							((a.responseTime = Date.now()),
 							(a.roundTripTime = a.responseTime - a.requestTime),
@@ -15152,12 +15195,12 @@
 								206 === e.statusCode ||
 								0 === e.statusCode ||
 								(t = new Error("XHR Failed with a response of: " + (a && (n || a.responseText)))),
-							i(t, a);
+							i(t, a));
 					}),
 					s = a.abort;
 				return (
 					(a.abort = function () {
-						return (a.aborted = !0), s.apply(a, arguments);
+						return ((a.aborted = !0), s.apply(a, arguments));
 					}),
 					(a.uri = e.uri),
 					(a.requestTime = Date.now()),
@@ -15230,7 +15273,7 @@
 					o = r.toISOString();
 				return s <= a && a <= o;
 			}
-			if ("player" === e) return (r = n + i), i <= t && t <= r;
+			if ("player" === e) return ((r = n + i), i <= t && t <= r);
 		},
 		rc = function (t, e, i) {
 			if (!i.segments || 0 === i.segments.length) return null;
@@ -15266,7 +15309,7 @@
 					seekTime: a.estimatedStart,
 				});
 			var s = { mediaSeconds: n };
-			return a.segment.dateTimeObject && (s.programDateTime = a.segment.dateTimeObject.toISOString()), r(null, s);
+			return (a.segment.dateTimeObject && (s.programDateTime = a.segment.dateTimeObject.toISOString()), r(null, s));
 		},
 		sc = function t(e) {
 			var i = e.streamTime,
@@ -15318,17 +15361,17 @@
 					var i = void 0,
 						n = void 0;
 					try {
-						(i = new Date(t)), (n = new Date(e));
+						((i = new Date(t)), (n = new Date(e)));
 					} catch (t) {}
 					var r = i.getTime();
 					return (n.getTime() - r) / 1e3;
 				})(d.dateTimeObject, i),
 				f = d.start + p;
-			l.one("seeked", function () {
+			(l.one("seeked", function () {
 				return c(null, l.currentTime());
 			}),
 				u && l.pause(),
-				s(f);
+				s(f));
 		},
 		oc = function (t, e) {
 			var i = [],
@@ -15383,7 +15426,7 @@
 						var e = t.cueTime + this.timestampOffset;
 						t.frames.forEach(function (t) {
 							var i = new r(e, e, t.value || t.url || t.data || "");
-							(i.frame = t),
+							((i.frame = t),
 								(i.value = t),
 								(function (t) {
 									Object.defineProperties(t.frame, {
@@ -15417,7 +15460,7 @@
 										},
 									});
 								})(i),
-								this.metadataTrack_.addCue(i);
+								this.metadataTrack_.addCue(i));
 						}, this);
 					}, t),
 					t.metadataTrack_ && t.metadataTrack_.cues && t.metadataTrack_.cues.length)
@@ -15425,7 +15468,7 @@
 					for (var s = t.metadataTrack_.cues, o = [], u = 0; u < s.length; u++) s[u] && o.push(s[u]);
 					var l = o.reduce(function (t, e) {
 							var i = t[e.startTime] || [];
-							return i.push(e), (t[e.startTime] = i), t;
+							return (i.push(e), (t[e.startTime] = i), t);
 						}, {}),
 						c = Object.keys(l).sort(function (t, e) {
 							return Number(t) - Number(e);
@@ -15462,10 +15505,10 @@
 					(function (t, e) {
 						if (!t || !e) return;
 						var i = t.terminate;
-						(t.objURL = e),
+						((t.objURL = e),
 							(t.terminate = function () {
-								t.objURL && _c.revokeObjectURL(t.objURL), i.call(t);
-							});
+								(t.objURL && _c.revokeObjectURL(t.objURL), i.call(t));
+							}));
 					})(this[gc], r),
 					this[gc]
 				);
@@ -15478,13 +15521,13 @@
 						});
 				},
 			};
-			e.call(a),
+			(e.call(a),
 				(this.postMessage = function (t) {
 					setTimeout(function () {
 						a.onmessage({ data: t, target: n });
 					});
 				}),
-				(this.isThisThread = !0);
+				(this.isThisThread = !0));
 		};
 	}
 	if (bc) {
@@ -15496,7 +15539,7 @@
 		} catch (t) {
 			bc = null;
 		} finally {
-			_c.revokeObjectURL(kc), Sc && Sc.terminate();
+			(_c.revokeObjectURL(kc), Sc && Sc.terminate());
 		}
 	}
 	function Cc(t) {
@@ -15504,7 +15547,7 @@
 			return _c.createObjectURL(new Blob([t], { type: yc }));
 		} catch (i) {
 			var e = new vc();
-			return e.append(t), _c.createObjectURL(e.getBlob(type));
+			return (e.append(t), _c.createObjectURL(e.getBlob(type)));
 		}
 	}
 	var Ec = new Tc("./transmuxer-worker.worker.js", function (t, e) {
@@ -15551,7 +15594,7 @@
 					j,
 					F,
 					V = Math.pow(2, 32) - 1;
-				!(function () {
+				(!(function () {
 					var t;
 					if (
 						((S = {
@@ -15596,7 +15639,7 @@
 						for (t in S)
 							S.hasOwnProperty(t) &&
 								(S[t] = [t.charCodeAt(0), t.charCodeAt(1), t.charCodeAt(2), t.charCodeAt(3)]);
-						(k = new Uint8Array(["i".charCodeAt(0), "s".charCodeAt(0), "o".charCodeAt(0), "m".charCodeAt(0)])),
+						((k = new Uint8Array(["i".charCodeAt(0), "s".charCodeAt(0), "o".charCodeAt(0), "m".charCodeAt(0)])),
 							(C = new Uint8Array([
 								"a".charCodeAt(0),
 								"v".charCodeAt(0),
@@ -15619,7 +15662,7 @@
 							(x = I),
 							(D = new Uint8Array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])),
 							(R = I),
-							(O = new Uint8Array([0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0]));
+							(O = new Uint8Array([0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0])));
 					}
 				})(),
 					(t = function (t) {
@@ -15638,7 +15681,7 @@
 							e < n.length;
 							e++
 						)
-							i.set(n[e], r), (r += n[e].byteLength);
+							(i.set(n[e], r), (r += n[e].byteLength));
 						return i;
 					}),
 					(e = function () {
@@ -15865,7 +15908,7 @@
 							r = e.samples || [],
 							a = new Uint8Array(4 + r.length);
 						for (n = 0; n < r.length; n++)
-							(i = r[n].flags), (a[n + 4] = (i.dependsOn << 4) | (i.isDependedOn << 2) | i.hasRedundancy);
+							((i = r[n].flags), (a[n + 4] = (i.dependsOn << 4) | (i.isDependedOn << 2) | i.hasRedundancy));
 						return t(S.sdtp, a);
 					}),
 					(y = function (e) {
@@ -15881,13 +15924,13 @@
 							a = [],
 							s = [];
 						for (i = 0; i < n.length; i++)
-							a.push((65280 & n[i].byteLength) >>> 8),
+							(a.push((65280 & n[i].byteLength) >>> 8),
 								a.push(255 & n[i].byteLength),
-								(a = a.concat(Array.prototype.slice.call(n[i])));
+								(a = a.concat(Array.prototype.slice.call(n[i]))));
 						for (i = 0; i < r.length; i++)
-							s.push((65280 & r[i].byteLength) >>> 8),
+							(s.push((65280 & r[i].byteLength) >>> 8),
 								s.push(255 & r[i].byteLength),
-								(s = s.concat(Array.prototype.slice.call(r[i])));
+								(s = s.concat(Array.prototype.slice.call(r[i]))));
 						return t(
 							S.avc1,
 							new Uint8Array([
@@ -16166,7 +16209,7 @@
 						);
 					}),
 					(h = function (e) {
-						return (e.duration = e.duration || 4294967295), t(S.trak, d(e), p(e));
+						return ((e.duration = e.duration || 4294967295), t(S.trak, d(e), p(e)));
 					}),
 					(b = function (e) {
 						var i = new Uint8Array([
@@ -16195,7 +16238,7 @@
 							0,
 							1,
 						]);
-						return "video" !== e.type && (i[i.length - 1] = 0), t(S.trex, i);
+						return ("video" !== e.type && (i[i.length - 1] = 0), t(S.trex, i));
 					}),
 					(F = function (t, e) {
 						var i = 0,
@@ -16227,7 +16270,7 @@
 					(j = function (e, i) {
 						var n, r, a, s;
 						for (i += 20 + 16 * (r = e.samples || []).length, n = F(r, i), s = 0; s < r.length; s++)
-							(a = r[s]),
+							((a = r[s]),
 								(n = n.concat([
 									(4278190080 & a.duration) >>> 24,
 									(16711680 & a.duration) >>> 16,
@@ -16248,13 +16291,13 @@
 									(16711680 & a.compositionTimeOffset) >>> 16,
 									(65280 & a.compositionTimeOffset) >>> 8,
 									255 & a.compositionTimeOffset,
-								]));
+								])));
 						return t(S.trun, new Uint8Array(n));
 					}),
 					(N = function (e, i) {
 						var n, r, a, s;
 						for (i += 20 + 8 * (r = e.samples || []).length, n = F(r, i), s = 0; s < r.length; s++)
-							(a = r[s]),
+							((a = r[s]),
 								(n = n.concat([
 									(4278190080 & a.duration) >>> 24,
 									(16711680 & a.duration) >>> 16,
@@ -16264,12 +16307,12 @@
 									(16711680 & a.size) >>> 16,
 									(65280 & a.size) >>> 8,
 									255 & a.size,
-								]));
+								])));
 						return t(S.trun, new Uint8Array(n));
 					}),
 					(T = function (t, e) {
 						return "audio" === t.type ? N(t, e) : j(t, e);
-					});
+					}));
 				var H,
 					q,
 					z,
@@ -16288,13 +16331,13 @@
 							var e,
 								i = r(),
 								n = u(t);
-							return (e = new Uint8Array(i.byteLength + n.byteLength)).set(i), e.set(n, i.byteLength), e;
+							return ((e = new Uint8Array(i.byteLength + n.byteLength)).set(i), e.set(n, i.byteLength), e);
 						},
 					},
 					Y = function (t) {
 						return t >>> 0;
 					};
-				(z = function (t) {
+				((z = function (t) {
 					return H(t, ["moov", "trak"]).reduce(function (t, e) {
 						var i, n, r, a, s;
 						return (i = H(e, ["tkhd"])[0])
@@ -16361,7 +16404,7 @@
 							}),
 							i
 						);
-					});
+					}));
 				var $ = {
 						findBox: (H = function (t, e) {
 							var i,
@@ -16372,14 +16415,14 @@
 								o = [];
 							if (!e.length) return null;
 							for (i = 0; i < t.byteLength; )
-								(n = Y((t[i] << 24) | (t[i + 1] << 16) | (t[i + 2] << 8) | t[i + 3])),
+								((n = Y((t[i] << 24) | (t[i + 1] << 16) | (t[i + 2] << 8) | t[i + 3])),
 									(r = q(t.subarray(i + 4, i + 8))),
 									(a = n > 1 ? i + n : t.byteLength),
 									r === e[0] &&
 										(1 === e.length
 											? o.push(t.subarray(i + 8, a))
 											: (s = H(t.subarray(i + 8, a), e.slice(1))).length && (o = o.concat(s))),
-									(i = a);
+									(i = a));
 							return o;
 						}),
 						parseType: (q = function (t) {
@@ -16398,8 +16441,8 @@
 					K = function () {
 						this.init = function () {
 							var t = {};
-							(this.on = function (e, i) {
-								t[e] || (t[e] = []), (t[e] = t[e].concat(i));
+							((this.on = function (e, i) {
+								(t[e] || (t[e] = []), (t[e] = t[e].concat(i)));
 							}),
 								(this.off = function (e, i) {
 									var n;
@@ -16420,10 +16463,10 @@
 								}),
 								(this.dispose = function () {
 									t = {};
-								});
+								}));
 						};
 					};
-				(K.prototype.pipe = function (t) {
+				((K.prototype.pipe = function (t) {
 					return (
 						this.on("data", function (e) {
 							t.push(e);
@@ -16439,7 +16482,7 @@
 					}),
 					(K.prototype.flush = function (t) {
 						this.trigger("done", t);
-					});
+					}));
 				var Q,
 					J,
 					Z,
@@ -16558,7 +16601,7 @@
 							o = e || 0,
 							u = [];
 						for (i = 0; i < t.length; i++)
-							for (a = t[i], n = 0; n < a.length; n++) (s = a[n]), (o += (r = at(s, o)).size), u.push(r);
+							for (a = t[i], n = 0; n < a.length; n++) ((s = a[n]), (o += (r = at(s, o)).size), u.push(r));
 						return u;
 					},
 					ct = function (t) {
@@ -16576,11 +16619,11 @@
 						for (e = 0; e < t.length; e++)
 							for (r = t[e], i = 0; i < r.length; i++)
 								for (a = r[i], n = 0; n < a.length; n++)
-									(s = a[n]),
+									((s = a[n]),
 										h.setUint32(o, s.data.byteLength),
 										(o += 4),
 										c.set(s.data, o),
-										(o += s.data.byteLength);
+										(o += s.data.byteLength));
 						return c;
 					},
 					ht = [33, 16, 5, 32, 164, 27],
@@ -16651,13 +16694,13 @@
 								t
 							);
 						}, {}));
-				(it = function (t, e) {
+				((it = function (t, e) {
 					return J(et(t, e));
 				}),
 					(nt = function (t, e) {
 						return Z(tt(t), e);
-					});
-				(J = function (t) {
+					}));
+				((J = function (t) {
 					return 9e4 * t;
 				}),
 					(Z = function (t, e) {
@@ -16668,7 +16711,7 @@
 					}),
 					(et = function (t, e) {
 						return t / e;
-					});
+					}));
 				var gt = it,
 					yt = nt,
 					vt = function (t, e, i, n) {
@@ -16707,7 +16750,7 @@
 						var e,
 							i,
 							n = [];
-						for (e = 0; e < t.length; e++) (i = t[e]), n.push({ size: i.data.byteLength, duration: 1024 });
+						for (e = 0; e < t.length; e++) ((i = t[e]), n.push({ size: i.data.byteLength, duration: 1024 }));
 						return n;
 					},
 					Tt = function (t) {
@@ -16722,11 +16765,11 @@
 									return i;
 								})(t)
 							);
-						for (e = 0; e < t.length; e++) (i = t[e]), r.set(i.data, n), (n += i.data.byteLength);
+						for (e = 0; e < t.length; e++) ((i = t[e]), r.set(i.data, n), (n += i.data.byteLength));
 						return r;
 					},
 					St = function (t) {
-						delete t.minSegmentDts, delete t.maxSegmentDts, delete t.minSegmentPts, delete t.maxSegmentPts;
+						(delete t.minSegmentDts, delete t.maxSegmentDts, delete t.minSegmentPts, delete t.maxSegmentPts);
 					},
 					kt = function (t, e) {
 						var i,
@@ -16741,7 +16784,7 @@
 						);
 					},
 					wt = function (t, e) {
-						"number" == typeof e.pts &&
+						("number" == typeof e.pts &&
 							(void 0 === t.timelineStartInfo.pts && (t.timelineStartInfo.pts = e.pts),
 							void 0 === t.minSegmentPts
 								? (t.minSegmentPts = e.pts)
@@ -16756,7 +16799,7 @@
 									: (t.minSegmentDts = Math.min(t.minSegmentDts, e.dts)),
 								void 0 === t.maxSegmentDts
 									? (t.maxSegmentDts = e.dts)
-									: (t.maxSegmentDts = Math.max(t.maxSegmentDts, e.dts)));
+									: (t.maxSegmentDts = Math.max(t.maxSegmentDts, e.dts))));
 					},
 					Ct = function (t) {
 						for (
@@ -16764,13 +16807,13 @@
 							e < t.byteLength && 128 !== t[e];
 
 						) {
-							for (; 255 === t[e]; ) (n += 255), e++;
-							for (n += t[e++]; 255 === t[e]; ) (r += 255), e++;
+							for (; 255 === t[e]; ) ((n += 255), e++);
+							for (n += t[e++]; 255 === t[e]; ) ((r += 255), e++);
 							if (((r += t[e++]), !i.payload && 4 === n)) {
-								(i.payloadType = n), (i.payloadSize = r), (i.payload = t.subarray(e, e + r));
+								((i.payloadType = n), (i.payloadSize = r), (i.payload = t.subarray(e, e + r)));
 								break;
 							}
-							(e += r), (n = 0), (r = 0);
+							((e += r), (n = 0), (r = 0));
 						}
 						return i;
 					},
@@ -16793,41 +16836,42 @@
 							s = [];
 						if (!(64 & e[0])) return s;
 						for (n = 31 & e[0], i = 0; i < n; i++)
-							(a = { type: 3 & e[2 + (r = 3 * i)], pts: t }),
-								4 & e[r + 2] && ((a.ccData = (e[r + 3] << 8) | e[r + 4]), s.push(a));
+							((a = { type: 3 & e[2 + (r = 3 * i)], pts: t }),
+								4 & e[r + 2] && ((a.ccData = (e[r + 3] << 8) | e[r + 4]), s.push(a)));
 						return s;
 					},
 					Lt = function (t) {
 						for (var e, i, n = t.byteLength, r = [], a = 1; a < n - 2; )
 							0 === t[a] && 0 === t[a + 1] && 3 === t[a + 2] ? (r.push(a + 2), (a += 2)) : a++;
 						if (0 === r.length) return t;
-						(e = n - r.length), (i = new Uint8Array(e));
+						((e = n - r.length), (i = new Uint8Array(e)));
 						var s = 0;
-						for (a = 0; a < e; s++, a++) s === r[0] && (s++, r.shift()), (i[a] = t[s]);
+						for (a = 0; a < e; s++, a++) (s === r[0] && (s++, r.shift()), (i[a] = t[s]));
 						return i;
 					},
 					Ot = 4,
 					Pt = function t() {
-						t.prototype.init.call(this),
+						(t.prototype.init.call(this),
 							(this.captionPackets_ = []),
 							(this.ccStreams_ = [new Rt(0, 0), new Rt(0, 1), new Rt(1, 0), new Rt(1, 1)]),
 							this.reset(),
 							this.ccStreams_.forEach(function (t) {
-								t.on("data", this.trigger.bind(this, "data")), t.on("done", this.trigger.bind(this, "done"));
-							}, this);
+								(t.on("data", this.trigger.bind(this, "data")),
+									t.on("done", this.trigger.bind(this, "done")));
+							}, this));
 					};
-				((Pt.prototype = new rt()).push = function (t) {
+				(((Pt.prototype = new rt()).push = function (t) {
 					var e, i, n;
 					if ("sei_rbsp" === t.nalUnitType && (e = Ct(t.escapedRBSP)).payloadType === Ot && (i = Et(e)))
 						if (t.dts < this.latestDts_) this.ignoreNextEqualDts_ = !0;
 						else {
 							if (t.dts === this.latestDts_ && this.ignoreNextEqualDts_)
-								return this.numSameDts_--, void (this.numSameDts_ || (this.ignoreNextEqualDts_ = !1));
-							(n = At(t.pts, i)),
+								return (this.numSameDts_--, void (this.numSameDts_ || (this.ignoreNextEqualDts_ = !1)));
+							((n = At(t.pts, i)),
 								(this.captionPackets_ = this.captionPackets_.concat(n)),
 								this.latestDts_ !== t.dts && (this.numSameDts_ = 0),
 								this.numSameDts_++,
-								(this.latestDts_ = t.dts);
+								(this.latestDts_ = t.dts));
 						}
 				}),
 					(Pt.prototype.flush = function () {
@@ -16850,27 +16894,27 @@
 								}, this);
 					}),
 					(Pt.prototype.reset = function () {
-						(this.latestDts_ = null),
+						((this.latestDts_ = null),
 							(this.ignoreNextEqualDts_ = !1),
 							(this.numSameDts_ = 0),
 							(this.activeCea608Channel_ = [null, null]),
 							this.ccStreams_.forEach(function (t) {
 								t.reset();
-							});
+							}));
 					}),
 					(Pt.prototype.dispatchCea608Packet = function (t) {
-						this.setsChannel1Active(t)
+						(this.setsChannel1Active(t)
 							? (this.activeCea608Channel_[t.type] = 0)
 							: this.setsChannel2Active(t) && (this.activeCea608Channel_[t.type] = 1),
 							null !== this.activeCea608Channel_[t.type] &&
-								this.ccStreams_[(t.type << 1) + this.activeCea608Channel_[t.type]].push(t);
+								this.ccStreams_[(t.type << 1) + this.activeCea608Channel_[t.type]].push(t));
 					}),
 					(Pt.prototype.setsChannel1Active = function (t) {
 						return 4096 == (30720 & t.ccData);
 					}),
 					(Pt.prototype.setsChannel2Active = function (t) {
 						return 6144 == (30720 & t.ccData);
-					});
+					}));
 				var Ut = {
 						42: 225,
 						92: 233,
@@ -16972,7 +17016,7 @@
 						return t;
 					},
 					Rt = function t(e, i) {
-						t.prototype.init.call(this),
+						(t.prototype.init.call(this),
 							(this.field_ = e || 0),
 							(this.dataChannel_ = i || 0),
 							(this.name_ = "CC" + (1 + ((this.field_ << 1) | this.dataChannel_))),
@@ -16991,21 +17035,21 @@
 									)
 										if (e === this.RESUME_CAPTION_LOADING_) this.mode_ = "popOn";
 										else if (e === this.END_OF_CAPTION_)
-											(this.mode_ = "popOn"),
+											((this.mode_ = "popOn"),
 												this.clearFormatting(t.pts),
 												this.flushDisplayed(t.pts),
 												(i = this.displayed_),
 												(this.displayed_ = this.nonDisplayed_),
 												(this.nonDisplayed_ = i),
-												(this.startPts_ = t.pts);
-										else if (e === this.ROLL_UP_2_ROWS_) (this.rollUpRows_ = 2), this.setRollUp(t.pts);
-										else if (e === this.ROLL_UP_3_ROWS_) (this.rollUpRows_ = 3), this.setRollUp(t.pts);
-										else if (e === this.ROLL_UP_4_ROWS_) (this.rollUpRows_ = 4), this.setRollUp(t.pts);
+												(this.startPts_ = t.pts));
+										else if (e === this.ROLL_UP_2_ROWS_) ((this.rollUpRows_ = 2), this.setRollUp(t.pts));
+										else if (e === this.ROLL_UP_3_ROWS_) ((this.rollUpRows_ = 3), this.setRollUp(t.pts));
+										else if (e === this.ROLL_UP_4_ROWS_) ((this.rollUpRows_ = 4), this.setRollUp(t.pts));
 										else if (e === this.CARRIAGE_RETURN_)
-											this.clearFormatting(t.pts),
+											(this.clearFormatting(t.pts),
 												this.flushDisplayed(t.pts),
 												this.shiftRowsUp_(),
-												(this.startPts_ = t.pts);
+												(this.startPts_ = t.pts));
 										else if (e === this.BACKSPACE_)
 											"popOn" === this.mode_
 												? (this.nonDisplayed_[this.row_] = this.nonDisplayed_[this.row_].slice(
@@ -17014,17 +17058,17 @@
 													))
 												: (this.displayed_[this.row_] = this.displayed_[this.row_].slice(0, -1));
 										else if (e === this.ERASE_DISPLAYED_MEMORY_)
-											this.flushDisplayed(t.pts), (this.displayed_ = Dt());
+											(this.flushDisplayed(t.pts), (this.displayed_ = Dt()));
 										else if (e === this.ERASE_NON_DISPLAYED_MEMORY_) this.nonDisplayed_ = Dt();
 										else if (e === this.RESUME_DIRECT_CAPTIONING_)
-											"paintOn" !== this.mode_ &&
+											("paintOn" !== this.mode_ &&
 												(this.flushDisplayed(t.pts), (this.displayed_ = Dt())),
 												(this.mode_ = "paintOn"),
-												(this.startPts_ = t.pts);
+												(this.startPts_ = t.pts));
 										else if (this.isSpecialCharacter(n, r))
-											(a = It((n = (3 & n) << 8) | r)), this[this.mode_](t.pts, a), this.column_++;
+											((a = It((n = (3 & n) << 8) | r)), this[this.mode_](t.pts, a), this.column_++);
 										else if (this.isExtCharacter(n, r))
-											"popOn" === this.mode_
+											("popOn" === this.mode_
 												? (this.nonDisplayed_[this.row_] = this.nonDisplayed_[this.row_].slice(
 														0,
 														-1
@@ -17032,17 +17076,17 @@
 												: (this.displayed_[this.row_] = this.displayed_[this.row_].slice(0, -1)),
 												(a = It((n = (3 & n) << 8) | r)),
 												this[this.mode_](t.pts, a),
-												this.column_++;
+												this.column_++);
 										else if (this.isMidRowCode(n, r))
-											this.clearFormatting(t.pts),
+											(this.clearFormatting(t.pts),
 												this[this.mode_](t.pts, " "),
 												this.column_++,
 												14 == (14 & r) && this.addFormatting(t.pts, ["i"]),
-												1 == (1 & r) && this.addFormatting(t.pts, ["u"]);
+												1 == (1 & r) && this.addFormatting(t.pts, ["u"]));
 										else if (this.isOffsetControlCode(n, r)) this.column_ += 3 & r;
 										else if (this.isPAC(n, r)) {
 											var s = xt.indexOf(7968 & e);
-											"rollUp" === this.mode_ &&
+											("rollUp" === this.mode_ &&
 												(s - this.rollUpRows_ + 1 < 0 && (s = this.rollUpRows_ - 1),
 												this.setRollUp(t.pts, s)),
 												s !== this.row_ && (this.clearFormatting(t.pts), (this.row_ = s)),
@@ -17050,7 +17094,7 @@
 													-1 === this.formatting_.indexOf("u") &&
 													this.addFormatting(t.pts, ["u"]),
 												16 == (16 & e) && (this.column_ = 4 * ((14 & e) >> 1)),
-												this.isColorPAC(r) && 14 == (14 & r) && this.addFormatting(t.pts, ["i"]);
+												this.isColorPAC(r) && 14 == (14 & r) && this.addFormatting(t.pts, ["i"]));
 										} else
 											this.isNormalChar(n) &&
 												(0 === r && (r = null),
@@ -17059,16 +17103,16 @@
 												this[this.mode_](t.pts, a),
 												(this.column_ += a.length));
 								} else this.lastControlCode_ = null;
-							});
+							}));
 					};
-				(Rt.prototype = new rt()),
+				((Rt.prototype = new rt()),
 					(Rt.prototype.flushDisplayed = function (t) {
 						var e = this.displayed_
 							.map(function (t) {
 								try {
 									return t.trim();
 								} catch (t) {
-									return console.error("Skipping malformed caption."), "";
+									return (console.error("Skipping malformed caption."), "");
 								}
 							})
 							.join("\n")
@@ -17077,7 +17121,7 @@
 							this.trigger("data", { startPts: this.startPts_, endPts: t, text: e, stream: this.name_ });
 					}),
 					(Rt.prototype.reset = function () {
-						(this.mode_ = "popOn"),
+						((this.mode_ = "popOn"),
 							(this.topRow_ = 0),
 							(this.startPts_ = 0),
 							(this.displayed_ = Dt()),
@@ -17086,10 +17130,10 @@
 							(this.column_ = 0),
 							(this.row_ = 14),
 							(this.rollUpRows_ = 2),
-							(this.formatting_ = []);
+							(this.formatting_ = []));
 					}),
 					(Rt.prototype.setConstants = function () {
-						0 === this.dataChannel_
+						(0 === this.dataChannel_
 							? ((this.BASE_ = 16),
 								(this.EXT_ = 17),
 								(this.CONTROL_ = (20 | this.field_) << 8),
@@ -17109,7 +17153,7 @@
 							(this.RESUME_DIRECT_CAPTIONING_ = 41 | this.CONTROL_),
 							(this.BACKSPACE_ = 33 | this.CONTROL_),
 							(this.ERASE_DISPLAYED_MEMORY_ = 44 | this.CONTROL_),
-							(this.ERASE_NON_DISPLAYED_MEMORY_ = 46 | this.CONTROL_);
+							(this.ERASE_NON_DISPLAYED_MEMORY_ = 46 | this.CONTROL_));
 					}),
 					(Rt.prototype.isSpecialCharacter = function (t, e) {
 						return t === this.EXT_ && e >= 48 && e <= 63;
@@ -17143,9 +17187,9 @@
 							void 0 !== e && e !== this.row_)
 						)
 							for (var i = 0; i < this.rollUpRows_; i++)
-								(this.displayed_[e - i] = this.displayed_[this.row_ - i]),
-									(this.displayed_[this.row_ - i] = "");
-						void 0 === e && (e = this.row_), (this.topRow_ = e - this.rollUpRows_ + 1);
+								((this.displayed_[e - i] = this.displayed_[this.row_ - i]),
+									(this.displayed_[this.row_ - i] = ""));
+						(void 0 === e && (e = this.row_), (this.topRow_ = e - this.rollUpRows_ + 1));
 					}),
 					(Rt.prototype.addFormatting = function (t, e) {
 						this.formatting_ = this.formatting_.concat(e);
@@ -17159,16 +17203,16 @@
 							var e = this.formatting_.reverse().reduce(function (t, e) {
 								return t + "</" + e + ">";
 							}, "");
-							(this.formatting_ = []), this[this.mode_](t, e);
+							((this.formatting_ = []), this[this.mode_](t, e));
 						}
 					}),
 					(Rt.prototype.popOn = function (t, e) {
 						var i = this.nonDisplayed_[this.row_];
-						(i += e), (this.nonDisplayed_[this.row_] = i);
+						((i += e), (this.nonDisplayed_[this.row_] = i));
 					}),
 					(Rt.prototype.rollUp = function (t, e) {
 						var i = this.displayed_[this.row_];
-						(i += e), (this.displayed_[this.row_] = i);
+						((i += e), (this.displayed_[this.row_] = i));
 					}),
 					(Rt.prototype.shiftRowsUp_ = function () {
 						var t;
@@ -17179,8 +17223,8 @@
 					}),
 					(Rt.prototype.paintOn = function (t, e) {
 						var i = this.displayed_[this.row_];
-						(i += e), (this.displayed_[this.row_] = i);
-					});
+						((i += e), (this.displayed_[this.row_] = i));
+					}));
 				var Mt = { CaptionStream: Pt, Cea608Stream: Rt },
 					Bt = { H264_STREAM_TYPE: 27, ADTS_STREAM_TYPE: 15, METADATA_STREAM_TYPE: 21 },
 					Nt = function (t, e) {
@@ -17190,7 +17234,7 @@
 					},
 					jt = function t(e) {
 						var i, n;
-						t.prototype.init.call(this),
+						(t.prototype.init.call(this),
 							(this.type_ = e),
 							(this.push = function (t) {
 								t.type === this.type_ &&
@@ -17201,11 +17245,11 @@
 									this.trigger("data", t));
 							}),
 							(this.flush = function () {
-								(n = i), this.trigger("done");
+								((n = i), this.trigger("done"));
 							}),
 							(this.discontinuity = function () {
-								(n = void 0), (i = void 0);
-							});
+								((n = void 0), (i = void 0));
+							}));
 					};
 				jt.prototype = new rt();
 				var Ft,
@@ -17228,8 +17272,8 @@
 							if (3 === t.data[0]) {
 								for (e = 1; e < t.data.length; e++)
 									if (0 === t.data[e]) {
-										(t.description = qt(t.data, 1, e)),
-											(t.value = qt(t.data, e + 1, t.data.length).replace(/\0*$/, ""));
+										((t.description = qt(t.data, 1, e)),
+											(t.value = qt(t.data, e + 1, t.data.length).replace(/\0*$/, "")));
 										break;
 									}
 								t.data = t.value;
@@ -17240,7 +17284,7 @@
 							if (3 === t.data[0])
 								for (e = 1; e < t.data.length; e++)
 									if (0 === t.data[e]) {
-										(t.description = qt(t.data, 1, e)), (t.url = qt(t.data, e + 1, t.data.length));
+										((t.description = qt(t.data, 1, e)), (t.url = qt(t.data, e + 1, t.data.length)));
 										break;
 									}
 						},
@@ -17251,7 +17295,7 @@
 									t.owner = ((i = t.data), unescape(Ht(i, 0, e)));
 									break;
 								}
-							(t.privateData = t.data.subarray(e + 1)), (t.data = t.privateData);
+							((t.privateData = t.data.subarray(e + 1)), (t.data = t.privateData));
 						},
 					};
 				(Ft = function (t) {
@@ -17290,13 +17334,13 @@
 									l < n;
 
 								)
-									e.data.set(r[0].data.subarray(0, n - l), l),
+									(e.data.set(r[0].data.subarray(0, n - l), l),
 										(l += r[0].data.byteLength),
 										(a -= r[0].data.byteLength),
-										r.shift();
-								(s = 10),
+										r.shift());
+								((s = 10),
 									64 & e.data[5] &&
-										((s += 4), (s += zt(e.data.subarray(10, 14))), (n -= zt(e.data.subarray(16, 20))));
+										((s += 4), (s += zt(e.data.subarray(10, 14))), (n -= zt(e.data.subarray(16, 20)))));
 								do {
 									if ((o = zt(e.data.subarray(s + 4, s + 8))) < 1)
 										return console.log("Malformed ID3 frame encountered. Skipping metadata parsing.");
@@ -17315,15 +17359,15 @@
 												(c[5] << 14) |
 												(c[6] << 6) |
 												(c[7] >>> 2);
-										(h *= 4),
+										((h *= 4),
 											(h += 3 & c[7]),
 											(u.timeStamp = h),
 											void 0 === e.pts &&
 												void 0 === e.dts &&
 												((e.pts = u.timeStamp), (e.dts = u.timeStamp)),
-											this.trigger("timestamp", u);
+											this.trigger("timestamp", u));
 									}
-									e.frames.push(u), (s += 10), (s += o);
+									(e.frames.push(u), (s += 10), (s += o));
 								} while (s < n);
 								this.trigger("data", e);
 							}
@@ -17334,10 +17378,10 @@
 					Yt,
 					$t = Ft,
 					Kt = Vt;
-				((Gt = function () {
+				(((Gt = function () {
 					var t = new Uint8Array(188),
 						e = 0;
-					Gt.prototype.init.call(this),
+					(Gt.prototype.init.call(this),
 						(this.push = function (i) {
 							var n,
 								r = 0,
@@ -17355,25 +17399,25 @@
 							r < n.byteLength && (t.set(n.subarray(r), 0), (e = n.byteLength - r));
 						}),
 						(this.flush = function () {
-							188 === e && 71 === t[0] && (this.trigger("data", t), (e = 0)), this.trigger("done");
-						});
+							(188 === e && 71 === t[0] && (this.trigger("data", t), (e = 0)), this.trigger("done"));
+						}));
 				}).prototype = new rt()),
 					((Xt = function () {
 						var t, e, i, n;
-						Xt.prototype.init.call(this),
+						(Xt.prototype.init.call(this),
 							(n = this),
 							(this.packetsWaitingForPmt = []),
 							(this.programMapTable = void 0),
 							(t = function (t, n) {
 								var r = 0;
-								n.payloadUnitStartIndicator && (r += t[r] + 1),
-									"pat" === n.type ? e(t.subarray(r), n) : i(t.subarray(r), n);
+								(n.payloadUnitStartIndicator && (r += t[r] + 1),
+									"pat" === n.type ? e(t.subarray(r), n) : i(t.subarray(r), n));
 							}),
 							(e = function (t, e) {
-								(e.section_number = t[7]),
+								((e.section_number = t[7]),
 									(e.last_section_number = t[8]),
 									(n.pmtPid = ((31 & t[10]) << 8) | t[11]),
-									(e.pmtPid = n.pmtPid);
+									(e.pmtPid = n.pmtPid));
 							}),
 							(i = function (t, e) {
 								var i, r;
@@ -17387,13 +17431,13 @@
 									) {
 										var a = t[r],
 											s = ((31 & t[r + 1]) << 8) | t[r + 2];
-										a === Bt.H264_STREAM_TYPE && null === n.programMapTable.video
+										(a === Bt.H264_STREAM_TYPE && null === n.programMapTable.video
 											? (n.programMapTable.video = s)
 											: a === Bt.ADTS_STREAM_TYPE && null === n.programMapTable.audio
 												? (n.programMapTable.audio = s)
 												: a === Bt.METADATA_STREAM_TYPE &&
 													(n.programMapTable["timed-metadata"][s] = a),
-											(r += 5 + (((15 & t[r + 3]) << 8) | t[r + 4]));
+											(r += 5 + (((15 & t[r + 3]) << 8) | t[r + 4])));
 									}
 									e.programMapTable = n.programMapTable;
 								}
@@ -17409,7 +17453,7 @@
 									(48 & e[3]) >>> 4 > 1 && (n += e[n] + 1),
 									0 === i.pid)
 								)
-									(i.type = "pat"), t(e.subarray(n), i), this.trigger("data", i);
+									((i.type = "pat"), t(e.subarray(n), i), this.trigger("data", i));
 								else if (i.pid === this.pmtPid)
 									for (
 										i.type = "pmt", t(e.subarray(n), i), this.trigger("data", i);
@@ -17423,15 +17467,15 @@
 										: this.processPes_(e, n, i);
 							}),
 							(this.processPes_ = function (t, e, i) {
-								i.pid === this.programMapTable.video
+								(i.pid === this.programMapTable.video
 									? (i.streamType = Bt.H264_STREAM_TYPE)
 									: i.pid === this.programMapTable.audio
 										? (i.streamType = Bt.ADTS_STREAM_TYPE)
 										: (i.streamType = this.programMapTable["timed-metadata"][i.pid]),
 									(i.type = "pes"),
 									(i.data = t.subarray(e)),
-									this.trigger("data", i);
-							});
+									this.trigger("data", i));
+							}));
 					}).prototype = new rt()),
 					(Xt.STREAM_TYPES = { h264: 27, adts: 15 }),
 					((Yt = function () {
@@ -17448,9 +17492,9 @@
 									l = 0;
 								if (e.data.length && !(e.size < 9)) {
 									for (o.trackId = e.data[0].pid, u = 0; u < e.data.length; u++)
-										(a = e.data[u]), s.set(a.data, l), (l += a.data.byteLength);
+										((a = e.data[u]), s.set(a.data, l), (l += a.data.byteLength));
 									var c, h, d;
-									(c = s),
+									((c = s),
 										((h = o).packetLength = 6 + ((c[4] << 8) | c[5])),
 										(h.dataAlignmentIndicator = 0 != (4 & c[6])),
 										192 & (d = c[7]) &&
@@ -17475,10 +17519,10 @@
 										(h.data = c.subarray(9 + c[8])),
 										(r = "video" === i || o.packetLength <= e.size),
 										(n || r) && ((e.size = 0), (e.data.length = 0)),
-										r && t.trigger("data", o);
+										r && t.trigger("data", o));
 								}
 							};
-						Yt.prototype.init.call(this),
+						(Yt.prototype.init.call(this),
 							(this.push = function (a) {
 								({
 									pat: function () {},
@@ -17487,25 +17531,25 @@
 										switch (a.streamType) {
 											case Bt.H264_STREAM_TYPE:
 											case Bt.H264_STREAM_TYPE:
-												(t = e), (s = "video");
+												((t = e), (s = "video"));
 												break;
 											case Bt.ADTS_STREAM_TYPE:
-												(t = i), (s = "audio");
+												((t = i), (s = "audio"));
 												break;
 											case Bt.METADATA_STREAM_TYPE:
-												(t = n), (s = "timed-metadata");
+												((t = n), (s = "timed-metadata"));
 												break;
 											default:
 												return;
 										}
-										a.payloadUnitStartIndicator && r(t, s, !0),
+										(a.payloadUnitStartIndicator && r(t, s, !0),
 											t.data.push(a),
-											(t.size += a.data.byteLength);
+											(t.size += a.data.byteLength));
 									},
 									pmt: function () {
 										var e = { type: "metadata", tracks: [] },
 											i = a.programMapTable;
-										null !== i.video &&
+										(null !== i.video &&
 											e.tracks.push({
 												timelineStartInfo: { baseMediaDecodeTime: 0 },
 												id: +i.video,
@@ -17519,14 +17563,14 @@
 													codec: "adts",
 													type: "audio",
 												}),
-											t.trigger("data", e);
+											t.trigger("data", e));
 									},
 								})[a.type]();
 							}),
 							(this.flush = function () {
-								r(e, "video"), r(i, "audio"), r(n, "timed-metadata"), this.trigger("done");
-							});
-					}).prototype = new rt());
+								(r(e, "video"), r(i, "audio"), r(n, "timed-metadata"), this.trigger("done"));
+							}));
+					}).prototype = new rt()));
 				var Qt = {
 					PAT_PID: 0,
 					MP2T_PACKET_LENGTH: 188,
@@ -17544,7 +17588,7 @@
 					ee = [96e3, 88200, 64e3, 48e3, 44100, 32e3, 24e3, 22050, 16e3, 12e3, 11025, 8e3, 7350];
 				(Zt = function () {
 					var t;
-					Zt.prototype.init.call(this),
+					(Zt.prototype.init.call(this),
 						(this.push = function (e) {
 							var i,
 								n,
@@ -17588,12 +17632,12 @@
 											t.byteLength === r)
 										)
 											return void (t = void 0);
-										l++, (t = t.subarray(r));
+										(l++, (t = t.subarray(r)));
 									} else u++;
 						}),
 						(this.flush = function () {
 							this.trigger("done");
-						});
+						}));
 				}).prototype = new rt();
 				var ie,
 					ne,
@@ -17603,7 +17647,7 @@
 						var e = t.byteLength,
 							i = 0,
 							n = 0;
-						(this.length = function () {
+						((this.length = function () {
 							return 8 * e;
 						}),
 							(this.bitsAvailable = function () {
@@ -17614,10 +17658,10 @@
 									a = new Uint8Array(4),
 									s = Math.min(4, e);
 								if (0 === s) throw new Error("no bytes available");
-								a.set(t.subarray(r, r + s)),
+								(a.set(t.subarray(r, r + s)),
 									(i = new DataView(a.buffer).getUint32(0)),
 									(n = 8 * s),
-									(e -= s);
+									(e -= s));
 							}),
 							(this.skipBits = function (t) {
 								var r;
@@ -17640,8 +17684,8 @@
 							}),
 							(this.skipLeadingZeros = function () {
 								var t;
-								for (t = 0; t < n; ++t) if (0 != (i & (2147483648 >>> t))) return (i <<= t), (n -= t), t;
-								return this.loadWord(), t + this.skipLeadingZeros();
+								for (t = 0; t < n; ++t) if (0 != (i & (2147483648 >>> t))) return ((i <<= t), (n -= t), t);
+								return (this.loadWord(), t + this.skipLeadingZeros());
 							}),
 							(this.skipUnsignedExpGolomb = function () {
 								this.skipBits(1 + this.skipLeadingZeros());
@@ -17663,13 +17707,13 @@
 							(this.readUnsignedByte = function () {
 								return this.readBits(8);
 							}),
-							this.loadWord();
+							this.loadWord());
 					};
-				((ne = function () {
+				(((ne = function () {
 					var t,
 						e,
 						i = 0;
-					ne.prototype.init.call(this),
+					(ne.prototype.init.call(this),
 						(this.push = function (n) {
 							var r;
 							for (
@@ -17700,26 +17744,26 @@
 										do {
 											t++;
 										} while (1 !== e[t] && t < e.length);
-										(i = t - 2), (t += 3);
+										((i = t - 2), (t += 3));
 										break;
 									case 1:
 										if (0 !== e[t - 1] || 0 !== e[t - 2]) {
 											t += 3;
 											break;
 										}
-										this.trigger("data", e.subarray(i + 3, t - 2)), (i = t - 2), (t += 3);
+										(this.trigger("data", e.subarray(i + 3, t - 2)), (i = t - 2), (t += 3));
 										break;
 									default:
 										t += 3;
 								}
-							(e = e.subarray(i)), (t -= i), (i = 0);
+							((e = e.subarray(i)), (t -= i), (i = 0));
 						}),
 						(this.flush = function () {
-							e && e.byteLength > 3 && this.trigger("data", e.subarray(i + 3)),
+							(e && e.byteLength > 3 && this.trigger("data", e.subarray(i + 3)),
 								(e = null),
 								(i = 0),
-								this.trigger("done");
-						});
+								this.trigger("done"));
+						}));
 				}).prototype = new rt()),
 					(re = {
 						100: !0,
@@ -17744,7 +17788,7 @@
 							a,
 							s,
 							o = new ne();
-						ie.prototype.init.call(this),
+						(ie.prototype.init.call(this),
 							(t = this),
 							(this.push = function (t) {
 								"video" === t.type && ((e = t.trackId), (i = t.pts), (n = t.dts), o.push(t));
@@ -17756,12 +17800,12 @@
 										o.nalUnitType = "slice_layer_without_partitioning_rbsp_idr";
 										break;
 									case 6:
-										(o.nalUnitType = "sei_rbsp"), (o.escapedRBSP = r(s.subarray(1)));
+										((o.nalUnitType = "sei_rbsp"), (o.escapedRBSP = r(s.subarray(1))));
 										break;
 									case 7:
-										(o.nalUnitType = "seq_parameter_set_rbsp"),
+										((o.nalUnitType = "seq_parameter_set_rbsp"),
 											(o.escapedRBSP = r(s.subarray(1))),
-											(o.config = a(o.escapedRBSP));
+											(o.config = a(o.escapedRBSP)));
 										break;
 									case 8:
 										o.nalUnitType = "pic_parameter_set_rbsp";
@@ -17782,15 +17826,15 @@
 									n = 8,
 									r = 8;
 								for (i = 0; i < t; i++)
-									0 !== r && (r = (n + e.readExpGolomb() + 256) % 256), (n = 0 === r ? n : r);
+									(0 !== r && (r = (n + e.readExpGolomb() + 256) % 256), (n = 0 === r ? n : r));
 							}),
 							(r = function (t) {
 								for (var e, i, n = t.byteLength, r = [], a = 1; a < n - 2; )
 									0 === t[a] && 0 === t[a + 1] && 3 === t[a + 2] ? (r.push(a + 2), (a += 2)) : a++;
 								if (0 === r.length) return t;
-								(e = n - r.length), (i = new Uint8Array(e));
+								((e = n - r.length), (i = new Uint8Array(e)));
 								var s = 0;
-								for (a = 0; a < e; s++, a++) s === r[0] && (s++, r.shift()), (i[a] = t[s]);
+								for (a = 0; a < e; s++, a++) (s === r[0] && (s++, r.shift()), (i[a] = t[s]));
 								return i;
 							}),
 							(a = function (t) {
@@ -17916,8 +17960,8 @@
 									width: Math.ceil((16 * (l + 1) - 2 * m - 2 * g) * _),
 									height: (2 - h) * (c + 1) * 16 - 2 * y - 2 * v,
 								};
-							});
-					}).prototype = new rt());
+							}));
+					}).prototype = new rt()));
 				var oe,
 					ue = { H264Stream: ie, NalByteStream: ne },
 					le = function (t) {
@@ -17935,7 +17979,7 @@
 				(oe = function () {
 					var t = new Uint8Array(),
 						e = 0;
-					oe.prototype.init.call(this),
+					(oe.prototype.init.call(this),
 						(this.setTimestamp = function (t) {
 							e = t;
 						}),
@@ -17964,19 +18008,19 @@
 									else {
 										if (t.length - u < 7) break;
 										if (u + (o = he(t, u)) > t.length) break;
-										(a = { type: "audio", data: t.subarray(u, u + o), pts: e, dts: e }),
+										((a = { type: "audio", data: t.subarray(u, u + o), pts: e, dts: e }),
 											this.trigger("data", a),
-											(u += o);
+											(u += o));
 									}
 								else {
 									if (t.length - u < 10) break;
 									if (u + (o = ce(t, u)) > t.length) break;
-									(r = { type: "timed-metadata", data: t.subarray(u, u + o) }),
+									((r = { type: "timed-metadata", data: t.subarray(u, u + o) }),
 										this.trigger("data", r),
-										(u += o);
+										(u += o));
 								}
-							(n = t.length - u), (t = n > 0 ? t.subarray(u) : new Uint8Array());
-						});
+							((n = t.length - u), (t = n > 0 ? t.subarray(u) : new Uint8Array()));
+						}));
 				}).prototype = new rt();
 				var de,
 					pe,
@@ -17993,21 +18037,21 @@
 						for (i = 0; i < t.length; i++) if (t[i] !== e[i]) return !1;
 						return !0;
 					};
-				((pe = function (t, e) {
+				(((pe = function (t, e) {
 					var i = [],
 						n = 0,
 						r = 0,
 						a = 0,
 						s = 1 / 0;
-					(e = e || {}),
+					((e = e || {}),
 						pe.prototype.init.call(this),
 						(this.push = function (e) {
-							wt(t, e),
+							(wt(t, e),
 								t &&
 									_e.forEach(function (i) {
 										t[i] = e[i];
 									}),
-								i.push(e);
+								i.push(e));
 						}),
 						(this.setEarliestDts = function (e) {
 							r = e - t.timelineStartInfo.baseMediaDecodeTime;
@@ -18036,7 +18080,7 @@
 									this.trigger("data", { track: t, boxes: c }),
 									this.trigger("done", "AudioSegmentStream"))
 								: this.trigger("done", "AudioSegmentStream");
-						});
+						}));
 				}).prototype = new rt()),
 					((de = function (t, e) {
 						var i,
@@ -18044,12 +18088,12 @@
 							r = 0,
 							a = [],
 							s = [];
-						(e = e || {}),
+						((e = e || {}),
 							de.prototype.init.call(this),
 							delete t.minPTS,
 							(this.gopCache_ = []),
 							(this.push = function (e) {
-								wt(t, e),
+								(wt(t, e),
 									"seq_parameter_set_rbsp" !== e.nalUnitType ||
 										i ||
 										((i = e.config),
@@ -18058,13 +18102,13 @@
 											t[e] = i[e];
 										}, this)),
 									"pic_parameter_set_rbsp" !== e.nalUnitType || n || ((n = e.data), (t.pps = [e.data])),
-									a.push(e);
+									a.push(e));
 							}),
 							(this.flush = function () {
 								for (var i, n, o, u, l, c; a.length && "access_unit_delimiter_rbsp" !== a[0].nalUnitType; )
 									a.shift();
 								if (0 === a.length)
-									return this.resetStream_(), void this.trigger("done", "VideoSegmentStream");
+									return (this.resetStream_(), void this.trigger("done", "VideoSegmentStream"));
 								if (
 									((i = st(a)),
 									(o = ot(i))[0][0].keyFrame ||
@@ -18087,9 +18131,9 @@
 											this.resetStream_(),
 											void this.trigger("done", "VideoSegmentStream")
 										);
-									St(t), (o = h);
+									(St(t), (o = h));
 								}
-								wt(t, o),
+								(wt(t, o),
 									(t.samples = lt(o)),
 									(l = X.mdat(ct(o))),
 									(t.baseMediaDecodeTime = kt(t, e.keepOriginalTimestamps)),
@@ -18111,10 +18155,10 @@
 									c.set(l, u.byteLength),
 									this.trigger("data", { track: t, boxes: c }),
 									this.resetStream_(),
-									this.trigger("done", "VideoSegmentStream");
+									this.trigger("done", "VideoSegmentStream"));
 							}),
 							(this.resetStream_ = function () {
-								St(t), (i = void 0), (n = void 0);
+								(St(t), (i = void 0), (n = void 0));
 							}),
 							(this.getGopForFusion_ = function (e) {
 								var i,
@@ -18124,7 +18168,7 @@
 									s,
 									o = 1 / 0;
 								for (s = 0; s < this.gopCache_.length; s++)
-									(r = (a = this.gopCache_[s]).gop),
+									((r = (a = this.gopCache_[s]).gop),
 										t.pps &&
 											Te(t.pps[0], a.pps[0]) &&
 											t.sps &&
@@ -18133,7 +18177,7 @@
 												((i = e.dts - r.dts - r.duration) >= -1e4 &&
 													i <= 45e3 &&
 													(!n || o > i) &&
-													((n = a), (o = i))));
+													((n = a), (o = i)))));
 								return n ? n.gop : null;
 							}),
 							(this.alignGopsAtStart_ = function (t) {
@@ -18189,10 +18233,10 @@
 							}),
 							(this.alignGopsWith = function (t) {
 								s = t;
-							});
+							}));
 					}).prototype = new rt()),
 					((me = function (t, e) {
-						(this.numberOfTracks = 0),
+						((this.numberOfTracks = 0),
 							(this.metadataStream = e),
 							void 0 !== (t = t || {}).remux ? (this.remuxTracks = !!t.remux) : (this.remuxTracks = !0),
 							"boolean" == typeof t.keepOriginalTimestamps &&
@@ -18215,7 +18259,7 @@
 											(this.pendingBytes += t.boxes.byteLength),
 											"video" === t.track.type && (this.videoTrack = t.track),
 											void ("audio" === t.track.type && (this.audioTrack = t.track)));
-							});
+							}));
 					}).prototype = new rt()),
 					(me.prototype.flush = function (t) {
 						var e,
@@ -18260,22 +18304,22 @@
 							r < this.pendingBoxes.length;
 							r++
 						)
-							s.data.set(this.pendingBoxes[r], a), (a += this.pendingBoxes[r].byteLength);
+							(s.data.set(this.pendingBoxes[r], a), (a += this.pendingBoxes[r].byteLength));
 						for (r = 0; r < this.pendingCaptions.length; r++)
-							((e = this.pendingCaptions[r]).startTime = e.startPts),
+							(((e = this.pendingCaptions[r]).startTime = e.startPts),
 								this.keepOriginalTimestamps || (e.startTime -= o),
 								(e.startTime /= 9e4),
 								(e.endTime = e.endPts),
 								this.keepOriginalTimestamps || (e.endTime -= o),
 								(e.endTime /= 9e4),
 								(s.captionStreams[e.stream] = !0),
-								s.captions.push(e);
+								s.captions.push(e));
 						for (r = 0; r < this.pendingMetadata.length; r++)
-							((i = this.pendingMetadata[r]).cueTime = i.pts),
+							(((i = this.pendingMetadata[r]).cueTime = i.pts),
 								this.keepOriginalTimestamps || (i.cueTime -= o),
 								(i.cueTime /= 9e4),
-								s.metadata.push(i);
-						(s.metadata.dispatchType = this.metadataStream.dispatchType),
+								s.metadata.push(i));
+						((s.metadata.dispatchType = this.metadataStream.dispatchType),
 							(this.pendingTracks.length = 0),
 							(this.videoTrack = null),
 							(this.pendingBoxes.length = 0),
@@ -18283,20 +18327,20 @@
 							(this.pendingBytes = 0),
 							(this.pendingMetadata.length = 0),
 							this.trigger("data", s),
-							this.emittedTracks >= this.numberOfTracks && (this.trigger("done"), (this.emittedTracks = 0));
+							this.emittedTracks >= this.numberOfTracks && (this.trigger("done"), (this.emittedTracks = 0)));
 					}),
 					((fe = function (t) {
 						var e,
 							i,
 							n = this,
 							r = !0;
-						fe.prototype.init.call(this),
+						(fe.prototype.init.call(this),
 							(t = t || {}),
 							(this.baseMediaDecodeTime = t.baseMediaDecodeTime || 0),
 							(this.transmuxPipeline_ = {}),
 							(this.setupAacPipeline = function () {
 								var e = {};
-								(this.transmuxPipeline_ = e),
+								((this.transmuxPipeline_ = e),
 									(e.type = "aac"),
 									(e.metadataStream = new te.MetadataStream()),
 									(e.aacStream = new ge()),
@@ -18328,11 +18372,11 @@
 											e.adtsStream.pipe(e.audioSegmentStream).pipe(e.coalesceStream));
 									}),
 									e.coalesceStream.on("data", this.trigger.bind(this, "data")),
-									e.coalesceStream.on("done", this.trigger.bind(this, "done"));
+									e.coalesceStream.on("done", this.trigger.bind(this, "done")));
 							}),
 							(this.setupTsPipeline = function () {
 								var r = {};
-								(this.transmuxPipeline_ = r),
+								((this.transmuxPipeline_ = r),
 									(r.type = "ts"),
 									(r.metadataStream = new te.MetadataStream()),
 									(r.packetStream = new te.TransportPacketStream()),
@@ -18367,7 +18411,7 @@
 															n.baseMediaDecodeTime)
 													: ((e = a.tracks[s]).timelineStartInfo.baseMediaDecodeTime =
 															n.baseMediaDecodeTime);
-											e &&
+											(e &&
 												!r.videoSegmentStream &&
 												(r.coalesceStream.numberOfTracks++,
 												(r.videoSegmentStream = new de(e, t)),
@@ -18385,15 +18429,15 @@
 													!r.audioSegmentStream &&
 													(r.coalesceStream.numberOfTracks++,
 													(r.audioSegmentStream = new pe(i, t)),
-													r.adtsStream.pipe(r.audioSegmentStream).pipe(r.coalesceStream));
+													r.adtsStream.pipe(r.audioSegmentStream).pipe(r.coalesceStream)));
 										}
 									}),
 									r.coalesceStream.on("data", this.trigger.bind(this, "data")),
-									r.coalesceStream.on("done", this.trigger.bind(this, "done"));
+									r.coalesceStream.on("done", this.trigger.bind(this, "done")));
 							}),
 							(this.setBaseMediaDecodeTime = function (n) {
 								var r = this.transmuxPipeline_;
-								t.keepOriginalTimestamps || (this.baseMediaDecodeTime = n),
+								(t.keepOriginalTimestamps || (this.baseMediaDecodeTime = n),
 									i &&
 										((i.timelineStartInfo.dts = void 0),
 										(i.timelineStartInfo.pts = void 0),
@@ -18410,7 +18454,7 @@
 										r.captionStream.reset(),
 										t.keepOriginalTimestamps || (e.timelineStartInfo.baseMediaDecodeTime = n)),
 									r.timedMetadataTimestampRolloverStream &&
-										r.timedMetadataTimestampRolloverStream.discontinuity();
+										r.timedMetadataTimestampRolloverStream.discontinuity());
 							}),
 							(this.setAudioAppendStart = function (t) {
 								i && this.transmuxPipeline_.audioSegmentStream.setAudioAppendStart(t);
@@ -18423,20 +18467,20 @@
 							(this.push = function (t) {
 								if (r) {
 									var e = ve(t);
-									e && "aac" !== this.transmuxPipeline_.type
+									(e && "aac" !== this.transmuxPipeline_.type
 										? this.setupAacPipeline()
 										: e || "ts" === this.transmuxPipeline_.type || this.setupTsPipeline(),
-										(r = !1);
+										(r = !1));
 								}
 								this.transmuxPipeline_.headOfPipeline.push(t);
 							}),
 							(this.flush = function () {
-								(r = !0), this.transmuxPipeline_.headOfPipeline.flush();
+								((r = !0), this.transmuxPipeline_.headOfPipeline.flush());
 							}),
 							(this.resetCaptions = function () {
 								this.transmuxPipeline_.captionStream && this.transmuxPipeline_.captionStream.reset();
-							});
-					}).prototype = new rt());
+							}));
+					}).prototype = new rt()));
 				var Se,
 					ke,
 					we = {
@@ -18525,9 +18569,9 @@
 								},
 								o = 31 & t[5];
 							for (n = 6, r = 0; r < o; r++)
-								(i = a.getUint16(n)), (n += 2), s.sps.push(new Uint8Array(t.subarray(n, n + i))), (n += i);
+								((i = a.getUint16(n)), (n += 2), s.sps.push(new Uint8Array(t.subarray(n, n + i))), (n += i));
 							for (e = t[n], n++, r = 0; r < e; r++)
-								(i = a.getUint16(n)), (n += 2), s.pps.push(new Uint8Array(t.subarray(n, n + i))), (n += i);
+								((i = a.getUint16(n)), (n += 2), s.pps.push(new Uint8Array(t.subarray(n, n + i))), (n += i));
 							return s;
 						},
 						"btrt": function (t) {
@@ -18568,7 +18612,7 @@
 								n < t.byteLength;
 
 							)
-								i.compatibleBrands.push(Ce(t.subarray(n, n + 4))), (n += 4);
+								(i.compatibleBrands.push(Ce(t.subarray(n, n + 4))), (n += 4));
 							return i;
 						},
 						"dinf": function (t) {
@@ -18596,7 +18640,7 @@
 								}
 								e.name += String.fromCharCode(t[i]);
 							}
-							return (e.name = decodeURIComponent(escape(e.name))), e;
+							return ((e.name = decodeURIComponent(escape(e.name))), e);
 						},
 						"mdat": function (t) {
 							return { byteLength: t.byteLength, nals: Le(t) };
@@ -18652,7 +18696,7 @@
 									samplesize: e.getUint16(18),
 									samplerate: e.getUint16(24) + e.getUint16(26) / 65536,
 								};
-							return t.byteLength > 28 && (i.streamDescriptor = Se(t.subarray(28))[0]), i;
+							return (t.byteLength > 28 && (i.streamDescriptor = Se(t.subarray(28))[0]), i);
 						},
 						"moof": function (t) {
 							return { boxes: Se(t) };
@@ -18925,12 +18969,12 @@
 								c--;
 
 							)
-								(e = {}),
+								((e = {}),
 									s && ((e.duration = n.getUint32(h)), (h += 4)),
 									o && ((e.size = n.getUint32(h)), (h += 4)),
 									u && ((e.flags = Ae(t.subarray(h, h + 4))), (h += 4)),
 									l && ((e.compositionTimeOffset = n.getUint32(h)), (h += 4)),
-									i.samples.push(e);
+									i.samples.push(e));
 							return i;
 						},
 						"url ": function (t) {
@@ -18964,7 +19008,7 @@
 							)
 								l[c] = t[c];
 							for (e = new DataView(u); s < t.byteLength; )
-								(i = e.getUint32(s)),
+								((i = e.getUint32(s)),
 									(n = Ce(t.subarray(s + 4, s + 8))),
 									(r = i > 1 ? s + i : t.byteLength),
 									((a = (
@@ -18975,7 +19019,7 @@
 									)(t.subarray(s + 8, r))).size = i),
 									(a.type = n),
 									o.push(a),
-									(s = r);
+									(s = r));
 							return o;
 						}),
 						textify: (ke = function (t, e) {
@@ -19086,7 +19130,7 @@
 													case 6:
 														var l = t.subarray(r + 1, r + 1 + a),
 															c = xe(r, e);
-														(n = {
+														((n = {
 															nalUnitType: "sei_rbsp",
 															size: a,
 															data: l,
@@ -19096,7 +19140,7 @@
 															c
 																? ((n.pts = c.pts), (n.dts = c.dts), (s = c))
 																: ((n.pts = s.pts), (n.dts = s.dts)),
-															u.push(n);
+															u.push(n));
 												}
 										return u;
 									})(
@@ -19110,17 +19154,17 @@
 											return (
 												t.forEach(function (t) {
 													var e = Pe.parseTrun(t).samples;
-													e.forEach(function (t) {
-														void 0 === t.duration && (t.duration = r),
+													(e.forEach(function (t) {
+														(void 0 === t.duration && (t.duration = r),
 															void 0 === t.size && (t.size = a),
 															(t.trackId = s),
 															(t.dts = n),
 															void 0 === t.compositionTimeOffset &&
 																(t.compositionTimeOffset = 0),
 															(t.pts = n + t.compositionTimeOffset),
-															(n += t.duration);
+															(n += t.duration));
 													}),
-														(o = o.concat(e));
+														(o = o.concat(e)));
 												}),
 												o
 											);
@@ -19146,18 +19190,18 @@
 								n,
 								r,
 								a = !1;
-							(this.isInitialized = function () {
+							((this.isInitialized = function () {
 								return a;
 							}),
 								(this.init = function () {
-									(t = new Ie()),
+									((t = new Ie()),
 										(a = !0),
 										t.on("data", function (t) {
-											(t.startTime = t.startPts / n),
+											((t.startTime = t.startPts / n),
 												(t.endTime = t.endPts / n),
 												r.captions.push(t),
-												(r.captionStreams[t.stream] = !0);
-										});
+												(r.captionStreams[t.stream] = !0));
+										}));
 								}),
 								(this.isNewInit = function (t, e) {
 									return !(
@@ -19170,8 +19214,8 @@
 									var o;
 									if (!this.isInitialized()) return null;
 									if (!a || !s) return null;
-									if (this.isNewInit(a, s)) (i = a[0]), (n = s[i]);
-									else if (!i || !n) return e.push(t), null;
+									if (this.isNewInit(a, s)) ((i = a[0]), (n = s[i]));
+									else if (!i || !n) return (e.push(t), null);
 									for (; e.length > 0; ) {
 										var u = e.shift();
 										this.parse(u, a, s);
@@ -19194,23 +19238,23 @@
 									t.flush();
 								}),
 								(this.clearParsedCaptions = function () {
-									(r.captions = []), (r.captionStreams = {});
+									((r.captions = []), (r.captionStreams = {}));
 								}),
 								(this.resetCaptionStream = function () {
 									if (!this.isInitialized()) return null;
 									t.reset();
 								}),
 								(this.clearAllCaptions = function () {
-									this.clearParsedCaptions(), this.resetCaptionStream();
+									(this.clearParsedCaptions(), this.resetCaptionStream());
 								}),
 								(this.reset = function () {
-									(e = []),
+									((e = []),
 										(i = null),
 										(n = null),
 										r ? this.clearParsedCaptions() : (r = { captions: [], captionStreams: {} }),
-										this.resetCaptionStream();
+										this.resetCaptionStream());
 								}),
-								this.reset();
+								this.reset());
 						},
 					},
 					Me = function (t, e) {
@@ -19220,19 +19264,19 @@
 						function t(t, e) {
 							for (var i = 0; i < e.length; i++) {
 								var n = e[i];
-								(n.enumerable = n.enumerable || !1),
+								((n.enumerable = n.enumerable || !1),
 									(n.configurable = !0),
 									"value" in n && (n.writable = !0),
-									Object.defineProperty(t, n.key, n);
+									Object.defineProperty(t, n.key, n));
 							}
 						}
 						return function (e, i, n) {
-							return i && t(e.prototype, i), n && t(e, n), e;
+							return (i && t(e.prototype, i), n && t(e, n), e);
 						};
 					})(),
 					Ne = (function () {
 						function t(e, i) {
-							Me(this, t), (this.options = i || {}), (this.self = e), this.init();
+							(Me(this, t), (this.options = i || {}), (this.self = e), this.init());
 						}
 						return (
 							Be(t, [
@@ -19240,7 +19284,7 @@
 									key: "init",
 									value: function () {
 										var t, e;
-										this.transmuxer && this.transmuxer.dispose(),
+										(this.transmuxer && this.transmuxer.dispose(),
 											(this.transmuxer = new Re.Transmuxer(this.options)),
 											(t = this.self),
 											(e = this.transmuxer).on("data", function (e) {
@@ -19251,7 +19295,7 @@
 													byteLength: i.byteLength,
 												};
 												var n = e.data;
-												(e.data = n.buffer),
+												((e.data = n.buffer),
 													t.postMessage(
 														{
 															action: "data",
@@ -19260,7 +19304,7 @@
 															byteLength: n.byteLength,
 														},
 														[e.data]
-													);
+													));
 											}),
 											e.captionStream &&
 												e.captionStream.on("data", function (e) {
@@ -19271,7 +19315,7 @@
 											}),
 											e.on("gopInfo", function (e) {
 												t.postMessage({ action: "gopInfo", gopInfo: e });
-											});
+											}));
 									},
 								},
 								{
@@ -19416,8 +19460,8 @@
 					),
 					(n.audioProfile = Ac.audioProfile)));
 			var l = {};
-			n.videoCodec && (l.video = "" + n.videoCodec + n.videoObjectTypeIndicator),
-				n.audioProfile && (l.audio = "mp4a.40." + n.audioProfile);
+			(n.videoCodec && (l.video = "" + n.videoCodec + n.videoObjectTypeIndicator),
+				n.audioProfile && (l.audio = "mp4a.40." + n.audioProfile));
 			var c = Pc("audio", i, [l.audio]),
 				h = Pc("video", i, [l.video]),
 				d = Pc("video", i, [l.video, l.audio]);
@@ -19448,8 +19492,8 @@
 			if (i) return t.buffered;
 			if (0 === t.buffered.length && 0 === e.buffered.length) return ca.createTimeRange();
 			for (var u = t.buffered, l = e.buffered, c = u.length; c--; )
-				s.push({ time: u.start(c), type: "start" }), s.push({ time: u.end(c), type: "end" });
-			for (c = l.length; c--; ) s.push({ time: l.start(c), type: "start" }), s.push({ time: l.end(c), type: "end" });
+				(s.push({ time: u.start(c), type: "start" }), s.push({ time: u.end(c), type: "end" }));
+			for (c = l.length; c--; ) (s.push({ time: l.start(c), type: "start" }), s.push({ time: l.end(c), type: "end" }));
 			for (
 				s.sort(function (t, e) {
 					return t.time - e.time;
@@ -19458,15 +19502,15 @@
 				c < s.length;
 				c++
 			)
-				"start" === s[c].type ? 2 === ++a && (n = s[c].time) : "end" === s[c].type && 1 === --a && (r = s[c].time),
-					null !== n && null !== r && (o.push([n, r]), (n = null), (r = null));
+				("start" === s[c].type ? 2 === ++a && (n = s[c].time) : "end" === s[c].type && 1 === --a && (r = s[c].time),
+					null !== n && null !== r && (o.push([n, r]), (n = null), (r = null)));
 			return ca.createTimeRanges(o);
 		},
 		Mc = (function (t) {
 			function e(t, i) {
 				yl(this, e);
 				var n = bl(this, (e.__proto__ || Object.getPrototypeOf(e)).call(this, ca.EventTarget));
-				(n.timestampOffset_ = 0),
+				((n.timestampOffset_ = 0),
 					(n.pendingBuffers_ = []),
 					(n.bufferUpdating_ = !1),
 					(n.mediaSource_ = t),
@@ -19477,7 +19521,7 @@
 					(n.appendAudioInitSegment_ = !0),
 					(n.gopBuffer_ = []),
 					(n.timeMapping_ = 0),
-					(n.safeAppend_ = ca.browser.IE_VERSION >= 11);
+					(n.safeAppend_ = ca.browser.IE_VERSION >= 11));
 				var r = { remux: !1, alignGopsAtEnd: n.safeAppend_ };
 				return (
 					n.codecs_.forEach(function (t) {
@@ -19513,8 +19557,8 @@
 							return (this.videoBuffer_ || this.audioBuffer_).appendWindowStart;
 						},
 						set: function (t) {
-							this.videoBuffer_ && (this.videoBuffer_.appendWindowStart = t),
-								this.audioBuffer_ && (this.audioBuffer_.appendWindowStart = t);
+							(this.videoBuffer_ && (this.videoBuffer_.appendWindowStart = t),
+								this.audioBuffer_ && (this.audioBuffer_.appendWindowStart = t));
 						},
 					}),
 					Object.defineProperty(n, "updating", {
@@ -19541,7 +19585,7 @@
 						key: "data_",
 						value: function (t) {
 							var e = t.data.segment;
-							(e.data = new Uint8Array(e.data, t.data.byteOffset, t.data.byteLength)),
+							((e.data = new Uint8Array(e.data, t.data.byteOffset, t.data.byteLength)),
 								(e.initSegment = new Uint8Array(
 									e.initSegment.data,
 									e.initSegment.byteOffset,
@@ -19567,7 +19611,7 @@
 										).track),
 										(t.metadataTrack_.inBandMetadataTrackDispatchType = i.metadata.dispatchType));
 								})(this, this.mediaSource_, e),
-								this.pendingBuffers_.push(e);
+								this.pendingBuffers_.push(e));
 						},
 					},
 					{
@@ -19589,10 +19633,10 @@
 									if (t.mediaSource_[i + "Buffer_"]) (n = t.mediaSource_[i + "Buffer_"]).updating = !1;
 									else {
 										var r = i + '/mp4;codecs="' + t[i + "Codec_"] + '"';
-										(n = (function (t, e) {
+										((n = (function (t, e) {
 											var i = t.addSourceBuffer(e),
 												n = Object.create(null);
-											(n.updating = !1), (n.realBuffer_ = i);
+											((n.updating = !1), (n.realBuffer_ = i));
 											var r = function (t) {
 												"function" == typeof i[t]
 													? (n[t] = function () {
@@ -19611,9 +19655,9 @@
 											for (var a in i) r(a);
 											return n;
 										})(t.mediaSource_.nativeMediaSource_, r)),
-											(t.mediaSource_[i + "Buffer_"] = n);
+											(t.mediaSource_[i + "Buffer_"] = n));
 									}
-									(t[i + "Buffer_"] = n),
+									((t[i + "Buffer_"] = n),
 										["update", "updatestart", "updateend"].forEach(function (r) {
 											n.addEventListener(r, function () {
 												if ("audio" !== i || !t.audioDisabled_)
@@ -19631,7 +19675,7 @@
 															: void 0
 													);
 											});
-										});
+										}));
 								}
 							});
 						},
@@ -19646,7 +19690,7 @@
 									appendStart: e.end(e.length - 1),
 								});
 							}
-							this.videoBuffer_ &&
+							(this.videoBuffer_ &&
 								this.transmuxer_.postMessage({
 									action: "alignGopsWith",
 									gopsToAlignWith: Dc(
@@ -19659,7 +19703,7 @@
 									{ action: "push", data: t.buffer, byteOffset: t.byteOffset, byteLength: t.byteLength },
 									[t.buffer]
 								),
-								this.transmuxer_.postMessage({ action: "flush" });
+								this.transmuxer_.postMessage({ action: "flush" }));
 						},
 					},
 					{
@@ -19691,7 +19735,7 @@
 										);
 										if (-1 === o) return s;
 										for (var u = o + 1; u-- && !(t[u].pts <= r); );
-										return (u = Math.max(u, 0)), s.splice(u, o - u + 1), s;
+										return ((u = Math.max(u, 0)), s.splice(u, o - u + 1), s);
 									})(this.gopBuffer_, t, e, this.timeMapping_))),
 								!this.audioDisabled_ &&
 									this.audioBuffer_ &&
@@ -19711,7 +19755,7 @@
 								captions: [],
 								metadata: [],
 							};
-							(t = this.pendingBuffers_.reduce(function (t, e) {
+							((t = this.pendingBuffers_.reduce(function (t, e) {
 								var i = e.type,
 									n = e.data,
 									r = e.initSegment;
@@ -19737,9 +19781,9 @@
 										this.audioBuffer_ &&
 										(t.audio.segments.unshift(t.audio.initSegment),
 										(t.audio.bytes += t.audio.initSegment.byteLength)),
-									(this.appendAudioInitSegment_ = !1));
+									(this.appendAudioInitSegment_ = !1)));
 							var e = !1;
-							this.videoBuffer_ && t.video.bytes
+							(this.videoBuffer_ && t.video.bytes
 								? (t.video.segments.unshift(t.video.initSegment),
 									(t.video.bytes += t.video.initSegment.byteLength),
 									this.concatAndAppendSegments_(t.video, this.videoBuffer_),
@@ -19750,7 +19794,7 @@
 									this.concatAndAppendSegments_(t.audio, this.audioBuffer_),
 								(this.pendingBuffers_.length = 0),
 								e && this.trigger("updateend"),
-								(this.bufferUpdating_ = !1);
+								(this.bufferUpdating_ = !1));
 						},
 					},
 					{
@@ -19759,12 +19803,12 @@
 							var i = 0,
 								n = void 0;
 							if (t.bytes) {
-								(n = new Uint8Array(t.bytes)),
+								((n = new Uint8Array(t.bytes)),
 									t.segments.forEach(function (t) {
-										n.set(t, i), (i += t.byteLength);
-									});
+										(n.set(t, i), (i += t.byteLength));
+									}));
 								try {
-									(e.updating = !0), e.appendBuffer(n);
+									((e.updating = !0), e.appendBuffer(n));
 								} catch (t) {
 									this.mediaSource_.player_ &&
 										this.mediaSource_.player_.error({
@@ -19780,11 +19824,11 @@
 					{
 						key: "abort",
 						value: function () {
-							this.videoBuffer_ && this.videoBuffer_.abort(),
+							(this.videoBuffer_ && this.videoBuffer_.abort(),
 								!this.audioDisabled_ && this.audioBuffer_ && this.audioBuffer_.abort(),
 								this.transmuxer_ && this.transmuxer_.postMessage({ action: "reset" }),
 								(this.pendingBuffers_.length = 0),
-								(this.bufferUpdating_ = !1);
+								(this.bufferUpdating_ = !1));
 						},
 					},
 				]),
@@ -19807,7 +19851,7 @@
 							return this.duration_ === 1 / 0 ? this.duration_ : this.nativeMediaSource_.duration;
 						},
 						set: function (t) {
-							(this.duration_ = t), t === 1 / 0 || (this.nativeMediaSource_.duration = t);
+							((this.duration_ = t), t === 1 / 0 || (this.nativeMediaSource_.duration = t));
 						},
 					}),
 					Object.defineProperty(i, "seekable", {
@@ -19841,13 +19885,13 @@
 						for (var e = !1, n = !0, r = 0; r < i.player_.audioTracks().length; r++) {
 							var a = i.player_.audioTracks()[r];
 							if (a.enabled && "main" !== a.kind) {
-								(e = !0), (n = !1);
+								((e = !0), (n = !1));
 								break;
 							}
 						}
 						i.sourceBuffers.forEach(function (t, r) {
 							if (((t.appendAudioInitSegment_ = !0), t.videoCodec_ && t.audioCodec_)) t.audioDisabled_ = e;
-							else if (t.videoCodec_ && !t.audioCodec_) (t.audioDisabled_ = !0), (n = !1);
+							else if (t.videoCodec_ && !t.audioCodec_) ((t.audioDisabled_ = !0), (n = !1));
 							else if (!t.videoCodec_ && t.audioCodec_ && ((t.audioDisabled_ = r ? n : !n), t.audioDisabled_))
 								return;
 							i.activeSourceBuffers_.push(t);
@@ -19893,7 +19937,7 @@
 						}
 					}),
 					i.on("sourceclose", function (t) {
-						this.sourceBuffers.forEach(function (t) {
+						(this.sourceBuffers.forEach(function (t) {
 							t.transmuxer_ && t.transmuxer_.terminate();
 						}),
 							(this.sourceBuffers.length = 0),
@@ -19907,7 +19951,7 @@
 								this.player_.tech_ &&
 									this.player_.tech_.el_ &&
 									(this.player_.tech_.off("hls-reset", this.onHlsReset_),
-									this.player_.tech_.off("hls-segment-time-mapping", this.onHlsSegmentTimeMapping_)));
+									this.player_.tech_.off("hls-segment-time-mapping", this.onHlsSegmentTimeMapping_))));
 					}),
 					i
 				);
@@ -19921,11 +19965,11 @@
 							var i = void 0;
 							if (this.duration !== 1 / 0)
 								throw (
-									(((i = new Error(
+									((i = new Error(
 										"MediaSource.addSeekableRange() can only be invoked when the duration is Infinity"
 									)).name = "InvalidStateError"),
 									(i.code = 11),
-									i)
+									i
 								);
 							(e > this.nativeMediaSource_.duration || isNaN(this.nativeMediaSource_.duration)) &&
 								(this.nativeMediaSource_.duration = e);
@@ -19953,7 +19997,7 @@
 								})(t);
 							if (/^(video|audio)\/mp2t$/i.test(i.type)) {
 								var n = [];
-								i.parameters &&
+								(i.parameters &&
 									i.parameters.codecs &&
 									((n = i.parameters.codecs.split(",")),
 									(n = (n = Lc(n)).filter(function (t) {
@@ -19964,9 +20008,9 @@
 									0 !== this.sourceBuffers.length &&
 										(this.sourceBuffers[0].createRealSourceBuffers_(),
 										e.createRealSourceBuffers_(),
-										(this.sourceBuffers[0].audioDisabled_ = !0));
+										(this.sourceBuffers[0].audioDisabled_ = !0)));
 							} else e = this.nativeMediaSource_.addSourceBuffer(t);
-							return this.sourceBuffers.push(e), e;
+							return (this.sourceBuffers.push(e), e);
 						},
 					},
 				]),
@@ -19991,7 +20035,7 @@
 			if (((this.MediaSource = { open: jc, supportsNativeMediaSources: Fc }), Fc())) return new Bc();
 			throw new Error("Cannot use create a virtual MediaSource for this video");
 		};
-	(Vc.open = jc), (Vc.supportsNativeMediaSources = Fc);
+	((Vc.open = jc), (Vc.supportsNativeMediaSources = Fc));
 	var Hc = {
 		createObjectURL: function (t) {
 			var i = void 0;
@@ -20002,7 +20046,7 @@
 					: ((i = e.URL.createObjectURL(t)), (t.url_ = i), i);
 		},
 	};
-	(ca.MediaSource = Vc), (ca.URL = Hc);
+	((ca.MediaSource = Vc), (ca.URL = Hc));
 	var qc = ca.EventTarget,
 		zc = ca.mergeOptions,
 		Wc = function (t, e) {
@@ -20056,7 +20100,7 @@
 					{
 						key: "dispose",
 						value: function () {
-							this.stopRequest(), e.clearTimeout(this.mediaUpdateTimeout);
+							(this.stopRequest(), e.clearTimeout(this.mediaUpdateTimeout));
 						},
 					},
 					{
@@ -20064,7 +20108,7 @@
 						value: function () {
 							if (this.request) {
 								var t = this.request;
-								(this.request = null), (t.onreadystatechange = null), t.abort();
+								((this.request = null), (t.onreadystatechange = null), t.abort());
 							}
 						},
 					},
@@ -20080,20 +20124,20 @@
 								t = this.master.playlists[t];
 							}
 							var i = !this.media_ || t.uri !== this.media_.uri;
-							(this.state = "HAVE_METADATA"),
+							((this.state = "HAVE_METADATA"),
 								i &&
 									(this.media_ && this.trigger("mediachanging"),
 									(this.media_ = t),
 									this.refreshMedia_(),
-									"HAVE_MASTER" !== e && this.trigger("mediachange"));
+									"HAVE_MASTER" !== e && this.trigger("mediachange")));
 						},
 					},
 					{
 						key: "pause",
 						value: function () {
-							this.stopRequest(),
+							(this.stopRequest(),
 								e.clearTimeout(this.mediaUpdateTimeout),
-								"HAVE_NOTHING" === this.state && (this.started = !1);
+								"HAVE_NOTHING" === this.state && (this.started = !1));
 						},
 					},
 					{
@@ -20117,13 +20161,13 @@
 							t.uri = this.srcUrl;
 							for (var e = 0; e < t.playlists.length; e++) {
 								var i = "placeholder-uri-" + e;
-								(t.playlists[e].uri = i), (t.playlists[i] = t.playlists[e]);
+								((t.playlists[e].uri = i), (t.playlists[i] = t.playlists[e]));
 							}
 							return (
 								Cl(t, function (e, i, n, r) {
 									if (e.playlists && e.playlists.length) {
 										var a = "placeholder-uri-" + i + "-" + n + "-" + r;
-										(e.playlists[0].uri = a), (t.playlists[a] = e.playlists[0]);
+										((e.playlists[0].uri = a), (t.playlists[a] = e.playlists[0]));
 									}
 								}),
 								Al(t),
@@ -20136,7 +20180,7 @@
 						key: "start",
 						value: function () {
 							var t = this;
-							(this.started = !0),
+							((this.started = !0),
 								(this.request = this.hls_.xhr(
 									{ uri: this.srcUrl, withCredentials: this.withCredentials },
 									function (e, i) {
@@ -20152,14 +20196,14 @@
 													"HAVE_NOTHING" === t.state && (t.started = !1),
 													t.trigger("error")
 												);
-											(t.masterXml_ = i.responseText),
+											((t.masterXml_ = i.responseText),
 												i.responseHeaders && i.responseHeaders.date
 													? (t.masterLoaded_ = Date.parse(i.responseHeaders.date))
 													: (t.masterLoaded_ = Date.now()),
-												t.syncClientServerClock_(t.onClientServerClockSync_.bind(t));
+												t.syncClientServerClock_(t.onClientServerClockSync_.bind(t)));
 										}
 									}
-								));
+								)));
 						},
 					},
 					{
@@ -20179,16 +20223,16 @@
 											},
 											function (n, r) {
 												if (e.request) {
-													if (n) return (e.clientOffset_ = e.masterLoaded_ - Date.now()), t();
+													if (n) return ((e.clientOffset_ = e.masterLoaded_ - Date.now()), t());
 													var a = void 0;
-													(a =
+													((a =
 														"HEAD" === i.method
 															? r.responseHeaders && r.responseHeaders.date
 																? Date.parse(r.responseHeaders.date)
 																: e.masterLoaded_
 															: Date.parse(r.responseText)),
 														(e.clientOffset_ = a - Date.now()),
-														t();
+														t());
 												}
 											}
 										));
@@ -20198,7 +20242,7 @@
 						key: "onClientServerClockSync_",
 						value: function () {
 							var t = this;
-							(this.master = this.parseMasterXml()),
+							((this.master = this.parseMasterXml()),
 								(this.state = "HAVE_MASTER"),
 								this.trigger("loadedplaylist"),
 								this.media_ || this.media(this.master.playlists[0]),
@@ -20208,7 +20252,7 @@
 								this.master.minimumUpdatePeriod &&
 									e.setTimeout(function () {
 										t.trigger("minimumUpdatePeriod");
-									}, this.master.minimumUpdatePeriod);
+									}, this.master.minimumUpdatePeriod));
 						},
 					},
 					{
@@ -20232,10 +20276,10 @@
 											);
 										t.masterXml_ = n.responseText;
 										var r = t.parseMasterXml();
-										(t.master = Wc(t.master, r)),
+										((t.master = Wc(t.master, r)),
 											e.setTimeout(function () {
 												t.trigger("minimumUpdatePeriod");
-											}, t.master.minimumUpdatePeriod);
+											}, t.master.minimumUpdatePeriod));
 									}
 								}
 							);
@@ -20252,7 +20296,7 @@
 									(n = this.masterPlaylistLoader_.parseMasterXml()))
 								: ((i = this.master), (n = this.parseMasterXml()));
 							var r = Wc(i, n);
-							r
+							(r
 								? (this.masterPlaylistLoader_ ? (this.masterPlaylistLoader_.master = r) : (this.master = r),
 									(this.media_ = r.playlists[this.media_.uri]))
 								: this.trigger("playlistunchanged"),
@@ -20263,7 +20307,7 @@
 										},
 										Ol(this.media(), !!r)
 									)),
-								this.trigger("loadedplaylist");
+								this.trigger("loadedplaylist"));
 						},
 					},
 				]),
@@ -20276,7 +20320,7 @@
 	function Yc() {}
 	var $c = (function () {
 			function t(e, i, n, r) {
-				yl(this, t),
+				(yl(this, t),
 					(this.callbacks_ = []),
 					(this.pendingCallback_ = null),
 					(this.timestampOffset_ = 0),
@@ -20287,7 +20331,7 @@
 					(this.logger_ = Xc("SourceUpdater[" + n + "][" + i + "]")),
 					"closed" === e.readyState
 						? e.addEventListener("sourceopen", this.createSourceBuffer_.bind(this, i, r))
-						: this.createSourceBuffer_(i, r);
+						: this.createSourceBuffer_(i, r));
 			}
 			return (
 				vl(t, [
@@ -20295,29 +20339,29 @@
 						key: "createSourceBuffer_",
 						value: function (t, e) {
 							var i = this;
-							(this.sourceBuffer_ = this.mediaSource.addSourceBuffer(t)),
+							((this.sourceBuffer_ = this.mediaSource.addSourceBuffer(t)),
 								this.logger_("created SourceBuffer"),
 								e && (e.trigger("sourcebufferadded"), this.mediaSource.sourceBuffers.length < 2)
 									? e.on("sourcebufferadded", function () {
 											i.start_();
 										})
-									: this.start_();
+									: this.start_());
 						},
 					},
 					{
 						key: "start_",
 						value: function () {
 							var t = this;
-							(this.started_ = !0),
+							((this.started_ = !0),
 								(this.onUpdateendCallback_ = function () {
 									var e = t.pendingCallback_;
-									(t.pendingCallback_ = null),
+									((t.pendingCallback_ = null),
 										t.logger_("buffered [" + cc(t.buffered()) + "]"),
 										e && e(),
-										t.runCallback_();
+										t.runCallback_());
 								}),
 								this.sourceBuffer_.addEventListener("updateend", this.onUpdateendCallback_),
-								this.runCallback_();
+								this.runCallback_());
 						},
 					},
 					{
@@ -20334,10 +20378,10 @@
 						key: "appendBuffer",
 						value: function (t, e) {
 							var i = this;
-							(this.processedAppend_ = !0),
+							((this.processedAppend_ = !0),
 								this.queueCallback_(function () {
 									i.sourceBuffer_.appendBuffer(t);
-								}, e);
+								}, e));
 						},
 					},
 					{
@@ -20353,7 +20397,7 @@
 								n = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : Yc;
 							this.processedAppend_ &&
 								this.queueCallback_(function () {
-									i.logger_("remove [" + t + " => " + e + "]"), i.sourceBuffer_.remove(t, e);
+									(i.logger_("remove [" + t + " => " + e + "]"), i.sourceBuffer_.remove(t, e));
 								}, n);
 						},
 					},
@@ -20380,7 +20424,7 @@
 					{
 						key: "queueCallback_",
 						value: function (t, e) {
-							this.callbacks_.push([t.bind(this), e]), this.runCallback_();
+							(this.callbacks_.push([t.bind(this), e]), this.runCallback_());
 						},
 					},
 					{
@@ -20396,8 +20440,8 @@
 					{
 						key: "dispose",
 						value: function () {
-							this.sourceBuffer_.removeEventListener("updateend", this.onUpdateendCallback_),
-								this.sourceBuffer_ && "open" === this.mediaSource.readyState && this.sourceBuffer_.abort();
+							(this.sourceBuffer_.removeEventListener("updateend", this.onUpdateendCallback_),
+								this.sourceBuffer_ && "open" === this.mediaSource.readyState && this.sourceBuffer_.abort());
 						},
 					},
 				]),
@@ -20451,7 +20495,7 @@
 							? ((s.endOfAllRequests = Date.now()),
 								s.encryptedBytes
 									? (function (t, e, i) {
-											t.addEventListener("message", function n(r) {
+											(t.addEventListener("message", function n(r) {
 												if (r.data.source === e.requestId) {
 													t.removeEventListener("message", n);
 													var a = r.data.decrypted;
@@ -20469,7 +20513,7 @@
 														iv: e.key.iv,
 													}),
 													[e.encryptedBytes.buffer, e.key.bytes.buffer]
-												);
+												));
 										})(e, s, i)
 									: i(null, s))
 							: void 0;
@@ -20696,24 +20740,24 @@
 					{
 						key: "resetStats_",
 						value: function () {
-							(this.mediaBytesTransferred = 0),
+							((this.mediaBytesTransferred = 0),
 								(this.mediaRequests = 0),
 								(this.mediaRequestsAborted = 0),
 								(this.mediaRequestsTimedout = 0),
 								(this.mediaRequestsErrored = 0),
 								(this.mediaTransferDuration = 0),
-								(this.mediaSecondsLoaded = 0);
+								(this.mediaSecondsLoaded = 0));
 						},
 					},
 					{
 						key: "dispose",
 						value: function () {
-							(this.state = "DISPOSED"),
+							((this.state = "DISPOSED"),
 								this.pause(),
 								this.abort_(),
 								this.sourceUpdater_ && this.sourceUpdater_.dispose(),
 								this.resetStats_(),
-								this.captionParser_.reset();
+								this.captionParser_.reset());
 						},
 					},
 					{
@@ -20727,19 +20771,19 @@
 					{
 						key: "abort_",
 						value: function () {
-							this.pendingSegment_ && this.pendingSegment_.abortRequests(), (this.pendingSegment_ = null);
+							(this.pendingSegment_ && this.pendingSegment_.abortRequests(), (this.pendingSegment_ = null));
 						},
 					},
 					{
 						key: "error",
 						value: function (t) {
-							return void 0 !== t && (this.error_ = t), (this.pendingSegment_ = null), this.error_;
+							return (void 0 !== t && (this.error_ = t), (this.pendingSegment_ = null), this.error_);
 						},
 					},
 					{
 						key: "endOfStream",
 						value: function () {
-							(this.ended_ = !0), this.pause(), this.trigger("ended");
+							((this.ended_ = !0), this.pause(), this.trigger("ended"));
 						},
 					},
 					{
@@ -20819,9 +20863,9 @@
 							if (t) {
 								var i = this.playlist_,
 									n = this.pendingSegment_;
-								(this.playlist_ = t),
+								((this.playlist_ = t),
 									(this.xhrOptions_ = e),
-									this.hasPlayed_() || (t.syncInfo = { mediaSequence: t.mediaSequence, time: 0 });
+									this.hasPlayed_() || (t.syncInfo = { mediaSequence: t.mediaSequence, time: 0 }));
 								var r = i ? i.id : null;
 								if (
 									(this.logger_("playlist update [" + r + " => " + t.id + "]"),
@@ -20831,12 +20875,12 @@
 									return this.init_();
 								if (i && i.uri === t.uri) {
 									var a = t.mediaSequence - i.mediaSequence;
-									this.logger_("live window shift [" + a + "]"),
+									(this.logger_("live window shift [" + a + "]"),
 										null !== this.mediaIndex && (this.mediaIndex -= a),
 										n &&
 											((n.mediaIndex -= a),
 											n.mediaIndex >= 0 && (n.segment = t.segments[n.mediaIndex])),
-										this.syncController_.saveExpiredSegmentInfo(i, t);
+										this.syncController_.saveExpiredSegmentInfo(i, t));
 								} else null !== this.mediaIndex && this.resyncLoader();
 							}
 						},
@@ -20866,23 +20910,23 @@
 					{
 						key: "resetEverything",
 						value: function (t) {
-							(this.ended_ = !1),
+							((this.ended_ = !1),
 								this.resetLoader(),
 								this.remove(0, this.duration_(), t),
 								this.captionParser_.clearAllCaptions(),
-								this.trigger("reseteverything");
+								this.trigger("reseteverything"));
 						},
 					},
 					{
 						key: "resetLoader",
 						value: function () {
-							(this.fetchAtBuffer_ = !1), this.resyncLoader();
+							((this.fetchAtBuffer_ = !1), this.resyncLoader());
 						},
 					},
 					{
 						key: "resyncLoader",
 						value: function () {
-							(this.mediaIndex = null), (this.syncPoint_ = null), this.abort();
+							((this.mediaIndex = null), (this.syncPoint_ = null), this.abort());
 						},
 					},
 					{
@@ -20899,16 +20943,16 @@
 					{
 						key: "monitorBuffer_",
 						value: function () {
-							this.checkBufferTimeout_ && e.clearTimeout(this.checkBufferTimeout_),
-								(this.checkBufferTimeout_ = e.setTimeout(this.monitorBufferTick_.bind(this), 1));
+							(this.checkBufferTimeout_ && e.clearTimeout(this.checkBufferTimeout_),
+								(this.checkBufferTimeout_ = e.setTimeout(this.monitorBufferTick_.bind(this), 1)));
 						},
 					},
 					{
 						key: "monitorBufferTick_",
 						value: function () {
-							"READY" === this.state && this.fillBuffer_(),
+							("READY" === this.state && this.fillBuffer_(),
 								this.checkBufferTimeout_ && e.clearTimeout(this.checkBufferTimeout_),
-								(this.checkBufferTimeout_ = e.setTimeout(this.monitorBufferTick_.bind(this), 500));
+								(this.checkBufferTimeout_ = e.setTimeout(this.monitorBufferTick_.bind(this), 500)));
 						},
 					},
 					{
@@ -20957,17 +21001,17 @@
 							if (u >= this.goalBufferLength_()) return null;
 							if (!n && u >= 1) return null;
 							if (null === a)
-								return (i = this.getSyncSegmentCandidate_(e)), this.generateSegmentInfo_(e, i, null, !0);
+								return ((i = this.getSyncSegmentCandidate_(e)), this.generateSegmentInfo_(e, i, null, !0));
 							if (null !== i) {
 								var l = e.segments[i];
-								return (o = l && l.end ? l.end : s), this.generateSegmentInfo_(e, i + 1, o, !1);
+								return ((o = l && l.end ? l.end : s), this.generateSegmentInfo_(e, i + 1, o, !1));
 							}
 							if (this.fetchAtBuffer_) {
 								var c = Gl.getMediaInfoForTime(e, s, a.segmentIndex, a.time);
-								(i = c.mediaIndex), (o = c.startTime);
+								((i = c.mediaIndex), (o = c.startTime));
 							} else {
 								var h = Gl.getMediaInfoForTime(e, r, a.segmentIndex, a.time);
-								(i = h.mediaIndex), (o = h.startTime);
+								((i = h.mediaIndex), (o = h.startTime));
 							}
 							return this.generateSegmentInfo_(e, i, o, !1);
 						},
@@ -21103,7 +21147,7 @@
 					{
 						key: "loadSegment_",
 						value: function (t) {
-							(this.state = "WAITING"),
+							((this.state = "WAITING"),
 								(this.pendingSegment_ = t),
 								this.trimBackBuffer_(t),
 								(t.abortRequests = ah(
@@ -21114,7 +21158,7 @@
 									this.createSimplifiedSegmentObj_(t),
 									this.handleProgress_.bind(this),
 									this.segmentRequestFinished_.bind(this)
-								));
+								)));
 						},
 					},
 					{
@@ -21139,7 +21183,7 @@
 								var n = e.key.iv || new Uint32Array([0, 0, 0, t.mediaIndex + t.playlist.mediaSequence]);
 								i.key = { resolvedUri: e.key.resolvedUri, iv: n };
 							}
-							return e.map && (i.map = this.initSegment(e.map)), i;
+							return (e.map && (i.map = this.initSegment(e.map)), i);
 						},
 					},
 					{
@@ -21169,10 +21213,10 @@
 															this.error(t),
 															void this.trigger("error")))
 										);
-									(this.bandwidth = e.stats.bandwidth),
+									((this.bandwidth = e.stats.bandwidth),
 										(this.roundTrip = e.stats.roundTripTime),
 										e.map && (e.map = this.initSegment(e.map, !0)),
-										this.processSegmentResponse_(e);
+										this.processSegmentResponse_(e));
 								}
 							} else this.mediaRequestsAborted += 1;
 						},
@@ -21181,7 +21225,7 @@
 						key: "processSegmentResponse_",
 						value: function (t) {
 							var e = this.pendingSegment_;
-							(e.bytes = t.bytes),
+							((e.bytes = t.bytes),
 								t.map && (e.segment.map.bytes = t.map.bytes),
 								(e.endOfAllRequests = t.endOfAllRequests),
 								t.fmp4Captions &&
@@ -21214,7 +21258,7 @@
 										timestampOffset: 0,
 									}),
 									this.captionParser_.clearParsedCaptions()),
-								this.handleSegment_();
+								this.handleSegment_());
 						},
 					},
 					{
@@ -21249,7 +21293,10 @@
 												: "Neither audio nor video found in segment."
 											: null);
 								if (o)
-									return this.error({ message: o, blacklistDuration: 1 / 0 }), void this.trigger("error");
+									return (
+										this.error({ message: o, blacklistDuration: 1 / 0 }),
+										void this.trigger("error")
+									);
 								if (e.isSyncRequest)
 									return (
 										this.trigger("syncinfoupdate"),
@@ -21274,7 +21321,7 @@
 										});
 									}
 								}
-								(e.byteLength = e.bytes.byteLength),
+								((e.byteLength = e.bytes.byteLength),
 									"number" == typeof i.start && "number" == typeof i.end
 										? (this.mediaSecondsLoaded += i.end - i.start)
 										: (this.mediaSecondsLoaded += i.duration),
@@ -21304,7 +21351,7 @@
 											].join(" ");
 										})(e)
 									),
-									this.sourceUpdater_.appendBuffer(e.bytes, this.handleUpdateEnd_.bind(this));
+									this.sourceUpdater_.appendBuffer(e.bytes, this.handleUpdateEnd_.bind(this)));
 							} else this.state = "READY";
 						},
 					},
@@ -21312,7 +21359,7 @@
 						key: "handleUpdateEnd_",
 						value: function () {
 							if (!this.pendingSegment_)
-								return (this.state = "READY"), void (this.paused() || this.monitorBuffer_());
+								return ((this.state = "READY"), void (this.paused() || this.monitorBuffer_()));
 							var t = this.pendingSegment_,
 								e = t.segment,
 								i = null !== this.mediaIndex;
@@ -21365,7 +21412,7 @@
 											end: r,
 										},
 										o = new a(n, r, JSON.stringify(s));
-									(o.value = s), this.segmentMetadataTrack_.addCue(o);
+									((o.value = s), this.segmentMetadataTrack_.addCue(o));
 								}
 							}
 						},
@@ -21387,7 +21434,7 @@
 				var e = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : {};
 				yl(this, i);
 				var n = bl(this, (i.__proto__ || Object.getPrototypeOf(i)).call(this, t, e));
-				return (n.mediaSource_ = null), (n.subtitlesTrack_ = null), n;
+				return ((n.mediaSource_ = null), (n.subtitlesTrack_ = null), n);
 			}
 			return (
 				_l(i, hh),
@@ -21412,10 +21459,10 @@
 							if (e && !n && t.bytes) {
 								var r = ph.byteLength + t.bytes.byteLength,
 									a = new Uint8Array(r);
-								a.set(t.bytes),
+								(a.set(t.bytes),
 									a.set(ph, t.bytes.byteLength),
 									(this.initSegments_[i] = n =
-										{ resolvedUri: t.resolvedUri, byterange: t.byterange, bytes: a });
+										{ resolvedUri: t.resolvedUri, byterange: t.byterange, bytes: a }));
 							}
 							return n || t;
 						},
@@ -21429,7 +21476,7 @@
 					{
 						key: "init_",
 						value: function () {
-							return (this.state = "READY"), this.resetEverything(), this.monitorBuffer_();
+							return ((this.state = "READY"), this.resetEverything(), this.monitorBuffer_());
 						},
 					},
 					{
@@ -21471,7 +21518,7 @@
 								if (null === this.syncController_.timestampOffsetForTimeline(e.timeline)) {
 									return (
 										this.syncController_.one("timestampoffset", function () {
-											(t.state = "READY"), t.paused() || t.monitorBuffer_();
+											((t.state = "READY"), t.paused() || t.monitorBuffer_());
 										}),
 										void (this.state = "WAITING_ON_TIMELINE")
 									);
@@ -21509,11 +21556,11 @@
 										(this.state = "WAITING_ON_VTTJS"),
 										this.subtitlesTrack_.tech_.one("vttjsloaded", r),
 										void this.subtitlesTrack_.tech_.one("vttjserror", function () {
-											t.subtitlesTrack_.tech_.off("vttjsloaded", r),
+											(t.subtitlesTrack_.tech_.off("vttjsloaded", r),
 												t.error({ message: "Error loading vtt.js" }),
 												(t.state = "READY"),
 												t.pause(),
-												t.trigger("error");
+												t.trigger("error"));
 										})
 									);
 								}
@@ -21537,13 +21584,13 @@
 										(this.pendingSegment_ = null),
 										void (this.state = "READY")
 									);
-								(i.byteLength = i.bytes.byteLength),
+								((i.byteLength = i.bytes.byteLength),
 									(this.mediaSecondsLoaded += n.duration),
 									i.cues.length && this.remove(i.cues[0].endTime, i.cues[i.cues.length - 1].endTime),
 									i.cues.forEach(function (e) {
 										t.subtitlesTrack_.addCue(e);
 									}),
-									this.handleUpdateEnd_();
+									this.handleUpdateEnd_());
 							} else this.state = "READY";
 						},
 					},
@@ -21569,10 +21616,10 @@
 								t.segment.map)
 							) {
 								var a = t.segment.map.bytes;
-								n && (a = dh(a)), r.parse(a);
+								(n && (a = dh(a)), r.parse(a));
 							}
 							var s = t.bytes;
-							n && (s = dh(s)), r.parse(s), r.flush();
+							(n && (s = dh(s)), r.parse(s), r.flush());
 						},
 					},
 					{
@@ -21585,7 +21632,7 @@
 										a = r.MPEGTS / 9e4 - r.LOCAL + e.mapping;
 									if (
 										(t.cues.forEach(function (t) {
-											(t.startTime += a), (t.endTime += a);
+											((t.startTime += a), (t.endTime += a));
 										}),
 										!i.syncInfo)
 									) {
@@ -21635,7 +21682,7 @@
 							var c = l.dateTimeObject.getTime() / 1e3 + t.datetimeToDisplayTime,
 								h = Math.abs(r - c);
 							if (null !== o && o < h) break;
-							(o = h), (s = { time: c, segmentIndex: u });
+							((o = h), (s = { time: c, segmentIndex: u }));
 						}
 					}
 					return s;
@@ -21716,7 +21763,7 @@
 							var i = this.runStrategies_(t, e, t.discontinuitySequence, 0);
 							if (!i.length) return null;
 							var n = this.selectSyncPoint_(i, { key: "segmentIndex", value: 0 });
-							return n.segmentIndex > 0 && (n.time *= -1), Math.abs(n.time + Dl(t, n.segmentIndex, 0));
+							return (n.segmentIndex > 0 && (n.time *= -1), Math.abs(n.time + Dl(t, n.segmentIndex, 0)));
 						},
 					},
 					{
@@ -21768,7 +21815,7 @@
 							for (var i = e.mediaSequence - t.mediaSequence - 1; i >= 0; i--) {
 								var n = t.segments[i];
 								if (n && void 0 !== n.start) {
-									(e.syncInfo = { mediaSequence: t.mediaSequence + i, time: n.start }),
+									((e.syncInfo = { mediaSequence: t.mediaSequence + i, time: n.start }),
 										this.logger_(
 											"playlist refresh sync: [time:" +
 												e.syncInfo.time +
@@ -21776,7 +21823,7 @@
 												e.syncInfo.mediaSequence +
 												"]"
 										),
-										this.trigger("syncinfoupdate");
+										this.trigger("syncinfoupdate"));
 									break;
 								}
 							}
@@ -21824,7 +21871,10 @@
 							var e = t.segment,
 								i = no.timescale(e.map.bytes),
 								n = no.startTime(i, t.bytes);
-							return null !== t.timestampOffset && (t.timestampOffset -= n), { start: n, end: n + e.duration };
+							return (
+								null !== t.timestampOffset && (t.timestampOffset -= n),
+								{ start: n, end: n + e.duration }
+							);
 						},
 					},
 					{
@@ -21870,7 +21920,7 @@
 							var i = t.segment,
 								n = this.timelines[t.timeline];
 							if (null !== t.timestampOffset)
-								(n = { time: t.startOfSegment, mapping: t.startOfSegment - e.start }),
+								((n = { time: t.startOfSegment, mapping: t.startOfSegment - e.start }),
 									(this.timelines[t.timeline] = n),
 									this.trigger("timestampoffset"),
 									this.logger_(
@@ -21883,10 +21933,10 @@
 											"]"
 									),
 									(i.start = t.startOfSegment),
-									(i.end = e.end + n.mapping);
+									(i.end = e.end + n.mapping));
 							else {
 								if (!n) return !1;
-								(i.start = e.start + n.mapping), (i.end = e.end + n.mapping);
+								((i.start = e.start + n.mapping), (i.end = e.end + n.mapping));
 							}
 							return !0;
 						},
@@ -21905,8 +21955,8 @@
 										o = Math.abs(s);
 									if (!this.discontinuities[a] || this.discontinuities[a].accuracy > o) {
 										var u = void 0;
-										(u = s < 0 ? i.start - Dl(e, t.mediaIndex, r) : i.end + Dl(e, t.mediaIndex + 1, r)),
-											(this.discontinuities[a] = { time: u, accuracy: o });
+										((u = s < 0 ? i.start - Dl(e, t.mediaIndex, r) : i.end + Dl(e, t.mediaIndex + 1, r)),
+											(this.discontinuities[a] = { time: u, accuracy: o }));
 									}
 								}
 						},
@@ -21925,14 +21975,14 @@
 						function t(t, e) {
 							for (var i = 0; i < e.length; i++) {
 								var n = e[i];
-								(n.enumerable = n.enumerable || !1),
+								((n.enumerable = n.enumerable || !1),
 									(n.configurable = !0),
 									"value" in n && (n.writable = !0),
-									Object.defineProperty(t, n.key, n);
+									Object.defineProperty(t, n.key, n));
 							}
 						}
 						return function (e, i, n) {
-							return i && t(e.prototype, i), n && t(e, n), e;
+							return (i && t(e.prototype, i), n && t(e, n), e);
 						};
 					})(),
 					n = function (t, e) {
@@ -21970,19 +22020,19 @@
 								a < 4;
 								a++
 							)
-								(e[a][s] = p = (p << 24) ^ (p >>> 8)), (i[a][d] = f = (f << 24) ^ (f >>> 8));
-						for (a = 0; a < 5; a++) (e[a] = e[a].slice(0)), (i[a] = i[a].slice(0));
+								((e[a][s] = p = (p << 24) ^ (p >>> 8)), (i[a][d] = f = (f << 24) ^ (f >>> 8)));
+						for (a = 0; a < 5; a++) ((e[a] = e[a].slice(0)), (i[a] = i[a].slice(0)));
 						return t;
 					},
 					a = null,
 					s = (function () {
 						function e(i) {
-							t(this, e),
+							(t(this, e),
 								a || (a = r()),
 								(this._tables = [
 									[a[0][0].slice(), a[0][1].slice(), a[0][2].slice(), a[0][3].slice(), a[0][4].slice()],
 									[a[1][0].slice(), a[1][1].slice(), a[1][2].slice(), a[1][3].slice(), a[1][4].slice()],
-								]);
+								]));
 							var n = void 0,
 								s = void 0,
 								o = void 0,
@@ -21994,7 +22044,7 @@
 								p = 1;
 							if (4 !== d && 6 !== d && 8 !== d) throw new Error("Invalid aes key size");
 							for (u = i.slice(0), l = [], this._key = [u, l], n = d; n < 4 * d + 28; n++)
-								(o = u[n - 1]),
+								((o = u[n - 1]),
 									(n % d == 0 || (8 === d && n % d == 4)) &&
 										((o =
 											(c[o >>> 24] << 24) ^
@@ -22003,16 +22053,16 @@
 											c[255 & o]),
 										n % d == 0 &&
 											((o = (o << 8) ^ (o >>> 24) ^ (p << 24)), (p = (p << 1) ^ (283 * (p >> 7))))),
-									(u[n] = u[n - d] ^ o);
+									(u[n] = u[n - d] ^ o));
 							for (s = 0; n; s++, n--)
-								(o = u[3 & s ? n : n - 4]),
+								((o = u[3 & s ? n : n - 4]),
 									(l[s] =
 										n <= 4 || s < 4
 											? o
 											: h[0][c[o >>> 24]] ^
 												h[1][c[(o >> 16) & 255]] ^
 												h[2][c[(o >> 8) & 255]] ^
-												h[3][c[255 & o]]);
+												h[3][c[255 & o]]));
 						}
 						return (
 							(e.prototype.decrypt = function (t, e, i, n, r, a) {
@@ -22034,16 +22084,16 @@
 									T = y[3],
 									S = y[4];
 								for (m = 0; m < f; m++)
-									(h = v[o >>> 24] ^ _[(u >> 16) & 255] ^ b[(l >> 8) & 255] ^ T[255 & c] ^ s[g]),
+									((h = v[o >>> 24] ^ _[(u >> 16) & 255] ^ b[(l >> 8) & 255] ^ T[255 & c] ^ s[g]),
 										(d = v[u >>> 24] ^ _[(l >> 16) & 255] ^ b[(c >> 8) & 255] ^ T[255 & o] ^ s[g + 1]),
 										(p = v[l >>> 24] ^ _[(c >> 16) & 255] ^ b[(o >> 8) & 255] ^ T[255 & u] ^ s[g + 2]),
 										(c = v[c >>> 24] ^ _[(o >> 16) & 255] ^ b[(u >> 8) & 255] ^ T[255 & l] ^ s[g + 3]),
 										(g += 4),
 										(o = h),
 										(u = d),
-										(l = p);
+										(l = p));
 								for (m = 0; m < 4; m++)
-									(r[(3 & -m) + a] =
+									((r[(3 & -m) + a] =
 										(S[o >>> 24] << 24) ^
 										(S[(u >> 16) & 255] << 16) ^
 										(S[(l >> 8) & 255] << 8) ^
@@ -22053,23 +22103,23 @@
 										(o = u),
 										(u = l),
 										(l = c),
-										(c = h);
+										(c = h));
 							}),
 							e
 						);
 					})(),
 					o = (function () {
 						function e() {
-							t(this, e), (this.listeners = {});
+							(t(this, e), (this.listeners = {}));
 						}
 						return (
 							(e.prototype.on = function (t, e) {
-								this.listeners[t] || (this.listeners[t] = []), this.listeners[t].push(e);
+								(this.listeners[t] || (this.listeners[t] = []), this.listeners[t].push(e));
 							}),
 							(e.prototype.off = function (t, e) {
 								if (!this.listeners[t]) return !1;
 								var i = this.listeners[t].indexOf(e);
-								return this.listeners[t].splice(i, 1), i > -1;
+								return (this.listeners[t].splice(i, 1), i > -1);
 							}),
 							(e.prototype.trigger = function (t) {
 								var e = this.listeners[t];
@@ -22099,7 +22149,7 @@
 						function i() {
 							t(this, i);
 							var r = n(this, e.call(this, o));
-							return (r.jobs = []), (r.delay = 1), (r.timeout_ = null), r;
+							return ((r.jobs = []), (r.delay = 1), (r.timeout_ = null), r);
 						}
 						return (
 							(function (t, e) {
@@ -22107,20 +22157,20 @@
 									throw new TypeError(
 										"Super expression must either be null or a function, not " + typeof e
 									);
-								(t.prototype = Object.create(e && e.prototype, {
+								((t.prototype = Object.create(e && e.prototype, {
 									constructor: { value: t, enumerable: !1, writable: !0, configurable: !0 },
 								})),
-									e && (Object.setPrototypeOf ? Object.setPrototypeOf(t, e) : (t.__proto__ = e));
+									e && (Object.setPrototypeOf ? Object.setPrototypeOf(t, e) : (t.__proto__ = e)));
 							})(i, e),
 							(i.prototype.processJob_ = function () {
-								this.jobs.shift()(),
+								(this.jobs.shift()(),
 									this.jobs.length
 										? (this.timeout_ = setTimeout(this.processJob_.bind(this), this.delay))
-										: (this.timeout_ = null);
+										: (this.timeout_ = null));
 							}),
 							(i.prototype.push = function (t) {
-								this.jobs.push(t),
-									this.timeout_ || (this.timeout_ = setTimeout(this.processJob_.bind(this), this.delay));
+								(this.jobs.push(t),
+									this.timeout_ || (this.timeout_ = setTimeout(this.processJob_.bind(this), this.delay)));
 							}),
 							i
 						);
@@ -22142,8 +22192,8 @@
 								h < o.length;
 								h += s
 							)
-								(r = new Uint32Array([l(o[h - 4]), l(o[h - 3]), l(o[h - 2]), l(o[h - 1])])),
-									this.asyncStream_.push(this.decryptChunk_(o.subarray(h, h + s), n, r, c));
+								((r = new Uint32Array([l(o[h - 4]), l(o[h - 3]), l(o[h - 2]), l(o[h - 1])])),
+									this.asyncStream_.push(this.decryptChunk_(o.subarray(h, h + s), n, r, c)));
 							this.asyncStream_.push(function () {
 								var t;
 								a(null, (t = c).subarray(0, t.byteLength - t[t.byteLength - 1]));
@@ -22167,7 +22217,7 @@
 											g = void 0,
 											y = void 0;
 										for (u = i[0], c = i[1], h = i[2], d = i[3], y = 0; y < n.length; y += 4)
-											(p = l(n[y])),
+											((p = l(n[y])),
 												(f = l(n[y + 1])),
 												(m = l(n[y + 2])),
 												(g = l(n[y + 3])),
@@ -22179,7 +22229,7 @@
 												(u = p),
 												(c = f),
 												(h = m),
-												(d = g);
+												(d = g));
 										return a;
 									})(t, e, i);
 									n.set(r, t.byteOffset);
@@ -22231,12 +22281,12 @@
 			);
 		},
 		Th = function (t, e) {
-			t.abort(),
+			(t.abort(),
 				t.pause(),
-				e && e.activePlaylistLoader && (e.activePlaylistLoader.pause(), (e.activePlaylistLoader = null));
+				e && e.activePlaylistLoader && (e.activePlaylistLoader.pause(), (e.activePlaylistLoader = null)));
 		},
 		Sh = function (t, e) {
-			(e.activePlaylistLoader = t), t.load();
+			((e.activePlaylistLoader = t), t.load());
 		},
 		kh = {
 			AUDIO: function (t, e) {
@@ -22267,9 +22317,9 @@
 				return function () {
 					var i = e.segmentLoaders[t],
 						n = e.mediaTypes[t];
-					ca.log.warn("Problem encountered loading the subtitle track.Disabling subtitle track."), Th(i, n);
+					(ca.log.warn("Problem encountered loading the subtitle track.Disabling subtitle track."), Th(i, n));
 					var r = n.activeTrack();
-					r && (r.mode = "disabled"), n.onTrackChanged();
+					(r && (r.mode = "disabled"), n.onTrackChanged());
 				};
 			},
 		},
@@ -22279,14 +22329,14 @@
 					var n = i.tech,
 						r = i.requestOptions,
 						a = i.segmentLoaders[t];
-					e.on("loadedmetadata", function () {
+					(e.on("loadedmetadata", function () {
 						var t = e.media();
-						a.playlist(t, r), (!n.paused() || (t.endList && "none" !== n.preload())) && a.load();
+						(a.playlist(t, r), (!n.paused() || (t.endList && "none" !== n.preload())) && a.load());
 					}),
 						e.on("loadedplaylist", function () {
-							a.playlist(e.media(), r), n.paused() || a.load();
+							(a.playlist(e.media(), r), n.paused() || a.load());
 						}),
-						e.on("error", kh[t](t, i));
+						e.on("error", kh[t](t, i)));
 				}
 			},
 			SUBTITLES: function (t, e, i) {
@@ -22294,16 +22344,16 @@
 					r = i.requestOptions,
 					a = i.segmentLoaders[t],
 					s = i.mediaTypes[t];
-				e.on("loadedmetadata", function () {
+				(e.on("loadedmetadata", function () {
 					var t = e.media();
-					a.playlist(t, r),
+					(a.playlist(t, r),
 						a.track(s.activeTrack()),
-						(!n.paused() || (t.endList && "none" !== n.preload())) && a.load();
+						(!n.paused() || (t.endList && "none" !== n.preload())) && a.load());
 				}),
 					e.on("loadedplaylist", function () {
-						a.playlist(e.media(), r), n.paused() || a.load();
+						(a.playlist(e.media(), r), n.paused() || a.load());
 					}),
-					e.on("error", kh[t](t, i));
+					e.on("error", kh[t](t, i)));
 			},
 		},
 		Ch = function (t, e) {
@@ -22452,7 +22502,7 @@
 				n = t.tech,
 				r = t.hls;
 			["AUDIO", "SUBTITLES"].forEach(function (i) {
-				(e[i].activeGroup = (function (t, e) {
+				((e[i].activeGroup = (function (t, e) {
 					return function (i) {
 						var n = e.masterPlaylistLoader,
 							r = e.mediaTypes[t].groups,
@@ -22482,11 +22532,11 @@
 								s = a.activeTrack(),
 								o = a.activeGroup(s),
 								u = a.activePlaylistLoader;
-							Th(n, a),
+							(Th(n, a),
 								o &&
 									(o.playlistLoader
 										? (n.resyncLoader(), Sh(o.playlistLoader, a))
-										: u && r.resetEverything());
+										: u && r.resetEverything()));
 						};
 					})(i, t)),
 					(e[i].onTrackChanged = (function (t, e) {
@@ -22498,15 +22548,15 @@
 								s = a.activeTrack(),
 								o = a.activeGroup(s),
 								u = a.activePlaylistLoader;
-							Th(n, a),
+							(Th(n, a),
 								o &&
 									(o.playlistLoader
 										? u !== o.playlistLoader
 											? (n.track && n.track(s), n.resetEverything(), Sh(o.playlistLoader, a))
 											: Sh(o.playlistLoader, a)
-										: r.resetEverything());
+										: r.resetEverything()));
 						};
-					})(i, t));
+					})(i, t)));
 			});
 			var a = e.AUDIO.activeGroup(),
 				s = (
@@ -22514,21 +22564,21 @@
 						return t.default;
 					})[0] || a[0]
 				).id;
-			(e.AUDIO.tracks[s].enabled = !0),
+			((e.AUDIO.tracks[s].enabled = !0),
 				e.AUDIO.onTrackChanged(),
 				i.on("mediachange", function () {
 					["AUDIO", "SUBTITLES"].forEach(function (t) {
 						return e[t].onGroupChanged();
 					});
-				});
+				}));
 			var o = function () {
-				e.AUDIO.onTrackChanged(), n.trigger({ type: "usage", name: "hls-audio-change" });
+				(e.AUDIO.onTrackChanged(), n.trigger({ type: "usage", name: "hls-audio-change" }));
 			};
 			for (var u in (n.audioTracks().addEventListener("change", o),
 			n.remoteTextTracks().addEventListener("change", e.SUBTITLES.onTrackChanged),
 			r.on("dispose", function () {
-				n.audioTracks().removeEventListener("change", o),
-					n.remoteTextTracks().removeEventListener("change", e.SUBTITLES.onTrackChanged);
+				(n.audioTracks().removeEventListener("change", o),
+					n.remoteTextTracks().removeEventListener("change", e.SUBTITLES.onTrackChanged));
 			}),
 			n.clearTracks("audio"),
 			e.AUDIO.tracks))
@@ -22578,7 +22628,7 @@
 					h = t.sourceType,
 					d = t.seekTo;
 				if (!n) throw new Error("A non-empty playlist URL is required");
-				(Uh = o),
+				((Uh = o),
 					(e.withCredentials = r),
 					(e.tech_ = a),
 					(e.hls_ = a.hls),
@@ -22604,7 +22654,7 @@
 						!1
 					).track),
 					(e.decrypter_ = new _h()),
-					(e.inbandTextTracks_ = {});
+					(e.inbandTextTracks_ = {}));
 				var p = {
 					hls: e.hls_,
 					mediaSource: e.mediaSource,
@@ -22658,10 +22708,10 @@
 						key: "setupMasterPlaylistLoaderListeners_",
 						value: function () {
 							var t = this;
-							this.masterPlaylistLoader_.on("loadedmetadata", function () {
+							(this.masterPlaylistLoader_.on("loadedmetadata", function () {
 								var e = t.masterPlaylistLoader_.media(),
 									i = 1.5 * t.masterPlaylistLoader_.targetDuration * 1e3;
-								Wl(t.masterPlaylistLoader_.master, t.masterPlaylistLoader_.media())
+								(Wl(t.masterPlaylistLoader_.master, t.masterPlaylistLoader_.media())
 									? (t.requestOptions_.timeout = 0)
 									: (t.requestOptions_.timeout = i),
 									e.endList &&
@@ -22682,15 +22732,16 @@
 										mediaTypes: t.mediaTypes_,
 										blacklistCurrentPlaylist: t.blacklistCurrentPlaylist.bind(t),
 									}),
-									t.triggerPresenceUsage_(t.master(), e);
+									t.triggerPresenceUsage_(t.master(), e));
 								try {
 									t.setupSourceBuffers_();
 								} catch (e) {
 									return (
-										ca.log.warn("Failed to create SourceBuffers", e), t.mediaSource.endOfStream("decode")
+										ca.log.warn("Failed to create SourceBuffers", e),
+										t.mediaSource.endOfStream("decode")
 									);
 								}
-								t.setupFirstPlay(), t.trigger("selectedinitialmedia");
+								(t.setupFirstPlay(), t.trigger("selectedinitialmedia"));
 							}),
 								this.masterPlaylistLoader_.on("loadedplaylist", function () {
 									var e = t.masterPlaylistLoader_.media();
@@ -22728,17 +22779,17 @@
 									t.blacklistCurrentPlaylist(t.masterPlaylistLoader_.error);
 								}),
 								this.masterPlaylistLoader_.on("mediachanging", function () {
-									t.mainSegmentLoader_.abort(), t.mainSegmentLoader_.pause();
+									(t.mainSegmentLoader_.abort(), t.mainSegmentLoader_.pause());
 								}),
 								this.masterPlaylistLoader_.on("mediachange", function () {
 									var e = t.masterPlaylistLoader_.media(),
 										i = 1.5 * t.masterPlaylistLoader_.targetDuration * 1e3;
-									Wl(t.masterPlaylistLoader_.master, t.masterPlaylistLoader_.media())
+									(Wl(t.masterPlaylistLoader_.master, t.masterPlaylistLoader_.media())
 										? (t.requestOptions_.timeout = 0)
 										: (t.requestOptions_.timeout = i),
 										t.mainSegmentLoader_.playlist(e, t.requestOptions_),
 										t.mainSegmentLoader_.load(),
-										t.tech_.trigger({ type: "mediachange", bubbles: !0 });
+										t.tech_.trigger({ type: "mediachange", bubbles: !0 }));
 								}),
 								this.masterPlaylistLoader_.on("playlistunchanged", function () {
 									var e = t.masterPlaylistLoader_.media();
@@ -22751,7 +22802,7 @@
 								}),
 								this.masterPlaylistLoader_.on("renditionenabled", function () {
 									t.tech_.trigger({ type: "usage", name: "hls-rendition-enabled" });
-								});
+								}));
 						},
 					},
 					{
@@ -22764,32 +22815,32 @@
 								for (var s in i.AUDIO[a]) {
 									i.AUDIO[a][s].uri || (n = !1);
 								}
-							n && this.tech_.trigger({ type: "usage", name: "hls-demuxed" }),
+							(n && this.tech_.trigger({ type: "usage", name: "hls-demuxed" }),
 								Object.keys(i.SUBTITLES).length && this.tech_.trigger({ type: "usage", name: "hls-webvtt" }),
 								Uh.Playlist.isAes(e) && this.tech_.trigger({ type: "usage", name: "hls-aes" }),
 								Uh.Playlist.isFmp4(e) && this.tech_.trigger({ type: "usage", name: "hls-fmp4" }),
 								r.length &&
 									Object.keys(i.AUDIO[r[0]]).length > 1 &&
 									this.tech_.trigger({ type: "usage", name: "hls-alternate-audio" }),
-								this.useCueTags_ && this.tech_.trigger({ type: "usage", name: "hls-playlist-cue-tags" });
+								this.useCueTags_ && this.tech_.trigger({ type: "usage", name: "hls-playlist-cue-tags" }));
 						},
 					},
 					{
 						key: "setupSegmentLoaderListeners_",
 						value: function () {
 							var t = this;
-							this.mainSegmentLoader_.on("bandwidthupdate", function () {
+							(this.mainSegmentLoader_.on("bandwidthupdate", function () {
 								var e = t.selectPlaylist(),
 									i = t.masterPlaylistLoader_.media(),
 									n = t.tech_.buffered(),
 									r = n.length ? n.end(n.length - 1) - t.tech_.currentTime() : 0,
 									a = t.bufferLowWaterLine();
-								(!i.endList ||
+								((!i.endList ||
 									t.duration() < Kc.MAX_BUFFER_LOW_WATER_LINE ||
 									e.attributes.BANDWIDTH < i.attributes.BANDWIDTH ||
 									r >= a) &&
 									t.masterPlaylistLoader_.media(e),
-									t.tech_.trigger("bandwidthupdate");
+									t.tech_.trigger("bandwidthupdate"));
 							}),
 								this.mainSegmentLoader_.on("progress", function () {
 									t.trigger("progress");
@@ -22826,7 +22877,7 @@
 								}),
 								this.audioSegmentLoader_.on("ended", function () {
 									t.onEndOfStream();
-								});
+								}));
 						},
 					},
 					{
@@ -22840,9 +22891,9 @@
 					{
 						key: "load",
 						value: function () {
-							this.mainSegmentLoader_.load(),
+							(this.mainSegmentLoader_.load(),
 								this.mediaTypes_.AUDIO.activePlaylistLoader && this.audioSegmentLoader_.load(),
-								this.mediaTypes_.SUBTITLES.activePlaylistLoader && this.subtitleSegmentLoader_.load();
+								this.mediaTypes_.SUBTITLES.activePlaylistLoader && this.subtitleSegmentLoader_.load());
 						},
 					},
 					{
@@ -22871,7 +22922,7 @@
 						key: "play",
 						value: function () {
 							if (!this.setupFirstPlay()) {
-								this.tech_.ended() && this.seekTo_(0), this.hasPlayed_() && this.load();
+								(this.tech_.ended() && this.seekTo_(0), this.hasPlayed_() && this.load());
 								var t = this.tech_.seekable();
 								return this.tech_.duration() === 1 / 0 && this.tech_.currentTime() < t.start(0)
 									? this.seekTo_(t.end(t.length - 1))
@@ -22891,15 +22942,15 @@
 								if (ca.browser.IE_VERSION && 0 === this.tech_.readyState())
 									return (
 										this.tech_.one("loadedmetadata", function () {
-											t.trigger("firstplay"),
+											(t.trigger("firstplay"),
 												t.seekTo_(i.end(0)),
 												(t.hasPlayed_ = function () {
 													return !0;
-												});
+												}));
 										}),
 										!1
 									);
-								this.trigger("firstplay"), this.seekTo_(i.end(0));
+								(this.trigger("firstplay"), this.seekTo_(i.end(0)));
 							}
 							return (
 								(this.hasPlayed_ = function () {
@@ -22917,7 +22968,8 @@
 								this.setupSourceBuffers_();
 							} catch (t) {
 								return (
-									ca.log.warn("Failed to create Source Buffers", t), this.mediaSource.endOfStream("decode")
+									ca.log.warn("Failed to create Source Buffers", t),
+									this.mediaSource.endOfStream("decode")
 								);
 							}
 							if (this.tech_.autoplay()) {
@@ -22931,13 +22983,13 @@
 						key: "onEndOfStream",
 						value: function () {
 							var t = this.mainSegmentLoader_.ended_;
-							this.mediaTypes_.AUDIO.activePlaylistLoader &&
+							(this.mediaTypes_.AUDIO.activePlaylistLoader &&
 								(t =
 									!this.mainSegmentLoader_.startingMedia_ ||
 									this.mainSegmentLoader_.startingMedia_.containsVideo
 										? t && this.audioSegmentLoader_.ended_
 										: this.audioSegmentLoader_.ended_),
-								t && this.mediaSource.endOfStream();
+								t && this.mediaSource.endOfStream());
 						},
 					},
 					{
@@ -22995,9 +23047,9 @@
 					{
 						key: "pauseLoading",
 						value: function () {
-							this.mainSegmentLoader_.pause(),
+							(this.mainSegmentLoader_.pause(),
 								this.mediaTypes_.AUDIO.activePlaylistLoader && this.audioSegmentLoader_.pause(),
-								this.mediaTypes_.SUBTITLES.activePlaylistLoader && this.subtitleSegmentLoader_.pause();
+								this.mediaTypes_.SUBTITLES.activePlaylistLoader && this.subtitleSegmentLoader_.pause());
 						},
 					},
 					{
@@ -23055,7 +23107,7 @@
 												return;
 											if (0 === (e = Uh.Playlist.seekable(i, n)).length) return;
 										}
-										e
+										(e
 											? e.start(0) > t.end(0) || t.start(0) > e.end(0)
 												? (this.seekable_ = t)
 												: (this.seekable_ = ca.createTimeRanges([
@@ -23066,7 +23118,7 @@
 													]))
 											: (this.seekable_ = t),
 											this.logger_("seekable updated [" + cc(this.seekable_) + "]"),
-											this.tech_.trigger("seekablechanged");
+											this.tech_.trigger("seekablechanged"));
 									}
 								}
 							}
@@ -23080,22 +23132,22 @@
 								i = Uh.Playlist.duration(this.masterPlaylistLoader_.media()),
 								n = this.tech_.buffered(),
 								r = function e() {
-									(t.mediaSource.duration = i),
+									((t.mediaSource.duration = i),
 										t.tech_.trigger("durationchange"),
-										t.mediaSource.removeEventListener("sourceopen", e);
+										t.mediaSource.removeEventListener("sourceopen", e));
 								};
-							n.length > 0 && (i = Math.max(i, n.end(n.length - 1))),
+							(n.length > 0 && (i = Math.max(i, n.end(n.length - 1))),
 								e !== i &&
 									("open" !== this.mediaSource.readyState
 										? this.mediaSource.addEventListener("sourceopen", r)
-										: r());
+										: r()));
 						},
 					},
 					{
 						key: "dispose",
 						value: function () {
 							var t = this;
-							this.decrypter_.terminate(),
+							(this.decrypter_.terminate(),
 								this.masterPlaylistLoader_.dispose(),
 								this.mainSegmentLoader_.dispose(),
 								["AUDIO", "SUBTITLES"].forEach(function (e) {
@@ -23106,7 +23158,7 @@
 										});
 								}),
 								this.audioSegmentLoader_.dispose(),
-								this.subtitleSegmentLoader_.dispose();
+								this.subtitleSegmentLoader_.dispose());
 						},
 					},
 					{
@@ -23134,7 +23186,7 @@
 											e.resolvedUri),
 										this.mediaSource.endOfStream("decode")
 									);
-								this.configureLoaderMimeTypes_(t), this.excludeIncompatibleVariants_(e);
+								(this.configureLoaderMimeTypes_(t), this.excludeIncompatibleVariants_(e));
 							}
 						},
 					},
@@ -23142,7 +23194,7 @@
 						key: "configureLoaderMimeTypes_",
 						value: function (t) {
 							var e = t.length > 1 && -1 === t[0].indexOf(",") && t[0] !== t[1] ? new ca.EventTarget() : null;
-							this.mainSegmentLoader_.mimeType(t[0], e), t[1] && this.audioSegmentLoader_.mimeType(t[1], e);
+							(this.mainSegmentLoader_.mimeType(t[0], e), t[1] && this.audioSegmentLoader_.mimeType(t[1], e));
 						},
 					},
 					{
@@ -23171,13 +23223,13 @@
 							var e = 2,
 								i = null,
 								n = void 0;
-							t.attributes.CODECS && ((n = Oc(t.attributes.CODECS)), (i = n.videoCodec), (e = n.codecCount)),
+							(t.attributes.CODECS && ((n = Oc(t.attributes.CODECS)), (i = n.videoCodec), (e = n.codecCount)),
 								this.master().playlists.forEach(function (t) {
 									var n = { codecCount: 2, videoCodec: null };
-									t.attributes.CODECS && (n = Oc(t.attributes.CODECS)),
+									(t.attributes.CODECS && (n = Oc(t.attributes.CODECS)),
 										n.codecCount !== e && (t.excludeUntil = 1 / 0),
-										n.videoCodec !== i && (t.excludeUntil = 1 / 0);
-								});
+										n.videoCodec !== i && (t.excludeUntil = 1 / 0));
+								}));
 						},
 					},
 					{
@@ -23185,7 +23237,7 @@
 						value: function (t) {
 							var i = 0,
 								n = this.seekable();
-							n.length && (i = n.start(0)),
+							(n.length && (i = n.start(0)),
 								(function (t, i) {
 									var n = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : 0;
 									if (t.segments)
@@ -23193,7 +23245,7 @@
 											var o = t.segments[s];
 											if ((a || (a = mh(i, r + o.duration / 2)), a)) {
 												if ("cueIn" in o) {
-													(a.endTime = r), (a.adEndTime = r), (r += o.duration), (a = null);
+													((a.endTime = r), (a.adEndTime = r), (r += o.duration), (a = null));
 													continue;
 												}
 												if (r < a.endTime) {
@@ -23212,15 +23264,15 @@
 													l,
 													c = o.cueOutCont.split("/").map(parseFloat),
 													h = Tl(c, 2);
-												(u = h[0]),
+												((u = h[0]),
 													(l = h[1]),
 													((a = new e.VTTCue(r, r + o.duration, "")).adStartTime = r - u),
 													(a.adEndTime = a.adStartTime + l),
-													i.addCue(a);
+													i.addCue(a));
 											}
 											r += o.duration;
 										}
-								})(t, this.cueTagsTrack_, i);
+								})(t, this.cueTagsTrack_, i));
 						},
 					},
 					{
@@ -23256,9 +23308,9 @@
 				u = o[(e.options_.smoothQualityChange ? "smooth" : "fast") + "QualityChange_"].bind(o);
 			if (i.attributes.RESOLUTION) {
 				var l = i.attributes.RESOLUTION;
-				(this.width = l.width), (this.height = l.height);
+				((this.width = l.width), (this.height = l.height));
 			}
-			(this.bandwidth = i.attributes.BANDWIDTH),
+			((this.bandwidth = i.attributes.BANDWIDTH),
 				(this.id = n),
 				(this.enabled =
 					((r = e.playlists),
@@ -23273,13 +23325,13 @@
 							: (t ? delete e.disabled : (e.disabled = !0),
 								t === n || i || (s(), t ? r.trigger("renditionenabled") : r.trigger("renditiondisabled")),
 								t);
-					}));
+					})));
 		},
 		Mh = ["seeking", "seeked", "pause", "playing", "error"],
 		Bh = (function () {
 			function t(i) {
 				var n = this;
-				yl(this, t),
+				(yl(this, t),
 					(this.tech_ = i.tech),
 					(this.seekable = i.seekable),
 					(this.seekTo = i.seekTo),
@@ -23288,7 +23340,7 @@
 					(this.timer_ = null),
 					(this.checkCurrentTimeTimeout_ = null),
 					(this.logger_ = Xc("PlaybackWatcher")),
-					this.logger_("initialize");
+					this.logger_("initialize"));
 				var r = function () {
 						return n.monitorCurrentTime_();
 					},
@@ -23301,28 +23353,28 @@
 					o = function () {
 						return n.fixesBadSeeks_();
 					};
-				this.tech_.on("seekablechanged", o),
+				(this.tech_.on("seekablechanged", o),
 					this.tech_.on("waiting", a),
 					this.tech_.on(Mh, s),
 					this.tech_.on("canplay", r),
 					(this.dispose = function () {
-						n.logger_("dispose"),
+						(n.logger_("dispose"),
 							n.tech_.off("seekablechanged", o),
 							n.tech_.off("waiting", a),
 							n.tech_.off(Mh, s),
 							n.tech_.off("canplay", r),
 							n.checkCurrentTimeTimeout_ && e.clearTimeout(n.checkCurrentTimeTimeout_),
-							n.cancelTimer_();
-					});
+							n.cancelTimer_());
+					}));
 			}
 			return (
 				vl(t, [
 					{
 						key: "monitorCurrentTime_",
 						value: function () {
-							this.checkCurrentTime_(),
+							(this.checkCurrentTime_(),
 								this.checkCurrentTimeTimeout_ && e.clearTimeout(this.checkCurrentTimeTimeout_),
-								(this.checkCurrentTimeTimeout_ = e.setTimeout(this.monitorCurrentTime_.bind(this), 250));
+								(this.checkCurrentTimeTimeout_ = e.setTimeout(this.monitorCurrentTime_.bind(this), 250)));
 						},
 					},
 					{
@@ -23330,7 +23382,8 @@
 						value: function () {
 							if (this.tech_.seeking() && this.fixesBadSeeks_())
 								return (
-									(this.consecutiveUpdates = 0), void (this.lastRecordedTime = this.tech_.currentTime())
+									(this.consecutiveUpdates = 0),
+									void (this.lastRecordedTime = this.tech_.currentTime())
 								);
 							if (!this.tech_.paused() && !this.tech_.seeking()) {
 								var t = this.tech_.currentTime(),
@@ -23348,9 +23401,9 @@
 					{
 						key: "cancelTimer_",
 						value: function () {
-							(this.consecutiveUpdates = 0),
+							((this.consecutiveUpdates = 0),
 								this.timer_ && (this.logger_("cancelTimer_"), clearTimeout(this.timer_)),
-								(this.timer_ = null);
+								(this.timer_ = null));
 						},
 					},
 					{
@@ -23485,7 +23538,7 @@
 							var e = this.tech_.buffered(),
 								i = this.tech_.currentTime(),
 								n = lc(e, i);
-							this.cancelTimer_(),
+							(this.cancelTimer_(),
 								0 !== n.length &&
 									i === t &&
 									(this.logger_(
@@ -23498,7 +23551,7 @@
 										n.start(0)
 									),
 									this.seekTo(n.start(0) + 1 / 30),
-									this.tech_.trigger({ type: "usage", name: "hls-gap-skip" }));
+									this.tech_.trigger({ type: "usage", name: "hls-gap-skip" })));
 						},
 					},
 					{
@@ -23559,18 +23612,18 @@
 							e.trigger({ type: "usage", name: "hls-error-reload-canceled" });
 						else {
 							if (a.getSource && "function" == typeof a.getSource)
-								return (n = Date.now()), a.getSource.call(e, o);
+								return ((n = Date.now()), a.getSource.call(e, o));
 							ca.log.error("ERROR: reloadSourceOnError - The option getSource must be a function!");
 						}
 					},
 					l = function t() {
-						e.off("loadedmetadata", s), e.off("error", u), e.off("dispose", t);
+						(e.off("loadedmetadata", s), e.off("error", u), e.off("dispose", t));
 					};
-				e.on("error", u),
+				(e.on("error", u),
 					e.on("dispose", l),
 					(e.reloadSourceOnError = function (i) {
-						l(), t(e, i);
-					});
+						(l(), t(e, i));
+					}));
 			})(this, t);
 		};
 	ca.use("*", function (t) {
@@ -23579,7 +23632,7 @@
 				e(null, t);
 			},
 			setCurrentTime: function (e) {
-				return t.vhs && t.currentSource().src === t.vhs.source_.src && t.vhs.setCurrentTime(e), e;
+				return (t.vhs && t.currentSource().src === t.vhs.source_.src && t.vhs.setCurrentTime(e), e);
 			},
 			play: function () {
 				t.vhs && t.currentSource().src === t.vhs.source_.src && t.vhs.setCurrentTime(t.currentTime());
@@ -23699,13 +23752,13 @@
 	].forEach(function (t) {
 		Object.defineProperty(Fh, t, {
 			get: function () {
-				return ca.log.warn("using Hls." + t + " is UNSAFE be sure you know what you are doing"), Kc[t];
+				return (ca.log.warn("using Hls." + t + " is UNSAFE be sure you know what you are doing"), Kc[t]);
 			},
 			set: function (e) {
-				ca.log.warn("using Hls." + t + " is UNSAFE be sure you know what you are doing"),
+				(ca.log.warn("using Hls." + t + " is UNSAFE be sure you know what you are doing"),
 					"number" != typeof e || e < 0
 						? ca.log.warn("value of Hls." + t + " must be greater than or equal to 0")
-						: (Kc[t] = e);
+						: (Kc[t] = e));
 			},
 		});
 	});
@@ -23719,7 +23772,7 @@
 					n = r;
 					break;
 				}
-			(t.selectedIndex_ = n), t.trigger({ selectedIndex: n, type: "change" });
+			((t.selectedIndex_ = n), t.trigger({ selectedIndex: n, type: "change" }));
 		};
 	Fh.canPlaySource = function () {
 		return ca.log.warn("HLS is no longer a tech. Please remove it from your player's techOrder.");
@@ -23732,7 +23785,7 @@
 						if (!t) return t;
 						var n = {};
 						for (var r in t)
-							(n[r] = {
+							((n[r] = {
 								audioContentType: 'audio/mp4; codecs="' + i.attributes.CODECS + '"',
 								videoContentType: 'video/mp4; codecs="' + e.attributes.CODECS + '"',
 							}),
@@ -23740,7 +23793,7 @@
 									e.contentProtection[r] &&
 									e.contentProtection[r].pssh &&
 									(n[r].pssh = e.contentProtection[r].pssh),
-								"string" == typeof t[r] && (n[r].url = t[r]);
+								"string" == typeof t[r] && (n[r].url = t[r]));
 						return ca.mergeOptions(t, n);
 					})(
 						t.source_.keySystems,
@@ -23761,7 +23814,7 @@
 				return null;
 			}
 		};
-	(Fh.supportsNativeHls = (function () {
+	((Fh.supportsNativeHls = (function () {
 		var e = t.createElement("video");
 		if (!ca.getTech("Html5").isSupported()) return !1;
 		return [
@@ -23784,7 +23837,7 @@
 		}),
 		(Fh.isSupported = function () {
 			return ca.log.warn("HLS is no longer a tech. Please remove it from your player's techOrder.");
-		});
+		}));
 	var Wh = ca.getComponent("Component"),
 		Gh = (function (e) {
 			function i(e, n, r) {
@@ -23792,7 +23845,7 @@
 				var a = bl(this, (i.__proto__ || Object.getPrototypeOf(i)).call(this, n, r.hls));
 				if (n.options_ && n.options_.playerId) {
 					var s = ca(n.options_.playerId);
-					s.hasOwnProperty("hls") ||
+					(s.hasOwnProperty("hls") ||
 						Object.defineProperty(s, "hls", {
 							get: function () {
 								return (
@@ -23805,7 +23858,7 @@
 						}),
 						(s.vhs = a),
 						(s.dash = a),
-						(a.player_ = s);
+						(a.player_ = s));
 				}
 				if (
 					((a.tech_ = n),
@@ -23814,7 +23867,7 @@
 					a.setOptions_(),
 					a.options_.overrideNative && n.overrideNativeAudioTracks && n.overrideNativeVideoTracks)
 				)
-					n.overrideNativeAudioTracks(!0), n.overrideNativeVideoTracks(!0);
+					(n.overrideNativeAudioTracks(!0), n.overrideNativeVideoTracks(!0));
 				else if (a.options_.overrideNative && (n.featuresNativeVideoTracks || n.featuresNativeAudioTracks))
 					throw new Error("Overriding native HLS requires emulated tracks. See https://git.io/vMpjB");
 				return (
@@ -23864,16 +23917,16 @@
 								"number" != typeof this.options_.bandwidth && this.options_.useBandwidthFromLocalStorage)
 							) {
 								var e = zh();
-								e &&
+								(e &&
 									e.bandwidth &&
 									((this.options_.bandwidth = e.bandwidth),
 									this.tech_.trigger({ type: "usage", name: "hls-bandwidth-from-local-storage" })),
 									e &&
 										e.throughput &&
 										((this.options_.throughput = e.throughput),
-										this.tech_.trigger({ type: "usage", name: "hls-throughput-from-local-storage" }));
+										this.tech_.trigger({ type: "usage", name: "hls-throughput-from-local-storage" })));
 							}
-							"number" != typeof this.options_.bandwidth && (this.options_.bandwidth = Kc.INITIAL_BANDWIDTH),
+							("number" != typeof this.options_.bandwidth && (this.options_.bandwidth = Kc.INITIAL_BANDWIDTH),
 								(this.options_.enableLowInitialPlaylist =
 									this.options_.enableLowInitialPlaylist &&
 									this.options_.bandwidth === Kc.INITIAL_BANDWIDTH),
@@ -23885,7 +23938,7 @@
 								].forEach(function (e) {
 									void 0 !== t.source_[e] && (t.options_[e] = t.source_[e]);
 								}),
-								(this.limitRenditionByPlayerDimensions = this.options_.limitRenditionByPlayerDimensions);
+								(this.limitRenditionByPlayerDimensions = this.options_.limitRenditionByPlayerDimensions));
 						},
 					},
 					{
@@ -23899,7 +23952,7 @@
 								(this.options_.externHls = Fh),
 								(this.options_.sourceType = Vh(e)),
 								(this.options_.seekTo = function (t) {
-									i.tech_.setCurrentTime(t), i.setCurrentTime(t);
+									(i.tech_.setCurrentTime(t), i.setCurrentTime(t));
 								}),
 								(this.masterPlaylistController_ = new Dh(this.options_)),
 								(this.playbackWatcher_ = new Bh(
@@ -23933,8 +23986,8 @@
 											return this.masterPlaylistController_.mainSegmentLoader_.throughput.rate;
 										},
 										set: function (t) {
-											(this.masterPlaylistController_.mainSegmentLoader_.throughput.rate = t),
-												(this.masterPlaylistController_.mainSegmentLoader_.throughput.count = 1);
+											((this.masterPlaylistController_.mainSegmentLoader_.throughput.rate = t),
+												(this.masterPlaylistController_.mainSegmentLoader_.throughput.count = 1));
 										},
 									},
 									bandwidth: {
@@ -23942,11 +23995,11 @@
 											return this.masterPlaylistController_.mainSegmentLoader_.bandwidth;
 										},
 										set: function (t) {
-											(this.masterPlaylistController_.mainSegmentLoader_.bandwidth = t),
+											((this.masterPlaylistController_.mainSegmentLoader_.bandwidth = t),
 												(this.masterPlaylistController_.mainSegmentLoader_.throughput = {
 													rate: 0,
 													count: 0,
-												});
+												}));
 										},
 									},
 									systemBandwidth: {
@@ -23954,7 +24007,8 @@
 											var t = 1 / (this.bandwidth || 1),
 												e = void 0;
 											return (
-												(e = this.throughput > 0 ? 1 / this.throughput : 0), Math.floor(1 / (t + e))
+												(e = this.throughput > 0 ? 1 / this.throughput : 0),
+												Math.floor(1 / (t + e))
 											);
 										},
 										set: function () {
@@ -24093,7 +24147,7 @@
 								}),
 								this.masterPlaylistController_.on("selectedinitialmedia", function () {
 									var t, e;
-									(e = (t = i).playlists),
+									((e = (t = i).playlists),
 										(t.representations = function () {
 											return e.master.playlists
 												.filter(function (t) {
@@ -24103,7 +24157,7 @@
 													return new Rh(t, e, e.uri);
 												});
 										}),
-										qh(i);
+										qh(i));
 								}),
 								this.on(this.masterPlaylistController_, "progress", function () {
 									this.tech_.trigger("progress");
@@ -24125,11 +24179,11 @@
 								((this.qualityLevels_ = e.qualityLevels()),
 								this.masterPlaylistController_.on("selectedinitialmedia", function () {
 									var e, i;
-									(e = t.qualityLevels_),
+									((e = t.qualityLevels_),
 										(i = t).representations().forEach(function (t) {
 											e.addQualityLevel(t);
 										}),
-										Hh(e, i.playlists);
+										Hh(e, i.playlists));
 								}),
 								this.playlists.on("mediachange", function () {
 									Hh(t.qualityLevels_, t.playlists);
@@ -24163,7 +24217,7 @@
 					{
 						key: "dispose",
 						value: function () {
-							this.playbackWatcher_ && this.playbackWatcher_.dispose(),
+							(this.playbackWatcher_ && this.playbackWatcher_.dispose(),
 								this.masterPlaylistController_ && this.masterPlaylistController_.dispose(),
 								this.qualityLevels_ && this.qualityLevels_.dispose(),
 								this.player_ && (delete this.player_.vhs, delete this.player_.dash, delete this.player_.hls),
@@ -24178,7 +24232,7 @@
 									if ("value" in r) return r.value;
 									var s = r.get;
 									return void 0 !== s ? s.call(n) : void 0;
-								})(i.prototype.__proto__ || Object.getPrototypeOf(i.prototype), "dispose", this).call(this);
+								})(i.prototype.__proto__ || Object.getPrototypeOf(i.prototype), "dispose", this).call(this));
 						},
 					},
 					{
@@ -24218,7 +24272,7 @@
 			handleSource: function (t, e) {
 				var i = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : {},
 					n = ca.mergeOptions(ca.options, i);
-				return (e.hls = new Gh(t, e, n)), (e.hls.xhr = $l()), e.hls.src(t.src, t.type), e.hls;
+				return ((e.hls = new Gh(t, e, n)), (e.hls.xhr = $l()), e.hls.src(t.src, t.type), e.hls);
 			},
 			canPlayType: function (t) {
 				var e = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : {},
@@ -24241,5 +24295,5 @@
 }),
 	(function () {
 		var t, e;
-		(t = window), (e = t && t.videojs) && (e.CDN_VERSION = "7.4.1");
-	})();
+		((t = window), (e = t && t.videojs) && (e.CDN_VERSION = "7.4.1"));
+	})());

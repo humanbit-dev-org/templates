@@ -1,8 +1,10 @@
 "use client";
 
-import AuthSessionStatus from "@/components/elements/AuthSessionStatus";
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import AuthSessionStatusComponent from "@/components/elements/AuthSessionStatus";
+import * as constants from "@/config/constants";
+import { useTranslate } from "@/providers/Translate"; // Provides translation context and hook access for `lang` and `translates`
 
 async function fetchCsrf() {
 	try {
@@ -22,7 +24,9 @@ async function fetchCsrf() {
 	}
 }
 
-export function PasswordResetComponent({ lang }) {
+export function PasswordResetComponent() {
+	const lang = useTranslate()["lang"];
+	const translates = useTranslate()["translates"];
 	const searchParams = useSearchParams();
 	const router = useRouter();
 
@@ -56,7 +60,7 @@ export function PasswordResetComponent({ lang }) {
 
 		const xsrfToken = await fetchCsrf();
 
-		const fetchPath = `${constants.BACKEND_URL_CLIENT}/reset-password`;
+		const fetchPath = constants.BACKEND_URL_CLIENT + "/reset-password";
 
 		const resetPasswordRequest = new Request(fetchPath, {
 			method: "POST",
@@ -84,8 +88,8 @@ export function PasswordResetComponent({ lang }) {
 				setErrors(responseData.errors);
 				setIsSubmitting(false);
 			} else {
-				router.push("/?reset=" + btoa(responseData.status)), setStatus(responseData.status);
-				const fetchPath = `${constants.BACKEND_URL_CLIENT}/login`;
+				(router.push("/?reset=" + btoa(responseData.status)), setStatus(responseData.status));
+				const fetchPath = constants.BACKEND_URL_CLIENT + "/login";
 
 				const loginRequest = new Request(fetchPath, {
 					method: "POST",
@@ -141,14 +145,14 @@ export function PasswordResetComponent({ lang }) {
 				data-bs-keyboard="false"
 				aria-hidden="true">
 				<div className="modal-dialog modal-dialog-centered">
-					<form className="modal-content color_white border border_color_third p-3 p-md-5" onSubmit={submitForm}>
+					<form className="modal-content color_first border border_color_third p-3 p-md-5" onSubmit={submitForm}>
 						<div className="modal-header mb-5">
 							<h5 className="modal-title big" id="registerModalLabel">
-								Password Reset
+								{translates?.["all"]?.["password_reset"]?.[lang] ?? "Translate fallback"}
 							</h5>
 						</div>
 
-						<AuthSessionStatus className="mb-4" status={status} />
+						<AuthSessionStatusComponent className="mb-4" status={status} />
 
 						<fieldset className="modal-body row mx-n2 mb-5">
 							{/* Email Address */}
@@ -161,7 +165,8 @@ export function PasswordResetComponent({ lang }) {
 								required
 								autoFocus
 							/>
-							{/* <InputError messages={errors.email} className="mt-2" /> */}
+
+							{/* <InputError messages={errors?.email} className="mt-2" /> */}
 
 							{/* Password */}
 							<div className="input_wrapper_spacing col-12 col-lg-6 mb-3">
@@ -171,20 +176,24 @@ export function PasswordResetComponent({ lang }) {
 										type="password"
 										value={password ? password : ""}
 										className="form-control"
+										placeholder={
+											translates?.["all"]?.["password"]?.[`text_${lang}`] ?? "Translate fallback"
+										}
 										onChange={(event) => setPassword(event.target.value)}
 										required
 									/>
 
 									<label className="label" htmlFor="password">
-										Password
+										{translates?.["all"]?.["password"]?.[lang] ?? "Translate fallback"}
 									</label>
 
 									<p>{errors?.email}</p>
 									<p>{errors?.password}</p>
+
 									{/* <InputError
-                                        messages={errors.password}
-                                        className="mt-2"
-                                    /> */}
+										messages={errors?.password}
+										className="mt-2"
+									/> */}
 								</div>
 							</div>
 
@@ -196,27 +205,33 @@ export function PasswordResetComponent({ lang }) {
 										type="password"
 										value={passwordConfirmation ? passwordConfirmation : ""}
 										className="form-control"
+										placeholder={
+											translates?.["all"]?.["confirm_password"]?.[`text_${lang}`] ??
+											"Translate fallback"
+										}
 										onChange={(event) => setPasswordConfirmation(event.target.value)}
 										required
 									/>
+
 									<label className="label" htmlFor="passwordConfirmation">
-										Confirm Password
+										{translates?.["all"]?.["confirm_password"]?.[lang] ?? "Translate fallback"}
 									</label>
 
 									<p>{errors?.password_confirmation}</p>
+
 									{/* <InputError
-                                        messages={errors.password_confirmation}
-                                        className="mt-2"
-                                    /> */}
+										messages={errors?.password_confirmation}
+										className="mt-2"
+									/> */}
 								</div>
 							</div>
 
 							<div className="input_wrapper_spacing d-flex flex-wrap justify-content-end">
 								<button
-									className={`btn_bg_first ${isSubmitting ? "pe-none opacity-50" : ""}`}
+									className={`btn_bg_second ${isSubmitting ? "pe-none opacity-50" : ""}`}
 									type="submit"
 									disabled={isSubmitting}>
-									Reset Password
+									{translates?.["all"]?.["send"]?.[lang] ?? "Translate fallback"}
 								</button>
 							</div>
 						</fieldset>
