@@ -152,6 +152,87 @@ class FilterHelper
 	}
 
 	/**
+	 * Get HTML input type for a column based on database type and name
+	 */
+	public static function getInputType($column, $tableName): string
+	{
+		$columnName = $column["name"];
+
+		// Check for email fields first (specific fields)
+		if ($columnName === "email" || str_ends_with($columnName, "_email")) {
+			return "email";
+		}
+
+		// Check for URL fields
+		if (str_contains($columnName, "url") || str_contains($columnName, "website")) {
+			return "url";
+		}
+
+		// Get database column type
+		if (\Illuminate\Support\Facades\Schema::hasColumn($tableName, $columnName)) {
+			$columnType = strtolower(\Illuminate\Support\Facades\Schema::getColumnType($tableName, $columnName));
+
+			// Integer types - handle all possible aliases
+			if (
+				$columnType === "integer" ||
+				$columnType === "int" || // MySQL
+				$columnType === "bigint" ||
+				$columnType === "biginteger" ||
+				$columnType === "smallint" ||
+				$columnType === "smallinteger" ||
+				$columnType === "tinyint" ||
+				$columnType === "mediumint" ||
+				str_contains($columnType, "int")
+			) {
+				return "number";
+			}
+
+			// Decimal/Float types
+			if (
+				$columnType === "decimal" ||
+				$columnType === "numeric" ||
+				$columnType === "float" ||
+				$columnType === "double" ||
+				$columnType === "real" ||
+				str_contains($columnType, "decimal") ||
+				str_contains($columnType, "float")
+			) {
+				return "number";
+			}
+		}
+
+		return "text";
+	}
+
+	/**
+	 * Get step attribute for number inputs
+	 */
+	public static function getNumberStep($column, $tableName): string
+	{
+		if (!\Illuminate\Support\Facades\Schema::hasColumn($tableName, $column["name"])) {
+			return "1";
+		}
+
+		$columnType = strtolower(\Illuminate\Support\Facades\Schema::getColumnType($tableName, $column["name"]));
+
+		// Check if it's a decimal/float type (needs decimal step)
+		if (
+			$columnType === "decimal" ||
+			$columnType === "numeric" ||
+			$columnType === "float" ||
+			$columnType === "double" ||
+			$columnType === "real" ||
+			str_contains($columnType, "decimal") ||
+			str_contains($columnType, "float")
+		) {
+			return "0.01";
+		}
+
+		// Integer types get step="1"
+		return "1";
+	}
+
+	/**
 	 * Get active filters for display
 	 */
 	public static function getActiveFilters(Collection $columns): Collection

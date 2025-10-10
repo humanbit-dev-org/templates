@@ -51,7 +51,7 @@ extract($filterConfig); // Extract all variables for backward compatibility
           <button class="accordion-button {{ $openTextFilters ? '' : 'collapsed' }}" type="button"
             data-bs-toggle="collapse" data-bs-target="#textFiltersCollapse"
             aria-expanded="{{ $openTextFilters ? 'true' : 'false' }}" aria-controls="textFiltersCollapse">
-            <i class="la la-align-left"></i> {{ trans('backpack::filters.text_filters') }}
+            <i class="la la-align-left"></i> {{ trans('backpack::filters.value_filters') }}
             @if($textFilterCount > 0)
             <span class="badge bg-primary rounded-pill ms-2">{{ $textFilterCount }}</span>
             @endif
@@ -63,16 +63,21 @@ extract($filterConfig); // Extract all variables for backward compatibility
               @foreach ($textColumns as $column)
               @php
               $label = isset($column['label']) ? $column['label'] : $column['name'];
+              $inputType = FilterHelper::getInputType($column, $tableName);
+              $step = $inputType === 'number' ? FilterHelper::getNumberStep($column, $tableName) : null;
               @endphp
               <div class="col-lg-3 col-md-4 col-sm-6">
                 <label for="{{ $column['name'] }}" class="form-label small text-muted mb-1 filter-label">{{ $label }}</label>
                 <div class="position-relative">
-                  <input autocomplete="off" type="text" name="{{ $column['name'] }}"
-                    value="{{ request()->get($column['name']) }}"
-                    class="form-control autocomplete-input"
-                    data-column="{{ $column['name'] }}"
-                    data-table="{{ $crud->model->getTable() }}"
-                    id="{{ $column['name'] }}">
+                  <input autocomplete="off" 
+                         type="{{ $inputType }}" 
+                         name="{{ $column['name'] }}"
+                         value="{{ request()->get($column['name']) }}"
+                         class="form-control autocomplete-input"
+                         data-column="{{ $column['name'] }}"
+                         data-table="{{ $crud->model->getTable() }}"
+                         id="{{ $column['name'] }}"
+                         @if($step) step="{{ $step }}" @endif>
                   <div class="autocomplete-suggestions" id="autocomplete-{{ $column['name'] }}"></div>
                 </div>
               </div>

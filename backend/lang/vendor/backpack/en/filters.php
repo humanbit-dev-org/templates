@@ -3,7 +3,7 @@
 return [
 	// FILTER TEXTS
 	"active_filters" => "Active filters",
-	"text_filters" => "Text filters",
+	"value_filters" => "Value filters",
 	"date_filters" => "Date filters",
 	"select_filters" => "Select filters",
 	"relations" => "Relations",
