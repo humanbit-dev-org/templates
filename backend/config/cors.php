@@ -56,7 +56,20 @@ return [
 
 	"allowed_origins_patterns" => [],
 
-	"allowed_headers" => ["Content-Type", "Accept", "Authorization", "X-Locale", "X-Requested-With"],
+	// Allowed headers for API Token Authentication
+	// "allowed_headers" => ["Content-Type", "Accept", "Authorization", "X-Locale", "X-Requested-With"],
+
+	// Allowed headers for Session Cookie Authentication
+	"allowed_headers" => [
+		"Content-Type",
+		"Accept",
+		"Authorization",
+		"X-Locale",
+		"X-Requested-With",
+		"X-XSRF-TOKEN",
+		"Referer",
+		"cookie",
+	],
 
 	"exposed_headers" => [],
 

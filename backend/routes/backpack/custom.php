@@ -106,6 +106,7 @@ Route::group(
 		Route::crud("translate", "TranslateCrudController");
 		Route::crud("page", "PageCrudController");
 		Route::crud("contatto", "ContattoCrudController");
+		Route::crud("article", "ArticleCrudController");
 		Route::crud("institutional", "InstitutionalCrudController");
 		Route::crud("metadata", "MetadataCrudController");
 		Route::crud("media", "MediaCrudController");

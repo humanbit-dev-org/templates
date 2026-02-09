@@ -63,9 +63,7 @@ return [
 
 	// Menu logo. You can replace this with an <img> tag if you have a logo.
 	"project_logo" =>
-		"<img src='" .
-		env("APP_URL") .
-		"/static/images/logo.png' style='filter: drop-shadow(1px 2px 2px black);'>
+		"<img src='" . env("APP_URL") . "/static/images/logo.png' style='filter: drop-shadow(1px 2px 2px black);'>",
 
 	"project_logo_color" => "#16108a",
 
