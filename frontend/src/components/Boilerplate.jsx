@@ -56,22 +56,24 @@ export async function BoilerplateComponent({ props }) {
 	// const translates = useTranslate()["translates"]; // E.g., {translates?.[csr.page]?.["<code>"]?.[lang] ?? "Translate fallback"}
 
 	return (
-		<div className="boilerplate_component">
-			<div className="size_cont">
-				<div className="block_cont">
-					<div className="block_wrap">
-						<div className="group_cont">
-							<div className="group_wrap">{/* content */}</div>
-						</div>
+		<>
+			<div className="boilerplate_component">
+				<div className="size_cont">
+					<div className="block_cont">
+						<div className="block_wrap">
+							<div className="group_cont">
+								<div className="group_wrap">{/* content */}</div>
+							</div>
 
-						<div className="group_cont">
-							<div className="group_wrap">
-								<div className="obj_cont">
-									<div className="obj_wrap">
-										<div className="el_cont">
-											<div className="el_wrap">
-												{/* el_title el_subtitle el_abstract el_body */}
-												{/* el_txt el_btn el_img el_icon el_link el_label el_logo */}
+							<div className="group_cont">
+								<div className="group_wrap">
+									<div className="obj_cont">
+										<div className="obj_wrap">
+											<div className="el_cont">
+												<div className="el_wrap">
+													{/* el_title el_subtitle el_abstract el_body */}
+													{/* el_txt el_btn el_img el_icon el_link el_label el_logo */}
+												</div>
 											</div>
 										</div>
 									</div>
@@ -81,6 +83,79 @@ export async function BoilerplateComponent({ props }) {
 					</div>
 				</div>
 			</div>
-		</div>
+
+			{/* this is the main layout.js */}
+			<div className="root_layout">
+				<div className="grid_cont navbar"></div> {/* navbar main wrapper in main layout.js */}
+				{/* content main wrapper in main layout.js */}
+				<div className="grid_cont content">
+					{/* page wrapper container just for easy identification and scope */}
+					<div className="boilerplate_page">
+						{/* high level wrapper in case the page needs to be targeted */}
+						<div className="page_cont">
+							{/* website general padding wrapper */}
+							<div className="cont_space_1">
+								{/* website max width wrapper */}
+								<div className="cont_mw_1">
+									<div className="page_wrapper">
+										<div className="sect_cont">
+											<div className="sect_wrapper">
+												{/* identification and scope */}
+												<div className="boilerplate_component">
+													{/* when component size needs to be passed upwards */}
+													<div className="size_cont">
+														{/* highest, page or major component section */}
+														<div className="block_cont">
+															{/* highest, page or major component section */}
+															<div className="block_wrap">
+																{/* logical subdivision within a block */}
+																<div className="group_cont">
+																	{/* logical subdivision within a block */}
+																	<div className="group_wrap">
+																		{/* self-contained, reusable module */}
+																		<div className="unit_cont">
+																			{/* self-contained, reusable module */}
+																			<div className="unit_wrap">
+																				{/* repeatable or list-level element */}
+																				<div className="item_cont">
+																					{/* repeatable or list-level element */}
+																					<div className="item_wrap">
+																						{/* partial or fragment within an item/unit */}
+																						<div className="seg_cont">
+																							{/* partial or fragment within an item/unit */}
+																							<div className="seg_wrap">
+																								{/* atomic element, lowest level */}
+																								<div className="el_cont">
+																									{/* atomic element, lowest level */}
+																									<div className="el_wrap">
+																										{/* individual concepts/elements classes are marked below */}
+																										{/* el_title el_subtitle el_abstract el_body */}
+																										{/* el_txt el_btn el_img el_icon el_link el_label el_logo el_trigger el_fx */}
+																									</div>
+																								</div>
+																							</div>
+																						</div>
+																					</div>
+																				</div>
+																			</div>
+																		</div>
+																	</div>
+																</div>
+															</div>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				{/* footer main wrapper in main layout.js */}
+				<div className="grid_cont footer"></div>
+			</div>
+		</>
 	);
 }

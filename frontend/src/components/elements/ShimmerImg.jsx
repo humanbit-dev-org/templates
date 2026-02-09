@@ -41,7 +41,7 @@ export function ShimmerImgComponent(w, h, c) {
 	const c2 = lightenColor(c);
 
 	const shimmerSVG = `
-    <svg width="${w}" height="${h}" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <svg class="shimmer_img_component" width="${w}" height="${h}" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
       <defs>
         <linearGradient id="g">
           <stop stop-color="${c}" offset="20%" />

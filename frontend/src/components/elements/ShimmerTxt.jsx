@@ -27,7 +27,7 @@
 
 export function ShimmerTxtComponent() {
 	return (
-		<div role="status" className="tw:max-w-sm tw:animate-pulse">
+		<div role="status" className="shimmer_txt_component tw:max-w-sm tw:animate-pulse">
 			<div className="tw:h-2 tw:bg-gray-200 tw:rounded-full dark:tw:bg-gray-700 tw:max-w-[360px] tw:mb-2.5"></div>
 			<div className="tw:h-2 tw:bg-gray-200 tw:rounded-full dark:tw:bg-gray-700 tw:mb-2.5"></div>
 			<div className="tw:h-2 tw:bg-gray-200 tw:rounded-full dark:tw:bg-gray-700 tw:max-w-[330px] tw:mb-2.5"></div>

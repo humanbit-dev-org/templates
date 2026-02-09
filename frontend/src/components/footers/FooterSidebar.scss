@@ -1,20 +1,15 @@
-// File import statement:
-// @extend %footer_sidebar_component;
+// @use "@/footers/<filename>" as *; // File import statement
 
 // >>> Controllers — START
 @use "@/scss/controllers/dynamics" as *; // controllers for mixins and variables
 // <<<<< Controllers — END
-
-// >>>> Components — START
-// @use "@/navbars/NavLogoTop" as *;
-// <<<<<< Components — END
 
 .footer_sidebar_component {
 }
 
 /////
 ////
-/*/==================== @media ====================/*/
+/*/ ==================== @media ==================== /*/
 /////////////
 ////////////
 ////////////////////////

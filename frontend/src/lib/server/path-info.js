@@ -12,20 +12,9 @@ export async function getPathInfo() {
 	// Extract the pathname from custom request headers
 	const pathname = headersList.get("x-pathname");
 
-	// Get the full URL from headers to extract search params
-	const host = headersList.get("host");
-	const protocol = headersList.get("x-forwarded-proto") || "https";
-	const referer = headersList.get("referer");
-
-	// Parse query parameters from the full URL
-	let queryParams = {};
-	try {
-		// Try to get from referer first, then construct from host
-		const fullUrl = referer || `${protocol}://${host}${pathname}`;
-		const url = new URL(fullUrl);
-		queryParams = Object.fromEntries(url.searchParams.entries());
-	} catch (error) {
-		queryParams = {};
+	const queryParams = headersList.get("x-query-params");
+	if (queryParams) {
+		queryParams = Object.fromEntries(new URLSearchParams(queryParams));
 	}
 
 	// Break the pathname into segments

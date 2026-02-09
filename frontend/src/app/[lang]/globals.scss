@@ -101,12 +101,16 @@
 }
 // Scrollbar customization. <<OUT>>
 
+$font_title: var(--font-manrope);
+$font_subtitle: var(--font-manrope);
+$font_body: var(--font-lora);
+
 body {
-	font-family: "Lora", serif;
+	font-family: $font_body;
 	font-size: 1rem;
-	line-height: 1.2;
 	font-weight: 400;
-	color: #000000a8;
+	line-height: 1.2;
+	color: $color_black;
 	margin: 0;
 	overflow-x: hidden;
 	transition: 0s;
@@ -126,19 +130,19 @@ body {
 // font-family //
 // ----------- //
 
-.lora {
+.font_title {
 	&,
 	& > * {
-		font-family: "Lora", serif !important;
+		font-family: $font_title !important;
 		font-optical-sizing: auto;
 		font-style: normal;
 	}
 }
 
-.manrope {
+.font_body {
 	&,
 	& > * {
-		font-family: "Manrope", serif !important;
+		font-family: $font_body !important;
 		font-optical-sizing: auto;
 		font-style: normal;
 	}
@@ -160,7 +164,7 @@ $reference-vw-max: 80em; // Maximum REFERENCE viewport width
 // [ROLE (scope)] | [font-family] ([font-weight]) | fs: [min]px~[max]px/[min]rem~[max]rem | lh: [min]px~[max]px/[min-ratio]~[max-ratio]
 h1,
 .h1 {
-	font-family: "Manrope", serif;
+	font-family: $font_title;
 	font-weight: 500;
 
 	// prettier-ignore
@@ -183,7 +187,7 @@ h1,
 // [ROLE (scope)] | [font-family] ([font-weight]) | fs: [min]px~[max]px/[min]rem~[max]rem | lh: [min]px~[max]px/[min-ratio]~[max-ratio]
 h2,
 .h2 {
-	font-family: "Manrope", serif;
+	font-family: $font_title;
 	font-weight: 500;
 
 	// prettier-ignore
@@ -206,7 +210,7 @@ h2,
 // [ROLE (scope)] | [font-family] ([font-weight]) | fs: [min]px~[max]px/[min]rem~[max]rem | lh: [min]px~[max]px/[min-ratio]~[max-ratio]
 h3,
 .h3 {
-	font-family: "Manrope", serif;
+	font-family: $font_title;
 	font-weight: 700;
 
 	// prettier-ignore
@@ -229,7 +233,7 @@ h3,
 // [ROLE (scope)] | [font-family] ([font-weight]) | fs: [min]px~[max]px/[min]rem~[max]rem | lh: [min]px~[max]px/[min-ratio]~[max-ratio]
 h4,
 .h4 {
-	font-family: "Manrope", serif;
+	font-family: $font_title;
 	font-weight: 700;
 
 	// prettier-ignore
@@ -252,7 +256,7 @@ h4,
 // [ROLE (scope)] | [font-family] ([font-weight]) | fs: [min]px~[max]px/[min]rem~[max]rem | lh: [min]px~[max]px/[min-ratio]~[max-ratio]
 h5,
 .h5 {
-	font-family: "Manrope", serif;
+	font-family: $font_title;
 	font-weight: 700;
 
 	// prettier-ignore
@@ -275,7 +279,7 @@ h5,
 // [ROLE (scope)] | [font-family] ([font-weight]) | fs: [min]px~[max]px/[min]rem~[max]rem | lh: [min]px~[max]px/[min-ratio]~[max-ratio]
 h6,
 .h6 {
-	font-family: "Manrope", serif;
+	font-family: $font_title;
 	font-weight: 600;
 
 	// prettier-ignore
@@ -297,7 +301,7 @@ h6,
 
 // [ROLE (scope)] | [font-family] ([font-weight]) | fs: [min]px~[max]px/[min]rem~[max]rem | lh: [min]px~[max]px/[min-ratio]~[max-ratio]
 p {
-	font-family: "Lora", serif;
+	font-family: $font_body;
 	font-weight: 400;
 	letter-spacing: 0.2px;
 
@@ -322,7 +326,7 @@ p {
 .p {
 	&,
 	& * {
-		font-family: "Lora", serif;
+		font-family: $font_body;
 		font-weight: 400;
 		// letter-spacing: 0.2px;
 
@@ -346,7 +350,7 @@ p {
 
 // [ROLE (scope)] | [font-family] ([font-weight]) | fs: [min]px~[max]px/[min]rem~[max]rem | lh: [min]px~[max]px/[min-ratio]~[max-ratio]
 .biggest {
-	font-family: "Manrope", serif;
+	font-family: $font_title;
 	font-weight: 600;
 
 	// prettier-ignore
@@ -368,7 +372,7 @@ p {
 
 // [ROLE (scope)] | [font-family] ([font-weight]) | fs: [min]px~[max]px/[min]rem~[max]rem | lh: [min]px~[max]px/[min-ratio]~[max-ratio]
 .bigger {
-	font-family: "Manrope", serif;
+	font-family: $font_title;
 	font-weight: 600;
 
 	// prettier-ignore
@@ -390,7 +394,7 @@ p {
 
 // [ROLE (scope)] | [font-family] ([font-weight]) | fs: [min]px~[max]px/[min]rem~[max]rem | lh: [min]px~[max]px/[min-ratio]~[max-ratio]
 .big {
-	font-family: "Manrope", serif;
+	font-family: $font_title;
 	font-weight: 600;
 
 	// prettier-ignore
@@ -412,7 +416,7 @@ p {
 
 // [ROLE (scope)] | [font-family] ([font-weight]) | fs: [min]px~[max]px/[min]rem~[max]rem | lh: [min]px~[max]px/[min-ratio]~[max-ratio]
 .midbig {
-	font-family: "Manrope", serif;
+	font-family: $font_title;
 	font-weight: 600;
 
 	// prettier-ignore
@@ -434,7 +438,7 @@ p {
 
 // [ROLE (scope)] | [font-family] ([font-weight]) | fs: [min]px~[max]px/[min]rem~[max]rem | lh: [min]px~[max]px/[min-ratio]~[max-ratio]
 .medium {
-	font-family: "Manrope", serif;
+	font-family: $font_title;
 	font-weight: 600;
 
 	// prettier-ignore
@@ -456,7 +460,7 @@ p {
 
 // [ROLE (scope)] | [font-family] ([font-weight]) | fs: [min]px~[max]px/[min]rem~[max]rem | lh: [min]px~[max]px/[min-ratio]~[max-ratio]
 .midsmall {
-	font-family: "Manrope", serif;
+	font-family: $font_title;
 	font-weight: 500;
 
 	// prettier-ignore
@@ -479,7 +483,7 @@ p {
 // [ROLE (scope)] | [font-family] ([font-weight]) | fs: [min]px~[max]px/[min]rem~[max]rem | lh: [min]px~[max]px/[min-ratio]~[max-ratio]
 small,
 .small {
-	font-family: "Manrope", serif;
+	font-family: $font_title;
 	font-weight: 700;
 
 	// prettier-ignore
@@ -501,7 +505,7 @@ small,
 
 // [ROLE (scope)] | [font-family] ([font-weight]) | fs: [min]px~[max]px/[min]rem~[max]rem | lh: [min]px~[max]px/[min-ratio]~[max-ratio]
 .smaller {
-	font-family: "Manrope", serif;
+	font-family: $font_title;
 	font-weight: 300;
 
 	// prettier-ignore
@@ -523,7 +527,7 @@ small,
 
 // [ROLE (scope)] | [font-family] ([font-weight]) | fs: [min]px~[max]px/[min]rem~[max]rem | lh: [min]px~[max]px/[min-ratio]~[max-ratio]
 .smallest {
-	font-family: "Manrope", serif;
+	font-family: $font_title;
 	font-weight: 300;
 
 	// prettier-ignore
@@ -552,7 +556,7 @@ select.form-select,
 .form-label,
 .input,
 .label {
-	font-family: "Manrope", serif;
+	font-family: $font_title;
 	font-weight: 300;
 
 	// prettier-ignore
@@ -580,7 +584,7 @@ input {
 	}
 }
 
-.input_wrapper_spacing {
+.input_wrap_space {
 	// Set `<form>` elements spacing
 	$input_spacing_y: 0.5rem; // (top/bottom)
 	$input_spacing_x: 0.5rem; // (left/right)
@@ -653,6 +657,10 @@ input {
 ///---------- Colors ----------///
 //
 
+// ----------- //
+// Transparent //
+// ----------- //
+
 .color_transparent {
 	color: transparent;
 }
@@ -661,20 +669,8 @@ input {
 	background-color: transparent;
 }
 
-// ---- //
-// Gray //
-// ---- //
-
-.color_grayer {
-	color: $color_gray_dark;
-}
-
-.bg_color_grayer {
-	background-color: $color_gray_dark;
-}
-
-.border_color_grayer {
-	border-color: $color_gray_dark !important;
+.border_color_transparent {
+	border-color: transparent !important;
 }
 
 // ----- //
@@ -707,6 +703,54 @@ input {
 
 .border_color_white {
 	border-color: $color_white !important;
+}
+
+// ---------- //
+// Gray light //
+// ---------- //
+
+.color_gray_light {
+	color: $color_gray_light;
+}
+
+.bg_color_gray_light {
+	background-color: $color_gray_light;
+}
+
+.border_color_gray_light {
+	border-color: $color_gray_light !important;
+}
+
+// ----------- //
+// Gray medium //
+// ----------- //
+
+.color_gray_medium {
+	color: $color_gray_medium;
+}
+
+.bg_color_gray_medium {
+	background-color: $color_gray_medium;
+}
+
+.border_color_gray_medium {
+	border-color: $color_gray_medium !important;
+}
+
+// --------- //
+// Gray dark //
+// --------- //
+
+.color_gray_dark {
+	color: $color_gray_dark;
+}
+
+.bg_color_gray_dark {
+	background-color: $color_gray_dark;
+}
+
+.border_color_gray_dark {
+	border-color: $color_gray_dark !important;
 }
 
 // ------------ //
@@ -939,28 +983,31 @@ input {
 .btn_bg_ninth,
 .btn_color_tenth,
 .btn_bg_tenth {
+	display: inline-block;
 	// width: fit-content;
 	height: fit-content;
 	padding: 0.25rem 1rem;
-	font-family: "Manrope", serif;
+	font-family: $font_title;
 	// font-size: 0.875rem;
 	font-size: 1rem;
 	font-weight: 300;
 	line-height: 1.366;
 	text-align: center;
+	text-transform: uppercase;
 	vertical-align: middle;
+	user-select: none;
 	border: 2px solid currentcolor; // General border settings
 	border-radius: 5px;
 	box-shadow: 0px 4px 4px 0px rgba($color_black, 0.25);
-	opacity: 1 !important;
+	opacity: 1;
 	transition: none;
 
-	// use  this class in addition to differenciate paddings
+	// use  this class in addition to differentiate paddings
 	&.btn_big {
 		padding: 0.8rem 4.5rem;
 	}
 
-	// use in addition to differenciate radius
+	// use in addition to differentiate radius
 	&.btn_radius {
 		border-radius: 20px;
 	}
@@ -971,7 +1018,14 @@ input {
 
 	&:hover,
 	&:focus {
+		opacity: 1;
 		transition: all 0.15s ease-in-out !important;
+	}
+
+	&:disabled {
+		pointer-events: none;
+		filter: brightness(0.65) contrast(0.65);
+		opacity: 0.65;
 	}
 
 	// And all their children.

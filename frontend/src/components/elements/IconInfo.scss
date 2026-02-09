@@ -1,13 +1,8 @@
-// File import statement:
-// @extend %icon_info_component;
+// @use "@/components/<subfolder>/<filename>" as *; // File import statement
 
 // >>> Controllers — START
 @use "@/scss/controllers/dynamics" as *; // controllers for mixins and variables
 // <<<<< Controllers — END
-
-// >>>> Components — START
-// @use "./Example" as *;
-// <<<<<< Components — END
 
 .icon_info_component {
 }
@@ -135,6 +130,28 @@
 ///////////////////////
 
 @media (width: 1024px) and (height: 1366px) {
+	.icon_info_component {
+	}
+}
+
+// ----------------------- //
+
+/////////////////////////////
+/* all browsers (iOS only) */
+/////////////////////////////
+
+@supports (-webkit-touch-callout: none) and (hover: none) and (pointer: coarse) {
+	.icon_info_component {
+	}
+}
+
+// ------------------- //
+
+/////////////////////////
+/* Safari (MacOS only) */
+/////////////////////////
+
+@supports (-webkit-touch-callout: default) and (hover: hover) and (pointer: fine) {
 	.icon_info_component {
 	}
 }

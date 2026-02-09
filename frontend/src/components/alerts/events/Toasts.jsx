@@ -51,46 +51,46 @@ import "./Toasts.scss";
 // ===============================================
 
 export function ToastsComponent() {
-	const { messageData, messageType, messageId } = useEventMessage();
+	// const { messageData, messageType, messageId } = useEventMessage();
 	// const ssr = await getServer();
 	// const csr = useClient();
 	// const lang = useTranslate()["lang"];
 	// const translates = useTranslate()["translates"]; // E.g., {translates?.[csr.page]?.["<code>"]?.[lang] ?? "Translate fallback"}
 
-	useEffect(() => {
-		if (messageData && messageType && messageId > 0) {
-			// Use the original Bootstrap approach for showing toasts
-			const toastElement = document.querySelector(`#toast-${messageType}`);
+	// useEffect(() => {
+	// 	if (messageData && messageType && messageId > 0) {
+	// 		// Use the original Bootstrap approach for showing toasts
+	// 		const toastElement = document.querySelector(`#toast-${messageType}`);
 
-			if (toastElement && window.bootstrap) {
-				// Hide any currently visible toasts first
-				document.querySelectorAll(".toast-item").forEach((toast) => {
-					const instance = window.bootstrap.Toast.getInstance(toast);
+	// 		if (toastElement && window.bootstrap) {
+	// 			// Hide any currently visible toasts first
+	// 			document.querySelectorAll(".toast-item").forEach((toast) => {
+	// 				const instance = window.bootstrap.Toast.getInstance(toast);
 
-					if (instance) {
-						instance.hide();
-					}
-				});
+	// 				if (instance) {
+	// 					instance.hide();
+	// 				}
+	// 			});
 
-				// Wait a bit to ensure previous toast is completely hidden, then show new one
-				setTimeout(() => {
-					// Dispose of existing instance to reset state
-					const existingInstance = window.bootstrap.Toast.getInstance(toastElement);
+	// 			// Wait a bit to ensure previous toast is completely hidden, then show new one
+	// 			setTimeout(() => {
+	// 				// Dispose of existing instance to reset state
+	// 				const existingInstance = window.bootstrap.Toast.getInstance(toastElement);
 
-					if (existingInstance) {
-						existingInstance.dispose();
-					}
+	// 				if (existingInstance) {
+	// 					existingInstance.dispose();
+	// 				}
 
-					// Create fresh instance and show
-					const newInstance = new window.bootstrap.Toast(toastElement, {
-						autohide: true,
-						delay: 5000,
-					});
-					newInstance.show();
-				}, 200); // Small delay to ensure clean state
-			}
-		}
-	}, [messageData, messageType, messageId]); // Include messageId in dependency array
+	// 				// Create fresh instance and show
+	// 				const newInstance = new window.bootstrap.Toast(toastElement, {
+	// 					autohide: true,
+	// 					delay: 5000,
+	// 				});
+	// 				newInstance.show();
+	// 			}, 200); // Small delay to ensure clean state
+	// 		}
+	// 	}
+	// }, [messageData, messageType, messageId]); // Include messageId in dependency array
 
 	// Function to get icon based on toast type
 	const getToastIcon = (type) => {
@@ -193,7 +193,7 @@ export function ToastsComponent() {
 							</button>
 						</div>
 
-						<div className="toast-body">{messageType === "success" ? messageData : ""}</div>
+						{/* <div className="toast-body">{messageType === "success" ? messageData : ""}</div> */}
 					</div>
 
 					<div className="toast-progress">
@@ -244,7 +244,7 @@ export function ToastsComponent() {
 							</button>
 						</div>
 
-						<div className="toast-body">{messageType === "error" ? messageData : ""}</div>
+						{/* <div className="toast-body">{messageType === "error" ? messageData : ""}</div> */}
 					</div>
 
 					<div className="toast-progress">

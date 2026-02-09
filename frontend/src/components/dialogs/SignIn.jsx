@@ -88,7 +88,7 @@ export function SignInComponent({ preventClose = false }) {
 
 						<fieldset className="modal-body mx-n2 mb-5">
 							{/* Email */}
-							<div className="input_wrapper_spacing mb-3">
+							<div className="input_wrap_space mb-3">
 								<div className="form-floating">
 									<input
 										className="form-control"
@@ -114,7 +114,7 @@ export function SignInComponent({ preventClose = false }) {
 							</div>
 
 							{/* Password */}
-							<div className="input_wrapper_spacing mb-3">
+							<div className="input_wrap_space mb-3">
 								<div className="form-floating">
 									<input
 										className="form-control"
@@ -140,7 +140,7 @@ export function SignInComponent({ preventClose = false }) {
 							</div>
 
 							{/* Remember me */}
-							<div className="input_wrapper_spacing d-flex flex-wrap justify-content-between mb-3">
+							<div className="input_wrap_space d-flex flex-wrap justify-content-between mb-3">
 								<button
 									className={`btn_bg_second ${isSubmitting ? "pe-none opacity-50" : ""}`}
 									type="submit"
@@ -149,7 +149,7 @@ export function SignInComponent({ preventClose = false }) {
 								</button>
 							</div>
 
-							<div className="input_wrapper_spacing d-flex flex-wrap justify-content-between">
+							<div className="input_wrap_space d-flex flex-wrap justify-content-between">
 								<button
 									className={`btn_bg_third flex-fill ${isSubmitting ? "pe-none opacity-50" : ""}`}
 									type="submit"

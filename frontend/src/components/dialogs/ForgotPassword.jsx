@@ -113,7 +113,7 @@ export function ForgotPasswordComponent({ lang }) {
 							</div>
 
 							{/* Email */}
-							<div className="input_wrapper_spacing mb-3">
+							<div className="input_wrap_space mb-3">
 								<div className="form-floating">
 									<input
 										className="form-control"
@@ -137,7 +137,7 @@ export function ForgotPasswordComponent({ lang }) {
 							</div>
 
 							{/* Submit */}
-							<div className="input_wrapper_spacing d-flex flex-wrap justify-content-end">
+							<div className="input_wrap_space d-flex flex-wrap justify-content-end">
 								<button
 									className={`btn_bg_first ${isSubmitting ? "pe-none opacity-50" : ""}`}
 									type="submit"

@@ -26,9 +26,9 @@ export default async function HomeLayout({ children, params }) {
 
 	return (
 		<>
-			<div className="boilerplate_layout grid_cont footer order-2 order-xl-0">{/* content */}</div>
+			<div className="home_layout grid_cont footer order-2 order-xl-0">{/* content */}</div>
 
-			<div className="boilerplate_layout grid_cont content order-1">{children}</div>
+			<div className="home_layout grid_cont content order-1">{children}</div>
 		</>
 	);
 }

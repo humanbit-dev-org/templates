@@ -13,10 +13,11 @@ import * as constants from "@/config/constants";
 import MetadataSetup, { FontsLoader, GlobalScripts } from "@/config/metadata-setup";
 import { ClientProvider } from "@/providers/Client";
 import { getDictionary } from "@/app/dictionaries"; // TODO: Keep this here?
-import { TranslateProvider } from "@/providers/Translate"; // Provides translation context and hook access for `lang` and `translates`
 import { getServer } from "@/lib/server";
 import { klaroConfig } from "@/config/klaro-config"; // cookie configuration
 import { KlaroCookieConsent } from "@/config/klaro-cookie-consent"; // cookie handling
+import { TranslateProvider } from "@/providers/Translate"; // Provides translation context and hook access for `lang` and `translates`
+import { ApiProvider } from "@/providers/API"; // Provides API context and hook access for `api`
 
 // USER PROMPTS (modals | toasts)
 import { ForgotPasswordComponent } from "@/components/dialogs/ForgotPassword";
@@ -39,9 +40,9 @@ import "./layout.scss";
 export const viewport = {
 	width: "device-width, shrink-to-fit=no",
 	initialScale: 1.0,
-	userScalable: false,
+	userScalable: true,
 	minimumScale: 1.0,
-	maximumScale: 1.0,
+	maximumScale: 5.0,
 	shrinkToFit: false,
 	interactiveWidget: "resizes-visual", // Also supported but less commonly used
 };
@@ -50,8 +51,17 @@ export const viewport = {
 //
 // https://nextjs.org/docs/app/api-reference/functions/generate-metadata
 export async function generateMetadata({ params }) {
-	const ssr = await getServer(); // Get server-side context
 	const { lang } = await params; // Get language from route params
+	const ssr = await getServer(); // Get server-side context
+
+	// Control SEO generation:
+	// Set to `true` to skip SEO (for intranet or non-public builds)
+	// Set to `false` to enable full SEO metadata fetching (default)
+	if (false) {
+		// Skip SEO, return only favicon and core metadata
+		return await MetadataSetup(lang, {}, { seoMetadata: false });
+	}
+
 	const url = `${constants.BACKEND_URL_SERVER}/api/${lang}/${ssr.page}/seo`; // Construct the URL for the SEO metadata API
 
 	try {
@@ -65,15 +75,15 @@ export async function generateMetadata({ params }) {
 			},
 		});
 
-		// Exit early if the request fails
+		// Exit early if any request fails
 		if (!response.ok) {
-			console.error("SEO fetch failed:", response.status, url);
-			return {};
+			console.error("SEO fetch failed:", response.status, url); // Log the failure
+			return await MetadataSetup(lang, {}, { seoMetadata: false }); // Return empty metadata
 		}
 
 		// Parse the JSON response and format it
 		const rawMetadata = await response.json(); // Raw API response
-		const metadataJson = await MetadataSetup(rawMetadata, lang); // Structured SEO metadata
+		const metadataJson = await MetadataSetup(lang, rawMetadata, { seoMetadata: true }); // Structured SEO metadata
 
 		// Inject the processed metadata and append additional headers
 		return {
@@ -82,7 +92,7 @@ export async function generateMetadata({ params }) {
 		};
 	} catch (error) {
 		console.error("SEO fetch error:", error); // Log unexpected fetch or parsing errors
-		return {}; // Return empty metadata on failure
+		return await MetadataSetup(lang, {}, { seoMetadata: false }); // Return empty metadata on failure
 	}
 }
 
@@ -104,30 +114,36 @@ export default async function RootLayout({ children, params }) {
 	const translates = await getDictionary(lang);
 
 	return (
-		<html lang={lang} className={fontClasses}>
+		<html lang={lang} className={fontClasses} data-scroll-behavior="smooth">
 			{/* <body className="bg_color_white fx_load"> */}
 			<body className="bg_color_white">
 				{/* USER AND LOCALE CONTEXT (navbar | footer) */}
 				<ClientProvider lang={lang} dict={translates}>
 					<TranslateProvider lang={lang} translates={translates}>
-						<div className="root_layout container_structure container-fluid">
-							<div className="grid_cont navbar row justify-content-center position-sticky">
-								{/* <NavSideBurgerComponent menu={menuResponseJson} /> */}
-								{/* <NavSlideTopComponent /> */}
+						<ApiProvider lang={lang}>
+							<div className="root_layout container_structure container-fluid row flex-column mx-auto w-100 min-vh-100 position-relative">
+								<div className="grid_cont navbar row justify-content-center position-sticky top-0 start-0">
+									{/* <NavSideBurgerComponent menu={menuResponseJson} /> */}
+									{/* <NavSlideTopComponent /> */}
+								</div>
+
+								<div className="grid_cont content">{children}</div>
+
+								{/* <div className="grid_cont footer">
+									<FooterComponent />
+								</div> */}
 							</div>
 
-							{children}
-						</div>
+							{/* PROJECT UTILITIES (scripts | cookies) */}
+							<GlobalScripts />
+							<KlaroCookieConsent config={klaroConfig} />
 
-						{/* PROJECT UTILITIES (scripts | cookies) */}
-						<GlobalScripts />
-						<KlaroCookieConsent config={klaroConfig} />
-
-						{/* USER PROMPTS (modals | toasts) */}
-						<ForgotPasswordComponent lang={lang} />
-						<PasswordResetComponent lang={lang} />
-						<RegisterComponent lang={lang} />
-						<SignInComponent lang={lang} />
+							{/* USER PROMPTS (modals | toasts) */}
+							<ForgotPasswordComponent lang={lang} />
+							<PasswordResetComponent lang={lang} />
+							<RegisterComponent lang={lang} />
+							<SignInComponent lang={lang} />
+						</ApiProvider>
 					</TranslateProvider>
 				</ClientProvider>
 			</body>

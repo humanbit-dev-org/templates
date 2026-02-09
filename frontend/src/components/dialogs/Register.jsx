@@ -115,11 +115,11 @@ export function RegisterComponent({}) {
 
 						<fieldset className="modal-body row mx-n2 mb-5">
 							{/* Name */}
-							<div className="input_wrapper_spacing col-12 col-lg-6 mb-3">
+							<div className="input_wrap_space col-12 col-lg-6 mb-3">
 								<div className="form-floating">
 									<input
 										className="form-control"
-										id="RegisterName"
+										id="registerName"
 										type="text"
 										value={name}
 										onChange={(event) => setName(event.target.value)}
@@ -128,7 +128,7 @@ export function RegisterComponent({}) {
 										placeholder={translates?.["all"]?.["name"]?.[`text_${lang}`] ?? "Translate fallback"}
 									/>
 
-									<label className="label" htmlFor="RegisterName">
+									<label className="label" htmlFor="registerName">
 										{translates?.["all"]?.["name"]?.[lang] ?? "Translate fallback"}
 									</label>
 
@@ -139,11 +139,11 @@ export function RegisterComponent({}) {
 							</div>
 
 							{/* Surname */}
-							<div className="input_wrapper_spacing col-12 col-lg-6 mb-3">
+							<div className="input_wrap_space col-12 col-lg-6 mb-3">
 								<div className="form-floating">
 									<input
 										className="form-control"
-										id="RegisterSurname"
+										id="registerSurname"
 										type="text"
 										value={surname}
 										onChange={(event) => setSurname(event.target.value)}
@@ -154,7 +154,7 @@ export function RegisterComponent({}) {
 										}
 									/>
 
-									<label className="label" htmlFor="RegisterSurname">
+									<label className="label" htmlFor="registerSurname">
 										{translates?.["all"]?.["surname"]?.[lang] ?? "Translate fallback"}
 									</label>
 
@@ -165,11 +165,11 @@ export function RegisterComponent({}) {
 							</div>
 
 							{/* Username */}
-							<div className="input_wrapper_spacing col-12 col-lg-6 mb-3">
+							<div className="input_wrap_space col-12 col-lg-6 mb-3">
 								<div className="form-floating">
 									<input
 										className="form-control"
-										id="RegisterUsername"
+										id="registerUsername"
 										type="text"
 										value={username}
 										onChange={(event) => setUsername(event.target.value)}
@@ -180,7 +180,7 @@ export function RegisterComponent({}) {
 										}
 									/>
 
-									<label className="label" htmlFor="RegisterUsername">
+									<label className="label" htmlFor="registerUsername">
 										{translates?.["all"]?.["username"]?.[lang] ?? "Translate fallback"}
 									</label>
 
@@ -191,14 +191,14 @@ export function RegisterComponent({}) {
 							</div>
 
 							{/* Email */}
-							<div className="input_wrapper_spacing col-12 col-lg-6 mb-3">
+							<div className="input_wrap_space col-12 col-lg-6 mb-3">
 								<div className="form-floating">
 									<input
 										className={
 											searchParams.get("invite") ? "form-control pe-none opacity-75" : "form-control"
 										}
 										readOnly={searchParams.get("invite") ? true : false}
-										id="RegisterEmail"
+										id="registerEmail"
 										type="email"
 										value={email}
 										onChange={(event) => setEmail(event.target.value)}
@@ -208,7 +208,7 @@ export function RegisterComponent({}) {
 										}
 									/>
 
-									<label className="label" htmlFor="RegisterEmail">
+									<label className="label" htmlFor="registerEmail">
 										{translates?.[`all`]?.["email"]?.[lang] ?? "Translate fallback"}
 									</label>
 
@@ -219,11 +219,11 @@ export function RegisterComponent({}) {
 							</div>
 
 							{/* Address */}
-							<div className="input_wrapper_spacing col-12 col-lg-6 mb-3">
+							<div className="input_wrap_space col-12 col-lg-6 mb-3">
 								<div className="form-floating">
 									<input
 										className="form-control"
-										id="RegisterAddress"
+										id="registerAddress"
 										type="text"
 										value={address}
 										onChange={(event) => setAddress(event.target.value)}
@@ -234,7 +234,7 @@ export function RegisterComponent({}) {
 										}
 									/>
 
-									<label className="label" htmlFor="RegisterAddress">
+									<label className="label" htmlFor="registerAddress">
 										{translates?.["all"]?.["address"]?.[lang] ?? "Translate fallback"}
 									</label>
 
@@ -246,11 +246,11 @@ export function RegisterComponent({}) {
 
 							{/* Phone */}
 
-							<div className="input_wrapper_spacing col-12 col-lg-6 mb-3">
+							<div className="input_wrap_space col-12 col-lg-6 mb-3">
 								<div className="form-floating">
 									<input
 										className="form-control"
-										id="RegisterPhone"
+										id="registerPhone"
 										type="text"
 										value={phone}
 										onChange={(event) => setPhone(event.target.value)}
@@ -260,7 +260,7 @@ export function RegisterComponent({}) {
 										}
 									/>
 
-									<label className="label" htmlFor="RegisterPhone">
+									<label className="label" htmlFor="registerPhone">
 										{translates?.["all"]?.["phone"]?.[lang] ?? "Translate fallback"}
 									</label>
 
@@ -271,11 +271,11 @@ export function RegisterComponent({}) {
 							</div>
 
 							{/* Password */}
-							<div className="input_wrapper_spacing col-12 col-lg-6 mb-3">
+							<div className="input_wrap_space col-12 col-lg-6 mb-3">
 								<div className="form-floating">
 									<input
 										className="form-control"
-										id="RegisterPassword"
+										id="registerPassword"
 										type="password"
 										value={password}
 										onChange={(event) => setPassword(event.target.value)}
@@ -286,7 +286,7 @@ export function RegisterComponent({}) {
 										}
 									/>
 
-									<label className="label" htmlFor="RegisterPassword">
+									<label className="label" htmlFor="registerPassword">
 										{translates?.["all"]?.["password"]?.[lang] ?? "Translate fallback"}
 									</label>
 
@@ -297,11 +297,11 @@ export function RegisterComponent({}) {
 							</div>
 
 							{/* Confirm password */}
-							<div className="input_wrapper_spacing col-12 col-lg-6 mb-3">
+							<div className="input_wrap_space col-12 col-lg-6 mb-3">
 								<div className="form-floating">
 									<input
 										className="form-control"
-										id="passwordConfirmation"
+										id="registerPasswordConfirmation"
 										type="password"
 										value={passwordConfirmation}
 										onChange={(event) => setPasswordConfirmation(event.target.value)}
@@ -312,7 +312,7 @@ export function RegisterComponent({}) {
 										}
 									/>
 
-									<label className="label" htmlFor="passwordConfirmation">
+									<label className="label" htmlFor="registerPasswordConfirmation">
 										{translates?.["all"]?.["confirm_password"]?.[lang] ?? "Translate fallback"}
 									</label>
 
@@ -323,7 +323,7 @@ export function RegisterComponent({}) {
 							</div>
 
 							{/* Submit */}
-							<div className="input_wrapper_spacing d-flex flex-wrap justify-content-end">
+							<div className="input_wrap_space d-flex flex-wrap justify-content-end">
 								<button
 									className={`btn_bg_second ${isSubmitting ? "pe-none opacity-50" : ""}`}
 									type="submit"

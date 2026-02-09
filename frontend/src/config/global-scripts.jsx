@@ -169,10 +169,10 @@ export function GlobalScripts() {
 		<>
 			<Script
 				src="/js/__bundle.globals.js"
-				id="fxMove"
+				id="bundleGlobals"
 				strategy="lazyOnload"
 				onReady={() => {
-					window.fxLoad?.();
+					window.fxLoad?.(); // TODO: probably causes double click on links
 					window.fxMove?.(".fx");
 
 					window.addEventListener(

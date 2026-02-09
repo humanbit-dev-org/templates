@@ -34,11 +34,17 @@ export function middleware(request) {
 	const { pathname, searchParams } = request.nextUrl;
 
 	// Determine the preferred locale
-	let locale = getLocaleFromCookie(request) || getLocaleFromHeader(request) || defaultLocale;
+	let locale = getLocaleFromCookie(request) || getLocaleFromHeader(request);
 
+	// Fallback to default locale if resolved locale is not supported
+	if (!locales.includes(locale)) {
+		locale = defaultLocale;
+	}
+
+	// Extract locale segment from the URL path, if present
 	const pathLocale = extractLocaleFromPath(pathname);
 
-	// Allow `.css.map` files to load normally
+	// Bypass middleware for CSS source maps to avoid breaking DevTools asset resolution
 	if (pathname.endsWith(".css.map")) {
 		return NextResponse.next();
 	}

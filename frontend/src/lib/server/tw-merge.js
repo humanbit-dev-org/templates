@@ -11,7 +11,7 @@ const customTwMerge = createTailwindMerge(() => {
 
 	return {
 		...defaultConfig,
-		prefix: "tw_", // Use the same prefix as in your Tailwind CSS config
+		prefix: "tw:", // Use the same prefix as in your Tailwind CSS config
 	};
 });
 

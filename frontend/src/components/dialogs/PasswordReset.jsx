@@ -147,7 +147,7 @@ export function PasswordResetComponent() {
 				<div className="modal-dialog modal-dialog-centered">
 					<form className="modal-content color_first border border_color_third p-3 p-md-5" onSubmit={submitForm}>
 						<div className="modal-header mb-5">
-							<h5 className="modal-title big" id="registerModalLabel">
+							<h5 className="modal-title big" id="passwordResetModalLabel">
 								{translates?.["all"]?.["password_reset"]?.[lang] ?? "Translate fallback"}
 							</h5>
 						</div>
@@ -169,10 +169,10 @@ export function PasswordResetComponent() {
 							{/* <InputError messages={errors?.email} className="mt-2" /> */}
 
 							{/* Password */}
-							<div className="input_wrapper_spacing col-12 col-lg-6 mb-3">
+							<div className="input_wrap_space col-12 col-lg-6 mb-3">
 								<div className="form-floating">
 									<input
-										id="password"
+										id="resetPassword"
 										type="password"
 										value={password ? password : ""}
 										className="form-control"
@@ -183,7 +183,7 @@ export function PasswordResetComponent() {
 										required
 									/>
 
-									<label className="label" htmlFor="password">
+									<label className="label" htmlFor="resetPassword">
 										{translates?.["all"]?.["password"]?.[lang] ?? "Translate fallback"}
 									</label>
 
@@ -198,10 +198,10 @@ export function PasswordResetComponent() {
 							</div>
 
 							{/* Confirm Password */}
-							<div className="input_wrapper_spacing col-12 col-lg-6 mb-3">
+							<div className="input_wrap_space col-12 col-lg-6 mb-3">
 								<div className="form-floating">
 									<input
-										id="passwordConfirmation"
+										id="resetPasswordConfirmation"
 										type="password"
 										value={passwordConfirmation ? passwordConfirmation : ""}
 										className="form-control"
@@ -213,7 +213,7 @@ export function PasswordResetComponent() {
 										required
 									/>
 
-									<label className="label" htmlFor="passwordConfirmation">
+									<label className="label" htmlFor="resetPasswordConfirmation">
 										{translates?.["all"]?.["confirm_password"]?.[lang] ?? "Translate fallback"}
 									</label>
 
@@ -226,7 +226,7 @@ export function PasswordResetComponent() {
 								</div>
 							</div>
 
-							<div className="input_wrapper_spacing d-flex flex-wrap justify-content-end">
+							<div className="input_wrap_space d-flex flex-wrap justify-content-end">
 								<button
 									className={`btn_bg_second ${isSubmitting ? "pe-none opacity-50" : ""}`}
 									type="submit"

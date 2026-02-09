@@ -10,12 +10,12 @@ export { GlobalScripts } from "@/config/global-scripts";
 // ## ############################################
 // ===============================================
 
-export default async function MetadataSetup(metadataJson, lang) {
-	// Dynamically fetch SEO metadata
-	const dynamicSeo = await SeoManager(metadataJson, lang);
+export default async function MetadataSetup(lang, metadataJson, { seoMetadata = true } = {}) {
+	// Conditionally fetch SEO metadata
+	const dynamicSeo = seoMetadata ? await SeoManager(lang, metadataJson) : {};
 
 	return {
-		...FaviconGenerator, // Structure favicon metadata
 		...dynamicSeo, // Handle SEO metadata
+		...FaviconGenerator, // Structure favicon metadata
 	};
 }

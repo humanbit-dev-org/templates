@@ -1,0 +1,108 @@
+/**
+ * DataTables Bootstrap 5 Overrides
+ * This file ensures DataTables styles work correctly with our custom theme
+ * and don't override our custom styles
+ */
+
+/* Ensure DataTables uses our theme variables */
+.dataTables_wrapper .dataTables_length,
+.dataTables_wrapper .dataTables_filter,
+.dataTables_wrapper .dataTables_info,
+.dataTables_wrapper .dataTables_paginate {
+    color: var(--tblr-body-color);
+}
+
+.dataTables_wrapper .dataTables_filter input,
+.dataTables_wrapper .dataTables_length select {
+    background-color: var(--tblr-bg-surface);
+    border-color: var(--tblr-border-color);
+    color: var(--tblr-body-color);
+}
+
+.dataTables_wrapper .dataTables_filter input:focus,
+.dataTables_wrapper .dataTables_length select:focus {
+    border-color: var(--tblr-primary);
+    box-shadow: 0 0 0 0.25rem var(--tblr-focus-ring-color);
+}
+
+/* Table styles */
+.dataTables_wrapper table.dataTable {
+    border-color: var(--tblr-border-color);
+}
+
+.dataTables_wrapper table.dataTable thead th {
+    background-color: var(--tblr-bg-surface-tertiary);
+    color: var(--tblr-body-color);
+    border-color: var(--tblr-border-color);
+}
+
+.dataTables_wrapper table.dataTable tbody td {
+    border-color: var(--tblr-border-color);
+}
+
+.dataTables_wrapper table.dataTable tbody tr:hover {
+    background-color: rgba(var(--tblr-primary-rgb), 0.03);
+}
+
+/* Pagination */
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+    color: var(--tblr-link-color) !important;
+    border-color: var(--tblr-border-color) !important;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+    background: var(--tblr-primary-bg-subtle) !important;
+    border-color: var(--tblr-primary) !important;
+    color: var(--tblr-primary) !important;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button.current {
+    background: var(--tblr-primary) !important;
+    border-color: var(--tblr-primary) !important;
+    color: var(--tblr-white) !important;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
+    background: var(--tblr-primary) !important;
+    color: var(--tblr-white) !important;
+}
+
+/* Dark mode overrides */
+[data-bs-theme=dark] .dataTables_wrapper .dataTables_filter input,
+[data-bs-theme=dark] .dataTables_wrapper .dataTables_length select {
+    background-color: var(--tblr-bg-surface);
+    border-color: var(--tblr-primary-border-subtle);
+    color: var(--tblr-body-color);
+}
+
+[data-bs-theme=dark] .dataTables_wrapper table.dataTable thead th {
+    background-color: var(--tblr-bg-surface-tertiary);
+    color: var(--tblr-body-color);
+}
+
+[data-bs-theme=dark] .dataTables_wrapper table.dataTable tbody tr:hover {
+    background-color: rgba(var(--tblr-primary-rgb), 0.1);
+}
+
+/* Fixed header */
+.dataTables_wrapper .fixedHeader-floating {
+    background-color: var(--tblr-bg-surface);
+    border-color: var(--tblr-border-color);
+}
+
+/* Responsive */
+.dataTables_wrapper .dtr-details {
+    background-color: var(--tblr-bg-surface);
+    border-color: var(--tblr-border-color);
+    color: var(--tblr-body-color);
+}
+
+/* Ensure our custom table styles take priority */
+.dataTables_wrapper .table-content {
+    max-height: 75vh !important;
+    overflow-y: auto !important;
+}
+
+.dataTables_wrapper tfoot {
+    display: none !important;
+}

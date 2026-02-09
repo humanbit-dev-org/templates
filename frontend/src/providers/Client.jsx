@@ -17,36 +17,35 @@ const ClientContext = createContext();
 // Fetch the current authenticated user from the Laravel API (with XSRF protection)
 async function fetchUser(lang) {
 	try {
-
 		// Extract the XSRF token from browser cookies (Session Cookie Authentication)
-		// const xsrfToken = document.cookie
-		// 	.split("; ")
-		// 	.find((row) => row.startsWith("XSRF-TOKEN"))
-		// 	?.split("=")[1];
-
-		// Extract the API token from browser cookies (API Token Authentication)
-		const apiToken = document.cookie
+		const xsrfToken = document.cookie
 			.split("; ")
-			.find((row) => row.startsWith("apiToken"))
+			.find((row) => row.startsWith("XSRF-TOKEN"))
 			?.split("=")[1];
 
+		// Extract the API token from browser cookies (API Token Authentication)
+		// const apiToken = document.cookie
+		// 	.split("; ")
+		// 	.find((row) => row.startsWith("apiToken"))
+		// 	?.split("=")[1];
+
 		// If no token is found, log a warning and return early
-		if (!apiToken) {
-			console.warn("API token is missing");
-			return undefined;
-		}
+		// if (!apiToken) {
+		// 	console.warn("API token is missing");
+		// 	return undefined;
+		// }
 
 		// Make a secure request to the Laravel API to get the current user credentials
 		const userResponse = await fetch(`${constants.BACKEND_URL_CLIENT}/api/user`, {
 			method: "GET",
-			//credentials: "include", // Session Cookie Authentication
+			credentials: "include", // Session Cookie Authentication
 			headers: {
 				"Accept": "application/json",
 				"Content-Type": "application/json",
-				//"Referer": constants.APP_URL, // Session Cookie Authentication
-				"Authorization": "Bearer " + apiToken, // API Token Authentication
-				//"X-XSRF-TOKEN": xsrfToken, // Pass XSRF token for CSRF protection (Session Cookie Authentication)
+				"Referer": constants.APP_URL, // Session Cookie Authentication
+				"X-XSRF-TOKEN": xsrfToken, // Pass XSRF token for CSRF protection (Session Cookie Authentication)
 				"X-Locale": lang, // Pass user locale
+				// "Authorization": "Bearer " + apiToken, // API Token Authentication
 			},
 		});
 
@@ -81,13 +80,12 @@ export function ClientProvider({ children, lang }) {
 	useEffect(() => {
 		// Fetch and store the current user when the path changes
 		const fetchUserFunction = async () => {
-			const user = await fetchUser(lang);
-			console.log(user);
+			const user = await fetchUser(lang, token);
 			setUser(user);
 		};
 
 		fetchUserFunction();
-	}, [pathInfo.pathname]); // Re-run if pathname changes
+	}, [pathInfo.pathname, lang]); // Re-run if pathname changes
 
 	const values = {
 		// globalState,

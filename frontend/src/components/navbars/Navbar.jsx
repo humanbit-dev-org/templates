@@ -1,17 +1,20 @@
-"use client";
+"use client"; // marks module for full browser execution
+//
+// import { NavbarComponent } from "@/components/<filename>"; // File import statement
 
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import * as constants from "@/config/constants";
+import { fetchCsrf } from "@/hooks/fetchCsrf";
+import { useClient } from "@/providers/Client"; // Provide client-only values to the current component {CSR}
 import { usePathname } from "next/navigation";
 import { useTranslate } from "@/providers/Translate"; // Provides translation context and hook access for `lang` and `translates`
-import { fetchCsrf } from "@/hooks/fetchCsrf";
-
 import "./Navbar.scss";
 
-// UTILITY IMPORTS:
-import { useClient } from "@/providers/Client"; // Provide client-only values to the current component {CSR}
+// ===============================================
+// ## ############################################
+// ===============================================
 
 export const NavbarComponent = function ({ ...props }) {
 	const [loading, setLoading] = useState(true);
@@ -38,7 +41,7 @@ export const NavbarComponent = function ({ ...props }) {
 		}
 	}, [pathName]);
 
-	// Aggiungi l'effetto per rilevare lo scroll
+	// Add the effect to detect scrolling
 	// useEffect(() => {
 	// 	const handleScroll = () => {
 	// 		if (window.scrollY > 50) {
@@ -76,7 +79,7 @@ export const NavbarComponent = function ({ ...props }) {
 
 		const xsrfToken = await fetchCsrf();
 
-		const fetchPath = constants.BACKEND_URL_CLIENT + "/logout";
+		const fetchPath = constants.BACKEND_URL_CLIENT + "/api/logout";
 
 		const logoutRequest = new Request(fetchPath, {
 			method: "POST",
@@ -86,6 +89,7 @@ export const NavbarComponent = function ({ ...props }) {
 				"X-Requested-With": "XMLHttpRequest",
 				"Content-Type": "application/json",
 				"X-XSRF-TOKEN": xsrfToken,
+				// "Authorization": "Bearer " + apiToken,
 			},
 		});
 
@@ -94,6 +98,7 @@ export const NavbarComponent = function ({ ...props }) {
 			if (!logoutResponse.ok) {
 				throw new Error("Logout failed");
 			}
+			// document.cookie = "apiToken=; Path=/; Max-Age=0; SameSite=Lax";
 			window.location.href = "/";
 		} catch (error) {
 			console.error("Error logging out:", error);
@@ -105,6 +110,33 @@ export const NavbarComponent = function ({ ...props }) {
 			<nav className={`nav_slide_top rounded-3 navbar ${isScrolled ? "scrolled" : ""}`}>
 				<div className="navbar_container_full cont_space_1 color_white container-fluid row justify-content-between align-items-center py-0">
 					<div className="menu_navbar cont_mw_1 row justify-content-between align-items-center">
+						<nav className="skiplinks" aria-label="Scorciatoie di navigazione">
+							<ul>
+								<li className="visually-hidden-focusable">
+									<a
+										className="color_black"
+										href="#help_form_modal"
+										data-bs-toggle="modal"
+										role="button"
+										aria-label="Assistenza">
+										Hai bisogno di assistenza?
+									</a>
+								</li>
+
+								<li className="visually-hidden-focusable">
+									<a className="color_black" href="#main" data-focus-mouse="false">
+										Vai al contenuto
+									</a>
+								</li>
+
+								<li className="visually-hidden-focusable">
+									<a className="color_black" href="#footer">
+										Vai al footer
+									</a>
+								</li>
+							</ul>
+						</nav>
+
 						<div className="collapse_nav navbar-nav row flex-row align-items-end col-12 py-4">
 							{/* logo */}
 							<Link
@@ -295,10 +327,3 @@ export const NavbarComponent = function ({ ...props }) {
 		</div>
 	);
 };
-
-<style jsx>
-	{`.semicerchio
-		background-color: #ffffff !important;
-		clip-path: ellipse(50% 50% at 50% 0) !important;
-	`}
-</style>;

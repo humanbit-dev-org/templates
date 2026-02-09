@@ -1,9 +1,7 @@
 "use client";
 
-import { useAuth } from "@/hooks/auth";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import { useEffect, useState } from "react";
 import Image from "next/image";
 
 export const FooterSimple = function ({ logo }) {
@@ -40,15 +38,15 @@ export const FooterSimple = function ({ logo }) {
 							<p className="footer_text d-inline-block">info@humanbit.com</p>
 						</a>
 
-						<div className="service_wrapper d-flex flex-wrap color_gray_footer my-0 ps-0">
+						<div className="service_wrapper d-flex flex-wrap color_gray_medium my-0 ps-0">
 							{/* <xsl:choose>
-                                <xsl:when test="lan='it'">
-                                    <a className="service_link text-uppercase p-0" href="" target="_blank">Privacy</a>
-                                </xsl:when>
-                                <xsl:otherwise>
-                                    <a className="service_link text-uppercase p-0" href="" target="_blank">Privacy</a>
-                                </xsl:otherwise>
-                            </xsl:choose> */}
+								<xsl:when test="lan='it'">
+									<a className="service_link text-uppercase p-0" href="" target="_blank">Privacy</a>
+								</xsl:when>
+								<xsl:otherwise>
+									<a className="service_link text-uppercase p-0" href="" target="_blank">Privacy</a>
+								</xsl:otherwise>
+							</xsl:choose> */}
 							<Link
 								href={{
 									pathname: `${pathName}/prova`,
@@ -57,7 +55,7 @@ export const FooterSimple = function ({ logo }) {
 								{true === true ? "IT" : "EN"}
 							</Link>
 
-							<p className="copyright_text">© 2022 Humanbit</p>
+							<p className="copyright_text">© 2026 Humanbit</p>
 						</div>
 					</div>
 				</div>

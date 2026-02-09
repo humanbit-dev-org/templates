@@ -9,7 +9,28 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Parses the environment variable into a URL object so you can access protocol, hostname, etc.
-const url = new URL(process.env.NEXT_PUBLIC_BACKEND_URL_CLIENT);
+// const url = new URL(process.env.NEXT_PUBLIC_BACKEND_URL_CLIENT);
+/**
+ * Safely parse backend URL.
+ * - During `next build` (Docker): env may be undefined → do nothing
+ * - During runtime (`next start`): env exists → parsed
+ */
+let backendUrl = null;
+
+// Read and validate the backend URL used by the frontend
+// ------------------------------------------------------
+// - Only runs if the environment variable is defined
+// - Converts the string into a URL object for safe parsing
+// - Falls back to null if the value is missing or invalid
+try {
+	const backendUrlValue = process.env.NEXT_PUBLIC_BACKEND_URL_CLIENT || "";
+
+	if (backendUrlValue) {
+		backendUrl = new URL(String(backendUrlValue));
+	}
+} catch {
+	backendUrl = null;
+}
 
 /** @type {import('next').NextConfig} */
 // Webpack configuration (default engine)
@@ -91,18 +112,29 @@ const nextConfig = {
 		deviceSizes: [640, 750, 828, 1080, 1200, 1920, 3840, 5000], // Add larger sizes
 		imageSizes: [16, 32, 48, 64, 96, 128, 256, 384], // Default thumbnails
 		remotePatterns: [
-			// Development
-			{
-				protocol: url.protocol.slice(0, -1), // "http:" → "http"
-				hostname: url.hostname, // "localhost"
-				port: url.port, // Empty string if no explicit port
-			},
-			// Production (same host, but always HTTPS)
-			{
-				protocol: "https",
-				hostname: url.hostname,
-			},
-			// External
+			// ==========================================================
+			// Internal sources
+			// ----------------------------------------------------------
+			...(backendUrl
+				? [
+						// Development:
+						// Use the backend URL as-is (protocol, host, and port)
+						{
+							protocol: backendUrl.protocol.replace(":", ""), // "http:" → "http"
+							hostname: backendUrl.hostname, // "localhost"
+							port: backendUrl.port || "", // Empty string if no explicit port
+						},
+						// Production:
+						// Same host, but always served over HTTPS
+						{
+							protocol: "https",
+							hostname: backendUrl.hostname,
+						},
+					]
+				: []),
+			// ==========================================================
+			// External sources
+			// ----------------------------------------------------------
 			{
 				protocol: "https",
 				hostname: "api.dicebear.com",
@@ -120,6 +152,32 @@ const nextConfig = {
 			{
 				source: "/lang/:lang",
 				destination: "/frontend/lang/:lang", // Serve from the `/frontend/lang` folder
+			},
+		];
+	},
+
+	async headers() {
+		const enabled = String(process.env.NEXT_IFRAME_ENABLE || "").toLowerCase() === "true";
+
+		const allowed = String(process.env.NEXT_ALLOWED_ORIGINS || "")
+			.split(",")
+			.map((s) => s.trim())
+			.filter(Boolean);
+
+		const list = allowed
+			.map((s) => String(s).trim())
+			.filter(Boolean)
+			.filter((s) => s.startsWith("http://") || s.startsWith("https://"));
+
+		const csp = enabled ? `frame-ancestors 'self' ${list.join(" ")};` : `frame-ancestors 'none';`;
+
+		return [
+			{
+				source: "/:path*",
+				headers: [
+					{ key: "Content-Security-Policy", value: csp },
+					...(enabled ? [] : [{ key: "X-Frame-Options", value: "DENY" }]),
+				],
 			},
 		];
 	},

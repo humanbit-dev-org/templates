@@ -20,7 +20,8 @@
 			right: 0%;
 			z-index: 1039;
 			// display: none;
-			background-color: $color_black;
+			background-color: rgba($color_black, 0.1);
+			backdrop-filter: blur(5px);
 			transform: translate3d(0px, 0%, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg);
 			transform-style: preserve-3d;
 			animation: fx_load 1s forwards;
@@ -55,7 +56,8 @@
 				left: 0%;
 				right: 0%;
 				z-index: 1039;
-				background-color: $color_black;
+				background-color: rgba($color_black, 0.1);
+				backdrop-filter: blur(5px);
 				transform: translate3d(0px, 100%, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg)
 					skew(0deg, 0deg);
 				transform-style: preserve-3d;
@@ -63,7 +65,8 @@
 
 				@keyframes script {
 					0% {
-						background-color: $color_black;
+						background-color: rgba($color_black, 0.1);
+						backdrop-filter: blur(5px);
 						transform: translate3d(0px, 100%, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg)
 							skew(0deg, 0deg);
 						will-change: transform;

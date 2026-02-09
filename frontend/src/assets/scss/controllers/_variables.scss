@@ -6,11 +6,26 @@
 // Colors //
 // ------ //
 
+// ACHROMATIC
+
 // Black
 $color_black: #000000;
 
 // White
 $color_white: #ffffff;
+
+// GRAYSCALE
+
+// Anti-Flash White
+$color_gray_light: #f2f2f2;
+
+// Platinum
+$color_gray_medium: #e6e6e6;
+
+// Philippine Silver
+$color_gray_dark: #b3b3b3;
+
+// MAIN
 
 // Yale Blue
 $color_first: #0e4c94;
@@ -42,23 +57,7 @@ $color_ninth: #008aaa;
 // Blue
 $color_tenth: #0000ff;
 
-// Anti-Flash White
-$color_gray_light: #f2f2f2;
-
-// Platinum
-$color_gray_medium: #e6e6e6;
-
-// Philippine Silver
-$color_gray_dark: #b3b3b3;
-
-// >>> Navbar background — START
-// :root {
-// 	--nav_bg_color_primary: #{$color_first};
-// 	--nav_bg_color_secondary: #{$color_second};
-// }
-// <<<<< Navbar background — END
-
-// Social networks. <<IN>> //
+// SOCIAL <<IN>> //
 // Facebook
 $color_facebook: #4267b2;
 
@@ -73,7 +72,14 @@ $color_email: #7d7d7d;
 
 // WhatsApp
 $color_whatsapp: #25d366;
-// Social networks. <<OUT>> //
+// SOCIAL <<OUT>> //
+
+// >>> Navbar background — START
+// :root {
+// 	--nav_bg_color_primary: #{$color_first};
+// 	--nav_bg_color_secondary: #{$color_second};
+// }
+// <<<<< Navbar background — END
 
 //
 // Navbar

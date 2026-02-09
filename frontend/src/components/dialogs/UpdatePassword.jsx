@@ -90,7 +90,7 @@ export function UpdatePasswordComponent({ user }) {
 			<form className="block_cont accordion accordion-flush color_white mt-4 mt-lg-0 ps-lg-1" onSubmit={submitForm}>
 				{warning && <fieldset className="mb-4 text-red-600">{warning}</fieldset>}
 
-				<fieldset className="block_wrap accordion-item bg_color_gd border border-top-lg-0 border_color_third obj_radius user-select-none">
+				<fieldset className="block_wrap accordion-item bg_color_gd border border-top-lg-0 border_color_third border_radius user-select-none">
 					<div className="group_cont accordion-header">
 						<h3
 							className="el_btn accordion-button kodchasan h6 fw-600 text-uppercase bg_color_transparent px-4 px-md-5 py-3 py-md-4 collapsed"
@@ -103,7 +103,7 @@ export function UpdatePasswordComponent({ user }) {
 				</fieldset>
 
 				<div className="block_wrap border-0 collapse" id="updatePassword">
-					<div className="group_cont accordion-body bg_color_gd obj_radius row align-items-start mt-4 px-4 px-md-5 py-5">
+					<div className="group_cont accordion-body bg_color_gd border_radius row align-items-start mt-4 px-4 px-md-5 py-5">
 						<fieldset className="group_wrap row mx-n2 mb-2">
 							<h6 className="text-uppercase text-black mb-3 px-2">
 								Change your password
@@ -111,7 +111,7 @@ export function UpdatePasswordComponent({ user }) {
 							</h6>
 
 							{/* Current password */}
-							<div className="input_wrapper_spacing col-12 mb-3">
+							<div className="input_wrap_space col-12 mb-3">
 								<div className="form-floating">
 									<input
 										className="form-control"
@@ -138,7 +138,7 @@ export function UpdatePasswordComponent({ user }) {
 							</div>
 
 							{/* New password */}
-							<div className="input_wrapper_spacing col-12 col-lg-6 mb-3">
+							<div className="input_wrap_space col-12 col-lg-6 mb-3">
 								<div className="form-floating">
 									<input
 										className="form-control"
@@ -165,7 +165,7 @@ export function UpdatePasswordComponent({ user }) {
 							</div>
 
 							{/* New password confirmation */}
-							<div className="input_wrapper_spacing col-12 col-lg-6 mb-3">
+							<div className="input_wrap_space col-12 col-lg-6 mb-3">
 								<div className="form-floating">
 									<input
 										className="form-control"
@@ -195,7 +195,7 @@ export function UpdatePasswordComponent({ user }) {
 
 						<fieldset className="group_wrap justify-content-center mx-n2 mt-auto">
 							{/* Submit */}
-							<div className="input_wrapper_spacing d-flex flex-wrap justify-content-end">
+							<div className="input_wrap_space d-flex flex-wrap justify-content-end">
 								<button
 									className={`el_btn btn_bg_first ${isSubmitting ? "pe-none opacity-50" : ""}`}
 									type="submit"
