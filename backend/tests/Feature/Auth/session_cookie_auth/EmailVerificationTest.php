@@ -36,7 +36,7 @@ class EmailVerificationTest extends TestCase
 
         Event::fake();
 
-        $verificationUrl = URL::temporarySignedRoute('verification.verify', now()->addMinutes(60), [
+        $verificationUrl = URL::temporarySignedRoute('user.verification.verify', now()->addMinutes(60), [
             'id' => $user->id,
             'hash' => sha1($user->email),
         ]);
@@ -59,7 +59,7 @@ class EmailVerificationTest extends TestCase
             'backpack_role_id' => BackpackRole::where('name', 'Guest')->first()->id,
         ]);
 
-        $verificationUrl = URL::temporarySignedRoute('verification.verify', now()->addMinutes(60), [
+        $verificationUrl = URL::temporarySignedRoute('user.verification.verify', now()->addMinutes(60), [
             'id' => $user->id,
             'hash' => sha1('wrong-email'),
         ]);
