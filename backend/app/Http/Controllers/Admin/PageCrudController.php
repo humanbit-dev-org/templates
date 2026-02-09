@@ -79,4 +79,9 @@ class PageCrudController extends CrudController
 	{
 		$this->setupCreateOperation();
 	}
+
+	protected function setupShowOperation()
+	{
+		HelperBackend::setFieldsShow(new \App\Models\Page());
+	}
 }

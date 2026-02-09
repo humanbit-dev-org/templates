@@ -42,7 +42,11 @@ return [
 
 	// FILTERS
 	"filters" => "Filtri",
+	"reset" => "reimposta risultati",
 	"warning_creating_with_filters" => "Attenzione: il nuovo record avrà campi pre-riempiti in base ai filtri attivi",
+	"warning_export_with_filters" => "Attenzione: l'export CSV includerà solo i record che corrispondono ai filtri attivi",
+	"empty" => "vuoto",
+	"not_empty" => "non vuoto",
 
 	// SORT
 	"sort" => "Ordina",
@@ -52,6 +56,8 @@ return [
 	"csv_export" => "Esporta CSV",
 	"csv_import" => "Importa CSV",
 	"csv_import_disabled" => "Import CSV disabilitato per la sezione :section",
+	"csv_export_in_progress" => "Esportazione in corso...",
+	"csv_export_timeout" => "L'export sta richiedendo più tempo del previsto. Controlla i download o riprova più tardi.",
 
 	// BULK OPERATIONS
 	"bulk_delete" => "Elimina elementi selezionati",
@@ -63,4 +69,8 @@ return [
 	"bulk_duplicate_confirmation_title" => "Elementi duplicati",
 	"bulk_duplicate_confirmation_message" => "Gli elementi selezionati sono stati duplicati con successo.",
 	"selected" => "elementi selezionati",
+
+	// RELATION PREVIEW TOOLTIPS
+	"relation_preview_tooltip" => "Visualizza anteprima",
+	"relation_preview_tooltip_no_relation" => "Per visualizzare l'anteprima è necessario collegare un'entità :fieldName",
 ];

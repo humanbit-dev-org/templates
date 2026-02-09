@@ -35,7 +35,7 @@ return [
 	// Should we warn the user before leaving the page with unsaved changes?
 	// NOTE: this works by removing all fields from the form data serialization where field name starts with "_" (underscore). Usualy backpack internal attributes.
 	// if you have fields that start with an underscore, you need to change the field name, or this functionality wont detect changes in that field.
-	"warnBeforeLeaving" => true,
+	"warnBeforeLeaving" => false,
 
 	// Before saving the entry, how would you like the request to be stripped?
 	//  - false - use Backpack's default (ONLY save inputs that have fields)

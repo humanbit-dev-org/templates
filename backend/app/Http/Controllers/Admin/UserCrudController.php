@@ -85,6 +85,9 @@ class UserCrudController extends CrudController
 			"type" => "password",
 			"value" => "",
 			"hint" => "Leave blank if you don't want to change the password.",
+			"tab" => "Avanzati",
+			"tab" => "Dati",
+			"wrapper" => ["class" => "form-group col-md-6"],
 		]);
 		if ($this->crud->getCurrentEntry() && $this->crud->getCurrentEntry()->email_verified_at) {
 			CRUD::addField([
@@ -93,6 +96,7 @@ class UserCrudController extends CrudController
 				"type" => "datetime",
 				"hint" => "Field not editable",
 				"attributes" => ["readonly" => "readonly"],
+				"tab" => "Avanzati",
 			]);
 		}
 		CRUD::getCurrentEntry()->saving(function ($entry) {
@@ -107,6 +111,6 @@ class UserCrudController extends CrudController
 
 	protected function setupShowOperation()
 	{
-		$this->setupListOperation();
+		HelperBackend::setFieldsShow(new \App\Models\User());
 	}
 }

@@ -11,6 +11,9 @@ use Illuminate\Support\Facades\Session;
 
 class MetadataController extends Controller
 {
+	/**
+	 * @unauthenticated
+	 */
 	public function index($lang, $page)
 	{
 		// Store the language in the session

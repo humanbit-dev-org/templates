@@ -2,7 +2,7 @@
 @if (!$crud->model->translationEnabled())
 
 {{-- Single edit button --}}
-<a href="{{ url($crud->route.'/'.$entry->getKey().'/edit') }}" bp-button="update" class="btn btn-link p-0" title="{{ trans('backpack::crud.edit') }}">
+<a href="{{ url($crud->route.'/'.$entry->getKey().'/edit') }}" bp-button="update" class="btn btn-sm btn-link p-0" title="{{ trans('backpack::crud.edit') }}">
 	<i class="la la-edit btn-actions"></i>
 </a>
 
@@ -10,13 +10,13 @@
 
 {{-- Edit button group --}}
 <div class="btn-group">
-	<a href="{{ url($crud->route.'/'.$entry->getKey().'/edit') }}" class="btn btn-sm btn-link pr-0">
+	<a href="{{ url($crud->route.'/'.$entry->getKey().'/edit') }}" class="btn btn-sm btn-link pe-0">
 		<span><i class="la la-edit"></i> {{ trans('backpack::crud.edit') }}</span>
 	</a>
-	<a class="btn btn-sm btn-link dropdown-toggle text-primary pl-1" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+	<a class="btn btn-sm btn-link dropdown-toggle text-primary ps-1" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 		<span class="caret"></span>
 	</a>
-	<ul class="dropdown-menu dropdown-menu-right">
+	<ul class="dropdown-menu dropdown-menu-end">
 		<li class="dropdown-header">{{ trans('backpack::crud.edit_translations') }}:</li>
 		@foreach ($crud->model->getAvailableLocales() as $key => $locale)
 		<a class="dropdown-item" href="{{ url($crud->route.'/'.$entry->getKey().'/edit') }}?_locale={{ $key }}">{{ $locale }}</a>

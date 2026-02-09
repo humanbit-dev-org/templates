@@ -26,16 +26,22 @@
                     </div>
                     @endif
 
-                    <div class="form-group col-sm-12 mb-4" element="div" bp-field-wrapper="true" bp-field-name="import_instructions" bp-field-type="custom_html" bp-section="crud-field">
-                        <div class="p-3 mb-1 alert alert-info" style="border-left: 4px solid; background: #f8f9fa; border-radius: 5px;">
-                            <h4 class="m-0 text-info"><i class="las la-info-circle"></i> {{ trans('backpack::import.import_instructions_title') }}</h4>
-                            <p class="mt-2">{{ trans('backpack::import.import_instructions_text') }}</p>
-                            <ul>
-                                <li>{{ trans('backpack::import.import_instructions_format') }}</li>
-                                <li>{{ trans('backpack::import.import_instructions_headers') }}</li>
-                                <li>{{ trans('backpack::import.import_instructions_mapping') }}</li>
-                            </ul>
-                        </div>
+                    <div class="alert alert-info bg-light rounded p-4 mb-4" style="display: block !important;">
+                        <h5 class="text-info mb-3 fw-bold w-100" style="display: block !important; width: 100% !important;">{{ trans('backpack::import.what_you_need_to_know') }}</h5>
+                        <ul class="mb-0 ps-0 list-unstyled" style="display: block !important; width: 100% !important;">
+                            <li class="mb-2">
+                                <i class="la la-check-circle text-success me-2"></i>
+                                {{ trans('backpack::import.info_csv_format') }}
+                            </li>
+                            <li class="mb-2">
+                                <i class="la la-check-circle text-success me-2"></i>
+                                {{ trans('backpack::import.info_backup_log') }}
+                            </li>
+                            <li>
+                                <i class="la la-check-circle text-success me-2"></i>
+                                {{ trans('backpack::import.info_rollback') }}
+                            </li>
+                        </ul>
                     </div>
 
                     <div class="form-group csv-upload-container">
@@ -45,6 +51,7 @@
                         </label>
                         <div class="custom-file-upload" id="upload-area">
                             <input type="file" name="csv_file" id="csv_file" class="form-control-file csv-file-input" accept=".csv,.txt" required>
+                            <input type="hidden" name="client_last_modified" id="client_last_modified">
                             <div class="file-upload-placeholder" id="file-upload-placeholder">
                                 <i class="la la-cloud-upload-alt"></i>
                                 <span>{{ trans('backpack::import.drag_drop_or_select') }}</span>
@@ -105,7 +112,13 @@
         // Handle file change
         fileInput.addEventListener('change', function() {
             if (fileInput.files.length > 0) {
-                showSelectedFile(fileInput.files[0].name);
+                const f = fileInput.files[0];
+                showSelectedFile(f.name);
+                // Capture client-side lastModified (ms since epoch) and convert to ISO
+                if (f.lastModified) {
+                    const dt = new Date(f.lastModified);
+                    document.getElementById('client_last_modified').value = dt.toISOString();
+                }
             } else {
                 // When the user cancels the file selection, reset the input
                 resetFileInput();

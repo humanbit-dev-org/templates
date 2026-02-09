@@ -1,5 +1,21 @@
 <?php
 
+$secret = static function (?string $pathOrValue): ?string {
+	if ($pathOrValue === null || $pathOrValue === "") {
+		return null;
+	}
+
+	if (str_starts_with($pathOrValue, "/")) {
+		if (!is_file($pathOrValue) || !is_readable($pathOrValue)) {
+			return null;
+		}
+		$c = file_get_contents($pathOrValue);
+		return $c === false ? null : rtrim($c, "\r\n");
+	}
+
+	return $pathOrValue;
+};
+
 return [
 	/*
     |--------------------------------------------------------------------------
@@ -72,7 +88,7 @@ return [
 
 	// Set this to true if you would like to enable two-factor authentication for your users.
 	// Make sure your user model has `token` and `token_expire` columns and the necessary methods.
-	"setup_two_factor_auth" => true,
+	"setup_two_factor_auth" => false,
 
 	// How many times in any given time period should the user be allowed to
 	// request a new two-factor token via email?
@@ -104,6 +120,9 @@ return [
 	// type an email at first, so at least allow one more try.
 	// Defaults to 3,10 - 3 times in 10 minutes.
 	"password_recovery_throttle_access" => "3,10",
+
+	// Admin password from environment variable
+	"backpack_admin_password" => $secret(env("BACKPACK_ADMIN_PASSWORD_FILE", env("BACKPACK_ADMIN_PASSWORD"))),
 
 	/*
     |--------------------------------------------------------------------------
@@ -181,7 +200,7 @@ return [
 	// Should we use DB transactions when executing multiple queries? For example when creating an entry and it's relationships.
 	// By wrapping in a database transaction you ensure that either all queries went ok, or if some failed the whole process
 	// is rolled back and considered failed. This is a good setting for data integrity.
-	"useDatabaseTransactions" => false,
+	"useDatabaseTransactions" => true,
 
 	/*
     |--------------------------------------------------------------------------

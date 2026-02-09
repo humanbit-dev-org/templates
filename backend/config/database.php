@@ -2,6 +2,22 @@
 
 use Illuminate\Support\Str;
 
+$secret = static function (?string $pathOrValue): ?string {
+	if ($pathOrValue === null || $pathOrValue === "") {
+		return null;
+	}
+
+	if (str_starts_with($pathOrValue, "/")) {
+		if (!is_file($pathOrValue) || !is_readable($pathOrValue)) {
+			return null;
+		}
+		$c = file_get_contents($pathOrValue);
+		return $c === false ? null : rtrim($c, "\r\n");
+	}
+
+	return $pathOrValue;
+};
+
 return [
 	/*
     |--------------------------------------------------------------------------
@@ -47,7 +63,7 @@ return [
 			"port" => env("DB_PORT", "3306"),
 			"database" => env("DB_DATABASE", "laravel"),
 			"username" => env("DB_USERNAME", "root"),
-			"password" => env("DB_PASSWORD", ""),
+			"password" => $secret(env("DB_PASSWORD_FILE", env("DB_PASSWORD", ""))),
 			"unix_socket" => env("DB_SOCKET", ""),
 			"charset" => env("DB_CHARSET", "utf8mb4"),
 			"collation" => env("DB_COLLATION", "utf8mb4_unicode_ci"),
@@ -69,7 +85,7 @@ return [
 			"port" => env("DB_PORT", "3306"),
 			"database" => env("DB_DATABASE", "laravel"),
 			"username" => env("DB_USERNAME", "root"),
-			"password" => env("DB_PASSWORD", ""),
+			"password" => $secret(env("DB_PASSWORD_FILE", env("DB_PASSWORD", ""))),
 			"unix_socket" => env("DB_SOCKET", ""),
 			"charset" => env("DB_CHARSET", "utf8mb4"),
 			"collation" => env("DB_COLLATION", "utf8mb4_unicode_ci"),
@@ -91,7 +107,7 @@ return [
 			"port" => env("DB_PORT", "5432"),
 			"database" => env("DB_DATABASE", "laravel"),
 			"username" => env("DB_USERNAME", "root"),
-			"password" => env("DB_PASSWORD", ""),
+			"password" => $secret(env("DB_PASSWORD_FILE", env("DB_PASSWORD", ""))),
 			"charset" => env("DB_CHARSET", "utf8"),
 			"prefix" => "",
 			"prefix_indexes" => true,
@@ -106,7 +122,7 @@ return [
 			"port" => env("DB_PORT", "1433"),
 			"database" => env("DB_DATABASE", "laravel"),
 			"username" => env("DB_USERNAME", "root"),
-			"password" => env("DB_PASSWORD", ""),
+			"password" => $secret(env("DB_PASSWORD_FILE", env("DB_PASSWORD", ""))),
 			"charset" => env("DB_CHARSET", "utf8"),
 			"prefix" => "",
 			"prefix_indexes" => true,
@@ -154,7 +170,7 @@ return [
 			"url" => env("REDIS_URL"),
 			"host" => env("REDIS_HOST", "127.0.0.1"),
 			"username" => env("REDIS_USERNAME"),
-			"password" => env("REDIS_PASSWORD"),
+			"password" => $secret(env("REDIS_PASSWORD_FILE", env("REDIS_PASSWORD"))),
 			"port" => env("REDIS_PORT", "6379"),
 			"database" => env("REDIS_DB", "0"),
 		],
@@ -163,7 +179,7 @@ return [
 			"url" => env("REDIS_URL"),
 			"host" => env("REDIS_HOST", "127.0.0.1"),
 			"username" => env("REDIS_USERNAME"),
-			"password" => env("REDIS_PASSWORD"),
+			"password" => $secret(env("REDIS_PASSWORD_FILE", env("REDIS_PASSWORD"))),
 			"port" => env("REDIS_PORT", "6379"),
 			"database" => env("REDIS_SESSION_DB", "1"),
 		],
@@ -172,9 +188,18 @@ return [
 			"url" => env("REDIS_URL"),
 			"host" => env("REDIS_HOST", "127.0.0.1"),
 			"username" => env("REDIS_USERNAME"),
-			"password" => env("REDIS_PASSWORD"),
+			"password" => $secret(env("REDIS_PASSWORD_FILE", env("REDIS_PASSWORD"))),
 			"port" => env("REDIS_PORT", "6379"),
 			"database" => env("REDIS_CACHE_DB", "2"),
+		],
+
+		"queues" => [
+			"url" => env("REDIS_URL"),
+			"host" => env("REDIS_HOST", "127.0.0.1"),
+			"username" => env("REDIS_USERNAME"),
+			"password" => $secret(env("REDIS_PASSWORD_FILE", env("REDIS_PASSWORD"))),
+			"port" => env("REDIS_PORT", "6379"),
+			"database" => env("REDIS_QUEUE_DB", "3"),
 		],
 	],
 ];

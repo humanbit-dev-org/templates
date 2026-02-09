@@ -25,7 +25,9 @@
             </div>
             <div class="col-5 d-flex align-items-center justify-content-end">
                 @includeWhen(isset($breadcrumbs), backpack_view('inc.breadcrumbs'))
-                @include('backpack.language-switcher::language-switcher')
+                @if(config('backpack.language-switcher.setup_routes'))
+                    @include('backpack.language-switcher::language-switcher')
+                @endif
             </div>
         </div>
         <div class="page-body">

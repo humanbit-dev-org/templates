@@ -1,6 +1,8 @@
 <?php
 
+use App\Logging\EncryptedRotatingFileHandler;
 use Monolog\Handler\NullHandler;
+use Monolog\Handler\RotatingFileHandler;
 use Monolog\Handler\StreamHandler;
 use Monolog\Handler\SyslogUdpHandler;
 use Monolog\Processor\PsrLogMessageProcessor;
@@ -71,6 +73,22 @@ return [
 			"replace_placeholders" => true,
 		],
 
+		"encrypted_daily" => [
+			"driver" => "monolog",
+			"handler" => EncryptedRotatingFileHandler::class,
+			"handler_with" => [
+				"path" => storage_path("logs/laravel.log"),
+				"days" => (int) env("LOG_DAILY_DAYS", 30),
+				"level" => env("LOG_LEVEL", "info"),
+			],
+			"formatter" => \Monolog\Formatter\LineFormatter::class,
+			"formatter_with" => [
+				"format" => "[%datetime%] %channel%.%level_name%: %message%\n",
+				"dateFormat" => "Y-m-d H:i:s",
+			],
+			"replace_placeholders" => true,
+		],
+
 		"slack" => [
 			"driver" => "slack",
 			"url" => env("LOG_SLACK_WEBHOOK_URL"),
@@ -122,7 +140,148 @@ return [
 		],
 
 		"emergency" => [
-			"path" => storage_path("logs/laravel.log"),
+			"driver" => "monolog",
+			"handler" =>
+				env("LOG_CHANNEL") === "encrypted_daily" ? EncryptedRotatingFileHandler::class : RotatingFileHandler::class,
+			"handler_with" => [
+				"path" => storage_path("logs/laravel.log"),
+				"days" => (int) env("LOG_DAILY_DAYS", 30),
+				"level" => "debug",
+			],
+			"formatter" => \Monolog\Formatter\LineFormatter::class,
+			"formatter_with" => [
+				"format" => "[%datetime%] %channel%.%level_name%: %message%\n",
+				"dateFormat" => "Y-m-d H:i:s",
+			],
+			"replace_placeholders" => true,
+		],
+		"import" => [
+			"driver" => "monolog",
+			"handler" =>
+				env("LOG_CHANNEL") === "encrypted_daily" ? EncryptedRotatingFileHandler::class : RotatingFileHandler::class,
+			"handler_with" => [
+				"path" => storage_path("logs/import.log"),
+				"days" => (int) env("LOG_DAILY_DAYS", 30),
+				"level" => env("LOG_LEVEL", "debug"),
+			],
+			"formatter" => \Monolog\Formatter\LineFormatter::class,
+			"formatter_with" => [
+				"format" => "[%datetime%] %channel%.%level_name%: %message%\n",
+				"dateFormat" => "Y-m-d H:i:s",
+			],
+			"replace_placeholders" => true,
+		],
+		"tiraggio" => [
+			"driver" => "monolog",
+			"handler" =>
+				env("LOG_CHANNEL") === "encrypted_daily" ? EncryptedRotatingFileHandler::class : RotatingFileHandler::class,
+			"handler_with" => [
+				"path" => database_path("import/tiraggio/import.log"),
+				"days" => (int) env("LOG_DAILY_DAYS", 30),
+				"level" => env("LOG_LEVEL", "debug"),
+			],
+			"formatter" => \Monolog\Formatter\LineFormatter::class,
+			"formatter_with" => [
+				"format" => "[%datetime%] %channel%.%level_name%: %message%\n",
+				"dateFormat" => "Y-m-d H:i:s",
+			],
+			"replace_placeholders" => true,
+		],
+		"trattenuta" => [
+			"driver" => "monolog",
+			"handler" =>
+				env("LOG_CHANNEL") === "encrypted_daily" ? EncryptedRotatingFileHandler::class : RotatingFileHandler::class,
+			"handler_with" => [
+				"path" => database_path("import/trattenuta/import.log"),
+				"days" => (int) env("LOG_DAILY_DAYS", 30),
+				"level" => env("LOG_LEVEL", "debug"),
+			],
+			"formatter" => \Monolog\Formatter\LineFormatter::class,
+			"formatter_with" => [
+				"format" => "[%datetime%] %channel%.%level_name%: %message%\n",
+				"dateFormat" => "Y-m-d H:i:s",
+			],
+			"replace_placeholders" => true,
+		],
+		"mensile" => [
+			"driver" => "monolog",
+			"handler" =>
+				env("LOG_CHANNEL") === "encrypted_daily" ? EncryptedRotatingFileHandler::class : RotatingFileHandler::class,
+			"handler_with" => [
+				"path" => database_path("import/mensile/import.log"),
+				"days" => (int) env("LOG_DAILY_DAYS", 30),
+				"level" => env("LOG_LEVEL", "debug"),
+			],
+			"formatter" => \Monolog\Formatter\LineFormatter::class,
+			"formatter_with" => [
+				"format" => "[%datetime%] %channel%.%level_name%: %message%\n",
+				"dateFormat" => "Y-m-d H:i:s",
+			],
+			"replace_placeholders" => true,
+		],
+		"filiale" => [
+			"driver" => "monolog",
+			"handler" =>
+				env("LOG_CHANNEL") === "encrypted_daily" ? EncryptedRotatingFileHandler::class : RotatingFileHandler::class,
+			"handler_with" => [
+				"path" => database_path("import/filiale/import.log"),
+				"days" => (int) env("LOG_DAILY_DAYS", 30),
+				"level" => env("LOG_LEVEL", "debug"),
+			],
+			"formatter" => \Monolog\Formatter\LineFormatter::class,
+			"formatter_with" => [
+				"format" => "[%datetime%] %channel%.%level_name%: %message%\n",
+				"dateFormat" => "Y-m-d H:i:s",
+			],
+			"replace_placeholders" => true,
+		],
+		"delibera" => [
+			"driver" => "monolog",
+			"handler" =>
+				env("LOG_CHANNEL") === "encrypted_daily" ? EncryptedRotatingFileHandler::class : RotatingFileHandler::class,
+			"handler_with" => [
+				"path" => database_path("import/delibera/import.log"),
+				"days" => (int) env("LOG_DAILY_DAYS", 30),
+				"level" => env("LOG_LEVEL", "debug"),
+			],
+			"formatter" => \Monolog\Formatter\LineFormatter::class,
+			"formatter_with" => [
+				"format" => "[%datetime%] %channel%.%level_name%: %message%\n",
+				"dateFormat" => "Y-m-d H:i:s",
+			],
+			"replace_placeholders" => true,
+		],
+		"anagrafica" => [
+			"driver" => "monolog",
+			"handler" =>
+				env("LOG_CHANNEL") === "encrypted_daily" ? EncryptedRotatingFileHandler::class : RotatingFileHandler::class,
+			"handler_with" => [
+				"path" => database_path("import/anagrafica/import.log"),
+				"days" => (int) env("LOG_DAILY_DAYS", 30),
+				"level" => env("LOG_LEVEL", "debug"),
+			],
+			"formatter" => \Monolog\Formatter\LineFormatter::class,
+			"formatter_with" => [
+				"format" => "[%datetime%] %channel%.%level_name%: %message%\n",
+				"dateFormat" => "Y-m-d H:i:s",
+			],
+			"replace_placeholders" => true,
+		],
+		"proiezioni" => [
+			"driver" => "monolog",
+			"handler" =>
+				env("LOG_CHANNEL") === "encrypted_daily" ? EncryptedRotatingFileHandler::class : RotatingFileHandler::class,
+			"handler_with" => [
+				"path" => storage_path("logs/proiezioni.log"),
+				"days" => (int) env("LOG_DAILY_DAYS", 30),
+				"level" => env("LOG_LEVEL", "debug"),
+			],
+			"formatter" => \Monolog\Formatter\LineFormatter::class,
+			"formatter_with" => [
+				"format" => "[%datetime%] %channel%.%level_name%: %message%\n",
+				"dateFormat" => "Y-m-d H:i:s",
+			],
+			"replace_placeholders" => true,
 		],
 	],
 ];

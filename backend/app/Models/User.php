@@ -3,20 +3,51 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Models\Traits\HasTwoFactorAuth;
 use App\Notifications\VerifyEmailCustom;
-use Laravel\Sanctum\HasApiTokens;
-use Illuminate\Notifications\Notifiable;
 use Backpack\CRUD\app\Models\Traits\CrudTrait;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use App\Models\Traits\HasTwoFactorAuth;
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Log;
+// use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
-	use CrudTrait;
-	use HasFactory, Notifiable, HasApiTokens;
-	use HasTwoFactorAuth;
+	use CrudTrait, HasTwoFactorAuth, HasFactory, Notifiable;
+
+	/**
+	 * The primary key associated with the table.
+	 *
+	 * @var string
+	 */
+	protected $primaryKey = "username";
+
+	/**
+	 * The "type" of the auto-incrementing ID.
+	 *
+	 * @var string
+	 */
+	protected $keyType = "string";
+
+	/**
+	 * Indicates if the IDs are auto-incrementing.
+	 *
+	 * @var bool
+	 */
+	public $incrementing = false;
+
+	/**
+	 * Get the route key for the model.
+	 * This tells Laravel to use 'ndg' instead of 'id' in URLs
+	 *
+	 * @return string
+	 */
+	public function getRouteKeyName()
+	{
+		return "username";
+	}
 
 	/**
 	 * The attributes that are mass assignable.
@@ -25,18 +56,19 @@ class User extends Authenticatable implements MustVerifyEmail
 	 */
 	protected $fillable = [
 		"username",
+		"email",
 		"name",
 		"surname",
 		"address",
-		"email",
 		"phone",
-		"password",
-		"backpack_role_id",
 		"role_id",
-		"email_verified_at",
+		"backpack_role_id",
 		"token",
 		"token_expire",
 		"token_verified",
+		"email_verified_at",
+		"password",
+		"remember_token",
 	];
 
 	/**
@@ -81,6 +113,17 @@ class User extends Authenticatable implements MustVerifyEmail
 	}
 
 	public function getDisplayAttribute()
+	{
+		return $this->name . " " . $this->surname;
+	}
+
+	/**
+	 * Custom display attribute for relations
+	 * This method allows to customize how the model appears in relation lists
+	 *
+	 * @return string Custom display text for relations
+	 */
+	public function getRelationDisplayAttribute()
 	{
 		return $this->name . " " . $this->surname;
 	}

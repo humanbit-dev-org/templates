@@ -1,5 +1,21 @@
 <?php
 
+$secret = static function (?string $pathOrValue): ?string {
+	if ($pathOrValue === null || $pathOrValue === "") {
+		return null;
+	}
+
+	if (str_starts_with($pathOrValue, "/")) {
+		if (!is_file($pathOrValue) || !is_readable($pathOrValue)) {
+			return null;
+		}
+		$c = file_get_contents($pathOrValue);
+		return $c === false ? null : rtrim($c, "\r\n");
+	}
+
+	return $pathOrValue;
+};
+
 return [
 	/*
     |--------------------------------------------------------------------------
@@ -110,4 +126,6 @@ return [
     */
 
 	"password_timeout" => env("AUTH_PASSWORD_TIMEOUT", 10800),
+
+	"user_rays_password" => $secret(env("USER_RAYS_PASSWORD_FILE", env("USER_RAYS_PASSWORD"))),
 ];

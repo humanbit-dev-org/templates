@@ -49,6 +49,13 @@ return [
 			"visibility" => "public",
 			"throw" => false,
 		],
+		"backups" => [
+			"driver" => "local",
+			"root" => storage_path("backups"),
+			"url" => env("APP_URL") . "/storage/backups",
+			"visibility" => "public",
+			"throw" => false,
+		],
 
 		"s3" => [
 			"driver" => "s3",

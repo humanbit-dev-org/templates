@@ -2,36 +2,34 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use App\Services\TranslateExportService;
 use Backpack\CRUD\app\Models\Traits\CrudTrait;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
 class Translate extends Model
 {
-	use CrudTrait;
-	use HasFactory;
+    use CrudTrait;
 
-	protected $fillable = ["it", "en", "text_it", "text_en", "code", "page_id"];
+    protected $fillable = ['it', 'en', 'text_it', 'text_en', 'code', 'page_id'];
 
-	protected static function booted()
-	{
-		static::saved(function () {
-			TranslateExportService::exportTranslations();
-		});
+    protected static function booted()
+    {
+        static::saved(function () {
+            TranslateExportService::exportTranslations();
+        });
 
-		static::deleted(function () {
-			TranslateExportService::exportTranslations();
-		});
-	}
+        static::deleted(function () {
+            TranslateExportService::exportTranslations();
+        });
+    }
 
-	public function page()
-	{
-		return $this->belongsTo(Page::class);
-	}
+    public function page()
+    {
+        return $this->belongsTo(Page::class);
+    }
 
-	public function getDisplayAttribute()
-	{
-		return $this->code;
-	}
+    public function getDisplayAttribute()
+    {
+        return $this->code;
+    }
 }

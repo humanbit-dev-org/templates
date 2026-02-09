@@ -81,4 +81,20 @@ trait ChecksBackpackPermissions
 		}
 		return false;
 	}
+
+	/**
+	 * Check if current backpack user is a developer
+	 *
+	 * @return bool
+	 */
+	public static function isDeveloper(): bool
+	{
+		$user = Auth::guard(backpack_guard_name())->user();
+		if (!$user) {
+			return false;
+		}
+
+		// Check if user has backpack role and if it's "developer"
+		return $user->backpackRole && strtolower($user->backpackRole->name) === "developer";
+	}
 }

@@ -1,8 +1,12 @@
+@php
+    $isDeveloper = strtolower(optional(backpack_auth()->user()->backpackRole)->name ?? '') === 'developer';
+    $disabledClass = $isDeveloper ? '' : 'disabled-action';
+@endphp
 @if ($crud->hasAccess('update', $entry))
 @if (!$crud->model->translationEnabled())
 
 {{-- Single duplicate button --}}
-<a href="javascript:void(0)" onclick="duplicateEntry(this)" bp-button="duplicate" data-route="{{ url($crud->route.'/'.$entry->getKey().'/duplicate') }}" class="btn btn-sm btn-link p-0" data-button-type="duplicate" title="{{ trans('backpack::crud.duplicate') }}">
+<a href="javascript:void(0)" onclick="duplicateEntry(this)" bp-button="duplicate" data-route="{{ url($crud->route.'/'.$entry->getKey().'/duplicate') }}" class="btn btn-sm btn-link p-0 {{ $disabledClass }}" data-button-type="duplicate" data-disabled="{{ $isDeveloper ? 'false' : 'true' }}" title="{{ $isDeveloper ? trans('backpack::crud.duplicate') : 'Solo sviluppatori possono duplicare' }}">
     <i class="la la-clone btn-actions"></i>
 </a>
 
@@ -18,6 +22,10 @@
         $("[data-button-type=duplicate]").unbind('click');
 
         function duplicateEntry(button) {
+            // Check if button is disabled
+            if ($(button).attr('data-disabled') === 'true') {
+                return false;
+            }
             const route = $(button).attr('data-route');
 
             swal({

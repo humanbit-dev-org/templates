@@ -1,7 +1,7 @@
 @php
-    // Filtra i parametri per rimuovere quelli che terminano con "_path"
+    // Filtra i parametri per rimuovere quelli che terminano con "_path" e il campo "id"
     $filteredParams = collect(request()->except("page"))->filter(function ($value, $key) {
-        return !str_ends_with($key, "_path");
+        return !str_ends_with($key, "_path") && $key !== "id";
     })->all();
     
     $queryString = http_build_query($filteredParams);

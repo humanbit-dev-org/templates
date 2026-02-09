@@ -65,7 +65,7 @@ class LoginController extends AuthLoginController
 			$this->twoFactorService->resetRateLimit($user);
 			$this->twoFactorService->sendTokenEmail($user);
 
-			$request->session()->put("2fa_user_id", $user->id);
+			$request->session()->put("2fa_user_id", $user->getKey());
 			$request->session()->put("2fa_login_credentials", $credentials);
 
 			if (method_exists($this, "clearLoginAttempts")) {

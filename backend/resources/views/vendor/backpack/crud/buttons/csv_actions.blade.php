@@ -1,12 +1,33 @@
 @php
 // List of routes where import is disabled
-$disableImportFor = ['page'];
+$disableImportFor = ['page', 'contatto'];
 
 // Extract the current route name from the path
 $currentRoute = str_replace(config('backpack.base.route_prefix', 'admin').'/', '', $crud->route);
 
 // Check if import should be disabled for this route
 $importDisabled = in_array($currentRoute, $disableImportFor);
+
+// Get active filters from request, excluding pagination and system parameters
+$activeFilters = collect(request()->except([
+    'page', 
+    'persistent-table', 
+    '_token',
+    'draw',
+    'columns', 
+    'order',
+    'start',
+    'length',
+    'search'
+]))->filter(function ($value, $key) {
+    return $value !== null && $value !== '';
+});
+
+// Build query string with active filters
+$queryString = $activeFilters->isNotEmpty() ? '?' . http_build_query($activeFilters->all()) : '';
+
+// Check if there are active filters for the popover
+$hasActiveFilters = $activeFilters->isNotEmpty();
 @endphp
 
 <div class="csv-actions-container">
@@ -25,9 +46,32 @@ $importDisabled = in_array($currentRoute, $disableImportFor);
             </div>
             <div class="csv-popup-body">
                 <div class="csv-buttons">
-                    <a href="{{ url($crud->route.'/export-csv') }}" class="btn btn-primary">
-                        <i class="la la-file-export me-1"></i> {{ trans('backpack::crud.csv_export') }}
+                    @if($hasActiveFilters)
+                    <span
+                        data-toggle="tooltip"
+                        data-bs-toggle="tooltip"
+                        data-placement="top"
+                        data-bs-placement="top"
+                        title="{{ trans('backpack::crud.warning_export_with_filters') }}">
+                        <a href="{{ url($crud->route.'/export-csv' . $queryString) }}" 
+                           class="btn btn-primary csv-export-btn"
+                           data-loading-text="{{ trans('backpack::crud.csv_export_in_progress') }}"
+                           data-timeout-text="{{ trans('backpack::crud.csv_export_timeout') }}"
+                           onclick="showExportLoading(event, this)">
+                            <i class="la la-file-export me-1 csv-export-icon"></i>
+                            <span class="csv-export-text">{{ trans('backpack::crud.csv_export') }}</span>
+                        </a>
+                    </span>
+                    @else
+                    <a href="{{ url($crud->route.'/export-csv' . $queryString) }}" 
+                       class="btn btn-primary csv-export-btn"
+                       data-loading-text="{{ trans('backpack::crud.csv_export_in_progress') }}"
+                       data-timeout-text="{{ trans('backpack::crud.csv_export_timeout') }}"
+                       onclick="showExportLoading(event, this)">
+                        <i class="la la-file-export me-1 csv-export-icon"></i>
+                        <span class="csv-export-text">{{ trans('backpack::crud.csv_export') }}</span>
                     </a>
+                    @endif
 
                     @if($importDisabled)
                     <span
@@ -54,6 +98,62 @@ $importDisabled = in_array($currentRoute, $disableImportFor);
 </div>
 
 <script>
+    function showExportLoading(event, button) {
+        // Disable button to prevent double clicks
+        button.classList.add('csv-export-loading');
+        button.style.pointerEvents = 'none';
+        
+        // Change icon to spinner
+        var icon = button.querySelector('.csv-export-icon');
+        var originalIconClass = icon.className;
+        icon.className = 'la la-spinner la-spin me-1 csv-export-icon';
+        
+        // Change text
+        var textElement = button.querySelector('.csv-export-text');
+        var originalText = textElement.textContent;
+        var loadingText = button.getAttribute('data-loading-text') || 'Esportazione in corso...';
+        textElement.textContent = loadingText;
+
+        // Generate a unique token for this download
+        var downloadToken = 'download_' + new Date().getTime();
+        
+        // Add token to URL
+        var url = button.href;
+        var separator = url.includes('?') ? '&' : '?';
+        button.href = url + separator + 'downloadToken=' + downloadToken;
+
+        // Start checking for download completion via cookie
+        var attempts = 0;
+        var maxAttempts = 600; // 600 attempts * 500ms = 5 minutes max
+        
+        var checkInterval = setInterval(function() {
+            attempts++;
+            
+            // Check if download cookie exists
+            if (document.cookie.indexOf('downloadToken=' + downloadToken) !== -1) {
+                // Download has started, restore button
+                button.classList.remove('csv-export-loading');
+                button.style.pointerEvents = '';
+                icon.className = originalIconClass;
+                textElement.textContent = originalText;
+                clearInterval(checkInterval);
+                
+                // Clean up the cookie
+                document.cookie = 'downloadToken=' + downloadToken + '; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+            } else if (attempts >= maxAttempts) {
+                // Timeout after 5 minutes
+                button.classList.remove('csv-export-loading');
+                button.style.pointerEvents = '';
+                icon.className = originalIconClass;
+                textElement.textContent = originalText;
+                clearInterval(checkInterval);
+                
+                var timeoutMessage = button.getAttribute('data-timeout-text') || 'L\'export sta richiedendo più tempo del previsto. Controlla i download o riprova più tardi.';
+                alert(timeoutMessage);
+            }
+        }, 500);
+    }
+
     function toggleCsvPopup() {
         var popup = document.getElementById('csvActionsPopup');
 

@@ -1,5 +1,9 @@
+@php
+    $isDeveloper = strtolower(optional(backpack_auth()->user()->backpackRole)->name ?? '') === 'developer';
+    $disabledClass = $isDeveloper ? '' : 'disabled-action';
+@endphp
 @if ($crud->hasAccess('delete', $entry))
-    <a href="javascript:void(0)" onclick="deleteEntry(this)" bp-button="delete" data-route="{{ url($crud->route.'/'.$entry->getKey()) }}" class="btn btn-sm btn-link p-0" data-button-type="delete" title="{{ trans('backpack::crud.delete') }}">
+    <a href="javascript:void(0)" onclick="deleteEntry(this)" bp-button="delete" data-route="{{ url($crud->route.'/'.$entry->getKey()) }}" class="btn btn-sm btn-link p-0 {{ $disabledClass }}" data-button-type="delete" data-disabled="{{ $isDeveloper ? 'false' : 'true' }}" title="{{ $isDeveloper ? trans('backpack::crud.delete') : 'Solo sviluppatori possono eliminare' }}">
         <i class="la la-trash btn-actions"></i>
     </a>
 @endif
@@ -15,6 +19,10 @@
 	  $("[data-button-type=delete]").unbind('click');
 
 	  function deleteEntry(button) {
+		// Check if button is disabled
+		if ($(button).attr('data-disabled') === 'true') {
+			return false;
+		}
 		// ask for confirmation before deleting an item
 		// e.preventDefault();
 		var route = $(button).attr('data-route');

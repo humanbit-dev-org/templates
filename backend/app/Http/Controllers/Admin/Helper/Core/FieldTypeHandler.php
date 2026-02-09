@@ -82,12 +82,14 @@ class FieldTypeHandler
 
 		if (
 			str_contains($column, "importo") ||
-			str_contains($column, "transato") ||
+			str_contains($column, "importo_transato") ||
 			str_contains($column, "trattenuta") ||
 			str_contains($column, "interessi") ||
 			str_contains($column, "costo") ||
 			str_contains($column, "max_atp") ||
-			str_contains($column, "min_atp")
+			str_contains($column, "min_atp") ||
+			str_contains($column, "forecast") ||
+			str_contains($column, "baseline")
 		) {
 			$field->prefix("€");
 		}
@@ -138,22 +140,26 @@ class FieldTypeHandler
 			$fieldType = "url";
 		} elseif (
 			str_contains($column, "importo") ||
-			str_contains($column, "transato") ||
+			str_contains($column, "importo_transato") ||
 			str_contains($column, "trattenuta") ||
 			str_contains($column, "interessi") ||
 			str_contains($column, "costo") ||
 			str_contains($column, "max_atp") ||
-			str_contains($column, "min_atp")
+			str_contains($column, "min_atp") ||
+			str_contains($column, "forecast") ||
+			str_contains($column, "baseline")
 		) {
 			$field->prefix("€");
 		} elseif (str_contains($column, "hide_")) {
 			$field->hint(trans("backpack::crud.hint_hide") . str_replace("hide_", "", $column));
-		} elseif (str_contains($column, "percentage")) {
+		} elseif (str_contains($column, "percentuale") || str_contains($column, "tan") || str_contains($column, "taeg")) {
 			$field->suffix("%");
 			$field->attributes(["min" => 0, "max" => 100]);
 		} elseif ($column == "order") {
 			$field->attributes(["step" => 1, "min" => 1, "max" => DB::table($table)->max("order") + 1]);
 			$field->default(DB::table($table)->max("order") + 1);
+		} elseif (str_contains($column, "color")) {
+			$fieldType = "color";
 		}
 
 		// Check if this field has a custom select configuration
