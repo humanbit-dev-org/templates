@@ -15,4 +15,4 @@ Schedule::job(new CheckImportFiles())->everyThirtyMinutes()->withoutOverlapping(
 //     ->dailyAt('02:00')
 //     ->withoutOverlapping(60);
 
-Schedule::job(new DatabaseDumpScpTransfer())->everyMinute()->withoutOverlapping(60);
+Schedule::job(new DatabaseDumpScpTransfer())->dailyAt('02:00')->withoutOverlapping(60);
