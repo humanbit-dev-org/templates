@@ -1,6 +1,6 @@
 /**
     This file declares css color variables for branding purposes.
-    Attention, "./color-adjustments.css" depends on this file to properly function.
+    Attention, "./humanbit_color_adjustments.css" depends on this file to properly function.
 */
 
 @charset "UTF-8";
@@ -9,7 +9,7 @@
 [data-bs-theme=light],
 [data-menu-theme=light] {
 
-    /* overwite */
+    /* overwrite */
     --tblr-tabler: #051269;
     --tblr-primary: #051269;
     --tblr-link-color: rgb(5, 18, 105);
@@ -22,7 +22,6 @@
     --tblr-primary-rgb: 5, 18, 105;
     --tblr-tabler-rgb: 5, 18, 105;
     --tblr-focus-ring-color: rgba(5, 18, 105, 0.25);
-    --tblr-link-color-rgb: 5, 18, 105;
 
     /* core */
     --tblr-gray: #4c496c;
@@ -44,6 +43,8 @@
     --tblr-light: #f8fafc;
     --tblr-dark: #241f2d;
     --tblr-muted: #66626c;
+    --tblr-white: #ffffff;
+    --tblr-black: #000000;
     --tblr-secondary-rgb: 102, 98, 108;
     --tblr-success-rgb: 66, 186, 150;
     --tblr-info-rgb: 70, 127, 208;
@@ -95,6 +96,9 @@
     --tblr-tertiary-bg-rgb: 241, 245, 249;
     --tblr-border-color: #e7e6e7;
     --tblr-border-color-translucent: rgba(102, 98, 108, .16);
+    --tblr-border-width: 1px;
+    --tblr-border-radius: 0.375rem;
+    --tblr-border-radius-sm: 0.25rem;
     --tblr-box-shadow-inset: inset 0 1px 2px rgba(0, 0, 0, .075);
     --tblr-focus-ring-width: 0.25rem;
     --tblr-focus-ring-opacity: 0.25;
@@ -104,6 +108,27 @@
     --tblr-form-invalid-border-color: #df4759;
     --tblr-danger-text: var(--tblr-danger);
     --tblr-navbar-border-color: transparent;
+    --tblr-navbar-border-width: 0;
+    --tblr-navbar-color: rgba(36, 31, 45, 0.7);
+    --tblr-navbar-active-color: var(--tblr-primary);
+    --tblr-navbar-active-bg: var(--tblr-primary-bg-subtle);
+    --tblr-navbar-brand-font-size: 1.25rem;
+    --tblr-bg-surface: #ffffff;
+    --tblr-bg-surface-secondary: #f8fafc;
+    --tblr-bg-surface-tertiary: rgba(0, 0, 0, 0.02);
+    --tblr-card-bg: var(--tblr-bg-surface);
+    --tblr-card-border-color: var(--tblr-border-color);
+    --tblr-card-border-radius: var(--tblr-border-radius);
+    --tblr-card-border-width: var(--tblr-border-width);
+    --tblr-card-box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    --tblr-table-bg: transparent;
+    --tblr-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    --tblr-shadow-card: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.1);
+    --tblr-page-padding: 1.5rem;
+    --tblr-btn-hover-color: var(--tblr-primary);
+    --tblr-primary-border: var(--tblr-primary);
+    --tblr-font-weight-bold: 700;
+    --tblr-dropdown-link-active-bg: var(--tblr-primary-bg-subtle);
 
     /* Colori personalizzati da humanbit_custom.css */
     --color-white: #fff;
@@ -208,7 +233,7 @@
     --tblr-form-valid-border-color: #93c29a;
     --tblr-form-invalid-color: #d69090;
     --tblr-form-invalid-border-color: #d69090;
-    --tblr-bg-surface: rebeccapurple;
+    --tblr-bg-surface: #16108a; /* background menu */
     --tblr-navbar-bg: var(--tblr-bg-surface);
     --tblr-dark-mode-border-color: #302b33;
     --tblr-bg-main-color: #181818;
@@ -219,6 +244,10 @@
     --tblr-navbar-color: rgba(255, 255, 255, 0.7);
     --tblr-bg-surface-tertiary: #ffffff02;
     --tblr-navbar-border-color: transparent;
+    --tblr-bg-surface-secondary: #211d3b;
+    --tblr-card-bg: var(--tblr-bg-surface);
+    --tblr-card-border-color: var(--tblr-border-color);
+    --tblr-table-bg: transparent;
 
     /* Colori personalizzati modalità dark */
     --color-white: #221e26;
@@ -267,33 +296,4 @@
     --color-media-item-border: #302b33;
     --color-media-item-bg: #211d3b;
     --color-media-item-text: #c8d3e1;
-}
-
-.breadcrumb a {
-    color: color-mix(in srgb, var(--tblr-link-color) 50%, white);
-}
-
-/* Colori per le animazioni */
-@keyframes pulseEffect {
-    0% {
-        background-color: var(--color-pulse-effect-start);
-    }
-
-    50% {
-        background-color: var(--color-pulse-effect-middle);
-    }
-
-    100% {
-        background-color: var(--color-pulse-effect-start);
-    }
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-
-    to {
-        opacity: 1;
-    }
 }

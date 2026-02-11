@@ -24,7 +24,7 @@ class UserSeeder extends Seeder
 			"phone" => fake()->phoneNumber(),
 			"backpack_role_id" => BackpackRole::where("name", "Admin")->first()->id,
 			"role_id" => Role::where("name", "User")->first()->id,
-			"password" => bcrypt("Adm1n."),
+			'password' => bcrypt(config('backpack.base.backpack_admin_password')),
 			"email_verified_at" => now(),
 		]);
 		User::create([
@@ -36,7 +36,7 @@ class UserSeeder extends Seeder
 			"phone" => fake()->phoneNumber(),
 			"backpack_role_id" => BackpackRole::where("name", "Author")->first()->id,
 			"role_id" => Role::where("name", "User")->first()->id,
-			"password" => bcrypt("Auth0r."),
+			'password' => bcrypt(config('backpack.base.backpack_admin_password')),
 			"email_verified_at" => now(),
 		]);
 		User::create([
@@ -48,7 +48,7 @@ class UserSeeder extends Seeder
 			"phone" => fake()->phoneNumber(),
 			"backpack_role_id" => BackpackRole::where("name", "Guest")->first()->id,
 			"role_id" => Role::where("name", "User")->first()->id,
-			"password" => bcrypt("Gu3st."),
+			'password' => bcrypt(config('backpack.base.backpack_admin_password')),
 			"email_verified_at" => now(),
 		]);
 		User::create([
@@ -60,7 +60,7 @@ class UserSeeder extends Seeder
 			"phone" => fake()->phoneNumber(),
 			"backpack_role_id" => BackpackRole::where("name", "Developer")->first()->id,
 			"role_id" => Role::where("name", "User")->first()->id,
-			"password" => bcrypt("D3v3l0p3r."),
+			'password' => bcrypt(config('backpack.base.backpack_admin_password')),
 			"email_verified_at" => now(),
 		]);
 		User::create([
@@ -72,7 +72,19 @@ class UserSeeder extends Seeder
 			"phone" => fake()->phoneNumber(),
 			"backpack_role_id" => BackpackRole::where("name", "Developer")->first()->id,
 			"role_id" => Role::where("name", "User")->first()->id,
-			"password" => bcrypt("D3v3l0p3r."),
+			'password' => bcrypt(config('backpack.base.backpack_admin_password')),
+			"email_verified_at" => now(),
+		]);
+		User::create([
+			"username" => "mbusan",
+			"name" => "Matteo",
+			"surname" => "Busan",
+			"address" => "Via della Moscova, 40",
+			"email" => "busan@humanbit.com",
+			"phone" => fake()->phoneNumber(),
+			"backpack_role_id" => BackpackRole::where("name", "Developer")->first()->id,
+			"role_id" => Role::where("name", "User")->first()->id,
+			'password' => bcrypt(config('backpack.base.backpack_admin_password')),
 			"email_verified_at" => now(),
 		]);
 		User::create([
@@ -84,7 +96,7 @@ class UserSeeder extends Seeder
 			"phone" => fake()->phoneNumber(),
 			"backpack_role_id" => BackpackRole::where("name", "Developer")->first()->id,
 			"role_id" => Role::where("name", "User")->first()->id,
-			"password" => bcrypt("D3v3l0p3r."),
+			'password' => bcrypt(config('backpack.base.backpack_admin_password')),
 			"email_verified_at" => now(),
 		]);
 		User::create([
@@ -96,7 +108,7 @@ class UserSeeder extends Seeder
 			"phone" => fake()->phoneNumber(),
 			"backpack_role_id" => BackpackRole::where("name", "Developer")->first()->id,
 			"role_id" => Role::where("name", "User")->first()->id,
-			"password" => bcrypt("D3v3l0p3r."),
+			'password' => bcrypt(config('backpack.base.backpack_admin_password')),
 			"email_verified_at" => now(),
 		]);
 		User::factory()->count(5)->create();

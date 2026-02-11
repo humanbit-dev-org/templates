@@ -1,3 +1,30 @@
+/* Import IBM Plex fonts from Google Fonts for premium dashboard aesthetics */
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=IBM+Plex+Serif:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap');
+
+/* Smooth entrance animation for statistics cards */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+/* Reduce motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
 nav {
     position: sticky;
     top: 0;
@@ -5,13 +32,80 @@ nav {
     padding-bottom: 1rem;
 }
 
+.dtr-control::before {
+    content: none !important;
+}
+
+/* Make dropdown item and icon white when icon is present */
+a.dropdown-item.text-danger,
+a.dropdown-item.text-danger *,
+a.dropdown-item.text-danger .la-sign-out-alt,
+a.dropdown-item.text-danger i {
+    color: #231f20 !important;
+}
+
 .dtfh-floatingparent {
     margin-top: 1rem;
     z-index: 101;
 }
 
-.btn-actions {
-    font-size: 1.5rem;
+/* Action button icons in CRUD lists - ensure proper size */
+.btn-actions,
+.btn-link .btn-actions,
+a.btn-link .btn-actions,
+.btn-sm .btn-actions,
+.btn.btn-sm.btn-link .btn-actions,
+a.btn.btn-sm.btn-link .btn-actions,
+a.btn.btn-sm.btn-link.p-0 .btn-actions {
+    font-size: 1.4rem !important;
+    line-height: 1;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+/* Disabled action buttons styling */
+.disabled-action {
+    opacity: 0.3 !important;
+    cursor: not-allowed !important;
+    pointer-events: none !important;
+}
+
+/* Fix actions column width and alignment */
+#crudTable th[data-action-column="true"],
+#crudTable.dataTable th[data-action-column="true"],
+#crudTable tbody td:last-child,
+#crudTable.dataTable tbody td:last-child {
+    text-align: center !important;
+    vertical-align: middle !important;
+}
+
+#crudTable tbody td:last-child a.btn-link,
+#crudTable.dataTable tbody td:last-child a.btn-link {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+/* Ensure icons in action buttons are properly sized */
+#crudTable tbody td:last-child a.btn-link i,
+#crudTable.dataTable tbody td:last-child a.btn-link i,
+a.btn-link.btn-sm i.la,
+.btn-sm.btn-link i.la,
+#crudTable tbody td:last-child a.btn.btn-sm.btn-link i,
+#crudTable.dataTable tbody td:last-child a.btn.btn-sm.btn-link i {
+    font-size: 1.4rem !important;
+    line-height: 1;
+    vertical-align: middle;
+}
+
+/* Icons in responsive preview modal */
+.custom-modal-body a.btn-link i,
+.custom-modal-body .btn-actions,
+.custom-modal-body a.btn.btn-sm.btn-link i,
+.custom-modal-body a.btn.btn-sm.btn-link .btn-actions {
+    font-size: 1.4rem !important;
+    line-height: 1;
+    vertical-align: middle;
 }
 
 .dataTables_wrapper .table-content {
@@ -19,7 +113,7 @@ nav {
     overflow-y: auto !important;
 }
 
-.table-content th:last-child {
+/* .table-content th:last-child {
     position: sticky;
     right: 0;
 }
@@ -28,9 +122,10 @@ nav {
     position: sticky;
     right: 0;
     background-color: aliceblue !important;
-}
+} */
 
-.dataTables_wrapper tfoot {
+.dataTables_wrapper tfoot,
+.dataTables_wrapper table.dataTable tfoot {
     display: none !important;
 }
 
@@ -182,10 +277,10 @@ nav {
 }
 
 .accordion-body {
-    padding: 0.75rem 1.25rem !important;
-    padding-bottom: 1.5rem !important;
+    padding: 0.4rem 0.6rem !important; /* Further reduced */
+    padding-bottom: 0.5rem !important; /* Further reduced */
     background-color: rgba(var(--tblr-primary-rgb), 0.03);
-    max-height: 300px;
+    max-height: 400px; /* Increased slightly to allow content, but with scroll if needed */
     overflow-y: auto;
     scrollbar-width: thin;
 }
@@ -224,12 +319,18 @@ nav {
     background-color: var(--color-accordion-button-bg);
     color: var(--color-accordion-button-text);
     font-weight: 500;
+    font-size: 0.8rem !important; /* Further reduced from 0.85rem */
     border-radius: 4px;
     transition: all 0.25s ease;
-    padding: 0.75rem 1.25rem;
+    padding: 0.3rem 0.6rem !important; /* Further reduced from 0.4rem 0.75rem */
     width: 100%;
     margin: 0;
     border: 1.5px solid rgba(var(--tblr-primary-rgb), 0.3) !important;
+    line-height: 1.2 !important; /* Reduced line-height */
+    white-space: nowrap !important; /* Prevent title wrapping */
+    display: flex !important;
+    align-items: center !important;
+    overflow: hidden; /* Hide overflow to prevent wrapping */
 }
 
 .accordion-button:hover {
@@ -241,17 +342,16 @@ nav {
 /* Gestione dei bordi arrotondati */
 .accordion-button.collapsed {
     opacity: 0.9;
-    padding-top: 0.5rem;
-    padding-bottom: 0.5rem;
+    padding: 0.3rem 0.6rem !important; /* Further reduced padding */
     border-radius: 4px !important;
     border: 1.5px solid rgba(var(--tblr-primary-rgb), 0.3) !important;
 }
 
 .accordion-button:not(.collapsed) {
     background-color: var(--color-accordion-button-active-bg);
-    color: var(--color-accordion-button-active-text);
+    color: white !important;
     box-shadow: 0 3px 8px rgba(var(--tblr-primary-rgb), 0.25);
-    padding: 0.75rem 1.25rem;
+    padding: 0.3rem 0.6rem !important; /* Further reduced */
     border-bottom-left-radius: 0 !important;
     border-bottom-right-radius: 0 !important;
     border: 1.5px solid var(--tblr-primary) !important;
@@ -317,6 +417,13 @@ nav {
     text-transform: lowercase;
 }
 
+/* Override per il testo descrittivo tra parentesi - solo variabili in maiuscolo */
+.filter-label span.text-muted {
+    font-variant: normal !important;
+    text-transform: none !important;
+    letter-spacing: normal !important;
+}
+
 /* Nome del campo nei badge filtro */
 .filter-field-name {
     font-weight: 700;
@@ -372,32 +479,52 @@ a.filter-badge:hover .filter-remove-icon {
     color: var(--color-filter-remove-icon-hover);
 }
 
-/* Reset button */
-a.btn-outline-secondary.reset-btn {
-    background-color: var(--color-reset-btn-bg);
-    border: 1.5px solid var(--color-reset-btn-border);
-    color: var(--color-reset-btn-text);
+/* Reset button - smaller size with red colors */
+a.btn-outline-secondary.reset-btn,
+#resetFiltersBtn.reset-btn,
+#crudTable_reset_button,
+a.btn-outline-secondary.reset-btn.d-inline-flex,
+#crudTable_reset_button.btn-outline-secondary {
+    background-color: var(--color-reset-btn-bg) !important;
+    border: 1px solid var(--color-reset-btn-border) !important;
+    color: var(--color-reset-btn-text) !important;
     transition: all 0.2s ease;
-    display: inline-flex;
-    align-items: center;
-    padding: 0.25rem 0.5rem;
-    font-size: 0.75rem;
-    text-decoration: none;
-    line-height: 1;
+    display: inline-flex !important;
+    align-items: center !important;
+    text-decoration: none !important;
+    font-size: 0.75rem !important;
+    padding: 0.1rem 0.3rem !important;
+    line-height: 1.2 !important;
+    font-weight: 400 !important;
+    border-radius: 4px !important;
+    min-height: auto !important;
+    height: auto !important;
 }
 
 a.btn-outline-secondary.reset-btn:hover,
 a.btn-outline-secondary.reset-btn:focus,
-a.btn-outline-secondary.reset-btn:active {
+a.btn-outline-secondary.reset-btn:active,
+#crudTable_reset_button:hover,
+#crudTable_reset_button:focus,
+#crudTable_reset_button:active,
+a.btn-outline-secondary.reset-btn.d-inline-flex:hover,
+a.btn-outline-secondary.reset-btn.d-inline-flex:focus,
+a.btn-outline-secondary.reset-btn.d-inline-flex:active {
     background-color: var(--color-reset-btn-hover-bg) !important;
     color: var(--color-reset-btn-hover-text) !important;
     border-color: var(--color-reset-btn-hover-border) !important;
     box-shadow: none !important;
 }
 
-a.btn-outline-secondary.reset-btn i {
-    font-size: 1rem;
-    line-height: 1;
+a.btn-outline-secondary.reset-btn i,
+#resetFiltersBtn.reset-btn i,
+#crudTable_reset_button i,
+a.btn-outline-secondary.reset-btn.d-inline-flex i,
+#crudTable_reset_button.btn-outline-secondary i {
+    font-size: 0.7rem !important;
+    margin-right: 0.2rem !important;
+    line-height: 1 !important;
+    color: var(--color-reset-btn-text) !important;
 }
 
 /* Standardizzo lo spazio tra icone e testo */
@@ -406,45 +533,165 @@ a.btn-outline-secondary.reset-btn i {
     line-height: 1;
 }
 
-/* Restore standard button sizes */
+/* Button colors only - sizes handled by theme-tabler */
 .btn-primary,
 .btn-secondary,
 .btn-success,
 .btn-danger,
 .btn-warning,
-.btn-info {
-    padding: 0.4375rem 1rem;
-    font-size: 0.875rem;
+.btn-info,
+.btn-outline-primary,
+.btn-outline-secondary,
+.btn-outline-success,
+.btn-outline-danger,
+.btn-outline-warning,
+.btn-outline-info {
     display: inline-flex;
     align-items: center;
-    line-height: 1.5;
 }
 
+/* Label buttons and filter submit button - sizes handled by theme-tabler */
+
 .accordion-button i {
-    margin-right: 0.25rem;
+    flex-shrink: 0 !important; /* Prevent icon from shrinking */
+    margin-right: 0.4rem !important; /* Add spacing after icon */
     line-height: 1;
 }
 
-/* Search button */
+/* Filter search button - compact size inside accordions */
+.filter-search-btn {
+    font-size: 0.75rem !important;
+    padding: 0.25rem 0.6rem !important;
+    line-height: 1.2 !important;
+    font-weight: 500 !important;
+}
+
+.filter-search-btn i {
+    font-size: 0.85rem !important;
+    margin-right: 0.3rem !important;
+}
+
+/* Date filter toggle buttons - reduced size */
+.date-filter-toggle.btn-group-sm .btn {
+    font-size: 0.7rem !important;
+    padding: 0.2rem 0.4rem !important;
+    line-height: 1.2 !important;
+}
+
+.date-filter-toggle.btn-group-sm .btn i {
+    font-size: 0.75rem !important;
+    margin-right: 0.25rem !important;
+}
+
+/* Filter badges container - responsive with wrapping */
+.filter-badges-container {
+    display: flex;
+    flex-wrap: wrap !important; /* Allow wrapping for responsive layout */
+    gap: 0.2rem !important;
+    align-items: center;
+    max-width: 100%; /* Prevent overflow */
+}
+
+/* Hide badges in accordion header on medium and small screens to prevent clipping */
+@media (max-width: 1199.98px) {
+    .accordion-button .filter-badges-container {
+        display: none !important; /* Hide badges in header on mobile/tablet to prevent clipping */
+    }
+}
+
+/* On large screens, show badges in header but allow wrapping */
+@media (min-width: 1200px) {
+    .accordion-button .filter-badges-container {
+        display: flex !important;
+        flex-wrap: wrap !important;
+        max-width: calc(100% - 200px); /* Leave space for icon and badge count */
+    }
+}
+
+/* Filter item badges - neutral and discrete */
+.filter-item-badge {
+    display: inline-block;
+    padding: 0.15rem 0.4rem !important; /* Slightly increased padding */
+    font-size: 0.7rem !important; /* Reduced font size */
+    font-weight: 400;
+    line-height: 1.2;
+    color: #1f2937; /* Darker text color for better contrast */
+    background-color: #f3f4f6;
+    border: 1px solid #6b7280; /* Thin but darker border for sharper definition */
+    border-radius: 3px;
+    white-space: nowrap;
+    flex-shrink: 0; /* Prevent badge from shrinking */
+}
+
+/* Ensure text content in accordion button doesn't wrap */
+.accordion-button > *:not(i):not(.badge):not(.filter-badges-container) {
+    white-space: nowrap !important;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex-shrink: 0;
+}
+
+/* Fix font-size for text-muted inside accordion buttons after Backpack 7 upgrade (legacy support) */
+.accordion-button .text-muted,
+.accordion-button small.text-muted {
+    font-size: 0.65rem !important;
+    font-weight: normal !important;
+    line-height: 1.3 !important;
+    margin-left: 0.25rem !important;
+}
+
+.accordion-button.collapsed .text-muted,
+.accordion-button.collapsed small.text-muted {
+    font-size: 0.65rem !important;
+    margin-left: 0.25rem !important;
+}
+
+/* Reduce accordion button text size */
+.accordion-button {
+    font-size: 0.85rem !important;
+    padding: 0.5rem 0.75rem !important;
+    color: #374151 !important;
+    font-weight: 500 !important;
+}
+
+/* Ensure white text when accordion is selected */
+.accordion-button:not(.collapsed) {
+    color: white !important;
+}
+
+.accordion-button:not(.collapsed) i {
+    color: white !important;
+}
+
+/* Reduce accordion item margins */
+.accordion-item {
+    margin-bottom: 0.5rem !important;
+}
+
+/* Reduce accordion body padding */
+.accordion-body {
+    padding: 0.75rem !important;
+}
+
+/* Reduce main accordion margin */
+#filtersAccordion.accordion {
+    margin-bottom: 1rem !important;
+}
+
+/* Search button - colors only */
 .d-flex .btn-primary {
     display: inline-flex;
     align-items: center;
-    padding: 0.4375rem 1rem;
-    line-height: 1.5;
 }
 
 .d-flex .btn-primary i {
-    font-size: 1rem;
-    line-height: 1;
+    /* Sizes handled by theme-tabler */
 }
 
 .btn-group-sm .btn {
-    padding: 0.2rem 0.3rem;
-    font-size: 0.75rem;
     border-radius: 3px;
     transition: all 0.2s ease;
-    min-width: 40px;
-    max-width: 45px;
+    /* Sizes handled by theme-tabler */
 }
 
 .btn-group {
@@ -518,13 +765,15 @@ a.btn-outline-secondary.reset-btn i {
 
 /* Autocomplete suggestions styles */
 .autocomplete-suggestions {
-    position: absolute;
-    background: var(--color-white);
-    border: 1px solid var(--color-autocomplete-border);
+    position: absolute !important;
+    background: #fff !important;
+    background: var(--color-white, #fff) !important;
+    border: 1px solid #ddd !important;
+    border: 1px solid var(--color-autocomplete-border, #ddd) !important;
     border-radius: 0.25rem;
     max-height: 200px;
     overflow-y: auto;
-    z-index: 1050;
+    z-index: 9999 !important;
     width: 100%;
     display: none;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
@@ -533,10 +782,18 @@ a.btn-outline-secondary.reset-btn i {
 }
 
 .autocomplete-suggestions div {
-    padding: 8px 12px;
-    cursor: pointer;
-    border-bottom: 1px solid var(--color-autocomplete-item-border);
+    padding: 8px 12px !important;
+    cursor: pointer !important;
+    border-bottom: 1px solid #f0f0f0 !important;
+    border-bottom: 1px solid var(--color-autocomplete-item-border, #f0f0f0) !important;
     transition: background-color 0.2s;
+    color: #000 !important;
+    background-color: #fff !important;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    position: relative !important;
+    z-index: 10000 !important;
 }
 
 .autocomplete-suggestions div:hover {
@@ -594,21 +851,68 @@ tr.rejected {
 .accordion-item {
     border: none;
     background: transparent;
+    margin-bottom: 0.35rem !important; /* Reduced from 0.5rem */
 }
 
-/* Filter badge button (identical to reset) */
+/* Active filter badges - same size as reset button, styled like alert-info */
+.active-filter-badge {
+    background-color: var(--tblr-info-bg-subtle) !important;
+    border: 1px solid var(--tblr-info-border-subtle) !important;
+    color: var(--tblr-info-text-emphasis) !important;
+    transition: all 0.2s ease;
+    display: inline-flex !important;
+    align-items: center !important;
+    text-decoration: none !important;
+    font-size: 0.75rem !important; /* Same as reset button */
+    padding: 0.1rem 0.3rem !important; /* Same as reset button */
+    line-height: 1.2 !important; /* Same as reset button */
+    font-weight: 400 !important;
+    border-radius: 4px !important;
+    min-height: auto !important;
+    height: auto !important;
+    gap: 0.2rem;
+    white-space: nowrap !important; /* Prevent text wrapping */
+    flex-shrink: 0; /* Prevent badge from shrinking */
+    width: auto !important; /* Width adapts to content */
+    max-width: 100%; /* But doesn't exceed container */
+}
+
+.active-filter-badge:hover,
+.active-filter-badge:focus,
+.active-filter-badge:active {
+    background-color: var(--tblr-info-bg-subtle) !important;
+    color: var(--tblr-info-text-emphasis) !important;
+    border-color: var(--tblr-info) !important;
+    box-shadow: none !important;
+    opacity: 0.9;
+}
+
+.active-filter-label {
+    font-weight: 500;
+}
+
+.active-filter-value {
+    opacity: 0.9;
+}
+
+.active-filter-remove {
+    margin-left: 0.15rem;
+    font-weight: 700;
+    font-size: 0.85rem; /* Slightly smaller to match badge size */
+    line-height: 1;
+    cursor: pointer;
+}
+
+/* Filter badge button (legacy - kept for backward compatibility) */
 .btn-filter {
     background-color: var(--tblr-bg-surface-dark) !important;
     opacity: 0.9 !important;
     border-radius: 16px !important;
     color: var(--color-white) !important;
     transition: all 0.2s ease !important;
-    padding: 0.25rem 0.6rem 0.3rem 0.6rem !important;
     margin-right: 0.15rem !important;
     margin-bottom: 0.15rem !important;
-    font-size: 0.78rem !important;
     text-decoration: none !important;
-    line-height: 1 !important;
     border: none !important;
     display: inline-flex !important;
     align-items: center !important;
@@ -628,13 +932,11 @@ tr.rejected {
 .btn-filter .filter-field-name {
     margin-right: 0.1rem;
     font-weight: 600 !important;
-    font-size: 0.92rem !important;
     display: inline-flex !important;
     align-items: center !important;
 }
 
 .btn-filter span:not(.filter-field-name):not(.filter-remove-icon) {
-    font-size: 0.7rem !important;
     opacity: 0.9 !important;
     display: inline-flex !important;
     align-items: center !important;
@@ -645,8 +947,6 @@ tr.rejected {
 
 .btn-filter .filter-remove-icon {
     margin-left: 0.3rem !important;
-    font-size: 1.1rem !important;
-    line-height: 0.8 !important;
     opacity: 1 !important;
     font-weight: 700 !important;
     color: var(--color-white) !important;
@@ -667,13 +967,7 @@ tr.rejected {
 }
 
 /* Stile JavaScript da aggiungere per rendere attivo i filtri valorizzati */
-input[name][value]:not([value=""])+label,
-input[name][value]:not([value=""])~label,
-select[name]:has(option[selected]:not([value=""]))+label,
-select[name]:has(option[selected]:not([value=""]))~label,
-input[type="checkbox"]:checked+label {
-    /* Rimuovo i cambiamenti di stile per evitare problemi */
-}
+/* Removed empty CSS rule */
 
 /* Aggiungi stile per evidenziare le label dei campi con filtri attivi */
 .filter-active {
@@ -690,7 +984,28 @@ input[type="checkbox"]:checked+label {
 #textFiltersCollapse .row,
 #booleanFiltersCollapse .row,
 #relationFiltersCollapse .row {
-    row-gap: 1rem !important;
+    row-gap: 0.75rem !important;
+}
+
+/* Reduce filter field container margins */
+.filter-field-container {
+    margin-bottom: 0.5rem !important;
+    padding: 0.5rem !important;
+    padding-bottom: 0.75rem !important;
+    min-height: auto !important;
+    height: auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+    position: relative !important;
+}
+
+/* Reduce form label size in filters */
+#textFiltersCollapse .form-label,
+#booleanFiltersCollapse .form-label,
+#relationFiltersCollapse .form-label,
+.filter-field-container .form-label {
+    font-size: 0.75rem !important;
+    margin-bottom: 0.35rem !important;
 }
 
 /* Stile per i bottoni checked */
@@ -723,6 +1038,10 @@ input[type="checkbox"]:checked+label {
     background-color: var(--color-accordion-badge-bg) !important;
     color: var(--color-white) !important;
     transition: all 0.2s ease !important;
+    font-size: 0.65rem !important; /* Reduced badge size */
+    padding: 0.15rem 0.4rem !important; /* Reduced padding */
+    line-height: 1 !important;
+    flex-shrink: 0 !important; /* Prevent badge from shrinking */
 }
 
 .accordion-button:not(.collapsed) .badge.bg-primary {
@@ -775,6 +1094,1838 @@ input[type="checkbox"]:checked+label {
     animation: fadeIn 0.3s ease;
 }
 
-.btn[bp-button="create"].has-active-filters {
-    /* animation: softPulse 2s infinite; */
+/* Removed empty CSS rule */
+
+
+.relation-filter-select {
+  border: 2px solid #e9ecef;
+  transition: all 0.3s ease;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 0.75rem !important;
+  padding: 0.25rem 0.4rem !important;
+  line-height: 1.2 !important;
+}
+
+.relation-filter-select:focus {
+  border-color: #17a2b8;
+  box-shadow: 0 0 0 0.2rem rgba(23, 162, 184, 0.25);
+}
+
+.relation-filter-select option[data-has-relations="true"] {
+  background-color: #e3f2fd;
+  font-weight: 600;
+}
+
+.relation-filter-select option[data-has-relations="false"] {
+  background-color: #f8f9fa;
+  color: #6c757d;
+}
+
+/* Custom styling for the relation indicators */
+.relation-indicator {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 2px 6px;
+  border-radius: 12px;
+  font-size: 0.8em;
+  font-weight: bold;
+}
+
+.relation-indicator.has-relations {
+  background: linear-gradient(135deg, #17a2b8, #138496);
+  color: white;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.relation-indicator.no-relations {
+  background: #f8f9fa;
+  color: #6c757d;
+  border: 1px solid #dee2e6;
+}
+
+/* Animation removed for cleaner UX */
+
+/* Label styling for relation filters removed - using simple approach */
+
+/* Modal trigger button styling */
+/* Relation modal trigger buttons - compact size, positioned bottom right */
+.relation-modal-trigger,
+.hasmany-modal-trigger {
+    font-size: 0.7rem !important;
+    padding: 0.2rem 0.5rem !important;
+    line-height: 1.2 !important;
+    border-radius: 0.25rem !important;
+    min-height: auto !important;
+    height: auto !important;
+    transition: all 0.3s ease;
+    white-space: nowrap !important;
+    display: inline-flex !important;
+    align-items: center !important;
+}
+
+.relation-modal-trigger:hover,
+.hasmany-modal-trigger:hover {
+  border-color: #17a2b8;
+  background-color: #f8f9fa;
+  color: #212529 !important;
+}
+
+.relation-modal-trigger.has-selection,
+.hasmany-modal-trigger.has-selection {
+  border-color: #28a745;
+  background-color: #e8f5e8;
+  color: #155724 !important;
+}
+
+.relation-modal-trigger.has-selection:hover,
+.hasmany-modal-trigger.has-selection:hover {
+  background-color: #d1ecf1;
+  color: #0c5460 !important;
+}
+
+/* Modal relation options removed - now using standard select */
+
+/* Search input in modal */
+#relationSearchInput {
+  background: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23666' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M15 15l-4.486-4.486M11.5 7a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0z'/%3e%3c/svg%3e") no-repeat right 0.75rem center/16px 16px;
+  padding-right: 2.5rem;
+}
+
+/* Modal select styling */
+#modalRelationSelect {
+  border: 2px solid #e9ecef;
+  transition: all 0.3s ease;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+#modalRelationSelect:focus {
+  border-color: #17a2b8;
+  box-shadow: 0 0 0 0.2rem rgba(23, 162, 184, 0.25);
+}
+
+#modalRelationSelect option[data-has-relations="true"] {
+  background-color: #e3f2fd;
+  font-weight: 600;
+}
+
+#modalRelationSelect option[data-has-relations="false"] {
+  background-color: #f8f9fa;
+  color: #6c757d;
+}
+
+/* Style for Unicode symbols in options */
+#modalRelationSelect option {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Fix modal z-index for proper layering */
+#relationModal {
+  z-index: 1055 !important;
+}
+
+#relationModal .modal-backdrop {
+  z-index: 1050 !important;
+}
+
+/* Relation statistics styling */
+.relation-stats {
+  font-size: 11px;
+  color: #6c757d;
+  text-align: center;
+  margin-top: 8px;
+}
+
+.relation-stats span {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 10px;
+  margin-right: 6px;
+  font-weight: 600;
+  border: 1px solid;
+}
+
+.relation-stats span:first-child {
+  background: #e3f2fd;
+  color: #1976d2;
+  border-color: #bbdefb;
+}
+
+.relation-stats span:last-child {
+  background: #f8f9fa;
+  color: #757575;
+  border-color: #e0e0e0;
+  margin-right: 0;
+}
+
+/* Date Range Filters Styling - Clean and Simple */
+.date-filter-section {
+    transition: all 0.3s ease;
+}
+
+.date-filter-section.hidden {
+    display: none !important;
+}
+
+/* Date filter toggle buttons - matching accordion button style */
+.date-filter-container .btn-group .btn-check:checked + .btn-outline-secondary,
+.filter-field-container .btn-group .btn-check:checked + .btn-outline-secondary {
+    background-color: var(--color-accordion-button-active-bg) !important;
+    color: var(--color-accordion-button-active-text) !important;
+    box-shadow: 0 3px 8px rgba(var(--tblr-primary-rgb), 0.25) !important;
+    border-color: rgba(var(--tblr-primary-rgb), 0.3) !important;
+}
+
+.date-filter-container .btn-group .btn-outline-secondary,
+.filter-field-container .btn-group .btn-outline-secondary {
+    border-radius: 0.25rem;
+    transition: all 0.2s ease;
+    font-weight: 500 !important;
+    text-align: center;
+    border: 1.5px solid rgba(var(--tblr-primary-rgb), 0.3) !important;
+    background-color: transparent !important;
+    color: var(--tblr-text-muted) !important;
+}
+
+.date-filter-container .btn-group .btn-outline-secondary:hover,
+.filter-field-container .btn-group .btn-outline-secondary:hover {
+    background-color: var(--color-accordion-button-hover-bg) !important;
+    color: var(--tblr-primary) !important;
+    box-shadow: 0 2px 8px rgba(var(--tblr-primary-rgb), 0.2) !important;
+    border-color: rgba(var(--tblr-primary-rgb), 0.3) !important;
+}
+
+.date-filter-container .btn-group .btn-outline-secondary:focus,
+.filter-field-container .btn-group .btn-outline-secondary:focus {
+    box-shadow: 0 0 0 0.2rem rgba(var(--tblr-primary-rgb), 0.25) !important;
+}
+
+.date-filter-container .btn-group .btn-outline-secondary:focus:hover,
+.filter-field-container .btn-group .btn-outline-secondary:focus:hover {
+    background-color: var(--color-accordion-button-hover-bg) !important;
+    color: var(--tblr-primary) !important;
+    box-shadow: 0 2px 8px rgba(var(--tblr-primary-rgb), 0.2) !important;
+    border-color: rgba(var(--tblr-primary-rgb), 0.3) !important;
+}
+
+/* Date range inputs - clean and compact */
+.date-range-inputs .form-control-sm {
+    border-radius: 0.25rem;
+}
+
+/* Limit height of input fields in filters to prevent overflow */
+.filter-field-container .position-relative {
+    max-height: 38px;
+    overflow: hidden;
+}
+
+.filter-field-container .form-control-sm {
+    height: 31px !important;
+    max-height: 31px !important;
+    line-height: 1.5;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+}
+
+.date-range-inputs .form-label {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--tblr-text-muted);
+    margin-bottom: 0.3rem;
+}
+
+/* Simple date filter container */
+.date-filter-container {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 0.375rem;
+    padding: 0.75rem;
+    margin-bottom: 0.75rem;
+}
+
+.date-filter-container .form-label {
+    color: var(--tblr-text-muted);
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    font-size: 0.85rem;
+}
+
+/* Date filter button group styling - compact */
+.date-filter-container .btn-group {
+    display: flex;
+    gap: 0;
+    width: auto;
+}
+
+.date-filter-container .btn-group .btn {
+    flex: none;
+    border-radius: 0;
+    white-space: nowrap;
+}
+
+.date-filter-container .btn-group .btn:first-child {
+    border-top-left-radius: 0.375rem;
+    border-bottom-left-radius: 0.375rem;
+}
+
+.date-filter-container .btn-group .btn:last-child {
+    border-top-right-radius: 0.375rem;
+    border-bottom-right-radius: 0.375rem;
+}
+
+.date-filter-container .btn-group .btn:not(:first-child) {
+    border-left: 0;
+}
+
+/* Empty filter radio buttons styling */
+.filter-radio-group {
+    display: flex;
+    gap: 3px;
+    margin-left: 8px;
+}
+
+.filter-radio-group .btn-check {
+    display: none;
+}
+
+.filter-radio-group .btn {
+    border-radius: 0.25rem;
+    font-weight: 400;
+    font-size: 0.75rem;
+    padding: 0.1rem 0.3rem;
+    line-height: 1.2;
+    transition: all 0.2s ease;
+    border: 1px solid var(--tblr-border-color);
+    background-color: var(--tblr-light);
+    color: var(--tblr-muted);
+    text-align: center;
+    min-height: auto;
+    height: auto;
+}
+
+.filter-radio-group .btn:hover {
+    background-color: var(--tblr-primary-bg-subtle);
+    border-color: var(--tblr-primary);
+    color: var(--tblr-primary);
+}
+
+.filter-radio-group .btn-check:checked + .btn {
+    background-color: var(--tblr-primary) !important;
+    border-color: var(--tblr-primary) !important;
+    color: var(--tblr-white) !important;
+}
+
+.filter-radio-group .btn-check:checked + .btn-outline-secondary {
+    background-color: var(--tblr-primary) !important;
+    border-color: var(--tblr-primary) !important;
+    color: var(--tblr-white) !important;
+}
+
+.filter-radio-group .btn-check:checked + .btn-outline-success {
+    background-color: var(--tblr-primary) !important;
+    border-color: var(--tblr-primary) !important;
+    color: var(--tblr-white) !important;
+}
+
+.filter-radio-group .btn-check:checked + .btn-outline-danger {
+    background-color: var(--tblr-primary) !important;
+    border-color: var(--tblr-primary) !important;
+    color: var(--tblr-white) !important;
+}
+
+/* Active tab field names styling */
+.accordion-button:not(.collapsed) .text-muted {
+    color: white !important;
+}
+
+/* Active tab relation filter text styling */
+.accordion-button:not(.collapsed) .text-info {
+    color: white !important;
+}
+
+/* Responsive improvements for filter radio groups */
+@media (max-width: 768px) {
+    .filter-radio-group {
+        flex-direction: column;
+        gap: 4px;
+        margin-left: 0;
+        margin-top: 8px;
+    }
+    
+    .filter-radio-group .btn {
+        min-width: 100%;
+    }
+    
+    .d-flex.justify-content-between {
+        flex-direction: column;
+        align-items: flex-start !important;
+    }
+}
+
+/* Improve filter field spacing */
+.filter-field-container {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 0.2rem;
+    padding: 0.3rem;
+    margin-bottom: 0.3rem;
+    transition: all 0.2s ease;
+}
+
+.perfeziona-page .card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.perfeziona-page .card-header {
+    background: linear-gradient(90deg, rgba(255, 101, 95, 0.06) 0%, rgba(255, 255, 255, 1) 100%);
+    border-bottom: 1px solid #e5e7eb;
+    padding: 0.85rem 1.15rem;
+}
+
+.perfeziona-page .card-title {
+    font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-weight: 600;
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #1f2937;
+}
+
+.perfeziona-page .card-body {
+    padding: 1.15rem;
+}
+
+.perfeziona-page .form-label {
+    font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-weight: 500;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: #6b7280;
+    margin-bottom: 0.5rem;
+}
+
+.perfeziona-page .form-control {
+    font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 0.9rem;
+    padding: 0.6rem 0.85rem;
+    border: 1.5px solid #e5e7eb;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.perfeziona-page .form-control:focus {
+    border-color: #16108a;
+    box-shadow: 0 0 0 3px rgba(22, 16, 138, 0.1);
+}
+
+.perfeziona-page .btn {
+    font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-weight: 500;
+    border-radius: 6px;
+    transition: opacity 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+    letter-spacing: 0.01em;
+    opacity: 1;
+}
+
+.perfeziona-page .btn i {
+    margin-right: 0.3rem;
+}
+
+.perfeziona-page .btn-success {
+    background: #16a34a;
+    border: none;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.perfeziona-page .btn-success:hover {
+    background: #15803d;
+    opacity: 0.85;
+}
+
+.perfeziona-page .btn-secondary {
+    background: #6b7280;
+    border: none;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.perfeziona-page .btn-secondary:hover {
+    background: #4b5563;
+    opacity: 0.85;
+}
+
+.perfeziona-page .btn-danger {
+    background: #dc2626;
+    border: none;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.perfeziona-page .btn-danger:hover {
+    background: #b91c1c;
+    opacity: 0.85;
+}
+
+.perfeziona-page .card-body p {
+    font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 0.85rem;
+    margin-bottom: 0.75rem;
+    color: #374151;
+}
+
+.perfeziona-page .card-body p strong {
+    font-weight: 600;
+    color: #1f2937;
+    display: inline-block;
+    min-width: 140px;
+}
+
+.perfeziona-page .badge {
+    font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-weight: 500;
+    font-size: 0.75rem;
+    padding: 0.35em 0.65em;
+    letter-spacing: 0.02em;
+}
+
+.perfeziona-page .header-operation h1 {
+    font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-weight: 600;
+    font-size: 1.5rem;
+    color: #1f2937;
+}
+
+/* Info cards sidebar styling */
+.perfeziona-page .card.info-card {
+    background: linear-gradient(135deg, rgba(246, 248, 250, 0.8) 0%, #ffffff 100%);
+}
+
+.perfeziona-page .card.info-card .card-body p:last-child {
+    margin-bottom: 0;
+}
+
+/* ========================================
+   Backpack CRUD Edit/Create Forms Styling
+   Inspired by perfeziona.blade.php design
+   ======================================== */
+
+/* Main form cards styling - completely remove card styling when tabs are present */
+.crud .card:has(.nav-tabs),
+[bp-section="crud-operation-update"] .card:has(.nav-tabs),
+[bp-section="crud-operation-create"] .card:has(.nav-tabs) {
+    border: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border-radius: 0 !important;
+    display: block !important;
+}
+
+/* Remove any wrapper spacing */
+.crud .card:has(.nav-tabs) > *,
+[bp-section="crud-operation-update"] .card:has(.nav-tabs) > *,
+[bp-section="crud-operation-create"] .card:has(.nav-tabs) > * {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+}
+
+/* Target the main content wrapper when tabs exist */
+.crud [class*="col-"]:has(.nav-tabs) .card,
+[bp-section="crud-operation-update"] [class*="col-"]:has(.nav-tabs) .card,
+[bp-section="crud-operation-create"] [class*="col-"]:has(.nav-tabs) .card {
+    border: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* Also target direct card children when tabs are inside */
+.crud .card:has(.nav-tabs),
+.crud .card:has(.tab-content),
+[bp-section="crud-operation-update"] .card:has(.nav-tabs),
+[bp-section="crud-operation-update"] .card:has(.tab-content),
+[bp-section="crud-operation-create"] .card:has(.nav-tabs),
+[bp-section="crud-operation-create"] .card:has(.tab-content) {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+/* Fallback for browsers without :has() support - hide card when nav-tabs exists */
+.crud .card .nav-tabs,
+[bp-section="crud-operation-update"] .card .nav-tabs,
+[bp-section="crud-operation-create"] .card .nav-tabs {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.crud .card .nav-tabs ~ .card-body,
+[bp-section="crud-operation-update"] .card .nav-tabs ~ .card-body,
+[bp-section="crud-operation-create"] .card .nav-tabs ~ .card-body {
+    border: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+/* Remove all card styling when tabs exist - more aggressive approach */
+.crud .card:has(.nav-tabs) *,
+[bp-section="crud-operation-update"] .card:has(.nav-tabs) *,
+[bp-section="crud-operation-create"] .card:has(.nav-tabs) * {
+    box-shadow: none !important;
+}
+
+/* Ensure card header is completely hidden when tabs exist */
+.crud .card:has(.nav-tabs) .card-header,
+[bp-section="crud-operation-update"] .card:has(.nav-tabs) .card-header,
+[bp-section="crud-operation-create"] .card:has(.nav-tabs) .card-header {
+    display: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border: none !important;
+}
+
+/* Main form cards styling (when no tabs) */
+.crud .card:not(:has(.nav-tabs)),
+[bp-section="crud-operation-update"] .card:not(:has(.nav-tabs)),
+[bp-section="crud-operation-create"] .card:not(:has(.nav-tabs)) {
+    font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    border: 1px solid #d1d5db;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    transition: box-shadow 0.2s ease;
+    margin-bottom: 1rem;
+    background: #fafbfc;
+    overflow: hidden;
+}
+
+.crud .card:hover,
+[bp-section="crud-operation-update"] .card:hover,
+[bp-section="crud-operation-create"] .card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* Card headers - hide when tabs are present */
+.crud .card:has(.nav-tabs) .card-header,
+[bp-section="crud-operation-update"] .card:has(.nav-tabs) .card-header,
+[bp-section="crud-operation-create"] .card:has(.nav-tabs) .card-header {
+    display: none;
+}
+
+/* Card headers (when no tabs) */
+.crud .card:not(:has(.nav-tabs)) .card-header,
+[bp-section="crud-operation-update"] .card:not(:has(.nav-tabs)) .card-header,
+[bp-section="crud-operation-create"] .card:not(:has(.nav-tabs)) .card-header {
+    background: linear-gradient(90deg, rgba(255, 101, 95, 0.08) 0%, rgba(248, 250, 252, 1) 100%);
+    border-bottom: none;
+    border-top: none;
+    padding: 0.65rem 1rem;
+    border-radius: 12px 12px 0 0;
+}
+
+.crud .card-header h3,
+.crud .card-header .card-title,
+[bp-section="crud-operation-update"] .card-header h3,
+[bp-section="crud-operation-create"] .card-header h3 {
+    font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #1f2937;
+    margin-bottom: 0;
+}
+
+/* Card body - hide when tabs are present */
+.crud .card:has(.nav-tabs) .card-body,
+[bp-section="crud-operation-update"] .card:has(.nav-tabs) .card-body,
+[bp-section="crud-operation-create"] .card:has(.nav-tabs) .card-body {
+    padding: 0;
+    background: transparent;
+    border: none;
+    margin: 0;
+}
+
+/* Card body (when no tabs) */
+.crud .card:not(:has(.nav-tabs)) .card-body,
+[bp-section="crud-operation-update"] .card:not(:has(.nav-tabs)) .card-body,
+[bp-section="crud-operation-create"] .card:not(:has(.nav-tabs)) .card-body {
+    padding: 0.9rem 1rem;
+    background: #ffffff;
+    border-radius: 0;
+    border: none;
+    margin-bottom: 0;
+    position: relative;
+}
+
+/* Subtle separator between header and body (only when no tabs) */
+.crud .card:not(:has(.nav-tabs)) .card-header + .card-body::before,
+[bp-section="crud-operation-update"] .card:not(:has(.nav-tabs)) .card-header + .card-body::before,
+[bp-section="crud-operation-create"] .card:not(:has(.nav-tabs)) .card-header + .card-body::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent 0%, rgba(229, 231, 235, 0.5) 20%, rgba(229, 231, 235, 0.5) 80%, transparent 100%);
+}
+
+/* Form labels - bold-labels class support */
+.bold-labels label,
+.crud label,
+[bp-section="crud-operation-update"] label,
+[bp-section="crud-operation-create"] label {
+    font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-weight: 500;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: #6b7280;
+    margin-bottom: 0.3rem;
+    line-height: 1.2;
+}
+
+/* Form controls */
+.crud .form-control,
+.crud input[type="text"],
+.crud input[type="email"],
+.crud input[type="number"],
+.crud input[type="password"],
+.crud input[type="date"],
+.crud input[type="datetime-local"],
+.crud select,
+.crud textarea,
+[bp-section="crud-operation-update"] .form-control,
+[bp-section="crud-operation-create"] .form-control {
+    font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 0.85rem;
+    padding: 0.45rem 0.75rem;
+    border: 1.5px solid #d1d5db;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    background: #ffffff;
+}
+
+/* Subtle background for form sections */
+.crud .card-body .row:nth-child(even),
+[bp-section="crud-operation-update"] .card-body .row:nth-child(even),
+[bp-section="crud-operation-create"] .card-body .row:nth-child(even) {
+    background: transparent;
+}
+
+.crud .form-control:focus,
+.crud input:focus,
+.crud select:focus,
+.crud textarea:focus,
+[bp-section="crud-operation-update"] .form-control:focus,
+[bp-section="crud-operation-create"] .form-control:focus {
+    border-color: #16108a;
+    box-shadow: 0 0 0 3px rgba(22, 16, 138, 0.1);
+    outline: none;
+}
+
+/* Select2 integration */
+.crud .select2-container--bootstrap .select2-selection,
+[bp-section="crud-operation-update"] .select2-container--bootstrap .select2-selection,
+[bp-section="crud-operation-create"] .select2-container--bootstrap .select2-selection {
+    border: 1.5px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 0.25rem 0.4rem;
+    min-height: 36px;
+    transition: all 0.2s ease;
+}
+
+.crud .select2-container--bootstrap.select2-container--focus .select2-selection,
+.crud .select2-container--bootstrap.select2-container--open .select2-selection {
+    border-color: #16108a;
+    box-shadow: 0 0 0 3px rgba(22, 16, 138, 0.1);
+}
+
+/* Form groups spacing */
+.crud .form-group,
+.crud .mb-3,
+[bp-section="crud-operation-update"] .form-group,
+[bp-section="crud-operation-create"] .form-group {
+    margin-bottom: 0.7rem;
+}
+
+/* Row spacing for two-column layouts */
+.crud .row,
+[bp-section="crud-operation-update"] .row,
+[bp-section="crud-operation-create"] .row {
+    margin-left: -0.5rem;
+    margin-right: -0.5rem;
+}
+
+.crud .row > [class*="col-"],
+[bp-section="crud-operation-update"] .row > [class*="col-"],
+[bp-section="crud-operation-create"] .row > [class*="col-"] {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+}
+
+/* Buttons styling - colors only */
+.crud .btn,
+[bp-section="crud-operation-update"] .btn,
+[bp-section="crud-operation-create"] .btn {
+    font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-weight: 500;
+    border-radius: 6px;
+    transition: opacity 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+    letter-spacing: 0.01em;
+    opacity: 1;
+}
+
+.crud .btn i,
+[bp-section="crud-operation-update"] .btn i,
+[bp-section="crud-operation-create"] .btn i {
+    margin-right: 0.35rem;
+}
+
+/* Primary button (Save) */
+.crud .btn-primary,
+[bp-section="crud-operation-update"] .btn-primary,
+[bp-section="crud-operation-create"] .btn-primary {
+    background: #16108a;
+    border: none;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.crud .btn-primary:hover,
+[bp-section="crud-operation-update"] .btn-primary:hover,
+[bp-section="crud-operation-create"] .btn-primary:hover {
+    background: #110a6d;
+    opacity: 0.85;
+}
+
+/* Success button */
+.crud .btn-success,
+[bp-section="crud-operation-update"] .btn-success,
+[bp-section="crud-operation-create"] .btn-success {
+    background: #16a34a;
+    border: none;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.crud .btn-success:hover,
+[bp-section="crud-operation-update"] .btn-success:hover,
+[bp-section="crud-operation-create"] .btn-success:hover {
+    background: #15803d;
+    opacity: 0.85;
+}
+
+/* Secondary button (Cancel) */
+.crud .btn-secondary,
+.crud .btn-default,
+[bp-section="crud-operation-update"] .btn-secondary,
+[bp-section="crud-operation-create"] .btn-secondary {
+    background: #6b7280;
+    border: none;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.crud .btn-secondary:hover,
+.crud .btn-default:hover,
+[bp-section="crud-operation-update"] .btn-secondary:hover,
+[bp-section="crud-operation-create"] .btn-secondary:hover {
+    background: #4b5563;
+    opacity: 0.85;
+}
+
+/* Danger button (Delete) */
+.crud .btn-danger,
+[bp-section="crud-operation-update"] .btn-danger,
+[bp-section="crud-operation-create"] .btn-danger {
+    background: #dc2626;
+    border: none;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.crud .btn-danger:hover,
+[bp-section="crud-operation-update"] .btn-danger:hover,
+[bp-section="crud-operation-create"] .btn-danger:hover {
+    background: #b91c1c;
+    opacity: 0.85;
+}
+
+/* Help blocks and hints */
+.crud .form-text,
+.crud .help-block,
+[bp-section="crud-operation-update"] .form-text,
+[bp-section="crud-operation-create"] .form-text {
+    font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 0.75rem;
+    color: #6b7280;
+    margin-top: 0.25rem;
+}
+
+/* Validation errors */
+.crud .invalid-feedback,
+[bp-section="crud-operation-update"] .invalid-feedback,
+[bp-section="crud-operation-create"] .invalid-feedback {
+    font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 0.75rem;
+    color: #dc2626;
+    margin-top: 0.25rem;
+}
+
+.crud .is-invalid,
+[bp-section="crud-operation-update"] .is-invalid,
+[bp-section="crud-operation-create"] .is-invalid {
+    border-color: #dc2626 !important;
+}
+
+/* Tabs styling (if using tabbed forms) - Modern and elegant design */
+.crud .nav-tabs,
+[bp-section="crud-operation-update"] .nav-tabs,
+[bp-section="crud-operation-create"] .nav-tabs {
+    border: none;
+    border-bottom: 2px solid #e5e7eb;
+    border-radius: 0;
+    margin-bottom: 0;
+    margin-top: 1.5rem;
+    padding: 0.5rem 0.5rem 0 0.5rem;
+    background: transparent;
+    box-shadow: none;
+    display: flex;
+    gap: 0.15rem;
+    position: relative;
+}
+
+.crud .nav-tabs .nav-link,
+[bp-section="crud-operation-update"] .nav-tabs .nav-link,
+[bp-section="crud-operation-create"] .nav-tabs .nav-link {
+    font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-weight: 500;
+    font-size: 0.75rem;
+    color: #6b7280;
+    border: 1px solid #e5e7eb;
+    border-bottom: none;
+    padding: 0.55rem 1rem;
+    transition: all 0.2s ease;
+    margin-bottom: -2px;
+    background: #f9fafb;
+    border-radius: 6px 6px 0 0;
+    position: relative;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.crud .nav-tabs .nav-link:hover,
+[bp-section="crud-operation-update"] .nav-tabs .nav-link:hover,
+[bp-section="crud-operation-create"] .nav-tabs .nav-link:hover {
+    color: #16108a;
+    background: #f3f4f6;
+    border-color: #d1d5db;
+}
+
+.crud .nav-tabs .nav-link.active,
+[bp-section="crud-operation-update"] .nav-tabs .nav-link.active,
+[bp-section="crud-operation-create"] .nav-tabs .nav-link.active {
+    color: #16108a;
+    background: #ffffff;
+    font-weight: 600;
+    border: 1px solid #e5e7eb;
+    border-bottom: 3px solid #ffffff;
+    box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.05);
+    z-index: 1;
+}
+
+/* Tab content styling - connects seamlessly with tabs */
+.crud .tab-content,
+[bp-section="crud-operation-update"] .tab-content,
+[bp-section="crud-operation-create"] .tab-content {
+    border: none;
+    border-top: 2px solid #e5e7eb;
+    padding: 1.5rem 1.25rem;
+    margin-top: 0;
+    margin-left: 0;
+    margin-right: 0;
+    background: #ffffff;
+    border-radius: 0;
+    min-height: 200px;
+    box-shadow: none;
+    position: relative;
+    z-index: 1;
+}
+
+/* Ensure consistent padding to prevent movement when switching tabs */
+.crud .tab-pane,
+[bp-section="crud-operation-update"] .tab-pane,
+[bp-section="crud-operation-create"] .tab-pane {
+    padding: 0;
+    min-height: 0;
+}
+
+/* When card exists but has tabs, ensure seamless connection */
+.crud .card:has(.nav-tabs) .tab-content,
+[bp-section="crud-operation-update"] .card:has(.nav-tabs) .tab-content,
+[bp-section="crud-operation-create"] .card:has(.nav-tabs) .tab-content {
+    border: none;
+    border-top: none;
+    border-radius: 0;
+    box-shadow: none;
+    margin-left: 0;
+    margin-right: 0;
+}
+
+.crud .tab-pane,
+[bp-section="crud-operation-update"] .tab-pane,
+[bp-section="crud-operation-create"] .tab-pane {
+    border: none;
+    padding: 0;
+}
+
+/* Hide empty tab panes */
+.crud .tab-pane:empty,
+[bp-section="crud-operation-update"] .tab-pane:empty,
+[bp-section="crud-operation-create"] .tab-pane:empty {
+    display: none !important;
+}
+
+/* Hide tab if its pane is empty - but keep Avanzati tab visible if it has fields */
+.crud .nav-tabs .nav-link[data-bs-toggle="tab"]:has(+ .tab-pane:empty):not([href*="avanzati"]):not([data-bs-target*="avanzati"]),
+[bp-section="crud-operation-update"] .nav-tabs .nav-link[data-bs-toggle="tab"]:has(+ .tab-pane:empty):not([href*="avanzati"]):not([data-bs-target*="avanzati"]),
+[bp-section="crud-operation-create"] .nav-tabs .nav-link[data-bs-toggle="tab"]:has(+ .tab-pane:empty):not([href*="avanzati"]):not([data-bs-target*="avanzati"]) {
+    display: none;
+}
+
+/* Checkboxes and radio buttons */
+.crud .form-check-label,
+[bp-section="crud-operation-update"] .form-check-label,
+[bp-section="crud-operation-create"] .form-check-label {
+    font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 0.85rem;
+    color: #374151;
+}
+
+/* Textarea specific */
+.crud textarea.form-control,
+[bp-section="crud-operation-update"] textarea.form-control,
+[bp-section="crud-operation-create"] textarea.form-control {
+    min-height: 85px;
+    resize: vertical;
+}
+
+/* Required field asterisk */
+.crud label .required,
+[bp-section="crud-operation-update"] label .required,
+[bp-section="crud-operation-create"] label .required {
+    color: #dc2626;
+    margin-left: 0.2rem;
+}
+
+/* Footer buttons container - inside tab content */
+.crud .tab-content #saveActions,
+.crud .tab-content .form-actions,
+[bp-section="crud-operation-update"] .tab-content #saveActions,
+[bp-section="crud-operation-create"] .tab-content #saveActions {
+    border-top: none;
+    border-bottom: none;
+    padding-top: 0.9rem;
+    margin-top: 1rem;
+    background: #fafbfc;
+    margin-left: -1rem;
+    margin-right: -1rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    padding-bottom: 0.9rem;
+    border-radius: 0 0 12px 12px;
+    position: relative;
+}
+
+/* Footer buttons container - when no tabs */
+.crud .card-body #saveActions,
+.crud .card-body .form-actions,
+[bp-section="crud-operation-update"] .card-body #saveActions,
+[bp-section="crud-operation-create"] .card-body #saveActions {
+    border-top: none;
+    border-bottom: none;
+    padding-top: 0.9rem;
+    margin-top: 1rem;
+    background: #fafbfc;
+    margin-left: -1rem;
+    margin-right: -1rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    padding-bottom: 0.9rem;
+    border-radius: 0 0 12px 12px;
+    position: relative;
+}
+
+/* Subtle separator before footer */
+.crud .tab-pane:not(:empty) + #saveActions::before,
+.crud .tab-pane:not(:empty) + .form-actions::before,
+.crud .card-body + #saveActions::before,
+.crud .card-body + .form-actions::before,
+[bp-section="crud-operation-update"] .tab-pane:not(:empty) + #saveActions::before,
+[bp-section="crud-operation-create"] .tab-pane:not(:empty) + #saveActions::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 1rem;
+    right: 1rem;
+    height: 1px;
+    background: linear-gradient(90deg, transparent 0%, rgba(229, 231, 235, 0.5) 20%, rgba(229, 231, 235, 0.5) 80%, transparent 100%);
+}
+
+/* Page header for edit/create - Clean and simple design */
+[bp-section="page-header"] {
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid #e5e7eb;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.75rem;
+}
+
+[bp-section="page-header"] h1,
+[bp-section="page-header"] [bp-section="page-heading"] {
+    font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-weight: 600;
+    font-size: 1.5rem;
+    color: #1f2937;
+    margin-bottom: 0;
+    text-transform: uppercase !important;
+    letter-spacing: 0.04em;
+    flex-shrink: 0;
+}
+
+/* Back button next to title */
+[bp-section="page-header"] [bp-section="page-subheading-back-button"] {
+    margin: 0;
+    padding: 0;
+    flex-shrink: 0;
+    order: 2;
+}
+
+/* Ensure page-subheading is below title (full width) */
+[bp-section="page-header"] [bp-section="page-subheading"] {
+    width: 100%;
+    margin-top: 0.5rem;
+    margin-bottom: 0;
+    margin-left: 0 !important;
+    margin-inline-start: 0 !important;
+    flex-basis: 100%;
+    order: 3;
+}
+
+[bp-section="page-header"] p {
+    font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 0.875rem;
+    color: #6b7280;
+    margin-bottom: 0;
+    font-weight: 400;
+}
+
+/* Back link styling - simple link style */
+[bp-section="page-header"] a,
+[bp-section="page-header"] .back-link {
+    font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 0.875rem;
+    color: #16108a;
+    text-decoration: none;
+    transition: color 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0;
+    border: none;
+    background: transparent;
+    font-weight: 400;
+}
+
+[bp-section="page-header"] a:hover,
+[bp-section="page-header"] .back-link:hover {
+    color: #110a6d;
+    text-decoration: underline;
+}
+
+[bp-section="page-header"] a i,
+[bp-section="page-header"] .back-link i {
+    font-size: 0.875rem;
+}
+
+/* Compact relation sections styling */
+.relation-section-compact {
+    padding: 0.6rem;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    margin-bottom: 0.75rem;
+}
+
+.relation-badges-container {
+    min-height: 2rem;
+}
+
+.relation-badge {
+    white-space: nowrap;
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+    opacity: 1;
+    background-color: #f3f4f6 !important;
+}
+
+.relation-badge:hover {
+    opacity: 1 !important;
+}
+
+/* Relation add button styling */
+.btn-add-relation {
+    transition: opacity 0.2s ease, background-color 0.2s ease !important;
+    opacity: 1 !important;
+    position: relative !important;
+}
+
+.btn-add-relation i {
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    line-height: 1 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    font-weight: 700 !important;
+}
+
+.btn-add-relation:hover {
+    opacity: 0.85 !important;
+}
+
+/* Remove extra spacing in relation sections */
+.crud .relation-section-compact + .relation-section-compact,
+[bp-section="crud-operation-update"] .relation-section-compact + .relation-section-compact,
+[bp-section="crud-operation-create"] .relation-section-compact + .relation-section-compact {
+    margin-top: 0.5rem;
+}
+
+/* Relationship fields (select2, etc) */
+.crud .select2-selection__rendered,
+[bp-section="crud-operation-update"] .select2-selection__rendered,
+[bp-section="crud-operation-create"] .select2-selection__rendered {
+    font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 0.85rem;
+    color: #374151;
+}
+
+/* Date/time picker integration */
+.crud .datepicker,
+.crud .datetimepicker,
+[bp-section="crud-operation-update"] .datepicker,
+[bp-section="crud-operation-create"] .datepicker {
+    border: 1.5px solid #e5e7eb;
+    border-radius: 8px;
+}
+
+/* Additional visual structure */
+.crud .card-body > .row:first-child,
+[bp-section="crud-operation-update"] .card-body > .row:first-child,
+[bp-section="crud-operation-create"] .card-body > .row:first-child {
+    margin-top: 0;
+}
+
+.crud .card-body > .row:last-child,
+[bp-section="crud-operation-update"] .card-body > .row:last-child,
+[bp-section="crud-operation-create"] .card-body > .row:last-child {
+    margin-bottom: 0;
+}
+
+/* Hide completely empty cards and card bodies */
+.crud .card:empty,
+.crud .card-body:empty,
+[bp-section="crud-operation-update"] .card:empty,
+[bp-section="crud-operation-update"] .card-body:empty,
+[bp-section="crud-operation-create"] .card:empty,
+[bp-section="crud-operation-create"] .card-body:empty {
+    display: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    height: 0 !important;
+    min-height: 0 !important;
+}
+
+/* Hide cards that only contain empty card-body (but keep cards with tabs) */
+.crud .card:has(> .card-body:empty):not(:has(.nav-tabs)):not(:has(.tab-content)):not(:has(.form-group)),
+[bp-section="crud-operation-update"] .card:has(> .card-body:empty):not(:has(.nav-tabs)):not(:has(.tab-content)):not(:has(.form-group)),
+[bp-section="crud-operation-create"] .card:has(> .card-body:empty):not(:has(.nav-tabs)):not(:has(.tab-content)):not(:has(.form-group)) {
+    display: none !important;
+}
+
+/* Hide empty cards that appear before the main form card */
+.crud > .row > [class*="col-"]:first-child .card:empty,
+.crud > .row > [class*="col-"]:first-child .card:has(> .card-body:empty):not(:has(.nav-tabs)):not(:has(.tab-content)),
+[bp-section="crud-operation-update"] > .row > [class*="col-"]:first-child .card:empty,
+[bp-section="crud-operation-update"] > .row > [class*="col-"]:first-child .card:has(> .card-body:empty):not(:has(.nav-tabs)):not(:has(.tab-content)),
+[bp-section="crud-operation-create"] > .row > [class*="col-"]:first-child .card:empty,
+[bp-section="crud-operation-create"] > .row > [class*="col-"]:first-child .card:has(> .card-body:empty):not(:has(.nav-tabs)):not(:has(.tab-content)) {
+    display: none !important;
+}
+
+/* Hide fields that appear outside tabs in edit mode (should be in Avanzati tab) */
+[bp-section="crud-operation-update"] .card:not(:has(.nav-tabs)) .form-group:has([name*="password"]),
+[bp-section="crud-operation-update"] .card:not(:has(.nav-tabs)) .form-group:has([name="email_verified_at"]) {
+    display: none !important;
+}
+
+/* Hide any card that appears before the main form card with tabs and contains only Avanzati fields */
+[bp-section="crud-operation-update"] .row > [class*="col-"]:first-child .card:not(:has(.nav-tabs)):not(:has(.tab-content)):has(.form-group:has([name*="password"])),
+[bp-section="crud-operation-update"] .row > [class*="col-"]:first-child .card:not(:has(.nav-tabs)):not(:has(.tab-content)):has(.form-group:has([name="email_verified_at"])) {
+    display: none !important;
+}
+
+/* Hide card that contains only script fields (with or without hidden fields) - no visible form fields */
+/* This rule hides cards that have script fields but no other visible field types */
+[bp-section="crud-operation-update"] .card:not(:has(.nav-tabs)):not(:has(.tab-content)):has([bp-field-name^="script_"]):not(:has([bp-field-type="text"])):not(:has([bp-field-type="email"])):not(:has([bp-field-type="password"])):not(:has([bp-field-type="select"])):not(:has([bp-field-type="select_from_array"])):not(:has([bp-field-type="select_multiple"])):not(:has([bp-field-type="number"])):not(:has([bp-field-type="datetime"])):not(:has([bp-field-type="date"])):not(:has([bp-field-type="textarea"])):not(:has([bp-field-type="summernote"])):not(:has([bp-field-type="upload"])):not(:has([bp-field-type="image"])):not(:has([bp-field-type="browse"])):not(:has([bp-field-type="checkbox"])):not(:has([bp-field-type="radio"])),
+[bp-section="crud-operation-create"] .card:not(:has(.nav-tabs)):not(:has(.tab-content)):has([bp-field-name^="script_"]):not(:has([bp-field-type="text"])):not(:has([bp-field-type="email"])):not(:has([bp-field-type="password"])):not(:has([bp-field-type="select"])):not(:has([bp-field-type="select_from_array"])):not(:has([bp-field-type="select_multiple"])):not(:has([bp-field-type="number"])):not(:has([bp-field-type="datetime"])):not(:has([bp-field-type="date"])):not(:has([bp-field-type="textarea"])):not(:has([bp-field-type="summernote"])):not(:has([bp-field-type="upload"])):not(:has([bp-field-type="image"])):not(:has([bp-field-type="browse"])):not(:has([bp-field-type="checkbox"])):not(:has([bp-field-type="radio"])) {
+    display: none !important;
+}
+
+/* Hide any card that appears before the main form and doesn't have tabs - this should hide the empty box */
+[bp-section="crud-operation-update"] .row > [class*="col-"]:first-child .card:not(:has(.nav-tabs)):not(:has(.tab-content)),
+[bp-section="crud-operation-update"] .row > [class*="col-"]:first-child .card:has(> .card-body:empty),
+[bp-section="crud-operation-update"] .row > [class*="col-"]:first-child .card:has(> .card-body:not(:has(.form-group))),
+[bp-section="crud-operation-update"] .row > [class*="col-"]:first-child .card:has(> .card-body:not(:has(.row))),
+[bp-section="crud-operation-create"] .row > [class*="col-"]:first-child .card:not(:has(.nav-tabs)):not(:has(.tab-content)),
+[bp-section="crud-operation-create"] .row > [class*="col-"]:first-child .card:has(> .card-body:empty),
+[bp-section="crud-operation-create"] .row > [class*="col-"]:first-child .card:has(> .card-body:not(:has(.form-group))),
+[bp-section="crud-operation-create"] .row > [class*="col-"]:first-child .card:has(> .card-body:not(:has(.row))) {
+    display: none !important;
+}
+
+/* Hide fields that appear outside tabs in edit mode (should be in Avanzati tab) */
+[bp-section="crud-operation-update"] .card:not(:has(.nav-tabs)) .form-group:has([name*="password"]),
+[bp-section="crud-operation-update"] .card:not(:has(.nav-tabs)) .form-group:has([name="email_verified_at"]) {
+    display: none !important;
+}
+
+/* Hide empty card-body that appears before tabs */
+[bp-section="crud-operation-update"] .row > [class*="col-"]:first-child .card-body:empty,
+[bp-section="crud-operation-update"] .row > [class*="col-"]:first-child .card-body:not(:has(.form-group)):not(:has(.row)) {
+    display: none !important;
+}
+
+/* But keep the main form card with tabs visible */
+[bp-section="crud-operation-update"] .row > [class*="col-"]:has(.nav-tabs) .card,
+[bp-section="crud-operation-update"] .row > [class*="col-"]:has(.tab-content) .card {
+    display: block !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .crud .card-body,
+    [bp-section="crud-operation-update"] .card-body,
+    [bp-section="crud-operation-create"] .card-body {
+        padding: 0.75rem 0.8rem;
+    }
+    
+    .crud .card-header,
+    [bp-section="crud-operation-update"] .card-header,
+    [bp-section="crud-operation-create"] .card-header {
+        padding: 0.55rem 0.9rem;
+    }
+    
+    .crud .btn,
+    [bp-section="crud-operation-update"] .btn,
+    [bp-section="crud-operation-create"] .btn {
+        /* Sizes handled by theme-tabler */
+    }
+    
+    .crud .form-control,
+    [bp-section="crud-operation-update"] .form-control,
+    [bp-section="crud-operation-create"] .form-control {
+        padding: 0.4rem 0.65rem;
+        font-size: 0.8rem;
+    }
+    
+    .crud .form-group,
+    .crud .mb-3,
+    [bp-section="crud-operation-update"] .form-group,
+    [bp-section="crud-operation-create"] .form-group {
+        margin-bottom: 0.6rem;
+    }
+}
+
+/* ========================================
+   System Logs Page Styling
+   ======================================== */
+
+/* Log message styling */
+.log-message pre {
+    background-color: #f8f9fa;
+    padding: 8px;
+    border-radius: 4px;
+    border-left: 3px solid #dee2e6;
+    color: #2d3748 !important;
+}
+
+/* Error and critical log messages */
+.log-entry.log-error .log-message pre,
+.log-entry.log-critical .log-message pre {
+    background-color: #fff5f5;
+    border-left-color: #dc3545;
+    color: #721c24 !important;
+}
+
+/* Warning log messages */
+.log-entry.log-warning .log-message pre {
+    background-color: #fffbf0;
+    border-left-color: #ffc107;
+    color: #856404 !important;
+}
+
+/* Info log messages */
+.log-entry.log-info .log-message pre {
+    background-color: #f0f9ff;
+    border-left-color: #0dcaf0;
+    color: #004085 !important;
+}
+
+/* Debug log messages */
+.log-entry.log-debug .log-message pre {
+    background-color: #f8f9fa;
+    border-left-color: #6c757d;
+    color: #495057 !important;
+}
+
+/* Log entry hover effect */
+.log-entry:hover {
+    background-color: #f8f9fa;
+}
+
+/* Log entry border indicators by level */
+.log-entry.log-info {
+    border-left: 4px solid #0dcaf0;
+}
+
+.log-entry.log-error,
+.log-entry.log-critical {
+    border-left: 4px solid #dc3545;
+}
+
+.log-entry.log-warning {
+    border-left: 4px solid #ffc107;
+}
+
+.log-entry.log-debug {
+    border-left: 4px solid #6c757d;
+}
+
+/* Grouped logs - thicker border */
+.log-grouped {
+    border-left-width: 5px !important;
+}
+
+/* Log file selector */
+.log-page .form-select {
+    background-color: white;
+    border: 1px solid #ced4da;
+    font-weight: 400;
+    cursor: pointer;
+    padding: 0.375rem 2.25rem 0.375rem 0.75rem;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 16px 12px;
+    appearance: none;
+}
+
+.log-page .form-select:focus {
+    border-color: #86b7fe;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+/* Form controls (inputs) */
+.log-page .form-control {
+    background-color: white;
+    border: 1px solid #ced4da;
+    font-weight: 400;
+    cursor: text;
+}
+
+.log-page .form-control:focus {
+    border-color: #86b7fe;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+/* Log page table styling */
+.log-page .table thead th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+    border-bottom: 2px solid #dee2e6;
+    vertical-align: middle;
+}
+
+.log-page .table tbody td {
+    vertical-align: top;
+}
+
+/* Pagination styling - use Backpack colors */
+.log-page .pagination {
+    border-radius: 4px;
+}
+
+.log-page .pagination-sm .page-link {
+    color: #495057;
+    border: 1px solid var(--tblr-border-color, #dee2e6);
+    padding: 0.25rem 0.5rem;
+    transition: all 0.2s;
+    font-size: 0.875rem;
+}
+
+.log-page .pagination .page-link:hover {
+    background-color: var(--tblr-border-color-light, #e9ecef);
+    border-color: var(--tblr-border-color, #dee2e6);
+    color: var(--tblr-primary, #0d6efd);
+}
+
+.log-page .pagination .page-item.active .page-link {
+    background-color: var(--tblr-primary, #0d6efd);
+    border-color: var(--tblr-primary, #0d6efd);
+    color: white;
+    font-weight: 500;
+}
+
+.log-page .pagination .page-item.disabled .page-link {
+    color: #6c757d;
+    background-color: #fff;
+    border-color: var(--tblr-border-color, #dee2e6);
+    cursor: not-allowed;
+}
+
+/* Search and clear buttons - colors only */
+.log-page .btn-primary,
+.log-page .btn-danger {
+    font-weight: 500;
+}
+
+.log-page .btn-primary {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+}
+
+.log-page .btn-primary:hover {
+    background-color: #0b5ed7;
+    border-color: #0a58ca;
+}
+
+.log-page .btn-danger {
+    background-color: #dc3545;
+    border-color: #dc3545;
+}
+
+.log-page .btn-danger:hover {
+    background-color: #bb2d3b;
+    border-color: #b02a37;
+}
+
+/* Remove all icons/arrows from search input including datalist */
+.log-page input[name="search"]::-webkit-calendar-picker-indicator,
+.log-page input[name="search"]::-webkit-inner-spin-button,
+.log-page input[name="search"]::-webkit-outer-spin-button,
+.log-page input[name="search"]::-webkit-search-decoration,
+.log-page input[name="search"]::-webkit-search-cancel-button,
+.log-page input[name="search"]::-webkit-search-results-button,
+.log-page input[name="search"]::-webkit-search-results-decoration {
+    -webkit-appearance: none !important;
+    appearance: none !important;
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+}
+
+.log-page input[name="search"] {
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    appearance: none !important;
+    background-image: none !important;
+}
+
+/* Force remove any background images that might show arrows */
+.log-page input[name="search"]::-webkit-calendar-picker-indicator {
+    background: transparent !important;
+    bottom: 0;
+    color: transparent !important;
+    cursor: pointer;
+    height: auto;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: auto;
+    display: none !important;
+}
+
+/* Per page select styling - minimal */
+.log-page .form-select {
+    border: 1px solid #ced4da;
+    background-size: 12px 10px;
+}
+
+/* Export button styling */
+.log-page .btn-success {
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.log-page .btn-success:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(40, 167, 69, 0.3);
+}
+
+/* File info header styling */
+.log-page .bg-light.border.rounded {
+    gap: 2rem;
+}
+
+.log-page .bg-light.border.rounded > div {
+    flex-shrink: 0;
+}
+
+/* Results counter */
+.log-page .h5 {
+    margin-bottom: 0;
+    color: #495057;
+}
+
+/* Simplify table spacing */
+.log-page .table {
+    margin-bottom: 0;
+}
+
+.log-page .table thead th {
+    padding: 0.75rem;
+}
+
+.log-page .table tbody td {
+    padding: 0.75rem;
+}
+
+/* Relation Preview Button Styles */
+.relation-preview-inline {
+    transition: opacity 0.2s ease;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    position: relative;
+}
+
+.relation-preview-inline i {
+    margin: 0 !important;
+    line-height: 1 !important;
+}
+
+.relation-preview-inline[disabled] {
+    opacity: 0.5;
+    cursor: not-allowed !important;
+    pointer-events: auto !important;
+}
+
+.relation-preview-inline[disabled] .relation-preview-tooltip {
+    opacity: 0;
+}
+
+.relation-preview-inline[disabled] .relation-preview-tooltip.show {
+    opacity: 1 !important;
+}
+
+.relation-preview-inline:not([disabled]):hover {
+    background: #16108a !important;
+    border-color: #16108a !important;
+    color: white !important;
+}
+
+.relation-badge.relation-preview-btn {
+    position: relative;
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+    opacity: 1;
+    background-color: #f3f4f6 !important;
+}
+
+.relation-badge.relation-preview-btn:hover {
+    background: #e5e7eb !important;
+    border-color: #d1d5db !important;
+    color: #16108a !important;
+    opacity: 1 !important;
+}
+
+.relation-badge.relation-preview-btn:hover i {
+    color: #16108a !important;
+}
+
+/* Custom Tooltip for Relation Preview Buttons - Positioned to the right */
+.relation-preview-tooltip {
+    position: absolute;
+    left: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+    margin-left: 8px;
+    background-color: #1f2937;
+    color: #ffffff;
+    font-size: 0.75rem;
+    line-height: 1.5;
+    border-radius: 4px;
+    z-index: 10000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.05s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    min-width: 250px;
+    max-width: 400px;
+    white-space: normal;
+    word-wrap: break-word;
+}
+
+.relation-preview-tooltip::before {
+    content: "";
+    position: absolute;
+    right: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+    border: 5px solid transparent;
+    border-right-color: #1f2937;
+}
+
+.relation-preview-tooltip.show {
+    opacity: 1;
+}
+
+/* Tooltip for badge buttons - positioned above */
+.relation-preview-tooltip-badge {
+    left: 50%;
+    top: auto;
+    bottom: 100%;
+    transform: translateX(-50%);
+    margin-left: 0;
+    margin-bottom: 8px;
+    min-width: auto;
+    max-width: 200px;
+    white-space: nowrap;
+}
+
+.relation-preview-tooltip-badge::before {
+    right: auto;
+    left: 50%;
+    top: auto;
+    bottom: -5px;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-top-color: #1f2937;
+    border-right-color: transparent;
+}
+
+/* ========================================
+   Import loader - minimal wave animation
+   ======================================== */
+.import-loader-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.import-loader-waves {
+    display: flex;
+    gap: 0.25rem;
+    align-items: center;
+}
+
+.import-loader-waves .wave {
+    width: 5px;
+    height: 20px;
+    background: linear-gradient(to top,
+        var(--tblr-primary),
+        color-mix(in srgb, var(--tblr-primary) 55%, white));
+    border-radius: 3px;
+    animation: waveAnimation 1.3s ease-in-out infinite;
+    box-shadow: 0 1px 2px rgba(var(--tblr-primary-rgb), 0.2);
+}
+
+.import-loader-waves .wave:nth-child(1) {
+    animation-delay: 0s;
+}
+
+.import-loader-waves .wave:nth-child(2) {
+    animation-delay: 0.18s;
+}
+
+.import-loader-waves .wave:nth-child(3) {
+    animation-delay: 0.36s;
+}
+
+@keyframes waveAnimation {
+    0%, 100% {
+        transform: scaleY(0.5);
+        opacity: 0.6;
+    }
+    50% {
+        transform: scaleY(1);
+        opacity: 1;
+    }
+}
+
+/* Import log container - always visible scrollbar */
+.import-log-container {
+    max-height: 200px;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(var(--tblr-primary-rgb), 0.5) rgba(var(--tblr-primary-rgb), 0.1);
+}
+
+/* Webkit scrollbar styling for better visibility */
+.import-log-container::-webkit-scrollbar {
+    width: 10px;
+}
+
+.import-log-container::-webkit-scrollbar-track {
+    background: rgba(var(--tblr-primary-rgb), 0.05);
+    border-radius: 5px;
+}
+
+.import-log-container::-webkit-scrollbar-thumb {
+    background: rgba(var(--tblr-primary-rgb), 0.4);
+    border-radius: 5px;
+    border: 2px solid rgba(var(--tblr-primary-rgb), 0.05);
+}
+
+.import-log-container::-webkit-scrollbar-thumb:hover {
+    background: rgba(var(--tblr-primary-rgb), 0.6);
+}
+
+/* Log entry styling */
+#import-operation-log .log-entry,
+#operation-log .log-entry {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(var(--tblr-primary-rgb), 0.1);
+    transition: background-color 0.2s ease;
+}
+
+#import-operation-log .log-entry:hover,
+#operation-log .log-entry:hover {
+    background-color: rgba(var(--tblr-primary-rgb), 0.03);
+}
+
+#import-operation-log .log-entry:last-child,
+#operation-log .log-entry:last-child {
+    border-bottom: none;
+}
+
+/* Sidebar nav-link - white text color using CSS variables */
+.navbar-nav .nav-link span,
+.navbar-nav .nav-link {
+    color: var(--tblr-white) !important; /* White text color for menu items */
+}
+
+/* Sidebar nav-link hover - subtle text color change only, no background */
+.navbar-nav .nav-link:hover {
+    background-color: transparent !important; /* Remove any background effect */
+    background: transparent !important; /* Ensure no background */
+}
+
+/* Make text slightly darker on hover - subtle change from white using CSS variables */
+.navbar-nav .nav-link:hover span,
+.navbar-nav .nav-link:hover {
+    color: var(--tblr-gray-400) !important; /* Darker gray on hover - subtle change from white */
 }

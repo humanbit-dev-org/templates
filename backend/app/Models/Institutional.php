@@ -9,9 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Institutional extends Model
 {
-	use CrudTrait;
-	use HasFactory;
-	use StorableMedia;
+	use CrudTrait, HasFactory, StorableMedia;
 
 	protected $fillable = [
 		"title_italian",

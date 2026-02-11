@@ -11,64 +11,6 @@
 @section('content')
 <div class="row" bp-section="crud-operation-import">
     <div class="col-md-12">
-        <!-- CSV File Preview -->
-        <div class="accordion mb-3" id="csvPreviewAccordion">
-            <div class="accordion-item">
-                <h2 class="accordion-header">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#csvPreviewCollapse" aria-expanded="false" aria-controls="csvPreviewCollapse">
-                        <i class="la la-table me-1"></i> {{ trans('backpack::import.csv_preview') }}
-                    </button>
-                </h2>
-                <div id="csvPreviewCollapse" class="accordion-collapse collapse" data-bs-parent="#csvPreviewAccordion">
-                    <div class="accordion-body preview-csv-body p-0">
-                        <div class="csv-preview-container">
-                            <table class="table table-sm table-striped mb-0">
-                                <thead>
-                                    <tr>
-                                        @foreach($csvHeaders as $header)
-                                        <th class="csv-header">
-                                            @if(Str::length($header) > 30 || Str::endsWith(Str::limit($header, 30), '...'))
-                                            <span class="truncated-text" data-full-text="{{ $header }}">{{ Str::limit($header, 30) }}</span>
-                                            @else
-                                            {{ $header }}
-                                            @endif
-                                        </th>
-                                        @endforeach
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @if(isset($csvPreview) && count($csvPreview) > 0)
-                                    @foreach($csvPreview as $row)
-                                    <tr>
-                                        @foreach($row as $value)
-                                        <td class="csv-cell">
-                                            @if(Str::length($value) > 50 || Str::endsWith(Str::limit($value, 50), '...'))
-                                            <span class="truncated-text" data-full-text="{{ $value }}">{{ Str::limit($value, 50) }}</span>
-                                            @else
-                                            {{ $value }}
-                                            @endif
-                                        </td>
-                                        @endforeach
-                                    </tr>
-                                    @endforeach
-                                    @else
-                                    <tr>
-                                        <td colspan="{{ count($csvHeaders) }}" class="text-center py-3 text-muted">
-                                            <i class="la la-info-circle"></i> {{ trans('backpack::import.no_preview_data') }}
-                                        </td>
-                                    </tr>
-                                    @endif
-                                </tbody>
-                            </table>
-                        </div>
-                        <div class="small text-muted p-2">
-                            <i class="la la-info-circle"></i> {{ trans('backpack::import.csv_preview_note') }}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <!-- Unique Field Highlight -->
         <div class="card mb-3 border-primary unique-field-card">
             <div class="card-body">
@@ -129,6 +71,12 @@
                     @csrf
                     <input type="hidden" name="file_path" value="{{ $filePath }}">
                     <input type="hidden" name="delimiter" value="{{ $delimiter }}">
+                    @if(isset($originalFileName))
+                    <input type="hidden" name="original_file_name" value="{{ $originalFileName }}">
+                    @endif
+                    @if(isset($originalFileLastModified))
+                    <input type="hidden" name="original_file_last_modified" value="{{ $originalFileLastModified }}">
+                    @endif
 
                     <div class="alert alert-info mb-4">
                         <i class="la la-info-circle"></i>
@@ -191,18 +139,24 @@
 
                 <div id="import-progress" style="display: none;">
                     <div class="progress-container p-4 border rounded bg-light">
-                        <h4 class="text-primary mb-3">
-                            <i class="la la-sync fa-spin me-2"></i>
+                        <div class="d-flex align-items-center gap-3 flex-wrap mb-3 import-status-header">
+                            <h4 class="text-primary mb-0 d-flex align-items-center gap-2">
+                                <i class="la la-sync fa-spin"></i>
                             {{ trans('backpack::import.import_in_progress') }}
                         </h4>
-                        <div class="progress mb-3">
-                            <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%"></div>
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="import-loader-wrapper">
+                                    <div class="import-loader-waves">
+                                        <div class="wave"></div>
+                                        <div class="wave"></div>
+                                        <div class="wave"></div>
+                                    </div>
+                                </div>
+                                <span id="progress-text" class="badge bg-primary fs-6">0%</span>
+                            </div>
                         </div>
 
                         <div class="mt-3">
-                            <div class="progress-percentage mb-3 text-center">
-                                <span id="progress-text" class="badge bg-primary fs-5">0%</span>
-                            </div>
                             <div id="import-stats" class="stats-container mt-3">
                                 <div class="row">
                                     <div class="col-sm-6 col-md-3 mb-2">
@@ -266,7 +220,7 @@
                             </div>
                             
                             <!-- Log storico compatto -->
-                            <div class="border rounded bg-white p-2" style="max-height: 150px; overflow-y: auto;">
+                            <div class="border rounded bg-white p-2 import-log-container">
                                 <div id="operation-log" class="small">
                                     <div class="text-muted">{{ trans('backpack::import.import_in_progress') }}</div>
                                 </div>
@@ -277,18 +231,12 @@
 
                 <div id="import-results" style="display: none;">
                     <div class="progress-container p-4 border rounded bg-light">
-                        <h4 class="text-success mb-3">
-                            <i class="la la-check-circle me-2"></i>
+                        <div class="d-flex align-items-center gap-3 flex-wrap mb-3 import-status-header">
+                            <h4 class="text-success mb-0 d-flex align-items-center gap-2">
+                                <i class="la la-check-circle"></i>
                             {{ trans('backpack::import.import_completed') }}
                         </h4>
-
-                        <!-- 100% Progress Bar -->
-                        <div class="progress mb-4">
-                            <div class="progress-bar bg-success" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
-                        </div>
-
-                        <div class="mt-3 mb-3 text-center">
-                            <span class="badge bg-success fs-5">100%</span>
+                            <span id="result-progress-text" class="badge bg-success fs-6">100%</span>
                         </div>
 
                         <div id="result-stats" class="stats-container mt-3">
@@ -335,6 +283,14 @@
                                 <code>/storage/backups/csv-imports/</code>
                             </span>
                         </div>
+                        
+                        <div class="alert alert-success mt-3" id="log-path-alert" style="display: none;">
+                            <i class="la la-file-alt me-2"></i>
+                            <span>
+                                <strong>Log import salvati in:</strong>
+                                <code id="log-path-text">-</code>
+                            </span>
+                        </div>
 
                         <div class="text-center mt-4">
                             <a href="{{ url($crud_route) }}" class="btn btn-success">
@@ -347,19 +303,26 @@
 
                 <div id="import-error" style="display: none;">
                     <div class="alert alert-danger">
-                        <h4 class="alert-heading">
+                        <h4 class="alert-heading mb-3">
                             <i class="la la-exclamation-circle me-2"></i>
                             {{ trans('backpack::import.import_error') }}
                         </h4>
-                        <p id="error-message" class="mb-3"></p>
-                        <div id="error-details" class="border rounded bg-light p-3 mb-3" style="display: none;">
-                            <h6 class="text-danger"><i class="la la-bug"></i> Technical Error Details:</h6>
-                            <pre id="error-log" class="small text-pre-wrap bg-dark text-light p-2 rounded" style="max-height: 200px; overflow-y: auto;"></pre>
+                        <div id="error-details" class="border rounded bg-light p-3 mb-4" style="display: none;">
+                            <h6 class="text-danger mb-3"><i class="la la-bug"></i> Technical Error Details:</h6>
+                            <pre id="error-log" class="small text-pre-wrap bg-dark text-light p-3 rounded" style="max-height: 400px; overflow-y: auto; overflow-x: auto; word-wrap: break-word; white-space: pre-wrap;"></pre>
                         </div>
-                        <p class="mb-0">
-                            {{ trans('backpack::import.backup_created') }}
-                            <code>/storage/backups/csv-imports/</code>
-                        </p>
+                        <div class="pt-3 border-top">
+                            <p class="mb-2">
+                                <i class="la la-info-circle me-2"></i>
+                                {{ trans('backpack::import.backup_created') }}
+                                <code>/storage/backups/csv-imports/</code>
+                            </p>
+                            <div id="error-log-path" class="mt-2" style="display: none;">
+                                <i class="la la-file-alt me-2"></i>
+                                <strong>Log import salvati in:</strong>
+                                <code id="error-log-path-text">-</code>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -592,7 +555,7 @@
         });
 
         // Also update during container scrolling
-        document.querySelectorAll('.csv-preview-container, .table-responsive').forEach(container => {
+        document.querySelectorAll('.table-responsive').forEach(container => {
             container.addEventListener('scroll', function() {
                 requestAnimationFrame(updateTooltipPosition);
             }, {
@@ -620,7 +583,7 @@
                 // Skip elements that already have a child with truncated-text class
                 if (element.querySelector('.truncated-text')) return;
 
-                // Skip elements in the mapping table (not in the CSV preview)
+                // Skip elements in the mapping table
                 if (element.closest('.mapping-table')) return;
 
                 try {
@@ -683,12 +646,6 @@
                 }
             }
 
-            // Search in relevant containers ONLY IN THE CSV PREVIEW
-            document.querySelectorAll('.csv-preview-container .csv-cell').forEach(container => {
-                if (!container.querySelector('.truncated-text')) {
-                    findTextNodes(container);
-                }
-            });
 
             // Transform the found text nodes
             textNodes.forEach(textNode => {
@@ -880,7 +837,6 @@
                 $('#import-progress').show();
                 
                 // Hide other navigation elements during import
-                $('#csvPreviewAccordion').hide();
                 $('.unique-field-card').hide();
                 $('#auto-map-btn').hide();
                 $('.card-header').hide();
@@ -928,7 +884,6 @@
                                         if (lastValidJson.status === 'processing') {
                                             // Aggiorna la barra di progresso
                                             const progressPercentage = lastValidJson.progress || 0;
-                                            $('.progress-bar').css('width', progressPercentage + '%');
                                             $('#progress-text').text(progressPercentage + '%');
                                             
                                             // Aggiorna le statistiche in tempo reale
@@ -956,7 +911,6 @@
                                         else if (lastValidJson.status === 'success') {
                                             // L'importazione è completa, mostra i risultati
                                             // Hide import elements
-                                            $('#csvPreviewAccordion').hide();
                                             $('.unique-field-card').hide();
                                             $('#auto-map-btn').hide();
                                             $('.card-header').hide();
@@ -989,6 +943,13 @@
                                             $('#result-created-rows').text(lastValidJson.created || 0);
                                             $('#result-updated-rows').text(lastValidJson.updated || 0);
                                             $('#result-skipped-rows').text(lastValidJson.skipped || 0);
+                                            $('#result-progress-text').text('100%');
+                                            
+                                            // Mostra il path del log se disponibile
+                                            if (lastValidJson.logPath) {
+                                                $('#log-path-text').text(lastValidJson.logPath);
+                                                $('#log-path-alert').show();
+                                            }
                                         }
                                         else if (lastValidJson.status === 'error') {
                                             // Mostra l'errore con dettagli tecnici
@@ -1198,7 +1159,6 @@
                 
                 // Update progress bar with real percentage
                 const progressPercentage = Math.round((data.processed / data.total) * 100);
-                $('.progress-bar').css('width', progressPercentage + '%');
                 $('#progress-text').text(progressPercentage + '%');
 
                 // Update statistics
@@ -1210,7 +1170,6 @@
                 // If import is completed
                 if (data.status === 'completed') {
                     // Hide import elements
-                    $('#csvPreviewAccordion').hide();
                     $('.unique-field-card').hide();
                     $('#auto-map-btn').hide(); // Correct: use ID instead of class
                     $('.card-header').hide(); // Hide the card header completely
@@ -1225,6 +1184,13 @@
                     $('#result-created-rows').text(data.created || 0);
                     $('#result-updated-rows').text(data.updated || 0);
                     $('#result-skipped-rows').text(data.skipped || 0);
+                    $('#result-progress-text').text('100%');
+                    
+                    // Mostra il path del log se disponibile
+                    if (data.logPath) {
+                        $('#log-path-text').text(data.logPath);
+                        $('#log-path-alert').show();
+                    }
 
                     // Try all possible backup filename keys and log everything
                     console.log('Complete data object:', data);
@@ -1252,7 +1218,6 @@
                 // If the import is already completed directly
                 if (data.status === 'success') {
                     // Hide import elements
-                    $('#csvPreviewAccordion').hide();
                     $('.unique-field-card').hide();
                     $('#auto-map-btn').hide(); // Correct: use ID instead of class
                     $('.card-header').hide(); // Hide the card header completely
@@ -1267,6 +1232,7 @@
                     $('#result-created-rows').text(data.created || 0);
                     $('#result-updated-rows').text(data.updated || 0);
                     $('#result-skipped-rows').text(data.skipped || 0);
+                    $('#result-progress-text').text('100%');
 
                     // Try all possible backup filename keys and log everything
                     console.log('Complete data object:', data);
@@ -1326,23 +1292,74 @@
         // Function to show import errors
         function showImportError(message, details = null) {
             $('#import-progress').hide();
+            $('#import-mapping-form').hide();
             $('#import-error').show();
-            $('#error-message').text(message);
-
-            // If there are additional details, show them in the details area
+            
+            // Extract message from details if it's an object with message property
+            let errorMessage = message;
+            if (details && typeof details === 'object') {
+                // If details has a message and message is the same, use details.message
+                if (details.message && details.message === message) {
+                    errorMessage = details.message;
+                } else if (details.parsedResponse && details.parsedResponse.message) {
+                    errorMessage = details.parsedResponse.message;
+                }
+            }
+            
+            // Always show error details box with the message
+            $('#error-details').show();
+            
+            // Build log text starting with the error message
+            let logParts = [];
+            
+            // Add error message first
+            logParts.push('=== MESSAGGIO ERRORE ===');
+            logParts.push(errorMessage);
+            logParts.push('');
+            
+            // Add technical details if available
             if (details) {
-                $('#error-details').show();
-                let logText = typeof details === 'object' ? JSON.stringify(details, null, 2) : details.toString();
-                $('#error-log').text(logText);
+                let technicalDetails = {};
+                if (typeof details === 'object') {
+                    Object.keys(details).forEach(key => {
+                        // Exclude message to avoid duplication
+                        if (key !== 'message') {
+                            if (key === 'parsedResponse' && details[key] && details[key].message) {
+                                // Create a copy without the message
+                                let parsedCopy = Object.assign({}, details[key]);
+                                delete parsedCopy.message;
+                                if (Object.keys(parsedCopy).length > 0) {
+                                    technicalDetails[key] = parsedCopy;
+                                }
+                            } else {
+                                technicalDetails[key] = details[key];
+                            }
+                        }
+                    });
+                } else {
+                    technicalDetails = details;
+                }
+                
+                if (Object.keys(technicalDetails).length > 0) {
+                    logParts.push('=== DETTAGLI TECNICI ===');
+                    logParts.push(typeof technicalDetails === 'object' ? JSON.stringify(technicalDetails, null, 2) : technicalDetails.toString());
+                }
+            }
+            
+            $('#error-log').text(logParts.join('\n'));
+            
+            // Show log path if available
+            if (details && details.logPath) {
+                $('#error-log-path-text').text(details.logPath);
+                $('#error-log-path').show();
+            } else if (details && details.parsedResponse && details.parsedResponse.logPath) {
+                $('#error-log-path-text').text(details.parsedResponse.logPath);
+                $('#error-log-path').show();
             } else {
-                $('#error-details').hide();
+                $('#error-log-path').hide();
             }
         }
 
-        document.querySelector('#csvPreviewAccordion .accordion-button').addEventListener('click', function() {
-            // Small delay to ensure the content is visible
-            setTimeout(makeAllTruncatedElementsClickable, 300);
-        });
 
         // Re-run the truncated text detection when a collapse type element is opened
         document.querySelectorAll('[data-bs-toggle="collapse"]').forEach(collapseButton => {
@@ -1776,7 +1793,7 @@
                 logClass = 'text-success';
                 iconClass = 'text-success';
                 opIcon = 'la-plus-circle';
-                operationTitle = "{{ trans('backpack::import.record_inserted') }}".replace(':id', op.id);
+                operationTitle = "{{ trans('backpack::import.record_inserted') }}".replace(':primary_key', op.primary_key).replace(':primary_key_value', op.primary_key_value);
                 
                 if (op.field && op.value) {
                     operationDetails = "{{ trans('backpack::import.processing_value') }}"
@@ -1790,7 +1807,7 @@
                 logClass = 'text-primary';
                 iconClass = 'text-primary';
                 opIcon = 'la-sync';
-                operationTitle = "{{ trans('backpack::import.record_updated') }}".replace(':id', op.id);
+                operationTitle = "{{ trans('backpack::import.record_updated') }}".replace(':primary_key', op.primary_key).replace(':primary_key_value', op.primary_key_value);
                 
                 if (op.field && op.value) {
                     operationDetails = "{{ trans('backpack::import.processing_value') }}"
@@ -1816,6 +1833,12 @@
             // Aggiungi informazioni sulla riga al messaggio di log
             const rowText = "{{ trans('backpack::import.row_processing') }}".replace(':row', op.row);
             logMessage += ` <span class="text-muted">- ${rowText}</span>`;
+            
+            // Aggiungi messaggio se la password è stata auto-generata
+            if (op.password_auto_generated) {
+                logMessage += ` <span class="text-success"><i class="la la-key me-1"></i> Password auto-generata e hashata</span>`;
+            }
+            
             logMessage += `</div>`;
             
             // Aggiorna il box dell'operazione corrente

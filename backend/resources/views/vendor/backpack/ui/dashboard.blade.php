@@ -17,21 +17,6 @@
         //     'type'        => 'view',
         //     'view'        => backpack_view('inc.getting_started'),
         // ];
-
-        // if(Auth::guard('backpack')->user()->getAttribute('backpack_role') == "developer") {
-        //     $repository = 'humanbit-dev-org/all-together-pay';
-        //     $gitHubService = new \App\Services\GitHubService();
-        //     $commits = $gitHubService->getCommits($repository, 5);
-        //     $issues = $gitHubService->getIssues($repository, 10);
-
-        //     if($commits != null && $issues != null) {
-        //         $widgets['after_content'][] = [
-        //             'type' => 'view',
-        //             'view' => backpack_view('widgets.github_activity'),
-        //             'data' => compact('commits', 'issues'),
-        //         ];
-        //     }
-        // }
     @endphp
 @else
     @php

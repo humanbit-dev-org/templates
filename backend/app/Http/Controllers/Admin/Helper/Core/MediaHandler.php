@@ -273,6 +273,7 @@ class MediaHandler
 	 * Organizes fields into tabs based on their purpose:
 	 * - *_path fields go to "Uploads" tab
 	 * - caption field goes to "Caption" tab
+	 * - Other fields (like title) go to "Dati" tab
 	 *
 	 * @param string $column Column name
 	 * @param string $table Table name
@@ -288,6 +289,9 @@ class MediaHandler
 			$field->tab("Uploads");
 		} elseif ($column == "caption") {
 			$field->tab("Caption");
+		} else {
+			// Other fields (like title, etc.) go to "Dati" tab
+			$field->tab("Dati");
 		}
 	}
 }

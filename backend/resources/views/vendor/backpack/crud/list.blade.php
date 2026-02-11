@@ -14,7 +14,7 @@ $breadcrumbs = $breadcrumbs ?? $defaultBreadcrumbs;
 @section('header')
 <section class="header-operation container-fluid animated fadeIn d-flex mb-2 align-items-baseline d-print-none" bp-section="page-header">
   <h1 class="text-uppercase mb-0" bp-section="page-heading">{!! $crud->getHeading() ?? $crud->entity_name_plural !!}</h1>
-  <p class="ms-2 ml-2 mb-0" id="datatable_info_stack" bp-section="page-subheading">{!! $crud->getSubheading() ?? '' !!}</p>
+  <p class="ms-2 mb-0" id="datatable_info_stack" bp-section="page-subheading">{!! $crud->getSubheading() ?? '' !!}</p>
 </section>
 @endsection
 
@@ -57,6 +57,154 @@ $breadcrumbs = $breadcrumbs ?? $defaultBreadcrumbs;
         @endif
       </div>
     </div>
+
+    {{-- Active Filters Badges - Full Width Row --}}
+    @php
+    use App\Http\Controllers\Admin\Helper\FilterHelper;
+    use Illuminate\Support\Collection;
+    // Ensure columns is a Collection
+    $columns = $crud->columns();
+    $columns = is_array($columns) ? collect($columns) : $columns;
+    $activeFilters = FilterHelper::getActiveFilters($columns);
+    // Get filter configuration to access hasManyRelations
+    $filterConfig = FilterHelper::getFilterConfiguration($crud);
+    $hasManyRelations = $filterConfig['hasManyRelations'] ?? [];
+    @endphp
+    @if($activeFilters->count() > 0)
+    <div class="row mb-2">
+      <div class="col-12">
+        <div class="filter-badges-container">
+          @foreach($activeFilters as $key => $value)
+            @php
+            // Check if this is a hasMany filter
+            $isHasManyFilter = false;
+            $hasManyLabel = null;
+            $relatedModelClass = null;
+            if (!empty($hasManyRelations)) {
+                foreach ($hasManyRelations as $relation) {
+                    if (isset($relation['searchable_keys'])) {
+                        foreach ($relation['searchable_keys'] as $keyInfo) {
+                            $filterKey = $relation['name'] . '_' . $keyInfo['field'];
+                            if ($key === $filterKey) {
+                                $isHasManyFilter = true;
+                                $relatedModelClass = $relation['model'] ?? null;
+                                $relationLabel = ucfirst(str_replace('_', ' ', $relation['name']));
+                                $searchField = $keyInfo['field']; // The actual field used for search (id, numero_pratica, etc.)
+                                
+                                // Get the actual field name used for display (the search field, not unique field)
+                                $displayInfo = \App\Http\Controllers\Admin\Helper\FilterHelper::getHasManyFilterDisplayValueAndField($relatedModelClass, $value, $searchField);
+                                $fieldName = $displayInfo['field'] ?? $searchField;
+                                
+                                // Use the search field name for the label (not the unique field)
+                                $fieldLabel = ucfirst(str_replace('_', ' ', $fieldName));
+                                $hasManyLabel = $relationLabel . ' - ' . $fieldLabel;
+                                break 2;
+                            }
+                        }
+                    }
+                }
+            }
+            
+            // Handle not_empty and empty filters
+            if (str_ends_with($key, '_not_empty') || str_ends_with($key, '_empty')) {
+                $originalKey = str_replace(['_not_empty', '_empty'], '', $key);
+                $column = $columns->firstWhere('name', $originalKey);
+                
+                // Check if it's a foreign key (relation) even if not in columns list
+                $isForeignKey = false;
+                if (!$column && !$isHasManyFilter) {
+                    $tableName = is_string($crud->model) ? (new $crud->model())->getTable() : $crud->model->getTable();
+                    $isForeignKey = \App\Http\Controllers\Admin\Helper\FilterHelper::isForeignKeyColumn($originalKey, $tableName);
+                    if (!$isForeignKey) {
+                        continue;
+                    }
+                }
+                
+                if ($column) {
+                    $label = isset($column['label']) ? $column['label'] : $originalKey;
+                } elseif ($isForeignKey) {
+                    // For foreign keys, generate a label from the column name
+                    $label = ucwords(str_replace('_', ' ', str_replace('_id', '', $originalKey)));
+                } else {
+                    $label = $originalKey;
+                }
+            } elseif ($isHasManyFilter) {
+                $label = $hasManyLabel;
+            } else {
+                $columnName = $key === 'page_filter' ? 'page' : $key;
+                $column = $columns->firstWhere('name', $columnName);
+                if (!$column) continue;
+                $label = isset($column['label']) ? $column['label'] : $columnName;
+            }
+            
+            // Get display value - for hasMany filters, use helper to get the value for the search field
+            if ($isHasManyFilter) {
+                if ($relatedModelClass) {
+                    // Extract search field from filter key (e.g., "delibera_id" -> "id")
+                    $searchField = null;
+                    if (!empty($hasManyRelations)) {
+                        foreach ($hasManyRelations as $relation) {
+                            if (isset($relation['searchable_keys'])) {
+                                foreach ($relation['searchable_keys'] as $keyInfo) {
+                                    $filterKey = $relation['name'] . '_' . $keyInfo['field'];
+                                    if ($key === $filterKey) {
+                                        $searchField = $keyInfo['field'];
+                                        break 2;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    $displayValue = \App\Http\Controllers\Admin\Helper\FilterHelper::getHasManyFilterDisplayValue($relatedModelClass, $value, $searchField);
+                } else {
+                    $displayValue = $value;
+                }
+            } else {
+                $displayValue = FilterHelper::getFilterDisplayValue($key, $value, $columns, $crud);
+            }
+            
+            // Handle different filter types for removal
+            $removeParams = request()->except(['page', $key]);
+            
+            // Handle date range filter removal
+            $fromValue = request()->get($key . '_from');
+            $toValue = request()->get($key . '_to');
+            if ($fromValue || $toValue) {
+                $removeParams = request()->except(['page', $key . '_from', $key . '_to']);
+            }
+            
+            // Handle not_empty and empty filter removal
+            if (str_ends_with($key, '_not_empty')) {
+                $originalKey = str_replace('_not_empty', '', $key);
+                // Remove both not_empty and empty to avoid conflicts
+                $removeParams = request()->except(['page', $originalKey . '_not_empty', $originalKey . '_empty']);
+            } elseif (str_ends_with($key, '_empty')) {
+                $originalKey = str_replace('_empty', '', $key);
+                // Remove both not_empty and empty to avoid conflicts
+                $removeParams = request()->except(['page', $originalKey . '_not_empty', $originalKey . '_empty']);
+            }
+            
+            // Check if there will be any real filters left after removing this one
+            $remainingFilters = collect($removeParams)->filter(function ($value, $paramKey) {
+                return $paramKey !== 'last_filter_section' && $paramKey !== 'persistent-table' && 
+                       $value !== null && $value !== '';
+            });
+            
+            // If no real filters will remain, also remove last_filter_section
+            if ($remainingFilters->isEmpty()) {
+                $removeParams = array_merge($removeParams, ['last_filter_section' => null]);
+            }
+            @endphp
+            <a href="{{ url()->current() }}?{{ http_build_query(array_merge($removeParams, ['persistent-table' => '1'])) }}"
+              class="active-filter-badge">
+              <span class="active-filter-label">{{ $label }}</span><span class="active-filter-value">: {{ $displayValue }}</span>
+              <span class="active-filter-remove">×</span>
+            </a>
+          @endforeach
+        </div>
+      </div>
+    </div>
+    @endif
 
     {{-- Backpack List Filters --}}
     @if ($crud->filtersEnabled())
@@ -150,7 +298,7 @@ $breadcrumbs = $breadcrumbs ?? $defaultBreadcrumbs;
     @if ( $crud->buttons()->where('stack', 'bottom')->count() )
     <div id="bottom_buttons" class="d-print-none text-sm-left">
       @include('crud::inc.button_stack', ['stack' => 'bottom'])
-      <div id="datatable_button_stack" class="float-right float-end text-right hidden-xs"></div>
+      <div id="datatable_button_stack" class="float-end text-end hidden-xs"></div>
     </div>
     @endif
 
@@ -165,6 +313,9 @@ $breadcrumbs = $breadcrumbs ?? $defaultBreadcrumbs;
 @basset('https://cdn.datatables.net/1.13.1/css/dataTables.bootstrap5.min.css')
 @basset('https://cdn.datatables.net/fixedheader/3.3.1/css/fixedHeader.dataTables.min.css')
 @basset('https://cdn.datatables.net/responsive/2.4.0/css/responsive.dataTables.min.css')
+
+{{-- DataTables custom overrides - must be loaded after DataTables CSS --}}
+@basset(base_path('public/static/css/humanbit_datatables.css'))
 
 {{-- CRUD LIST CONTENT - crud_list_styles stack --}}
 @stack('crud_list_styles')

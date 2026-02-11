@@ -4,14 +4,11 @@ namespace App\Models;
 
 use App\Models\Traits\StorableMedia;
 use Backpack\CRUD\app\Models\Traits\CrudTrait;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Log;
 
 class Media extends Model
 {
-	use CrudTrait, StorableMedia;
-	use HasFactory;
+    use CrudTrait, StorableMedia;
 
 	protected $fillable = [
 		"title",

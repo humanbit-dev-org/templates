@@ -13,7 +13,14 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->api(prepend: [
+            // Uncomment this when Sanctum session-based authentication is used
             \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
+            \App\Http\Middleware\SecurityShield::class,
+            \App\Http\Middleware\RollbackDocs::class,
+        ]);
+
+        $middleware->web(prepend: [
+            \App\Http\Middleware\SecurityShield::class,
         ]);
 
         $middleware->alias([
@@ -21,8 +28,6 @@ return Application::configure(basePath: dirname(__DIR__))
             'backpack.permission' => \App\Http\Middleware\BackpackModelPermission::class,
             'frontend.permission' => \App\Http\Middleware\FrontendModelPermission::class,
         ]);
-
-        //
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

@@ -36,22 +36,10 @@ class FieldConfigHandler
 			return [
 				"type" => "select_from_array",
 				"options" => [
-					"new" => "New",
 					"open" => "Open",
 					"close" => "Close",
 				],
-				"default" => "new",
-			];
-		}
-
-		// Backpack role field
-		if (str_contains($column, "backpack_role")) {
-			return [
-				"type" => "select_from_array",
-				"options" => [
-					"admin" => "Admin",
-				],
-				"default" => "admin",
+				"default" => "open",
 			];
 		}
 

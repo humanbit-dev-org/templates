@@ -27,10 +27,6 @@ return [
 	"unique_field" => "Unique column (if exists the record will be updated instead of being inserted)",
 	"no_unique_field" => "None - Always insert new records",
 	"start_import" => "Start Import",
-	"csv_preview" => "CSV Preview",
-	"csv_preview_note" =>
-		"Note: The preview shows only the first 100 rows and is meant to ensure you selected the correct file.",
-	"no_preview_data" => "No preview data available",
 	"auto_map" => "Auto Mapping",
 	"mapping_in_progress" => "Automatic mapping in progress...",
 	"full_text_unavailable" => "Full text unavailable",
@@ -78,4 +74,10 @@ return [
 	"record_skipped" => "Record skipped",
 	"update_only_reason" => "because 'Update Only' mode is active",
 	"processing_value" => "Processing value ':value' for field ':field'",
+
+	// Info block
+	"what_you_need_to_know" => "What you need to know",
+	"info_csv_format" => "Only CSV format with column separators and headers in the first row is accepted.",
+	"info_backup_log" => "A backup of the table will be created before import and a log will be available at the end.",
+	"info_rollback" => "If something goes wrong, operations will be rolled back to the previous state.",
 ];

@@ -1,10 +1,15 @@
 <?php
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\Helper\LogController;
+use App\Http\Controllers\TiraggioController;
+use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\Helper\HelperBackend;
 use App\Http\Controllers\Admin\Helper\DuplicateController;
 use App\Http\Controllers\Admin\Helper\ExportCsvController;
 use App\Http\Controllers\Admin\Helper\ImportCsvController;
+use App\Http\Controllers\Admin\TiraggioManagementController;
 use App\Http\Controllers\Admin\Helper\AutocompleteController;
 use App\Http\Controllers\Admin\Helper\BulkOperationsController;
 
@@ -68,6 +73,9 @@ Route::group(
 	function () {
 		//CUSTOM ROUTES FOR ADVANCED CRUDS
 
+		Route::get("logs", [LogController::class, "index"]);
+		Route::get("logs/export", [LogController::class, "export"]);
+
 		Route::post("{modelName}/sort", [HelperBackend::class, "sort"]);
 		Route::get("{crud}/{id}/duplicate", [DuplicateController::class, "duplicate"]);
 		Route::get("{crud}/export-csv", [ExportCsvController::class, "exportCrudToCsv"]);
@@ -78,26 +86,35 @@ Route::group(
 		Route::get("{crud}/import-csv/status", [ImportCsvController::class, "getImportStatus"]);
 
 		Route::get("autocomplete-values", [AutocompleteController::class, "getValues"]);
+		Route::get("autocomplete-relation-values", [AutocompleteController::class, "getRelationValues"]);
+
+		// AJAX Relation Search Routes
+		Route::get("ajax/relation-search", [
+			\App\Http\Controllers\Admin\Ajax\RelationSearchController::class,
+			"searchRelation",
+		])->name("admin.ajax.relation-search");
 
 		// Bulk Operations Routes
 		Route::post("{crud}/bulk-delete", [BulkOperationsController::class, "bulkDelete"]);
 		Route::post("{crud}/bulk-duplicate", [BulkOperationsController::class, "bulkDuplicate"]);
 
+		// Dashboard Widget API Routes
+		Route::get("users/search", [AdminController::class, "searchUsers"]);
+
 		Route::crud("user", "UserCrudController");
 		Route::crud("role", "RoleCrudController");
 		Route::crud("translate", "TranslateCrudController");
 		Route::crud("page", "PageCrudController");
+		Route::crud("contatto", "ContattoCrudController");
 		Route::crud("article", "ArticleCrudController");
 		Route::crud("institutional", "InstitutionalCrudController");
 		Route::crud("metadata", "MetadataCrudController");
 		Route::crud("media", "MediaCrudController");
 		Route::crud("attachment", "AttachmentCrudController");
+		Route::crud("notification", "NotificationCrudController");
 		Route::crud("backpack-role", "BackpackRoleCrudController");
 		Route::crud("role", "RoleCrudController");
 		Route::crud("model-permission", "ModelPermissionCrudController");
-
-		// Model Permission custom routes
-		Route::post("model-permission/check-used-permissions", "ModelPermissionCrudController@checkUsedPermissions");
 	}
 ); // this should be the absolute last line of this file
 

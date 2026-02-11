@@ -28,10 +28,6 @@ return [
 	"unique_field" => "Colonna univoca (se esiste il record verrà aggiornato invece di essere inserito)",
 	"no_unique_field" => "Nessuno - Inserisci sempre nuovi record",
 	"start_import" => "Avvia Import",
-	"csv_preview" => "Anteprima CSV",
-	"csv_preview_note" =>
-		"Nota: L'anteprima mostra solo le prime 100 righe ed è pensata per assicurarti di aver selezionato il file corretto.",
-	"no_preview_data" => "Nessun dato di anteprima disponibile",
 	"auto_map" => "Mappatura Automatica",
 	"mapping_in_progress" => "Mappatura automatica in corso...",
 	"full_text_unavailable" => "Testo completo non disponibile",
@@ -74,9 +70,15 @@ return [
 	// Operation log messages
 	"operation_log_title" => "Log Operazioni di Import",
 	"row_processing" => "Elaborazione riga #:row",
-	"record_inserted" => "Nuovo record inserito (ID: :id)",
-	"record_updated" => "Record aggiornato (ID: :id)",
+	"record_inserted" => "Nuovo record inserito (:primary_key: :primary_key_value)",
+	"record_updated" => "Record aggiornato (:primary_key: :primary_key_value)",
 	"record_skipped" => "Record saltato",
 	"update_only_reason" => "perché è attiva la modalità 'Solo Aggiornamento'",
 	"processing_value" => "Elaborazione valore ':value' per il campo ':field'",
+
+	// Info block
+	"what_you_need_to_know" => "Cosa devi sapere",
+	"info_csv_format" => "Si accetta solo formato CSV con separazioni di colonne e intestazioni nella prima riga.",
+	"info_backup_log" => "Verrà creato un backup della tabella pre-import e alla fine sarà disponibile un log.",
+	"info_rollback" => "Se qualcosa andrà storto, le operazioni saranno portate alla situazione precedente.",
 ];

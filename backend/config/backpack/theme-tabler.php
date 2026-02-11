@@ -39,11 +39,12 @@ return [
 	 *   - boom!
 	 */
 	"styles" => [
-		base_path("vendor/backpack/theme-tabler/resources/assets/css/color-adjustments.css"),
-		base_path("vendor/backpack/theme-tabler/resources/assets/css/colors.css"),
-		base_path("public/static/css/humanbit_custom.css"),
-		base_path("public/static/css/humanbit_csv.css"),
 		base_path("public/static/css/humanbit_colors.css"),
+		base_path("public/static/css/humanbit_color_adjustments.css"),
+		base_path("public/static/css/humanbit_datatables.css"),
+		base_path("public/static/css/humanbit_csv.css"),
+		base_path("public/static/css/dashboard_custom.css"),
+		base_path("public/static/css/humanbit_custom.css"),
 	],
 
 	/**
@@ -119,7 +120,6 @@ return [
 		 * bg-indigo, bg-purple, bg-pink, bg-red, bg-orange, bg-yellow, bg-green, bg-teal, bg-cyan, bg-white.
 		 *
 		 * For links to be visible on different background colors use: "navbar-dark", "navbar-light".
-		 *
 		 */
 		"topHeader" => null,
 

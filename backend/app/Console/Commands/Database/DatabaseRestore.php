@@ -46,7 +46,7 @@ class DatabaseRestore extends Command
 	 */
 	public function handle()
 	{
-		$this->backupDir = storage_path("app/db-backups");
+		$this->backupDir = storage_path("backups/database");
 
 		// Check if we are in production environment and verify project name early
 		if (App::environment("production")) {
@@ -167,7 +167,7 @@ class DatabaseRestore extends Command
 		}
 
 		// Get project name from .env
-		$actualProjectName = env("APP_NAME");
+		$actualProjectName = config("app.name");
 
 		// Check if project name matches
 		if ($projectOption !== $actualProjectName) {

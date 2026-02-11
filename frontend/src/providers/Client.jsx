@@ -80,7 +80,7 @@ export function ClientProvider({ children, lang }) {
 	useEffect(() => {
 		// Fetch and store the current user when the path changes
 		const fetchUserFunction = async () => {
-			const user = await fetchUser(lang, token);
+			const user = await fetchUser(lang);
 			setUser(user);
 		};
 

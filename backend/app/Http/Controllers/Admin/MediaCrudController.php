@@ -77,4 +77,9 @@ class MediaCrudController extends CrudController
 	{
 		$this->setupCreateOperation();
 	}
+
+	protected function setupShowOperation()
+	{
+		HelperBackend::setFieldsShow(new \App\Models\Media());
+	}
 }

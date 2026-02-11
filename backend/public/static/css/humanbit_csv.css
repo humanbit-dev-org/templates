@@ -1,16 +1,3 @@
-.csv-preview-container {
-    border-bottom: 1px solid rgba(var(--tblr-primary-rgb), 0.1);
-    max-height: 300px;
-    overflow-y: scroll;
-}
-
-.csv-preview-container thead {
-    position: sticky;
-    top: 0;
-    z-index: 10;
-    background-color: var(--tblr-light);
-    border-bottom: 2px solid rgba(var(--tblr-primary-rgb), 0.1);
-}
 
 .csv-header {
     white-space: nowrap;
@@ -1299,10 +1286,6 @@
     }
 }
 
-.preview-csv-body {
-    overflow-y: hidden;
-    max-height: 600px;
-}
 
 /* Stili per il log delle operazioni di importazione */
 #operation-log {
@@ -1351,4 +1334,88 @@
         transform: scale(1);
         box-shadow: 0 0 0 0 rgba(var(--tblr-primary-rgb), 0);
     }
+}
+
+/* CSV Export Button Loading State */
+.csv-export-btn.csv-export-loading {
+    opacity: 0.7;
+    position: relative;
+}
+
+.csv-export-btn.csv-export-loading::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+    animation: pulse-loading 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse-loading {
+    0%, 100% {
+        opacity: 0.3;
+    }
+    50% {
+        opacity: 0.7;
+    }
+}
+
+/* Spinner animation for loading icon */
+.la-spin {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* Import Error Display Styles */
+#import-error {
+    margin-top: 2rem;
+}
+
+#import-error .alert-danger {
+    border-left: 4px solid #dc3545;
+    box-shadow: 0 2px 4px rgba(220, 53, 69, 0.1);
+}
+
+#error-message {
+    font-size: 1rem;
+    color: #721c24;
+}
+
+#error-details {
+    margin-top: 1rem;
+}
+
+#error-details h6 {
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+}
+
+#error-log {
+    font-family: 'Courier New', monospace;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    word-break: break-word;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+#error-log-path {
+    padding-top: 0.5rem;
+}
+
+#error-log-path code {
+    background-color: rgba(0, 0, 0, 0.05);
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.9em;
 }

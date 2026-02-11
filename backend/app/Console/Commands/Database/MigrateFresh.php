@@ -6,11 +6,14 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Str;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 use App\Console\Commands\Database\ConfirmStyle;
+use Illuminate\Support\Facades\Log;
 
 class MigrateFresh extends Command
 {
@@ -43,6 +46,13 @@ class MigrateFresh extends Command
 	 * @var int
 	 */
 	protected $terminalWidth = 144;
+
+	/**
+	 * Temporary directory for preserve-data dumps
+	 *
+	 * @var string|null
+	 */
+	protected $preserveTempDir = null;
 
 	/**
 	 * Get the terminal width dynamically
@@ -154,10 +164,58 @@ class MigrateFresh extends Command
 	}
 
 	/**
+	 * Check if at least one backup file already exists
+	 */
+	protected function hasExistingBackups($backupDir): bool
+	{
+		if (!File::exists($backupDir)) {
+			return false;
+		}
+
+		foreach (File::files($backupDir) as $file) {
+			$extension = strtolower($file->getExtension());
+			if (in_array($extension, ["sql", "gz"])) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Determine if we are in production with a non-localhost APP_URL
+	 */
+	protected function isNonLocalProduction(): bool
+	{
+		if (!App::environment("production")) {
+			return false;
+		}
+
+		$appUrl = config("app.url");
+		if (empty($appUrl)) {
+			return false;
+		}
+
+		return !preg_match("/(localhost|127\\.0\\.0\\.1|::1)/i", $appUrl);
+	}
+
+	/**
 	 * Execute the console command.
 	 */
 	public function handle()
 	{
+		$preserveData = (bool) $this->option("preserve-data");
+		$seedRequested = (bool) $this->option("seed");
+
+		if ($preserveData && $seedRequested) {
+			$this->components->error("Options --preserve-data and --seed cannot be used together.");
+			$this->components->warn("Please re-run using only one of the two options.");
+			return self::FAILURE;
+		}
+
+		// STEP 1: ALWAYS backup passwords BEFORE dropping tables
+		$this->backupPasswords();
+
 		// Check if we are in production environment
 		if (App::environment("production")) {
 			// Get project name from the command option
@@ -167,18 +225,18 @@ class MigrateFresh extends Command
 			if (empty($projectOption)) {
 				$this->components->error("Project name is required with the --p option in production environment.");
 				$this->components->info('Usage: <fg=green>php artisan migrate:fresh:safe --p="project_name"</>');
-				return Command::FAILURE;
+				return self::FAILURE;
 			}
 
 			// Get project name from .env
-			$actualProjectName = env("APP_NAME");
+			$actualProjectName = config("app.name");
 
 			// Check if project name matches
 			if ($projectOption !== $actualProjectName) {
 				$this->components->error("The provided project name does not match the APP_NAME in your .env file.");
 				$this->line("Provided name: <fg=red>" . $projectOption . "</>");
 				$this->line("Actual name: <fg=green>" . $actualProjectName . "</>");
-				return Command::FAILURE;
+				return self::FAILURE;
 			}
 
 			// Display production banner (only once at the beginning)
@@ -188,7 +246,7 @@ class MigrateFresh extends Command
 			$confirmStyle = new ConfirmStyle($this->input, $this->output);
 			if (!$confirmStyle->askConfirmation("Are you sure you want to run this command?", false)) {
 				$this->components->warn("Command cancelled.");
-				return Command::SUCCESS;
+				return self::SUCCESS;
 			}
 
 			// Additional warning with 5 second countdown
@@ -210,24 +268,62 @@ class MigrateFresh extends Command
 			$confirmStyle = new ConfirmStyle($this->input, $this->output);
 			if (!$confirmStyle->askConfirmation("Are you ABSOLUTELY SURE you want to continue?", false)) {
 				$this->components->warn("Command cancelled.");
-				return Command::SUCCESS;
+				return self::SUCCESS;
 			}
 		}
 
-		// Create database backup
-		$result = $this->call("db:backup");
-		if ($result !== Command::SUCCESS) {
-			$this->components->error("Failed to create database backup. Migration aborted for safety.");
-			return Command::FAILURE;
+		// Final guard for production on non-localhost URLs
+		if ($this->isNonLocalProduction()) {
+			$this->components->warn(
+				"ENV di produzione con APP_URL non localhost rilevato. Operazione potenzialmente pericolosa in collaudo/produzione!"
+			);
+			$confirmStyle = new ConfirmStyle($this->input, $this->output);
+			if (!$confirmStyle->askConfirmation("Vuoi continuare definitivamente?", false)) {
+				$this->components->warn("Command cancelled.");
+				return self::SUCCESS;
+			}
 		}
-		$this->newLine();
 
 		// Check if we need to preserve data
-		$preserveData = $this->option("preserve-data");
+		$backupDir = storage_path("backups/database");
+		$forcedBackup = false;
+		$hasBackups = $this->hasExistingBackups($backupDir);
+
+		// === Prompt con lo STESSO stile (ConfirmStyle) per il backup ===
+		if ($preserveData) {
+			$this->components->info("Preserve-data flag detected: automatic backup + restore will run.");
+			$performBackup = true;
+		} elseif (!$hasBackups) {
+			$this->components->warn("No existing backups found. Creating an initial backup is mandatory.");
+			$performBackup = true;
+			$forcedBackup = true;
+		} else {
+			$confirmStyle = new ConfirmStyle($this->input, $this->output);
+			$performBackup = $confirmStyle->askConfirmation("Create a database backup before continuing?", false);
+		}
+
+		// Create database backup (se confermato)
+		if ($performBackup) {
+			$result = $this->call("db:backup");
+			if ($result !== self::SUCCESS) {
+				$this->components->error("Failed to create database backup. Migration aborted for safety.");
+				return self::FAILURE;
+			}
+			$this->newLine();
+		} elseif (!$forcedBackup) {
+			$this->components->warn("Skipping database backup as requested.");
+			$this->newLine();
+		} else {
+			$this->newLine();
+		}
+
 		$dataBackup = [];
 
 		if ($preserveData) {
-			// No output for backup process - silent operation
+			$this->components->info("Preserve-data: dumping current table contents before migration...");
+			$this->preserveTempDir = storage_path("app/migrate_preserve/" . Str::uuid());
+			File::ensureDirectoryExists($this->preserveTempDir, 0755, true);
+
 			try {
 				// Get all table names using a more compatible approach
 				$tables = [];
@@ -255,37 +351,50 @@ class MigrateFresh extends Command
 						continue;
 					}
 
-					// Get the table data
-					$data = DB::table($tableName)->get()->toArray();
-					if (!empty($data)) {
-						$dataBackup[$tableName] = $data;
+					$tableFile = $this->preserveTempDir . "/" . $tableName . ".jsonl";
+					$handle = fopen($tableFile, "w");
+					$hasRows = false;
+
+					foreach (DB::table($tableName)->cursor() as $row) {
+						$hasRows = true;
+						fwrite($handle, json_encode($row, JSON_UNESCAPED_UNICODE) . PHP_EOL);
+					}
+
+					fclose($handle);
+
+					if ($hasRows) {
+						$dataBackup[$tableName] = $tableFile;
+					} else {
+						File::delete($tableFile);
 					}
 				}
 			} catch (\Exception $e) {
 				$this->components->error("Failed to backup table data: " . $e->getMessage());
-				if (!$this->confirm("Continue without data preservation?", false)) {
-					return Command::FAILURE;
+
+				// Prompt con ConfirmStyle, come gli altri
+				$confirmStyle = new ConfirmStyle($this->input, $this->output);
+				if (!$confirmStyle->askConfirmation("Continue without data preservation?", false)) {
+					return self::FAILURE;
 				}
 				$preserveData = false; // Disable data preservation if there was an error
+				if ($this->preserveTempDir && File::exists($this->preserveTempDir)) {
+					File::deleteDirectory($this->preserveTempDir);
+					$this->preserveTempDir = null;
+				}
 			}
+			$this->components->info("Preserve-data: collected " . count($dataBackup) . " tables for restoration.");
 		}
 
-		// Prepare the command for direct execution
-		$command = "LARAVEL_MIGRATE_ORIGINAL=true php artisan migrate:fresh";
+		// Build migrate:fresh command as separate process to bypass production overrides
+		$phpBinary = PHP_BINARY ?: "php";
+		$command = "LARAVEL_MIGRATE_ORIGINAL=true " . escapeshellarg($phpBinary) . " artisan migrate:fresh --ansi --force";
 
-		// Add --ansi to force colors
-		$command .= " --ansi";
-
-		// Always add --force to avoid further confirmations
-		$command .= " --force";
-
-		// Add options from the original command
-		if ($this->option("database")) {
-			$command .= " --database=" . escapeshellarg($this->option("database"));
+		if ($database = $this->option("database")) {
+			$command .= " --database=" . escapeshellarg($database);
 		}
 
-		if ($this->option("path")) {
-			$paths = $this->option("path");
+		$paths = (array) $this->option("path");
+		if (!empty($paths)) {
 			foreach ($paths as $path) {
 				$command .= " --path=" . escapeshellarg($path);
 			}
@@ -295,8 +404,8 @@ class MigrateFresh extends Command
 			$command .= " --realpath";
 		}
 
-		if ($this->option("schema-path")) {
-			$command .= " --schema-path=" . escapeshellarg($this->option("schema-path"));
+		if ($schemaPath = $this->option("schema-path")) {
+			$command .= " --schema-path=" . escapeshellarg($schemaPath);
 		}
 
 		if ($this->option("seed")) {
@@ -311,12 +420,20 @@ class MigrateFresh extends Command
 			$command .= " --drop-types";
 		}
 
-		// Execute the command directly, preserving the original output
+		$this->components->info("Starting migrate:fresh execution...");
+		Log::info("[migrate:fresh:safe] Executing command: {$command}");
+
+		$exitCode = 0;
 		passthru($command, $exitCode);
+		Log::info("[migrate:fresh:safe] migrate:fresh exit code: {$exitCode}");
 
 		if ($exitCode !== 0) {
-			return Command::FAILURE;
+			$this->components->error("migrate:fresh failed (exit code {$exitCode}). Aborting restore.");
+			Log::error("[migrate:fresh:safe] migrate:fresh failed with exit code {$exitCode}");
+			return self::FAILURE;
 		}
+
+		$this->components->info("migrate:fresh completed successfully.");
 
 		// Restore data if needed
 		if ($preserveData && !empty($dataBackup)) {
@@ -328,7 +445,7 @@ class MigrateFresh extends Command
 				// Disable foreign key checks to avoid insertion order issues
 				DB::statement("SET FOREIGN_KEY_CHECKS=0");
 
-				foreach ($dataBackup as $tableName => $data) {
+				foreach ($dataBackup as $tableName => $filePath) {
 					// Check if table still exists after migration
 					if (!Schema::hasTable($tableName)) {
 						$this->components->warn(
@@ -340,25 +457,50 @@ class MigrateFresh extends Command
 					// Get current table structure
 					$columns = Schema::getColumnListing($tableName);
 
-					foreach ($data as $row) {
+					if (!File::exists($filePath)) {
+						$this->components->warn("Preserve-data file missing for {$tableName}, skipping restore.");
+						continue;
+					}
+
+					$handle = fopen($filePath, "r");
+					$batch = [];
+
+					while (($line = fgets($handle)) !== false) {
+						$line = trim($line);
+						if ($line === "") {
+							continue;
+						}
+
+						$row = json_decode($line, true);
+						if (!is_array($row)) {
+							continue;
+						}
+
 						$rowData = [];
 
 						// Only include columns that exist in the new schema
-						foreach ((array) $row as $column => $value) {
+						foreach ($row as $column => $value) {
 							if (in_array($column, $columns)) {
 								$rowData[$column] = $value;
 							}
 						}
 
-						// Insert data if we have values
 						if (!empty($rowData)) {
-							try {
-								DB::table($tableName)->insert($rowData);
-							} catch (\Exception $e) {
-								$this->components->error("Failed to insert row in {$tableName}: " . $e->getMessage());
+							$batch[] = $rowData;
+
+							if (count($batch) >= 500) {
+								DB::table($tableName)->insert($batch);
+								$batch = [];
 							}
 						}
 					}
+
+					if (!empty($batch)) {
+						DB::table($tableName)->insert($batch);
+					}
+
+					fclose($handle);
+					File::delete($filePath);
 				}
 
 				// Re-enable foreign key checks
@@ -366,12 +508,100 @@ class MigrateFresh extends Command
 
 				$elapsedTime = round((microtime(true) - $startTime) * 1000);
 				$this->output->writeln($this->formatLine("Restoring table data", "DONE", "green", $elapsedTime));
+				if ($this->preserveTempDir && File::exists($this->preserveTempDir)) {
+					File::deleteDirectory($this->preserveTempDir);
+					$this->preserveTempDir = null;
+				}
 			} catch (\Exception $e) {
 				$this->output->writeln($this->formatLine("Restoring table data", "FAILED", "red"));
 				$this->components->error("Failed to restore data: " . $e->getMessage());
 			}
 		}
 
-		return Command::SUCCESS;
+		if ($this->preserveTempDir && File::exists($this->preserveTempDir)) {
+			File::deleteDirectory($this->preserveTempDir);
+			$this->preserveTempDir = null;
+		}
+
+		return self::SUCCESS;
+	}
+
+	/**
+	 * Backup existing hashed passwords before dropping tables
+	 *
+	 * @return void
+	 */
+	private function backupPasswords(): void
+	{
+		$this->newLine();
+		$this->components->info("BACKUP: Saving existing hashed passwords before dropping tables...");
+
+		$cacheFile = storage_path("app/cache/user_passwords_backup.json");
+
+		// Create cache directory if not exists
+		$cacheDir = dirname($cacheFile);
+		if (!file_exists($cacheDir)) {
+			mkdir($cacheDir, 0755, true);
+		}
+
+		try {
+			// Check if users table exists
+			if (!Schema::hasTable("users")) {
+				$this->components->warn("   Users table does not exist yet (first migration)");
+				$this->components->info("   Skipping password backup");
+				$this->newLine();
+				return;
+			}
+
+			// Check if table has any data
+			$totalUsers = DB::table("users")->count();
+			$this->line("Current users in database: <fg=cyan>{$totalUsers}</>");
+
+			if ($totalUsers === 0) {
+				$this->components->warn("   No users to backup (empty table)");
+				$this->newLine();
+				return;
+			}
+
+			// Get users with bcrypt hashed passwords
+			// Use LIKE for better compatibility - bcrypt always starts with $2y$, $2a$, $2b$, or $2x$
+			$users = DB::table("users")
+				->select("email", "password")
+				->where(function ($query) {
+					$query
+						->where("password", "like", "\$2y\$%")
+						->orWhere("password", "like", "\$2a\$%")
+						->orWhere("password", "like", "\$2b\$%")
+						->orWhere("password", "like", "\$2x\$%");
+				})
+				->get();
+
+			$this->line("Found <fg=cyan>" . $users->count() . "</> users with bcrypt passwords");
+
+			if ($users->isEmpty()) {
+				$this->components->warn("   No hashed passwords found (all plain text or first import)");
+				$this->newLine();
+				return;
+			}
+
+			// Build cache array indexed by email
+			$passwordCache = [];
+			foreach ($users as $user) {
+				if ($user->email) {
+					$passwordCache[$user->email] = $user->password;
+				}
+			}
+
+			// Save to JSON file (survives migrate:fresh!)
+			file_put_contents($cacheFile, json_encode($passwordCache, JSON_PRETTY_PRINT));
+
+			$this->line("Backed up <fg=green>" . count($passwordCache) . "</> hashed passwords");
+			$this->line("File: <fg=gray>storage/app/cache/user_passwords_backup.json</>");
+			$this->line("These passwords will be reused if email matches in CSV");
+			$this->newLine();
+		} catch (\Exception $e) {
+			$this->components->error("Warning: Could not backup passwords: " . $e->getMessage());
+			$this->newLine();
+		}
 	}
 }

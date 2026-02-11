@@ -62,11 +62,15 @@ return [
 	"home_link" => "admin",
 
 	// Menu logo. You can replace this with an <img> tag if you have a logo.
-	"project_logo" => "<img src='" . env("APP_URL") . "/static/images/logo.png'>",
+	"project_logo" =>
+		"<img src='" . env("APP_URL") . "/static/images/logo.png' style='filter: drop-shadow(1px 2px 2px black);'>",
 
-	"project_logo_color" => "#051269",
+	"project_logo_color" => "#16108a",
 
-	"project_color" => "#EEEEEE",
+	"project_color" => "#ff655f",
+
+	"breadcrumbs_link_color" => "#16108a",
+	"breadcrumbs_active_color" => "#16108a",
 
 	// Show / hide breadcrumbs on admin panel pages.
 	"breadcrumbs" => true,
@@ -118,7 +122,7 @@ return [
 
 	// JS files that are loaded in all pages, using Laravel's asset() helper
 	"scripts" => [
-		"static/js/humanbit_custom.js",
+		base_path("public/static/js/humanbit_custom.js"),
 		// 'js/example.js',
 		// 'https://unpkg.com/vue@2.4.4/dist/vue.min.js',
 		// 'https://unpkg.com/react@16/umd/react.production.min.js',

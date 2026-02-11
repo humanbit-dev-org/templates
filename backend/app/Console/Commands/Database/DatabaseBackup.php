@@ -129,7 +129,7 @@ class DatabaseBackup extends Command
 		}
 
 		// Check if backup directory exists, create if not
-		$backupDir = storage_path("app/db-backups");
+		$backupDir = storage_path("backups/database");
 		if (!File::exists($backupDir)) {
 			$this->line($this->formatLine("Creating backup directory", "RUNNING"));
 			$startTime = microtime(true);
@@ -155,7 +155,7 @@ class DatabaseBackup extends Command
 
 		$timestamp = $now->format("Y-m-d_H-i-s");
 
-		$projectName = env("APP_NAME", "laravel");
+		$projectName = config("app.name");
 		$safeProjectName = Str::slug($projectName);
 		$filename = "{$safeProjectName}_{$timestamp}.sql";
 		$backupPath = "{$backupDir}/{$filename}";
@@ -414,7 +414,7 @@ class DatabaseBackup extends Command
 	/**
 	 * Clean up old backups, keeping only the most recent ones
 	 */
-	protected function cleanupOldBackups($backupDir, $keep = 5)
+	protected function cleanupOldBackups($backupDir, $keep = 3)
 	{
 		// Collect all backup files and sort them by filename (which contains timestamp)
 		$backupFiles = collect(File::files($backupDir))->sortByDesc(function ($file) {

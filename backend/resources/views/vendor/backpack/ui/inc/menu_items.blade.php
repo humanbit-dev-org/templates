@@ -19,6 +19,9 @@
             'Admin' => [
                 ['name' => 'User', 'title' => 'Users', 'icon' => 'la la-user-circle', 'url' => 'user'],
                 ['name' => 'Page', 'title' => 'Pages', 'icon' => 'la la-pager', 'url' => 'page'],
+            ],
+            'Developer' => [
+                ['name' => 'Developer', 'title' => 'Developer', 'icon' => 'la la-code', 'url' => 'logs'],
             ]
         ];
 
@@ -31,6 +34,17 @@
                     ['name' => 'BackpackRole', 'title' => 'Backend Roles', 'icon' => 'la la-user-cog', 'url' => 'backpack-role'],
                     ['name' => 'Role', 'title' => 'Web Roles', 'icon' => 'la la-user-cog', 'url' => 'role'],
                     ['name' => 'ModelPermission', 'title' => 'Model Permissions', 'icon' => 'la la-key', 'url' => 'model-permission'],
+                ]
+            ]
+        ];
+
+        // Developer-only sections (not model-based, requires developer role)
+        $developerSections = [
+            [
+                'title' => 'Developer Tools',
+                'icon' => 'la la-code',
+                'items' => [
+                    ['title' => 'System Logs', 'icon' => 'la la-file-text', 'url' => 'logs'],
                 ]
             ]
         ];
@@ -52,6 +66,8 @@
         @endif
     @endforeach
 
+    <hr/>
+
     {{-- Render dropdown menus --}}
     @foreach ($dropdownMenus as $dropdown)
         @if (\App\Http\Traits\ChecksBackpackPermissions::userCanAccessAnyMenu($dropdown['items']))
@@ -67,5 +83,19 @@
             </x-backpack::menu-dropdown>
         @endif
     @endforeach
+
+    {{-- Render developer-only sections --}}
+    @if (\App\Http\Traits\ChecksBackpackPermissions::isDeveloper())
+        @foreach ($developerSections as $dropdown)
+            <x-backpack::menu-dropdown title="{{ $dropdown['title'] }}" icon="{{ $dropdown['icon'] }}">
+                @foreach ($dropdown['items'] as $item)
+                    <x-backpack::menu-dropdown-item 
+                        title="{{ $item['title'] }}" 
+                        icon="{{ $item['icon'] }}" 
+                        :link="backpack_url($item['url'])" />
+                @endforeach
+            </x-backpack::menu-dropdown>
+        @endforeach
+    @endif
 @endif
 @include(backpack_view('inc.footer'))

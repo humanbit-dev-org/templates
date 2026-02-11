@@ -15,4 +15,14 @@ return [
 	"with_file" => "With file",
 	"without_file" => "Without file",
 	"uploaded" => "Uploaded",
+	"advanced_filters" => "Advanced filters",
+	
+	// DATE FILTER TYPES
+	"exact_date" => "Exact date",
+	"date_range" => "Date range",
+	"from" => "From",
+	"to" => "To",
+	"select_date" => "select date",
+	"start_date" => "start date",
+	"end_date" => "end date",
 ];

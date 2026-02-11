@@ -20,6 +20,7 @@ $backpack_alerts = \Alert::getMessages();
 // datatables caches the ajax responses with pageLength in LocalStorage so when changing this
 // settings in controller users get unexpected results. To avoid that we will reset
 // the table cache when both lengths don't match.
+var crudEntityName = @json($crud->entity_name ?? 'Record');
 let $dtCachedInfo = JSON.parse(localStorage.getItem('DataTables_crudTable_/{{$crud->getRoute()}}'))
     ? JSON.parse(localStorage.getItem('DataTables_crudTable_/{{$crud->getRoute()}}')) : [];
 var $dtDefaultPageLength = {{ $crud->getDefaultPageLength() }};
@@ -154,36 +155,158 @@ window.crud = {
     @if ($crud->getResponsiveTable())
     responsive: {
         details: {
-            display: $.fn.dataTable.Responsive.display.modal( {
-                header: function ( row ) {
-                    // show the content of the first column
-                    // as the modal header
-                    // var data = row.data();
-                    // return data[0];
-                    return '';
+            display: function ( row, update, render ) {
+                // Custom modal display similar to relation preview modal
+                if ( ! update ) {
+                    var tableContent = render();
+                    if (!tableContent) {
+                        return;
+                    }
+                    var api = crud.table;
+                    // Create modal structure
+                    var modal = $('<div class="custom-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1055; overflow: auto;">' +
+                        '<div class="custom-modal-backdrop" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 1054;"></div>' +
+                        '<div class="custom-modal-dialog" style="position: relative; z-index: 1055; margin: 1rem auto; max-width: 600px; width: calc(100% - 2rem); max-height: 90vh; display: flex; align-items: center; min-height: calc(100% - 2rem);">' +
+                        '<div class="custom-modal-content" style="background: white; border-radius: 8px; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2); width: 100%; max-height: 90vh; display: flex; flex-direction: column; overflow: hidden;">' +
+                        '<div class="custom-modal-header" style="padding: 0.75rem 1rem; border-bottom: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;">' +
+                        '<h5 class="custom-modal-title" style="font-size: 1rem; font-weight: 600; margin: 0;">Preview Record</h5>' +
+                        '<button type="button" class="custom-modal-close" aria-label="Close" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; padding: 0; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; color: #6b7280;">&times;</button>' +
+                        '</div>' +
+                        '<div class="custom-modal-body" style="padding: 1rem; min-height: 300px; max-height: calc(90vh - 200px); overflow-y: auto; flex: 1;"></div>' +
+                        '<div class="custom-modal-footer" style="padding: 0.75rem 1rem; border-top: 1px solid #e5e7eb; display: flex; justify-content: flex-end; gap: 0.5rem; flex-shrink: 0;"></div>' +
+                        '</div>' +
+                        '</div>' +
+                        '</div>');
+                    
+                    // Set content
+                    modal.find('.custom-modal-body').html(tableContent);
+                    
+                    // Add close button to footer
+                    modal.find('.custom-modal-footer').html(
+                        '<button type="button" class="btn btn-secondary btn-sm custom-modal-close-btn">Chiudi</button>'
+                    );
+                    
+                    // Add modal to body
+                    $('body').append(modal);
+                    
+                    // Set modal title with model name and ID
+                    // Try to get ID from row node data attribute
+                    var entryId = $(row.node()).data('entry-id') || $(row.node()).attr('data-entry-id') || '';
+                    
+                    // If not found, try to get from action buttons with data-route attribute
+                    if (!entryId) {
+                        var actionButton = $(row.node()).find('[data-route]');
+                        if (actionButton.length) {
+                            var route = actionButton.first().data('route') || actionButton.first().attr('data-route') || '';
+                            if (route && route !== 'javascript:void(0)' && !route.startsWith('javascript:')) {
+                                var routeParts = route.split('/').filter(function(part) { return part && part !== ''; });
+                                // ID is usually the last numeric part in routes like /admin/user/123 or /admin/user/123/edit
+                                for (var i = routeParts.length - 1; i >= 0; i--) {
+                                    if (/^\d+$/.test(routeParts[i])) {
+                                        entryId = routeParts[i];
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    
+                    // If still not found, try to get from href of action buttons (but skip javascript:void(0))
+                    if (!entryId) {
+                        var actionButton = $(row.node()).find('a[href*="/edit"], a[href*="/show"], a[href*="/delete"]');
+                        if (actionButton.length) {
+                            var href = actionButton.first().attr('href') || '';
+                            if (href && href !== 'javascript:void(0)' && !href.startsWith('javascript:')) {
+                                var routeParts = href.split('/').filter(function(part) { return part && part !== ''; });
+                                for (var i = routeParts.length - 1; i >= 0; i--) {
+                                    if (/^\d+$/.test(routeParts[i])) {
+                                        entryId = routeParts[i];
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    
+                    // If still not found, try to get from first column (usually ID column)
+                    if (!entryId) {
+                        var rowData = row.data();
+                        if (rowData && rowData.length > 0) {
+                            // First column might be ID - check if it's a number
+                            var firstCol = String(rowData[0] || '').trim();
+                            if (/^\d+$/.test(firstCol)) {
+                                entryId = firstCol;
+                            }
+                        }
+                    }
+                    
+                    var modalTitle = 'Preview ' + crudEntityName + (entryId ? ' #' + entryId : '');
+                    modal.find('.custom-modal-title').text(modalTitle);
+                    
+                    // Show modal
+                    modal.fadeIn(200);
+                    $('body').css('overflow', 'hidden');
+                    
+                    // Close handlers
+                    modal.find('.custom-modal-close, .custom-modal-close-btn, .custom-modal-backdrop').on('click', function() {
+                        modal.fadeOut(200, function() {
+                            modal.remove();
+                            $('body').css('overflow', '');
+                        });
+                    });
+                    
+                    // Close on ESC
+                    $(document).on('keydown.listPreviewModal', function(e) {
+                        if (e.key === 'Escape' && modal.is(':visible')) {
+                            modal.fadeOut(200, function() {
+                                modal.remove();
+                                $('body').css('overflow', '');
+                                $(document).off('keydown.listPreviewModal');
+                            });
+                        }
+                    });
                 }
-            }),
+            },
             type: 'none',
             target: '.dtr-control',
             renderer: function ( api, rowIdx, columns ) {
+                var actionsHtml = '';
+                var lastColumn = columns[columns.length - 1];
+                if (lastColumn && lastColumn.data) {
+                    actionsHtml = lastColumn.data;
+                }
 
-              var data = $.map( columns, function ( col, i ) {
-                  var columnHeading = crud.table.columns().header()[col.columnIndex];
+                var tableContent = '<table class="table table-striped mb-0" style="margin: 0;"><tbody>';
 
-                  // hide columns that have VisibleInModal false
-                  if ($(columnHeading).attr('data-visible-in-modal') == 'false') {
-                    return '';
-                  }
+                if (actionsHtml) {
+                    tableContent += '<tr><td colspan="2" style="padding: 0.75rem; border-bottom: 2px solid #e5e7eb; background: #f9fafb;">' +
+                        '<div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">' + actionsHtml + '</div>' +
+                        '</td></tr>';
+                }
 
-                  return '<tr data-dt-row="'+col.rowIndex+'" data-dt-column="'+col.columnIndex+'">'+
-                            '<td style="vertical-align:top; border:none;"><strong>'+col.title.trim()+':'+'<strong></td> '+
-                            '<td style="padding-left:10px;padding-bottom:10px; border:none;">'+col.data+'</td>'+
-                          '</tr>';
-              } ).join('');
+                $.each(columns, function(i, col) {
+                    if (i === columns.length - 1) return;
 
-              return data ?
-                  $('<table class="table table-striped mb-0">').append( '<tbody>' + data + '</tbody>' ) :
-                  false;
+                    var columnHeading = api.columns(col.columnIndex).header();
+                    if ($(columnHeading).attr('data-visible-in-modal') == 'false') {
+                        return;
+                    }
+
+                    tableContent += '<tr>' +
+                        '<td style="vertical-align:top; border:none; padding: 0.5rem 0.75rem; width: 30%;"><strong>' + col.title.trim() + ':</strong></td>' +
+                        '<td style="padding: 0.5rem 0.75rem; border:none;">' + (col.data || '-') + '</td>' +
+                        '</tr>';
+                });
+
+                if (actionsHtml) {
+                    tableContent += '<tr><td colspan="2" style="padding: 0.75rem; border-top: 2px solid #e5e7eb; background: #f9fafb;">' +
+                        '<div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">' + actionsHtml + '</div>' +
+                        '</td></tr>';
+                }
+
+                tableContent += '</tbody></table>';
+
+                return tableContent;
             },
         }
     },
@@ -278,9 +401,12 @@ window.crud = {
       ajax: {
           "url": "{!! url($crud->route.'/search').'?'.Request::getQueryString() !!}",
           "type": "POST",
-          "data": {
-            "totalEntryCount": "{{$crud->getOperationSetting('totalEntryCount') ?? false}}"
-        },
+          "data": function(d) {
+              // Add datatable_id for Backpack 7 compatibility
+              d.datatable_id = "crudTable";
+              d.totalEntryCount = "{{$crud->getOperationSetting('totalEntryCount') ?? false}}";
+              return d;
+          },
       },
       dom:
         "<'row hidden'<'col-sm-6'i><'col-sm-6 d-print-none'f>>" +
@@ -319,7 +445,7 @@ jQuery(document).ready(function($) {
 
   @if($crud->getOperationSetting('resetButton') ?? true)
     // create the reset button
-    var crudTableResetButton = '<a href="{{url($crud->route)}}" class="ml-1 ms-1 btn btn-outline-secondary reset-btn d-inline-flex align-items-center" id="crudTable_reset_button"><i class="la la-times-circle"></i> {{ trans('backpack::crud.reset') }}</a>';
+    var crudTableResetButton = '<a href="{{url($crud->route)}}" class="ms-1 btn btn-outline-secondary reset-btn d-inline-flex align-items-center" id="crudTable_reset_button"><i class="la la-times-circle"></i> {{ trans('backpack::crud.reset') }}</a>';
 
     $('#datatable_info_stack').append(crudTableResetButton);
 
@@ -392,6 +518,7 @@ jQuery(document).ready(function($) {
      if (crud.table.responsive.hasHidden()) {
         $('.dtr-control').removeClass('d-none'); 
         $('.dtr-control').addClass('d-inline');
+        $('.dtr-control').html('<i class="las la-eye" style="font-size: 1rem; margin-right: 0.5rem;"></i>');
         $("#crudTable").removeClass('has-hidden-columns').addClass('has-hidden-columns');
      }
 
@@ -411,6 +538,7 @@ jQuery(document).ready(function($) {
         if (crud.table.responsive.hasHidden()) {
             $('.dtr-control').removeClass('d-none'); 
             $('.dtr-control').addClass('d-inline');
+            $('.dtr-control').html('<i class="las la-eye" style="font-size: 1rem; margin-right: 0.5rem;"></i>');
             $("#crudTable").removeClass('has-hidden-columns').addClass('has-hidden-columns');
          } else {
           $('.dtr-control').removeClass('d-none').removeClass('d-inline').addClass('d-none');  

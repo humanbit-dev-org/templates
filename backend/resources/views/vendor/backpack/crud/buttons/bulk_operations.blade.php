@@ -1,23 +1,28 @@
 @if ($crud->hasAccess('delete') || $crud->hasAccess('update'))
 <!-- Bulk operations toolbar -->
-<div id="bulk-operations" class="d-none fade-in-out">
-    <div class="bulk-actions-counter"></div>
-    <div class="bulk-actions-buttons">
-        @if ($crud->hasAccess('delete'))
-        <button type="button" id="bulk-delete-btn" class="mini-btn mini-btn-danger">
-            <i class="la la-trash me-1"></i> {{ trans('backpack::crud.delete') }}
-        </button>
-        @endif
-        
-        @if ($crud->hasAccess('update'))
-        <button type="button" id="bulk-duplicate-btn" class="mini-btn mini-btn-primary">
-            <i class="la la-clone me-1"></i> {{ trans('backpack::crud.duplicate') }}
-        </button>
-        @endif
+<div id="bulk-operations" class="bulk-operations-container">
+    <div class="bulk-operations-content">
+        <div class="bulk-actions-counter">
+            <i class="la la-check-square me-2"></i>
+            <span class="bulk-counter-text"></span>
+        </div>
+        <div class="bulk-actions-buttons">
+            @if ($crud->hasAccess('delete'))
+            <button type="button" id="bulk-delete-btn" class="mini-btn mini-btn-danger" title="{{ trans('backpack::crud.delete') }}">
+                <i class="la la-trash me-1"></i> {{ trans('backpack::crud.delete') }}
+            </button>
+            @endif
+            
+            @if ($crud->hasAccess('update'))
+            <button type="button" id="bulk-duplicate-btn" class="mini-btn mini-btn-primary" title="{{ trans('backpack::crud.duplicate') }}">
+                <i class="la la-clone me-1"></i> {{ trans('backpack::crud.duplicate') }}
+            </button>
+            @endif
 
-        <button type="button" id="bulk-cancel-btn" class="mini-btn mini-btn-light">
-            <i class="la la-times"></i>
-        </button>
+            <button type="button" id="bulk-cancel-btn" class="mini-btn mini-btn-light" title="{{ trans('backpack::crud.cancel') }}">
+                <i class="la la-times me-1"></i> {{ trans('backpack::crud.cancel') }}
+            </button>
+        </div>
     </div>
 </div>
 
@@ -61,14 +66,24 @@ function addBulkOperations() {
             
             if (entryId) {
                 const checkboxId = 'entry-checkbox-' + entryId;
+                const isDuplicated = $(this).hasClass('duplicated');
+                const duplicateBadge = isDuplicated ? '<span class="duplicate-badge" title="Elemento duplicato"><i class="la la-clone"></i></span>' : '';
+                
                 $(this).prepend(`
                     <td class="bulk-checkbox">
                         <div class="fancy-checkbox">
                             <input type="checkbox" class="entry-checkbox" id="${checkboxId}" data-entry-id="${entryId}">
                             <label for="${checkboxId}"></label>
                         </div>
+                        ${duplicateBadge}
                     </td>
                 `);
+            }
+        } else {
+            // Checkbox already exists, check if row is duplicated and add badge if missing
+            const checkboxCell = $(this).find('td.bulk-checkbox');
+            if ($(this).hasClass('duplicated') && !checkboxCell.find('.duplicate-badge').length) {
+                checkboxCell.append('<span class="duplicate-badge" title="Elemento duplicato"><i class="la la-clone"></i></span>');
             }
         }
     });
@@ -158,11 +173,17 @@ function setupCheckboxHandlers() {
 // Check if there are any selected checkboxes and show/hide bulk operations
 function updateBulkOperationsVisibility() {
     const selectedCount = $('.entry-checkbox:checked').length;
+    const bulkOps = $('#bulk-operations');
+    const wrapper = $('#crudTable_wrapper');
     
     if (selectedCount > 0) {
-        // Show bulk operations with animation
-        $('#bulk-operations').removeClass('d-none').addClass('active');
-        $('.bulk-actions-counter').text(selectedCount + ' {{ trans("backpack::crud.selected") }}');
+        // Update counter text
+        const counterText = selectedCount + ' {{ trans("backpack::crud.selected") }}';
+        $('.bulk-counter-text').text(counterText);
+        
+        // Show bulk operations with smooth animation (zero layout shift)
+        bulkOps.addClass('active');
+        wrapper.addClass('bulk-ops-active');
         
         // Disable action buttons in the action column
         $('.crud-action-btn').addClass('disabled-action-btn');
@@ -174,14 +195,7 @@ function updateBulkOperationsVisibility() {
             
             if (checkbox.prop('checked')) {
                 $(this).addClass('bulk-selected-row');
-                // Add ripple effect animation
                 checkboxLabel.addClass('pulse-animation');
-                
-                // Add a slight animation to the row
-                $(this).addClass('row-selected-animation');
-                setTimeout(() => {
-                    $(this).removeClass('row-selected-animation');
-                }, 500);
             } else {
                 $(this).removeClass('bulk-selected-row');
                 checkboxLabel.removeClass('pulse-animation');
@@ -190,13 +204,9 @@ function updateBulkOperationsVisibility() {
         
         bulkModeActive = true;
     } else {
-        // Hide bulk operations with animation
-        $('#bulk-operations').removeClass('active');
-        setTimeout(function() {
-            if (!$('#bulk-operations').hasClass('active')) {
-                $('#bulk-operations').addClass('d-none');
-            }
-        }, 300);
+        // Hide bulk operations with smooth animation
+        bulkOps.removeClass('active');
+        wrapper.removeClass('bulk-ops-active');
         
         // Enable action buttons
         $('.crud-action-btn').removeClass('disabled-action-btn');
@@ -286,6 +296,13 @@ function bulkDelete(ids) {
                         selectedEntryIds = [];
                         localStorage.removeItem('bulkSelectedIds_' + window.location.pathname);
                         
+                        // Deselect all checkboxes
+                        $('.entry-checkbox').prop('checked', false);
+                        $('#select-all-checkbox').prop('checked', false);
+                        
+                        // Hide bulk operations immediately
+                        updateBulkOperationsVisibility();
+                        
                         // Redraw the table
                         crud.table.draw(false);
                         
@@ -363,6 +380,13 @@ function bulkDuplicate(ids) {
                         selectedEntryIds = [];
                         localStorage.removeItem('bulkSelectedIds_' + window.location.pathname);
                         
+                        // Deselect all checkboxes
+                        $('.entry-checkbox').prop('checked', false);
+                        $('#select-all-checkbox').prop('checked', false);
+                        
+                        // Hide bulk operations immediately
+                        updateBulkOperationsVisibility();
+                        
                         // Redraw the table
                         crud.table.draw(false);
                         
@@ -371,15 +395,29 @@ function bulkDuplicate(ids) {
                         
                         // Listen for the draw event to highlight the duplicated rows
                         crud.table.one('draw', function() {
-                            // Highlight the duplicated rows
-                            if (duplicatedEntries.length > 0) {
-                                $('#crudTable tbody tr').each(function() {
-                                    let id = $(this).find('.entry-checkbox').data('entry-id');
-                                    if (id && duplicatedEntries.includes(id)) {
-                                        $(this).addClass('duplicated');
-                                    }
-                                });
-                            }
+                            // Small delay to ensure table is fully rendered
+                            setTimeout(function() {
+                                if (duplicatedEntries.length > 0) {
+                                    // Convert all IDs to strings for consistent comparison
+                                    const duplicatedIds = duplicatedEntries.map(id => String(id));
+                                    
+                                    $('#crudTable tbody tr').each(function() {
+                                        let checkbox = $(this).find('.entry-checkbox');
+                                        let id = checkbox.data('entry-id');
+                                        
+                                        if (id && duplicatedIds.includes(String(id))) {
+                                            // Add duplicated class to row
+                                            $(this).addClass('duplicated');
+                                            
+                                            // Add visual indicator badge near checkbox
+                                            let checkboxCell = $(this).find('td.bulk-checkbox');
+                                            if (checkboxCell.length && !checkboxCell.find('.duplicate-badge').length) {
+                                                checkboxCell.append('<span class="duplicate-badge" title="Elemento duplicato"><i class="la la-clone"></i></span>');
+                                            }
+                                        }
+                                    });
+                                }
+                            }, 100);
                         });
                         
                         // Show success notification
@@ -428,9 +466,19 @@ function interceptDataTablesEvents() {
             // Small delay to ensure the table is fully rendered
             setTimeout(function() {
                 addBulkOperations();
-                if (bulkModeActive) {
+                
+                // Check if there are actually any selected checkboxes
+                const selectedCount = $('.entry-checkbox:checked').length;
+                if (selectedCount === 0 && bulkModeActive) {
+                    // No checkboxes selected, ensure bulk operations are hidden
+                    bulkModeActive = false;
+                    updateBulkOperationsVisibility();
+                } else if (bulkModeActive) {
                     // Re-apply disabled style to action buttons if in bulk mode
                     $('.crud-action-btn').addClass('disabled-action-btn');
+                    // Re-apply padding and active state
+                    $('#crudTable_wrapper').addClass('bulk-ops-active');
+                    $('#bulk-operations').addClass('active');
                 }
             }, 10);
         });
@@ -441,9 +489,11 @@ function interceptDataTablesEvents() {
 $(document).ready(function() {
     console.log("Document ready, initializing bulk operations");
     
-    // Add bulk operations to table wrapper
+    // Add bulk operations to table wrapper (always present to avoid layout shift)
     let bulkOperationsElement = $('#bulk-operations');
-    $('#crudTable_wrapper').prepend(bulkOperationsElement);
+    if (bulkOperationsElement.length && !bulkOperationsElement.parent().is('#crudTable_wrapper')) {
+        $('#crudTable_wrapper').prepend(bulkOperationsElement);
+    }
     
     // Make sure to intercept DataTables events
     interceptDataTablesEvents();
@@ -477,42 +527,77 @@ if (typeof crud !== 'undefined') {
 $(document).ready(function() {
     $('head').append(`
         <style>
-            /* Bulk operations bar */
-            .fade-in-out {
-                transition: all 0.3s ease-in-out;
+            /* Bulk operations container - zero layout shift solution */
+            #crudTable_wrapper {
+                position: relative;
+            }
+            
+            .bulk-operations-container {
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                z-index: 10;
                 opacity: 0;
+                visibility: hidden;
                 transform: translateY(-10px);
-                overflow: hidden;
+                transition: opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+                            visibility 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+                            transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+                pointer-events: none;
             }
             
-            .fade-in-out.active {
+            .bulk-operations-container.active {
                 opacity: 1;
+                visibility: visible;
                 transform: translateY(0);
+                pointer-events: auto;
             }
             
-            #bulk-operations {
+            /* Add padding to table wrapper when bulk operations are active to prevent overlap */
+            #crudTable_wrapper.bulk-ops-active {
+                padding-top: 60px;
+                transition: padding-top 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            }
+            
+            /* Content wrapper */
+            .bulk-operations-content {
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
-                padding: 5px 10px;
-                background-color: rgba(var(--tblr-primary-rgb), 0.03);
-                border-radius: 4px;
-                margin-bottom: 10px;
-                border: 1px solid rgba(var(--tblr-primary-rgb), 0.1);
-                box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+                padding: 10px 16px;
+                background: linear-gradient(135deg, rgba(var(--tblr-primary-rgb), 0.08) 0%, rgba(var(--tblr-primary-rgb), 0.04) 100%);
+                border-radius: 8px;
+                border: 1.5px solid rgba(var(--tblr-primary-rgb), 0.2);
+                box-shadow: 0 2px 8px rgba(var(--tblr-primary-rgb), 0.1),
+                            0 1px 3px rgba(0, 0, 0, 0.08);
+                backdrop-filter: blur(4px);
             }
             
             /* Counter for selected items */
             .bulk-actions-counter {
-                font-size: 0.85rem;
+                display: flex;
+                align-items: center;
+                font-size: 0.9rem;
                 color: var(--tblr-primary);
-                font-weight: 500;
+                font-weight: 600;
+            }
+            
+            .bulk-actions-counter i {
+                font-size: 1.1rem;
+                color: var(--tblr-primary);
+            }
+            
+            .bulk-counter-text {
+                font-weight: 600;
+                letter-spacing: 0.02em;
             }
             
             /* Buttons container */
             .bulk-actions-buttons {
                 display: flex;
-                gap: 6px;
+                gap: 8px;
+                align-items: center;
             }
             
             /* Disabled action buttons */
@@ -522,55 +607,61 @@ $(document).ready(function() {
                 cursor: default !important;
             }
             
-            /* Extra-small custom button styles */
+            /* Enhanced button styles */
             .mini-btn {
                 display: inline-flex;
                 align-items: center;
                 justify-content: center;
-                font-size: 0.75rem;
-                padding: 0.2rem 0.5rem;
-                border-radius: 3px;
+                font-size: 0.8rem;
+                padding: 0.4rem 0.85rem;
+                border-radius: 6px;
                 border: 0;
-                font-weight: 500;
-                line-height: 1.3;
-                transition: all 0.15s ease-in-out;
+                font-weight: 600;
+                line-height: 1.4;
+                transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
                 cursor: pointer;
+                white-space: nowrap;
+                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
             }
             
             .mini-btn i {
-                font-size: 0.875rem;
-                margin-right: 0.25rem;
+                font-size: 0.9rem;
+            }
+            
+            .mini-btn:active {
+                transform: translateY(1px);
+                box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
             }
             
             .mini-btn-primary {
-                background-color: var(--tblr-primary);
+                background: linear-gradient(135deg, var(--tblr-primary) 0%, rgba(var(--tblr-primary-rgb), 0.9) 100%);
                 color: #fff;
-                box-shadow: 0 1px 2px rgba(var(--tblr-primary-rgb), 0.15);
+                box-shadow: 0 2px 4px rgba(var(--tblr-primary-rgb), 0.25);
             }
             
             .mini-btn-primary:hover {
-                background-color: rgba(var(--tblr-primary-rgb), 0.9);
+                opacity: 0.85;
             }
             
             .mini-btn-danger {
-                background-color: var(--tblr-danger);
+                background: linear-gradient(135deg, var(--tblr-danger) 0%, rgba(var(--tblr-danger-rgb), 0.9) 100%);
                 color: #fff;
-                box-shadow: 0 1px 2px rgba(var(--tblr-danger-rgb), 0.15);
+                box-shadow: 0 2px 4px rgba(var(--tblr-danger-rgb), 0.25);
             }
             
             .mini-btn-danger:hover {
-                background-color: rgba(var(--tblr-danger-rgb), 0.9);
+                opacity: 0.85;
             }
             
             .mini-btn-light {
-                background-color: #f8f9fa;
-                color: #495057;
-                border: 1px solid #dee2e6;
+                background-color: #ffffff;
+                color: #6b7280;
+                border: 1.5px solid #e5e7eb;
+                box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
             }
             
             .mini-btn-light:hover {
-                background-color: #e9ecef;
-                border-color: #dde0e3;
+                opacity: 0.85;
             }
             
             /* Checkbox column - small and compact */
@@ -582,12 +673,17 @@ $(document).ready(function() {
                 padding-right: 4px !important;
             }
             
-            /* Fancy checkboxes */
+            /* Select all checkbox in header - add left padding */
+            #crudTable thead tr th.bulk-checkbox {
+                padding-left: 12px !important;
+            }
+            
+            /* Enhanced fancy checkboxes */
             .fancy-checkbox {
                 position: relative;
                 display: inline-block;
-                width: 14px;
-                height: 14px;
+                width: 18px;
+                height: 18px;
             }
             
             .fancy-checkbox input[type="checkbox"] {
@@ -595,35 +691,37 @@ $(document).ready(function() {
                 position: absolute;
                 cursor: pointer;
                 z-index: 2;
-                width: 14px;
-                height: 14px;
+                width: 18px;
+                height: 18px;
                 margin: 0;
             }
             
             .fancy-checkbox label {
                 position: absolute;
-                width: 14px;
-                height: 14px;
-                background-color: var(--tblr-bg-surface);
-                border: 1px solid rgba(var(--tblr-primary-rgb), 0.3);
-                border-radius: 2px;
+                width: 18px;
+                height: 18px;
+                background-color: #ffffff;
+                border: 2px solid rgba(var(--tblr-primary-rgb), 0.4);
+                border-radius: 4px;
                 cursor: pointer;
-                transition: all 0.15s ease;
+                transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
                 margin: 0;
+                box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
             }
             
             .fancy-checkbox input[type="checkbox"]:checked + label {
-                background-color: var(--tblr-primary);
+                background: linear-gradient(135deg, var(--tblr-primary) 0%, rgba(var(--tblr-primary-rgb), 0.9) 100%);
                 border-color: var(--tblr-primary);
+                box-shadow: 0 2px 4px rgba(var(--tblr-primary-rgb), 0.3);
             }
             
             .fancy-checkbox input[type="checkbox"]:checked + label:after {
                 content: '';
                 position: absolute;
-                left: 4px;
-                top: 1px;
-                width: 4px;
-                height: 8px;
+                left: 5px;
+                top: 2px;
+                width: 5px;
+                height: 9px;
                 border: solid white;
                 border-width: 0 2px 2px 0;
                 transform: rotate(45deg);
@@ -631,21 +729,37 @@ $(document).ready(function() {
             
             .fancy-checkbox input[type="checkbox"]:hover + label {
                 border-color: var(--tblr-primary);
-                box-shadow: 0 0 0 1px rgba(var(--tblr-primary-rgb), 0.1);
+                box-shadow: 0 0 0 2px rgba(var(--tblr-primary-rgb), 0.15);
+                transform: scale(1.05);
             }
             
-            /* Selected row highlighting - just left border */
+            .fancy-checkbox input[type="checkbox"]:checked:hover + label {
+                transform: scale(1.08);
+                box-shadow: 0 3px 6px rgba(var(--tblr-primary-rgb), 0.4);
+            }
+            
+            /* Selected row highlighting - subtle and elegant */
+            tr.bulk-selected-row {
+                background-color: rgba(var(--tblr-primary-rgb), 0.04) !important;
+                transition: background-color 0.2s ease;
+            }
+            
             tr.bulk-selected-row td:first-child {
                 border-left: 3px solid var(--tblr-primary) !important;
+                padding-left: calc(4px - 3px) !important;
             }
             
-            /* Pulse animation for checkbox */
+            tr.bulk-selected-row:hover {
+                background-color: rgba(var(--tblr-primary-rgb), 0.06) !important;
+            }
+            
+            /* Pulse animation for checkbox - subtle */
             @keyframes pulse {
                 0% {
-                    box-shadow: 0 0 0 0 rgba(var(--tblr-primary-rgb), 0.7);
+                    box-shadow: 0 0 0 0 rgba(var(--tblr-primary-rgb), 0.4);
                 }
                 70% {
-                    box-shadow: 0 0 0 4px rgba(var(--tblr-primary-rgb), 0);
+                    box-shadow: 0 0 0 3px rgba(var(--tblr-primary-rgb), 0);
                 }
                 100% {
                     box-shadow: 0 0 0 0 rgba(var(--tblr-primary-rgb), 0);
@@ -653,29 +767,18 @@ $(document).ready(function() {
             }
             
             .pulse-animation {
-                animation: pulse 1.5s infinite;
+                animation: pulse 2s infinite;
             }
             
-            /* Row selection animation */
-            @keyframes rowSelectedEffect {
-                0% { background-color: transparent; }
-                50% { background-color: rgba(var(--tblr-primary-rgb), 0.1); }
-                100% { background-color: transparent; }
-            }
-            
-            .row-selected-animation {
-                animation: rowSelectedEffect 0.5s ease-in-out;
-            }
-            
-            /* Row transition animation */
+            /* Row transition animation - smooth */
             @keyframes rowTransition {
                 0% { background-color: transparent; }
-                50% { background-color: rgba(var(--tblr-primary-rgb), 0.1); }
+                50% { background-color: rgba(var(--tblr-primary-rgb), 0.08); }
                 100% { background-color: transparent; }
             }
             
             .row-transition-animation {
-                animation: rowTransition 0.3s ease-in-out;
+                animation: rowTransition 0.4s ease-out;
             }
             
             /* Animation for duplicated rows */
@@ -687,6 +790,72 @@ $(document).ready(function() {
                 0% { background-color: transparent; }
                 50% { background-color: rgba(var(--tblr-primary-rgb), 0.2); }
                 100% { background-color: transparent; }
+            }
+            
+            /* Duplicate badge indicator - visible near checkbox */
+            .duplicate-badge {
+                position: absolute;
+                top: -2px;
+                right: -8px;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                width: 18px;
+                height: 18px;
+                background: var(--tblr-primary);
+                color: #ffffff;
+                border-radius: 50%;
+                font-size: 0.7rem;
+                z-index: 5;
+                box-shadow: 0 2px 4px rgba(var(--tblr-primary), 0.4);
+                animation: duplicateBadgePulse 1.5s ease-in-out infinite;
+                pointer-events: none;
+            }
+            
+            .duplicate-badge i {
+                line-height: 1;
+                margin: 0;
+            }
+            
+            @keyframes duplicateBadgePulse {
+                0%, 100% {
+                    transform: scale(1);
+                    box-shadow: 0 2px 4px rgba(var(--tblr-primary), 0.4);
+                }
+                50% {
+                    transform: scale(1.15);
+                    box-shadow: 0 3px 8px rgba(var(--tblr-primary), 0.6);
+                }
+            }
+            
+            /* Ensure checkbox cell has relative positioning for badge */
+            td.bulk-checkbox {
+                position: relative;
+            }
+            
+            /* Responsive design for mobile */
+            @media (max-width: 768px) {
+                .bulk-operations-content {
+                    flex-direction: column;
+                    gap: 10px;
+                    padding: 12px;
+                }
+                
+                .bulk-actions-counter {
+                    width: 100%;
+                    justify-content: center;
+                }
+                
+                .bulk-actions-buttons {
+                    width: 100%;
+                    justify-content: center;
+                    flex-wrap: wrap;
+                }
+                
+                .mini-btn {
+                    font-size: 0.75rem;
+                    padding: 0.35rem 0.7rem;
+                }
             }
         </style>
     `);

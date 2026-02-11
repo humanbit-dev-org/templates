@@ -5,21 +5,62 @@
 
     RewriteEngine On
 
-    # Handle Authorization Header
+    # ---------------------------------------------------------------------
+    # 1) HARD BLOCK (prima di tutto)
+    # ---------------------------------------------------------------------
+
+    # Blocca endpoint tipici di exploit
+    RewriteRule ^(shell|cgi-bin)(/.*)?$ - [F,L,NC]
+
+    # Blocca dotfiles e file sensibili (anche se finissero per sbaglio in public)
+    RewriteRule ^(\.env|\.git|\.svn|\.ht|composer\.(json|lock)|package\.json|yarn\.lock|pnpm-lock\.yaml)(/.*)?$ - [F,L,NC]
+
+    # Blocca path traversal e wrapper pericolosi in query
+    RewriteCond %{QUERY_STRING} (\.\./|%2e%2e%2f|%2e%2e%5c|php://|data://|expect://|phar://|zip://|glob://|file://|gopher://) [NC]
+    RewriteRule ^ - [F,L]
+
+    # Blocca chiavi tipiche di RCE
+    RewriteCond %{QUERY_STRING} (^|&)(cmd|shell|command|exec|execute|system|passthru|eval|assert)= [NC]
+    RewriteRule ^ - [F,L]
+
+    # Blocca metacaratteri tipici di command injection in query (safe regex)
+    RewriteCond %{QUERY_STRING} (;|&&|\$\() [NC]
+    RewriteRule ^ - [F,L]
+
+    # ---------------------------------------------------------------------
+    # 2) Handle Authorization Header
+    # ---------------------------------------------------------------------
     RewriteCond %{HTTP:Authorization} .
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
 
-    # Redirect Trailing Slashes If Not A Folder...
+    # ---------------------------------------------------------------------
+    # 3) Redirect Trailing Slashes If Not A Folder...
+    # ---------------------------------------------------------------------
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_URI} (.+)/$
     RewriteRule ^ %1 [L,R=301]
 
-    # Set PHP File Upload Limits
-    php_value upload_max_filesize 10M
-    php_value post_max_size 20M
-
-    # Send Requests To Front Controller...
+    # ---------------------------------------------------------------------
+    # 4) Send Requests To Front Controller...
+    # ---------------------------------------------------------------------
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ index.php [L]
+</IfModule>
+
+# -------------------------------------------------------------------------
+# 5) PHP limits (solo se Apache usa mod_php)
+# -------------------------------------------------------------------------
+<IfModule mod_php.c>
+    php_value upload_max_filesize 10M
+    php_value post_max_size 20M
+</IfModule>
+
+# -------------------------------------------------------------------------
+# 6) Security headers (solo se mod_headers è attivo)
+# -------------------------------------------------------------------------
+<IfModule mod_headers.c>
+    # Header always set X-Frame-Options "DENY" -> uncomment if you want to block framing
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set Referrer-Policy "no-referrer"
 </IfModule>

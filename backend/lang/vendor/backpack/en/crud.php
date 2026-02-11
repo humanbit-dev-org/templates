@@ -43,6 +43,7 @@ return [
 	// FILTERS
 	"filters" => "Filters",
 	"warning_creating_with_filters" => "Warning: the new record will have fields pre-filled based on active filters",
+	"warning_export_with_filters" => "Warning: CSV export will include only records matching active filters",
 
 	//SORT
 	"sort" => "Sort",
@@ -52,6 +53,8 @@ return [
 	"csv_export" => "Export CSV",
 	"csv_import" => "Import CSV",
 	"csv_import_disabled" => "CSV import disabled for :section section",
+	"csv_export_in_progress" => "Exporting...",
+	"csv_export_timeout" => "The export is taking longer than expected. Check your downloads or try again later.",
 
 	// BULK OPERATIONS
 	"bulk_delete" => "Delete selected items",
@@ -63,4 +66,8 @@ return [
 	"bulk_duplicate_confirmation_title" => "Items Duplicated",
 	"bulk_duplicate_confirmation_message" => "The selected items have been duplicated successfully.",
 	"selected" => "items selected",
+
+	// RELATION PREVIEW TOOLTIPS
+	"relation_preview_tooltip" => "View preview",
+	"relation_preview_tooltip_no_relation" => "To view the preview, you need to link an entity :fieldName",
 ];

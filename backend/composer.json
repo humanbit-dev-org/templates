@@ -19,6 +19,7 @@
 		"laravel/sanctum": "^4.0",
 		"laravel/tinker": "^2.9",
 		"league/commonmark": "^2.5",
+		"phpseclib/phpseclib": "^3.0",
 		"wotz/laravel-swagger-ui": "^1.2"
 	},
 	"require-dev": {

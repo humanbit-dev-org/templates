@@ -24,7 +24,7 @@ return [
 
 	// When the user chooses "save and back" or "save and new", show a bubble
 	// for the fact that the default save action has been changed?
-	"showSaveActionChange" => false, //options: true, false
+	"showSaveActionChange" => true, //options: true, false
 
 	// Should we show a cancel button to the user?
 	"showCancelButton" => true,
