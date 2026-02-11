@@ -44,7 +44,12 @@ export default async function TestsPage({ params }) {
 							<h1 className="tw:text-2xl">TYPOGRAPHY TEST</h1>
 
 							{/* <div className="el_body big"> */}
-							<div className="big tw:text-red-500">
+							<div className="big text-red-500 col-6 w-[100%] mt-12!">
+								Lorem ipsum dolor, <span className="fw-700">fw-700</span> sit amet consectetur adipisicing
+								elit. Ad quasi asperiores voluptatum odit, molestiae repellendus fugiat nihil at ullam! Quis
+								veniam enim, excepturi vitae consectetur eos. Voluptate ut accusamus fugiat.
+							</div>
+							<div className="big d-none flex!">
 								Lorem ipsum dolor, <span className="fw-700">fw-700</span> sit amet consectetur adipisicing
 								elit. Ad quasi asperiores voluptatum odit, molestiae repellendus fugiat nihil at ullam! Quis
 								veniam enim, excepturi vitae consectetur eos. Voluptate ut accusamus fugiat.
