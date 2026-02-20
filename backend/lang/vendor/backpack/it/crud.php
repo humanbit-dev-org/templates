@@ -1,0 +1,76 @@
+<?php
+
+return [
+	/*
+    |--------------------------------------------------------------------------
+    | Backpack Crud Language Lines
+    |--------------------------------------------------------------------------
+    |
+    | The following language lines are used by the CRUD interface.
+    | You are free to change them to anything
+    | you want to customize your views to better match your application.
+    |
+    */
+
+	// DATATABLES
+	"info" => "_TOTAL_ record",
+	"infoEmpty" => "Nessun record",
+	"infoFiltered" => "(filtrati da _MAX_ record totali)",
+	"lengthMenu" => "_MENU_ record per pagina",
+
+	//DUPLICATE
+	"duplicate" => "Duplica",
+	"duplicate_confirm" => "Sei sicuro di voler duplicare questo elemento?",
+	"duplicate_confirmation_title" => "Elemento duplicato",
+	"duplicate_confirmation_message" => "L'elemento è stato duplicato con successo.",
+	"duplicate_confirmation_not_title" => "NON duplicato",
+	"duplicate_confirmation_not_message" => "C'è stato un errore. L'elemento potrebbe non essere stato duplicato.",
+
+	//HINTS
+	"hint_hide" => "Abilita questa opzione per nascondere il campo ",
+
+	//NAVIGATION
+	"open" => "Apri ",
+	"relations" => "Relazioni",
+	"add" => "Aggiungi ",
+
+	// DISCLAIMERS
+	"disclaimer_title" => "<i class='las la-info-circle me-1'></i> Informazioni ",
+	"disclaimer_gallery" => "Fornisce un'anteprima dei file caricati nel media corrente.",
+	"disclaimer_hero" => "Seleziona un'opzione solo se l'immagine media è destinata alla sezione hero di una pagina.",
+	"disclaimer_uploads" => "Puoi caricare più file media contemporaneamente.",
+
+	// FILTERS
+	"filters" => "Filtri",
+	"reset" => "reimposta risultati",
+	"warning_creating_with_filters" => "Attenzione: il nuovo record avrà campi pre-riempiti in base ai filtri attivi",
+	"warning_export_with_filters" => "Attenzione: l'export CSV includerà solo i record che corrispondono ai filtri attivi",
+	"empty" => "vuoto",
+	"not_empty" => "non vuoto",
+
+	// SORT
+	"sort" => "Ordina",
+
+	// IMPORT AND EXPORT
+	"csv_actions" => "Azioni CSV",
+	"csv_export" => "Esporta CSV",
+	"csv_import" => "Importa CSV",
+	"csv_import_disabled" => "Import CSV disabilitato per la sezione :section",
+	"csv_export_in_progress" => "Esportazione in corso...",
+	"csv_export_timeout" => "L'export sta richiedendo più tempo del previsto. Controlla i download o riprova più tardi.",
+
+	// BULK OPERATIONS
+	"bulk_delete" => "Elimina elementi selezionati",
+	"bulk_delete_confirm" => "Sei sicuro di voler eliminare tutti gli elementi selezionati?",
+	"bulk_delete_confirmation_title" => "Elementi eliminati",
+	"bulk_delete_confirmation_message" => "Gli elementi selezionati sono stati eliminati con successo.",
+	"bulk_duplicate" => "Duplica elementi selezionati",
+	"bulk_duplicate_confirm" => "Sei sicuro di voler duplicare tutti gli elementi selezionati?",
+	"bulk_duplicate_confirmation_title" => "Elementi duplicati",
+	"bulk_duplicate_confirmation_message" => "Gli elementi selezionati sono stati duplicati con successo.",
+	"selected" => "elementi selezionati",
+
+	// RELATION PREVIEW TOOLTIPS
+	"relation_preview_tooltip" => "Visualizza anteprima",
+	"relation_preview_tooltip_no_relation" => "Per visualizzare l'anteprima è necessario collegare un'entità :fieldName",
+];

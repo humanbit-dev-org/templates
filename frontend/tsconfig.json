@@ -1,0 +1,61 @@
+{
+	"compilerOptions": {
+		"lib": ["dom", "dom.iterable", "esnext"],
+		"allowJs": true,
+		"skipLibCheck": true,
+		"strict": true,
+		"strictNullChecks": true,
+		"noEmit": true,
+		"esModuleInterop": true,
+		"module": "esnext",
+		"moduleResolution": "bundler", // or "node" if using Node.js
+		"resolveJsonModule": true,
+		"isolatedModules": true,
+		"jsx": "preserve",
+		"incremental": true,
+		"plugins": [
+			{
+				"name": "next"
+			}
+		],
+		"baseUrl": ".",
+		"paths": {
+			// ─── Core structure ───────────────────────────────────────────
+			"@/app/*": ["src/app/[lang]/*"],
+			"@/layout/root": ["src/app/[lang]/layout"],
+			"@/layout/*": ["src/app/[lang]/*/layout", "src/app/[lang]/*/[id]/layout"],
+			"@/page/*": ["src/app/[lang]/*/page", "src/app/[lang]/*/[id]/page"],
+
+			// ─── Modular components ───────────────────────────────────────
+			"@/components/*": ["src/components/*"],
+			"@/footers/*": ["src/components/footers/*"],
+			"@/navbars/*": ["src/components/navbars/*"],
+
+			// ─── Other blocks ─────────────────────────────────────────────
+			"@/config/*": ["src/config/*"],
+			"@/hooks/*": ["src/hooks/*"],
+			"@/lib/*": ["src/lib/*"],
+			"@/server/*": ["src/lib/server/*"],
+			"@/providers/*": ["src/providers/*"],
+			"@/utils/*": ["src/utils/*"],
+
+			// ─── Static assets ────────────────────────────────────────────
+			"@/assets/*": ["src/assets/*"],
+			"@/bessex/*": ["src/assets/bessex/*"],
+			"@/css/*": ["src/assets/css/*"],
+			"@/js/*": ["src/assets/js/*"],
+			"@/scss/*": ["src/assets/scss/*"],
+
+			// ─── SCSS partials ────────────────────────────────────────────
+			// pretier-ignore
+			"@/scss/navbars/*": [
+				"src/assets/scss/partials/navbars/*",
+				"src/assets/scss/partials/navbars/nav_grow/*",
+				"src/assets/scss/partials/navbars/nav_slide/*"
+			]
+		},
+		"target": "ES2017"
+	},
+	"include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "types/**/*.d.ts", ".next/types/**/*.ts"],
+	"exclude": ["node_modules"]
+}

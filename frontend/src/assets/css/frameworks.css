@@ -1,0 +1,6 @@
+/* Framework layer precedence setup */
+
+@layer bessex;
+
+@import "../bessex/css/bessex_humanbit.min.css" layer(bessex);
+@import "tailwindcss";

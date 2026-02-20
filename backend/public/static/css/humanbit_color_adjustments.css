@@ -1,0 +1,34 @@
+/**
+    This file includes styles to help apply a skin color on top of Tabler's default
+    and it ensures all css color variables declared in "./humanbit_colors.css" are applied correctly,
+    particularly for dark mode.
+*/
+
+.breadcrumb a {
+    color: color-mix(in srgb, var(--tblr-link-color) 50%, white);
+}
+
+/* Colori per le animazioni */
+@keyframes pulseEffect {
+    0% {
+        background-color: var(--color-pulse-effect-start);
+    }
+
+    50% {
+        background-color: var(--color-pulse-effect-middle);
+    }
+
+    100% {
+        background-color: var(--color-pulse-effect-start);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}

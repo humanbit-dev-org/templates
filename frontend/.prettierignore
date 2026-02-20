@@ -1,0 +1,31 @@
+# Build Output / Runtime Caches
+**/.next
+**/cache
+**/dist
+**/storage
+**/vendor
+
+# Dependencies
+**/node_modules
+**/package-lock.json
+**/pnpm-lock.yaml
+**/composer.lock
+
+# Framework / Tool Files
+**/.env*
+**/.git*
+**/artisan
+**/bootstrap
+**/lang
+
+# Static Assets / Public
+**/public
+!**/public/favicon
+!**/public/static
+
+# Docs / Markdown
+**/*.md*
+
+# Source Maps / Minified
+**/*.map
+**/*.min.*

@@ -1,0 +1,70 @@
+// Functions
+//
+// Utility mixins and functions for evaluating source code across our variables, maps, and mixins.
+
+@use "sass:math";
+
+$root-font-size: 16px;
+
+// Round any number to three decimals
+@function round_3($value) {
+	@return math.div(math.round($value * 1000), 1000);
+}
+
+// Unitless
+// Removes the unit of a given value.
+// @param {Number} $number - Number to remove unit from
+// @return {Number} - Unitless number
+// See https://stackoverflow.com/questions/12328259/how-do-you-strip-the-unit-from-any-number-in-sass
+@function strip_unit($number) {
+	@if type-of($number) == "number" and not unitless($number) {
+		@return math.div($number, ($number * 0 + 1));
+	}
+
+	@return $number;
+}
+
+// Convert em to px
+@function to_px($val) {
+	$u: unit($val);
+
+	@if $u == "px" {
+		@return $val;
+	}
+	@if $u == "em" or $u == "rem" {
+		@return strip_unit($val) * strip_unit($root-font-size) * 1px;
+	}
+	@return $val; // fallback (unitless or unknown)
+}
+
+// Convert px to em
+@function to_em($val) {
+	$u: unit($val);
+
+	@if $u == "em" {
+		@return $val;
+	}
+	@if $u == "px" {
+		@return strip_unit($val) / strip_unit($root-font-size) * 1em;
+	}
+	@if $u == "rem" {
+		@return strip_unit($val) * 1em;
+	} // rem → em (same root)
+	@return $val;
+}
+
+// Convert px to rem
+@function to_rem($val) {
+	$u: unit($val);
+
+	@if $u == "rem" {
+		@return $val;
+	}
+	@if $u == "px" {
+		@return strip_unit($val) / strip_unit($root-font-size) * 1rem;
+	}
+	@if $u == "em" {
+		@return strip_unit($val) * 1rem;
+	} // em → rem
+	@return $val;
+}

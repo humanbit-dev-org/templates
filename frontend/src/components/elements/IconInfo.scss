@@ -1,0 +1,157 @@
+// @use "@/components/<subfolder>/<filename>" as *; // File import statement
+
+// >>> Controllers — START
+@use "@/scss/controllers/dynamics" as *; // controllers for mixins and variables
+// <<<<< Controllers — END
+
+.icon_info_component {
+}
+
+/////
+////
+/*/==================== @media ====================/*/
+/////////////
+////////////
+////////////////////////
+/* @media (max-width) */
+////////////////////////
+
+@media (max-width: 1399.98px) {
+	.icon_info_component {
+	}
+}
+
+@media (max-width: 1199.98px) {
+	.icon_info_component {
+		border-radius: 50rem;
+
+		.bg_color_section {
+			fill: var(--color_section);
+		}
+
+		.icon_path {
+			fill: $color_white;
+		}
+	}
+}
+
+@media (max-width: 991.98px) {
+	.icon_info_component {
+	}
+}
+
+@media (max-width: 767.98px) {
+	.icon_info_component {
+	}
+}
+
+@media (max-width: 575.98px) {
+	.icon_info_component {
+	}
+}
+
+// -------------- //
+
+////////////////////
+/* @media between */
+////////////////////
+
+@media (min-width: 576px) and (max-width: 767.98px) {
+	.icon_info_component {
+	}
+}
+
+@media (min-width: 576px) and (max-width: 991.98px) {
+	.icon_info_component {
+	}
+}
+
+@media (min-width: 768px) and (max-width: 991.98px) {
+	.icon_info_component {
+	}
+}
+
+@media (min-width: 992px) and (max-width: 1199.98px) {
+	.icon_info_component {
+	}
+}
+
+@media (min-width: 1200px) and (max-width: 1399.98px) {
+	.icon_info_component {
+	}
+}
+
+// ------------------ //
+
+////////////////////////
+/* @media (min-width) */
+////////////////////////
+
+@media (min-width: 576px) {
+	.icon_info_component {
+	}
+}
+
+@media (min-width: 768px) {
+	.icon_info_component {
+	}
+}
+
+@media (min-width: 992px) {
+	.icon_info_component {
+	}
+}
+
+@media (min-width: 1200px) {
+	.icon_info_component {
+	}
+}
+
+@media (min-width: 1400px) {
+	.icon_info_component {
+	}
+}
+
+// ---------------- //
+
+//////////////////////
+/* mobile landscape */
+//////////////////////
+
+@media (max-height: 400px) and (orientation: landscape) {
+	.icon_info_component {
+	}
+}
+
+// ----------------- //
+
+///////////////////////
+/* iPad Pro portrait */
+///////////////////////
+
+@media (width: 1024px) and (height: 1366px) {
+	.icon_info_component {
+	}
+}
+
+// ----------------------- //
+
+/////////////////////////////
+/* all browsers (iOS only) */
+/////////////////////////////
+
+@supports (-webkit-touch-callout: none) and (hover: none) and (pointer: coarse) {
+	.icon_info_component {
+	}
+}
+
+// ------------------- //
+
+/////////////////////////
+/* Safari (MacOS only) */
+/////////////////////////
+
+@supports (-webkit-touch-callout: default) and (hover: hover) and (pointer: fine) {
+	.icon_info_component {
+	}
+}

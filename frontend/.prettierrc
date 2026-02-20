@@ -1,0 +1,19 @@
+{
+	"arrowParens": "always",
+	"bracketSameLine": true,
+	"bracketSpacing": true,
+	"endOfLine": "lf",
+	"htmlWhitespaceSensitivity": "css",
+	"insertPragma": false,
+	"proseWrap": "preserve",
+	"quoteProps": "consistent",
+	"semi": true,
+	"singleQuote": false,
+	"singleAttributePerLine": false,
+	"printWidth": 125,
+	"vueIndentScriptAndStyle": false,
+	"trailingComma": "es5",
+	"useTabs": true,
+	"tabWidth": 4,
+	"plugins": ["@prettier/plugin-php"]
+}

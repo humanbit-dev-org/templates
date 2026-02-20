@@ -1,0 +1,149 @@
+// @use "@/page/<route>" as *; // File import statement
+
+// >>> Controllers — START
+@use "@/scss/controllers/dynamics" as *; // controllers for mixins and variables
+@use "@/scss/controllers/extends" as *; // controller for modules
+// <<<<< Controllers — END
+
+.boilerplate_page {
+}
+
+/////
+////
+/*/ ==================== @media ==================== /*/
+/////////////
+////////////
+////////////////////////
+/* @media (max-width) */
+////////////////////////
+
+@media (max-width: 1399.98px) {
+	.boilerplate_page {
+	}
+}
+
+@media (max-width: 1199.98px) {
+	.boilerplate_page {
+	}
+}
+
+@media (max-width: 991.98px) {
+	.boilerplate_page {
+	}
+}
+
+@media (max-width: 767.98px) {
+	.boilerplate_page {
+	}
+}
+
+@media (max-width: 575.98px) {
+	.boilerplate_page {
+	}
+}
+
+// -------------- //
+
+////////////////////
+/* @media between */
+////////////////////
+
+@media (min-width: 576px) and (max-width: 767.98px) {
+	.boilerplate_page {
+	}
+}
+
+@media (min-width: 576px) and (max-width: 991.98px) {
+	.boilerplate_page {
+	}
+}
+
+@media (min-width: 768px) and (max-width: 991.98px) {
+	.boilerplate_page {
+	}
+}
+
+@media (min-width: 992px) and (max-width: 1199.98px) {
+	.boilerplate_page {
+	}
+}
+
+@media (min-width: 1200px) and (max-width: 1399.98px) {
+	.boilerplate_page {
+	}
+}
+
+// ------------------ //
+
+////////////////////////
+/* @media (min-width) */
+////////////////////////
+
+@media (min-width: 576px) {
+	.boilerplate_page {
+	}
+}
+
+@media (min-width: 768px) {
+	.boilerplate_page {
+	}
+}
+
+@media (min-width: 992px) {
+	.boilerplate_page {
+	}
+}
+
+@media (min-width: 1200px) {
+	.boilerplate_page {
+	}
+}
+
+@media (min-width: 1400px) {
+	.boilerplate_page {
+	}
+}
+
+// ---------------- //
+
+//////////////////////
+/* mobile landscape */
+//////////////////////
+
+@media (max-height: 400px) and (orientation: landscape) {
+	.boilerplate_page {
+	}
+}
+
+// ----------------- //
+
+///////////////////////
+/* iPad Pro portrait */
+///////////////////////
+
+@media (width: 1024px) and (height: 1366px) {
+	.boilerplate_page {
+	}
+}
+
+// ----------------------- //
+
+/////////////////////////////
+/* all browsers (iOS only) */
+/////////////////////////////
+
+@supports (-webkit-touch-callout: none) and (hover: none) and (pointer: coarse) {
+	.boilerplate_page {
+	}
+}
+
+// ------------------- //
+
+/////////////////////////
+/* Safari (MacOS only) */
+/////////////////////////
+
+@supports (-webkit-touch-callout: default) and (hover: hover) and (pointer: fine) {
+	.boilerplate_page {
+	}
+}

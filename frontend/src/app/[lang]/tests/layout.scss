@@ -1,0 +1,149 @@
+// @use "@/layout/<route>" as *; // File import statement
+
+// >>> Controllers — START
+@use "@/scss/controllers/dynamics" as *; // controllers for mixins and variables
+@use "@/scss/controllers/extends" as *; // controller for modules
+// <<<<< Controllers — END
+
+.tests_layout {
+}
+
+/////
+////
+/*/ ==================== @media ==================== /*/
+/////////////
+////////////
+////////////////////////
+/* @media (max-width) */
+////////////////////////
+
+@media (max-width: 1399.98px) {
+	.tests_layout {
+	}
+}
+
+@media (max-width: 1199.98px) {
+	.tests_layout {
+	}
+}
+
+@media (max-width: 991.98px) {
+	.tests_layout {
+	}
+}
+
+@media (max-width: 767.98px) {
+	.tests_layout {
+	}
+}
+
+@media (max-width: 575.98px) {
+	.tests_layout {
+	}
+}
+
+// -------------- //
+
+////////////////////
+/* @media between */
+////////////////////
+
+@media (min-width: 576px) and (max-width: 767.98px) {
+	.tests_layout {
+	}
+}
+
+@media (min-width: 576px) and (max-width: 991.98px) {
+	.tests_layout {
+	}
+}
+
+@media (min-width: 768px) and (max-width: 991.98px) {
+	.tests_layout {
+	}
+}
+
+@media (min-width: 992px) and (max-width: 1199.98px) {
+	.tests_layout {
+	}
+}
+
+@media (min-width: 1200px) and (max-width: 1399.98px) {
+	.tests_layout {
+	}
+}
+
+// ------------------ //
+
+////////////////////////
+/* @media (min-width) */
+////////////////////////
+
+@media (min-width: 576px) {
+	.tests_layout {
+	}
+}
+
+@media (min-width: 768px) {
+	.tests_layout {
+	}
+}
+
+@media (min-width: 992px) {
+	.tests_layout {
+	}
+}
+
+@media (min-width: 1200px) {
+	.tests_layout {
+	}
+}
+
+@media (min-width: 1400px) {
+	.tests_layout {
+	}
+}
+
+// ---------------- //
+
+//////////////////////
+/* mobile landscape */
+//////////////////////
+
+@media (max-height: 400px) and (orientation: landscape) {
+	.tests_layout {
+	}
+}
+
+// ----------------- //
+
+///////////////////////
+/* iPad Pro portrait */
+///////////////////////
+
+@media (width: 1024px) and (height: 1366px) {
+	.tests_layout {
+	}
+}
+
+// ----------------------- //
+
+/////////////////////////////
+/* all browsers (iOS only) */
+/////////////////////////////
+
+@supports (-webkit-touch-callout: none) and (hover: none) and (pointer: coarse) {
+	.tests_layout {
+	}
+}
+
+// ------------------- //
+
+/////////////////////////
+/* Safari (MacOS only) */
+/////////////////////////
+
+@supports (-webkit-touch-callout: default) and (hover: hover) and (pointer: fine) {
+	.tests_layout {
+	}
+}

@@ -1,0 +1,163 @@
+// @use "@/layout/<route>" as *; // File import statement
+
+// >>> Controllers — START
+@use "@/scss/controllers/dynamics" as *; // controllers for mixins and variables
+@use "@/scss/controllers/extends" as *; // controller for modules
+// <<<<< Controllers — END
+
+.boilerplate_layout {
+	// &.content {
+	// 	.color_section,
+	// 	.bg_color_section {
+	// 		--color_section: #{$color_first};
+	// 	}
+
+	// 	.bg_color_gd::after {
+	// 		--bg_color_gd: #{$color_first};
+	// 	}
+	// }
+
+	// &.footer {
+	// 	z-index: -1;
+	// }
+}
+
+/////
+////
+/*/ ==================== @media ==================== /*/
+/////////////
+////////////
+////////////////////////
+/* @media (max-width) */
+////////////////////////
+
+@media (max-width: 1399.98px) {
+	.boilerplate_layout {
+	}
+}
+
+@media (max-width: 1199.98px) {
+	.boilerplate_layout {
+	}
+}
+
+@media (max-width: 991.98px) {
+	.boilerplate_layout {
+	}
+}
+
+@media (max-width: 767.98px) {
+	.boilerplate_layout {
+	}
+}
+
+@media (max-width: 575.98px) {
+	.boilerplate_layout {
+	}
+}
+
+// -------------- //
+
+////////////////////
+/* @media between */
+////////////////////
+
+@media (min-width: 576px) and (max-width: 767.98px) {
+	.boilerplate_layout {
+	}
+}
+
+@media (min-width: 576px) and (max-width: 991.98px) {
+	.boilerplate_layout {
+	}
+}
+
+@media (min-width: 768px) and (max-width: 991.98px) {
+	.boilerplate_layout {
+	}
+}
+
+@media (min-width: 992px) and (max-width: 1199.98px) {
+	.boilerplate_layout {
+	}
+}
+
+@media (min-width: 1200px) and (max-width: 1399.98px) {
+	.boilerplate_layout {
+	}
+}
+
+// ------------------ //
+
+////////////////////////
+/* @media (min-width) */
+////////////////////////
+
+@media (min-width: 576px) {
+	.boilerplate_layout {
+	}
+}
+
+@media (min-width: 768px) {
+	.boilerplate_layout {
+	}
+}
+
+@media (min-width: 992px) {
+	.boilerplate_layout {
+	}
+}
+
+@media (min-width: 1200px) {
+	.boilerplate_layout {
+	}
+}
+
+@media (min-width: 1400px) {
+	.boilerplate_layout {
+	}
+}
+
+// ---------------- //
+
+//////////////////////
+/* mobile landscape */
+//////////////////////
+
+@media (max-height: 400px) and (orientation: landscape) {
+	.boilerplate_layout {
+	}
+}
+
+// ----------------- //
+
+///////////////////////
+/* iPad Pro portrait */
+///////////////////////
+
+@media (width: 1024px) and (height: 1366px) {
+	.boilerplate_layout {
+	}
+}
+
+// ----------------------- //
+
+/////////////////////////////
+/* all browsers (iOS only) */
+/////////////////////////////
+
+@supports (-webkit-touch-callout: none) and (hover: none) and (pointer: coarse) {
+	.boilerplate_layout {
+	}
+}
+
+// ------------------- //
+
+/////////////////////////
+/* Safari (MacOS only) */
+/////////////////////////
+
+@supports (-webkit-touch-callout: default) and (hover: hover) and (pointer: fine) {
+	.boilerplate_layout {
+	}
+}

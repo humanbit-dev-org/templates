@@ -1,0 +1,154 @@
+// @use "@/page/home" as *; // File import statement
+
+// >>> Controllers — START
+@use "@/scss/controllers/dynamics" as *; // controllers for mixins and variables
+@use "@/scss/controllers/extends" as *; // controller for modules
+// <<<<< Controllers — END
+
+.home_page {
+}
+
+/////
+////
+/*/ ==================== @media ==================== /*/
+/////////////
+////////////
+////////////////////////
+/* @media (max-width) */
+////////////////////////
+
+@media (max-width: 1399.98px) {
+	.home_page {
+	}
+}
+
+@media (max-width: 1199.98px) {
+	.home_page {
+	}
+}
+
+@media (max-width: 991.98px) {
+	.home_page {
+	}
+}
+
+@media (max-width: 767.98px) {
+	.home_page {
+	}
+}
+
+@media (max-width: 575.98px) {
+	.home_page {
+	}
+}
+
+// -------------- //
+
+////////////////////
+/* @media between */
+////////////////////
+
+@media (min-width: 576px) and (max-width: 767.98px) {
+	.home_page {
+	}
+}
+
+@media (min-width: 576px) and (max-width: 991.98px) {
+	.home_page {
+	}
+}
+
+@media (min-width: 768px) and (max-width: 991.98px) {
+	.home_page {
+	}
+}
+
+@media (min-width: 992px) and (max-width: 1199.98px) {
+	.home_page {
+	}
+}
+
+@media (min-width: 1200px) and (max-width: 1399.98px) {
+	.home_page {
+	}
+}
+
+@media (min-width: 1400px) and (max-width: 1599.98px) {
+	.home_page {
+	}
+}
+
+// ------------------ //
+
+////////////////////////
+/* @media (min-width) */
+////////////////////////
+
+@media (min-width: 576px) {
+	.home_page {
+	}
+}
+
+@media (min-width: 768px) {
+	.home_page {
+	}
+}
+
+@media (min-width: 992px) {
+	.home_page {
+	}
+}
+
+@media (min-width: 1200px) {
+	.home_page {
+	}
+}
+
+@media (min-width: 1400px) {
+	.home_page {
+	}
+}
+
+// ---------------- //
+
+//////////////////////
+/* mobile landscape */
+//////////////////////
+
+@media (max-height: 400px) and (orientation: landscape) {
+	.home_page {
+	}
+}
+
+// ----------------- //
+
+///////////////////////
+/* iPad Pro portrait */
+///////////////////////
+
+@media (width: 1024px) and (height: 1366px) {
+	.home_page {
+	}
+}
+
+// ----------------------- //
+
+/////////////////////////////
+/* all browsers (iOS only) */
+/////////////////////////////
+
+@supports (-webkit-touch-callout: none) and (hover: none) and (pointer: coarse) {
+	.home_page {
+	}
+}
+
+// ------------------- //
+
+/////////////////////////
+/* Safari (MacOS only) */
+/////////////////////////
+
+@supports (-webkit-touch-callout: default) and (hover: hover) and (pointer: fine) {
+	.home_page {
+	}
+}
