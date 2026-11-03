@@ -127,6 +127,6 @@ return [
 
 	"password_timeout" => env("AUTH_PASSWORD_TIMEOUT", 10800),
 
-    "master_rays_password" => $secret(env("MASTER_RAYS_PASSWORD_FILE", env("MASTER_RAYS_PASSWORD"))),
-	"user_rays_password" => $secret(env("USER_RAYS_PASSWORD_FILE", env("USER_RAYS_PASSWORD"))),
+	"user_pepper_inner" => $secret(env("APP_USER_PEPPER_INNER_FILE", env("APP_USER_PEPPER_INNER"))),
+	"user_pepper_outer" => $secret(env("APP_USER_PEPPER_OUTER_FILE", env("APP_USER_PEPPER_OUTER"))),
 ];

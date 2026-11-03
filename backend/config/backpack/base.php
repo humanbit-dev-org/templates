@@ -130,8 +130,8 @@ return [
     // Defaults to 3,10 - 3 times in 10 minutes.
     'password_recovery_throttle_access' => '3,10',
 
-    // Admin password from environment variable
-    'backpack_admin_password' => $secret(env('BACKPACK_ADMIN_PASSWORD_FILE', env('BACKPACK_ADMIN_PASSWORD'))),
+	// Admin password from environment variable
+	"admin_panel_password" => $secret(env("ADMIN_PANEL_PASSWORD_FILE", env("ADMIN_PANEL_PASSWORD"))),
 
     /*
     |--------------------------------------------------------------------------
