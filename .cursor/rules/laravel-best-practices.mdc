@@ -1,0 +1,505 @@
+---
+globs: backend/**
+alwaysApply: false
+description: "Laravel backend. Apply when the request involves backend, Laravel, PHP, API, or files under backend/."
+---
+<laravel-development-handbook>
+
+=== general rules ===
+
+# Laravel Development Handbook
+
+## Introduction
+
+When writing code, it is important to keep in mind some general principles and standards that can help improve its quality and readability.
+
+## Naming Conventions
+
+### Class naming
+
+- **Action** — action name with "Action" suffix. Examples: `CreateUserAction`, `DeleteProductAction`, `UpdateCategoryAction`
+- **Command** — command name with "Command" suffix. Examples: `GenerateReportCommand`, `ImportDataCommand`, `ExportDataCommand`
+- **Controller** — singular with "Controller" suffix. Examples: `UserController`, `ProductController`, `CategoryController`
+- **Data** — singular with "Data" suffix. Examples: `UserData`, `ProductData`, `CategoryData`
+- **Event** — event name with "Event" suffix. Examples: `UserCreatedEvent`, `OrderCreatedEvent`, `OrderShippedEvent`
+- **Exception** — singular with "Exception" suffix. Examples: `ValidationException`, `NotFoundException`, `DuplicateEntryException`
+- **Interface** — adjective/noun without suffix. Examples: `Loggable`, `Configurable`, `Exportable`
+- **Job** — job name with "Job" suffix. Examples: `SendEmailJob`, `ProcessPaymentJob`, `GenerateReportJob`
+- **Mail** — mail name without suffix. Examples: `InvoicePaid`, `OrderShipped`, `PasswordReset`
+- **Middleware** — middleware name without suffix. Examples: `Authentication`, `RateLimit`, `Cors`
+- **Model** — singular without suffix. Examples: `User`, `Product`, `Category`
+- **Notification** — notification name without suffix. Examples: `InvoicePaid`, `OrderShipped`, `PasswordReset`
+- **Observer** — singular model name with "Observer" suffix. Examples: `UserObserver`, `ProductObserver`, `CategoryObserver`
+- **Policy** — singular model name with "Policy" suffix. Examples: `UserPolicy`, `ProductPolicy`, `CategoryPolicy`
+- **Provider** — provider name with "Provider" suffix. Examples: `PaymentProvider`, `StorageProvider`, `EmailProvider`
+- **Request** — method name with singular model name and "Request" suffix. Examples: `StoreUserRequest`, `UpdateProductRequest`, `DestroyCategoryRequest`
+- **Rule** — rule name without suffix. Examples: `ValidPhoneNumber`, `ValidBankAccount`, `Uppercase`
+- **Scope** — scope name with "Scope" suffix. Examples: `ActiveScope`, `NewScope`, `TrendingScope`
+- **Support** — support name without suffix. Examples: `OpeningHours`, `Cart`, `Table`
+- **Trait** — adjective or prefix "with", without suffix. Examples: `Sortable`, `Searchable`, `Filterable`, `WithForm`, `WithSorting`, `WithFileUploads`
+
+### Code naming
+
+- **Method** — camelCase. Examples: `store`, `massDestroy`, `run`
+- **Model property** — snake_case. Examples: `is_active`, `created_at`
+- **Class property** — camelCase. Examples: `$isActive`, `$createdAt`
+- **Variable** — camelCase. Examples: `$isActive`, `$createdAt`
+- **Route** — lowercase, plural. Examples: `users`, `products`, `categories`
+- **Route name** — snake_case with dot notation. Examples: `users.show`, `products.index`, `categories.create`
+
+### Database naming
+
+- **Table** — snake_case, plural. Examples: `users`, `products`, `categories`
+- **Pivot table** — snake_case, singular model names alphabetically. Examples: `category_product`, `order_user`
+- **Table column** — snake_case, without table prefix. Examples: `title`, `price`, `description`
+- **Primary key** — `id`
+- **Foreign key** — snake_case singular model name with "_id" suffix. Examples: `user_id`, `product_id`, `category_id`
+
+## Structure
+
+### Class structure
+
+When organizing code in the class, follow this order:
+
+- **Traits**
+- **Constants**
+- **Static properties**
+- **Properties**
+- **Static methods**
+- **Methods**
+- **Abstract methods**
+
+Order each category by visibility: **public**, then **protected**, then **private**.
+
+## Commenting
+
+Well-written comments elevate the readability and understanding of code. Readable and understandable code is important in general; comments serve as additional support and boost quality.
+
+### Attributes
+
+When declaring native Laravel attributes such as `$fillable`, you can omit comments and type hints since these properties are not accessed directly. Custom attributes should have a type hint and comments when the name is not self-explanatory.
+
+### Methods
+
+Provide descriptive comments (e.g. PHPDoc) for every method in the codebase.
+
+### Code
+
+Provide descriptive comments for every part of the code that looks unclear, such as complex statements.
+
+=== architecture rules ===
+
+# Architecture
+
+## Model
+
+Models are classes that represent database tables. They allow you to interact with the corresponding data using object-oriented syntax. Models provide an easy way to query, insert, update, and delete data. Read more: [Laravel Eloquent](https://laravel.com/docs/eloquent)
+
+**Create command:** `php artisan make:model Product`
+
+### Naming
+
+Singular without "Model" suffix (`User`, `Product`, `Category`).
+
+### Best practices
+
+- Follow the defined structure: attributes (`$fillable`, `$casts`…), lifecycle methods (`boot()`, `booted()`), relationships, accessors & mutators, other methods.
+- Models should contain only Laravel native things (relations, scopes) and database-related code. Business logic belongs in **Support** or **Action** classes.
+- Use mass assignment where possible; code for creating/updating is shorter and cleaner.
+- Prefer `$fillable` over `$guarded` (generally safer, more control, easy to see column names in the model).
+
+## Controller
+
+Controllers handle requests and responses; they are intermediaries between the database, views, and business logic. Read more: [Laravel Controllers](https://laravel.com/docs/controllers)
+
+**Create command:** `php artisan make:controller UserController`
+
+### Naming
+
+Singular with "Controller" suffix (`UserController`, `ProductController`, `CategoryController`).
+
+### Types
+
+- **resource** — methods for each CRUD operation plus HTML template methods (`create`, `edit`)
+- **api** — CRUD methods without HTML template methods
+- **invokable** — single-action controllers that do not match resources
+
+### Best practices
+
+- Keep controller methods thin; they should not contain large business logic. They are mainly responsible for returning a response.
+- Use resource controllers for CRUD operations; they follow naming conventions.
+
+### Namespacing
+
+When you have multiple controller types (API, Admin…), group them by structure, e.g. `Admin/UserController.php`, `Api/UserController.php`, `UserController.php`.
+
+## Request
+
+Requests encapsulate input data from an HTTP request and provide a convenient way to validate and process user input. Read more: [Form Request Validation](https://laravel.com/docs/validation#form-request-validation)
+
+**Create command:** `php artisan make:request StoreUserRequest`
+
+### Naming
+
+Method name with singular model name and "Request" suffix (`StoreUserRequest`, `UpdateProductRequest`, `UpdateCategoryRequest`).
+
+## Configuration
+
+Configuration is stored in the `config` directory.
+
+- Never access `env()` directly in the application; use it only in configuration files and access values via `config()`.
+- Access config values only via `config()`.
+- Store custom application settings in a separate config file (e.g. `project.php`).
+- Store API keys for third-party services in `services.php`.
+
+## Action
+
+Actions are classes responsible for a single task. Code stays cleaner and simpler.
+
+**Create command:** `php artisan make:action VerifyUserAction` (requires package such as `rockero-cz/laravel-starter-kit`)
+
+### Naming
+
+Action purpose with "Action" suffix (`VerifyUserAction`, `CreateProductAction`, `ReorderCategoryAction`).
+
+### Best practices
+
+- Each action should contain only one public method (e.g. `run()` or `execute()`).
+- Action helper methods should be private or protected; multiple helpers may become **Support** classes.
+
+## Support
+
+Support classes group related functions and logic. They are used for functionality shared across multiple parts of the application and are a simpler alternative than services.
+
+**Create command:** `php artisan make:class Support/Cart` (if available in your setup)
+
+### Naming
+
+Support purpose name without "Support" suffix (`Cart`, `OpeningHours`, `Table`).
+
+## Routing
+
+### Route types
+
+- **web** — web-based HTTP requests and responses
+- **api** — API requests and responses
+- **channels** — real-time broadcasting via websockets
+- **console** — custom Artisan CLI commands
+
+### Best practices
+
+- URLs should be plural.
+- Each route should have a name.
+- Group routes by entities (e.g. by middleware and name prefix).
+
+## Middleware
+
+Middleware filters and modifies incoming HTTP requests (authentication, authorization, session management). Create middleware when you need specific logic for a group of routes. Read more: [Laravel Middleware](https://laravel.com/docs/middleware)
+
+**Create command:** `php artisan make:middleware HandleLocale`
+
+## Observer
+
+Observers listen for model events such as `created`, `updated`, or `deleted`. They keep model classes focused and avoid cluttering them with extra logic. Read more: [Eloquent Observers](https://laravel.com/docs/eloquent#observers)
+
+**Note:** Eloquent mass update queries do not fire model events, so observers are not triggered.
+
+**Create command:** `php artisan make:observer UserObserver --model=User`
+
+### Naming
+
+Singular model name with "Observer" suffix (`UserObserver`, `ProductObserver`, `CategoryObserver`).
+
+## Event
+
+Events trigger and handle actions during application execution; they work with listeners. When an event is dispatched, Laravel notifies all registered listeners. Read more: [Laravel Events](https://laravel.com/docs/events)
+
+Actions are often used instead of events for simplicity; events are still useful for notifications or broadcasting.
+
+**Create command:** `php artisan make:event OrderCreated`
+
+### Dispatching events
+
+Use `OrderCreated::dispatch()` or `event(new OrderCreated())`.
+
+### Listeners
+
+**Create command:** `php artisan make:listener SendOrderCreatedNotification --event=OrderCreated`
+
+## Command
+
+Commands automate tasks. Laravel provides built-in commands; you can create custom ones for repetitive actions. Read more: [Writing Commands](https://laravel.com/docs/artisan#writing-commands)
+
+**Create command:** `php artisan make:command FetchUsers`
+
+### Scheduling commands
+
+Use the [Scheduler](https://laravel.com/docs/scheduling) to run commands at specified intervals or times.
+
+=== database rules ===
+
+# Database
+
+## Column naming
+
+- Primary key should always be `id`.
+- Foreign keys should be singular with suffix `_id` (`user_id`, `product_id`, `category_id`).
+- Avoid [reserved words](https://dev.mysql.com/doc/refman/8.0/en/keywords.html) when choosing names.
+
+### Recommended names for frequently used columns
+
+- **order_column** — sorting (e.g. drag & drop)
+- **company_number** — CIN / Company Identification Number
+- **vat_number** — VATIN / VAT ID
+- **zip_code** — ZIP / Postal Code
+
+### Names by column type
+
+- **boolean** — e.g. `is_enabled`, `has_reviews`
+- **timestamp** — e.g. `published_at`, `valid_from`, `scheduled_for`
+
+Some boolean columns can be converted to timestamps (e.g. `is_finished` → `finished_at`) to store more information in one column.
+
+## Column sorting
+
+- **id** — always first
+- **Foreign keys**
+- **Other columns** — by priority and context
+- **Native timestamps** — `created_at`, `updated_at`
+
+## UUIDs
+
+Use UUIDs for publicly accessible resources or sensitive tables (e.g. bank accounts, orders, invoices). See [UUID and ULID keys](https://laravel.com/docs/eloquent#uuid-and-ulid-keys).
+
+## Indexes
+
+Use indexes on columns that are frequently queried or used in joins to improve performance.
+
+## Migrations
+
+Migrations version-control your database schema and allow structured changes and rollbacks. Read more: [Laravel Migrations](https://laravel.com/docs/migrations)
+
+### Best practices
+
+- During development you can modify existing migrations and run `php artisan migrate:fresh`. In production, create new migrations for every change.
+- Preserve column order when adding columns; use `after()` and `before()`.
+- Add a short note with `comment()` when column names are not clear.
+- You can [squash migrations](https://laravel.com/docs/migrations#squashing-migrations) into a single SQL file over time.
+
+## Seeders
+
+Seeders populate the database with initial or test data. Read more: [Laravel Seeding](https://laravel.com/docs/seeding)
+
+- **Create:** `php artisan make:seeder UserSeeder`
+- **Run all:** `php artisan db:seed`
+- **Run one:** `php artisan db:seed --class=UserSeeder`
+
+Use the `WithoutModelEvents` trait in seeders when you need to disable model events.
+
+### Naming
+
+Singular with "Seeder" suffix (`UserSeeder`, `ProductSeeder`, `CategorySeeder`).
+
+## Factories
+
+Factories generate fake data for testing and are used in seeders and tests. Read more: [Eloquent Factories](https://laravel.com/docs/eloquent-factories)
+
+**Create command:** `php artisan make:factory UserFactory`
+
+### Naming
+
+Singular model name with "Factory" suffix (`UserFactory`, `ProductFactory`, `CategoryFactory`).
+
+### Usage
+
+- Single record: `User::factory()->create()`
+- Single instance: `User::factory()->make()`
+- Multiple records: `User::factory()->count(10)->create()`
+- With custom attributes: `User::factory()->create(['email' => 'info@example.com'])`
+
+### Factory methods
+
+- **Sequence** — vary attributes (e.g. state, order_column). See [Sequences](https://laravel.com/docs/database-testing#sequences).
+- **Recycle** — reuse the same related model instance across relationships. See [Recycling](https://laravel.com/docs/eloquent-factories#recycling-an-existing-model-for-relationships).
+- **Relationships** — use `has()`, `for()`, `hasAttached()` or magic methods like `hasPosts(3)`, `forUser()`.
+
+### Custom methods
+
+Define custom state methods on the factory (e.g. `github()`) and use them in tests for consistent setup.
+
+### Factory callbacks
+
+Use `configure()` with `afterMaking()` and `afterCreating()` to run logic after making or creating models.
+
+=== best practices ===
+
+# Best practices
+
+- Accept the standards and principles and follow them; code is easier to maintain and more consistent. Research Laravel codebase, popular packages, and well-known repos when in doubt. "Consistency is key" — Spatie.
+- Prefer duplicated code over the wrong abstraction; fixing a bad abstraction can be costly.
+- Keep test coverage as high as possible (e.g. at least 70–80%). Example: `php artisan test --coverage --min=80`.
+- Use static analysis (e.g. [PHPStan](https://phpstan.org)): `./vendor/bin/phpstan`.
+- Use Artisan CLI to create classes: `php artisan make:migration`, `php artisan make:controller`, etc.
+- Simplify business logic with action classes (one task per action).
+- Group classes into subfolders by resource (e.g. `Actions/User/`, `Actions/Order/`).
+- Keep controller methods thin; they are responsible for returning a response.
+- Models should contain only database-related code; put business logic in Support or Action classes.
+- Never update the database directly; always use migrations for schema changes and version control.
+
+=== testing rules ===
+
+# Testing
+
+We use [Pest](https://pestphp.com/) for automated testing for its simplicity, assertions, and documentation.
+
+**Create command:** `php artisan make:test Actions/VerifyUserActionTest`
+
+## Why write tests?
+
+- Code quality — tests force you to think about the code
+- Bug catching — find issues before production
+- Time saving — reduce manual testing over time
+- Confidence — easier to change and add features
+
+## When to write tests?
+
+Each class that contains logic should have a test.
+
+## What should be tested?
+
+- Code logic (actions, support classes, jobs)
+- Livewire components / Controllers
+- Routes
+
+## What to keep in the repository?
+
+- During development, write or run tests to verify the change.
+- **Remove** tests that pass when they only confirmed a one-off fix and do not guard lasting behaviour (no placeholder or example tests in the tree).
+- **Keep** tests that must catch regressions (auth, permissions, critical flows).
+
+## How to write tests?
+
+Prefer **Feature** tests; add **Unit** tests on complex projects. Cover multiple scenarios and edge cases. Assert only what is relevant to the tested class. Keep coverage as high as possible (e.g. at least 70%).
+
+## Helpers
+
+Use Pest hooks to prepare/clean data and create custom methods for reuse.
+
+## Pest hooks
+
+- `beforeEach()` — before each test
+- `afterEach()` — after each test
+- `beforeAll()` — once before all tests in the file
+- `afterAll()` — after all tests in the file
+
+## Custom methods
+
+Define helpers in a test suite or in `Pest.php` for global access (e.g. `asAdmin()`, `mockPayments()`).
+
+## Mocking
+
+Use mocking for events, file uploads, or third-party integrations. See [Laravel Mocking](https://laravel.com/docs/mocking). Use `Http::fake()` for HTTP; use `Http::preventStrayRequests()` to avoid hitting real endpoints.
+
+## Fixtures
+
+Place static test files in a `fixtures` directory and reference them in tests (e.g. `base_path('tests/fixtures/payment.xml')`).
+
+## Naming
+
+Use lowercase, descriptive names for test cases (e.g. `it('has a welcome page', ...)`, `test('payment can be processed', ...)`).
+
+=== tools rules ===
+
+# Tools for effective development
+
+## Development environments (IDE)
+
+- **PHPStorm** — professional IDE for PHP; best for medium/large projects. Plugins for Laravel. Paid. [Download](https://www.jetbrains.com/phpstorm/download)
+- **Visual Studio Code** — fast editor for small/medium/large projects. Many plugins; free. [Download](https://code.visualstudio.com/download)
+- **Sublime Text** — good for large files (dumps, XML, JSON). [Download](https://www.sublimetext.com/download)
+
+## Debug and testing
+
+- **Ray (Spatie)** — debug PHP without breaking flow; organize dumps by color. [Ray](https://spatie.be/products/ray)
+- **Tinkerwell** — run and test code on the project, optionally via SSH. [Tinkerwell](https://tinkerwell.app)
+- **Postman** — API testing and development. [Postman](https://www.postman.com/downloads)
+- **Insomnia** — API testing; simpler UI than Postman. [Insomnia](https://insomnia.rest/pricing)
+
+## Database
+
+- **TablePlus** — manage databases locally and on servers; SSH, raw queries. [TablePlus](https://tableplus.com)
+- **DBngin** — install and manage local PostgreSQL, MySQL, Redis (macOS). [DBngin](https://dbngin.com)
+
+## Emails
+
+- **Mailtrap** — email testing (local and server). [Mailtrap](https://mailtrap.io)
+- **Helo** — test emails locally. [Helo](https://usehelo.com)
+
+## Local development
+
+- **Laravel Herd** — app alternative to Valet (macOS). [Herd](https://herd.laravel.com)
+
+## Deployment
+
+- **Laravel Forge** — manage servers, projects, queues, databases. [Forge](https://forge.laravel.com)
+- **Envoyer** — zero-downtime deployment, scripts, migrations, queues. [Envoyer](https://envoyer.io)
+
+## Git
+
+- **GitHub Desktop** — simple Git and GitHub UI. [GitHub Desktop](https://desktop.github.com)
+
+## Productivity
+
+- **Raycast** — launcher and productivity (macOS). [Raycast](https://www.raycast.com)
+- **Tuple** — pair programming and remote collaboration. [Tuple](https://tuple.app)
+- **Slack** / **Discord** — team communication and community channels.
+- **iTerm** — advanced terminal (macOS). [iTerm](https://iterm2.com)
+- **Fig** — terminal autocomplete and suggestions. [Fig](https://fig.io)
+
+## Others
+
+- **Laravel Shift** — upgrade Laravel and run utilities (e.g. PHPUnit to Pest, Bootstrap to Tailwind). [Laravel Shift](https://laravelshift.com)
+
+=== resources ===
+
+# Resources
+
+## Websites and blogs
+
+- https://spatie.be/blog
+- https://spatie.be/guidelines
+- https://laravel-news.com/blog
+- https://christoph-rumpel.com
+- https://freek.dev
+- https://beyondco.de/blog
+- https://www.juststeveking.uk/blog
+- https://tighten.com/insights
+- https://ryangjchandler.co.uk/posts
+- https://laravel.io/articles
+- https://laraveldaily.com
+- https://phpstan.org/blog
+- https://crynobone.com
+- https://stitcher.io
+
+## Recommended courses
+
+- https://writing-readable-php.com
+- https://testing-laravel.com
+- https://laracasts.com
+- https://laravel-livewire.com/screencasts
+- https://www.youtube.com/c/laraveldaily
+
+## Recommended books
+
+- https://learn-laravel-queues.com
+- https://spatie.be/products/front-line-php
+- https://spatie.be/products/laravel-beyond-crud
+- https://battle-ready-laravel.com
+- https://refactoring.guru
+- https://laravelsecrets.com
+
+## Recommended Twitter/X accounts
+
+- Taylor Otwell, gonedark, calebporzio, barryvdh, enunomaduro, christophrumpel, themsaid, Philo01, TightenCo, crynobone, benjamincrozat, jessarchercodes, laravelshift, jeffrey_way, marcelpociot, filamentphp, jbrooksuk, pestphp, adamwathan, steveschoger, JustSteveKing, LaravelLivewire, freekmurze, spatie_be, PovilasKorop
+
+</laravel-development-handbook>

@@ -1,0 +1,7 @@
+{
+	"Laravel.basePath": "backend",
+	"Laravel.pint.runOnSave": true,
+	"files.eol": "\n",
+	"editor.formatOnSave": true,
+	"editor.defaultFormatter": "esbenp.prettier-vscode"
+}

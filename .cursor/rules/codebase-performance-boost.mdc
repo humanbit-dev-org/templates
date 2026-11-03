@@ -1,0 +1,33 @@
+---
+alwaysApply: true
+description: "Global stack, process, and reply format. Apply to every request (stack versions, 90% rule, confirmation, comments in English, verification checklist)."
+---
+<performance-boost-guidelines>
+=== foundation rules ===
+
+## Foundational Context
+
+This application is a Laravel Backend and Next.js frontend application. Package versions are auto-generated from composer.lock and pnpm-lock.yaml. Respect these versions when consulting docs or suggesting code.
+
+@.cursor/deps-versions.md
+@.devin/deps-versions.md
+
+- node - 20.x (recommended; not pinned in project)
+- pnpm - v9
+
+## Information Gathering (≥90% Rule)
+
+- Before starting implementation, assess whether you have at least 90% of the information needed to fulfil the request (scope, constraints, edge cases, existing patterns).
+- If you lack critical details (e.g. which file/API, environment, auth rules, acceptance criteria), ask the user concise, targeted questions until you reach that threshold. Do not guess or assume.
+- Once you have enough information, perform a **confirmation step**: in 2–4 short sentences, state exactly what you understood (goal, scope, constraints) and ask the user to confirm before proceeding (e.g. "Confermi che proceda così?" / "Confirm before I continue?").
+
+## Solution Quality & Sources
+
+- Base all solutions on verified practices: official docs (Laravel, Next.js, React, PHP, Node), security advisories (OWASP, CVE), and established patterns already used in this codebase.
+- Prioritise in this order: **security** (no injection, proper auth/sanctum, validation, escaping), **performance** (queries, caching, bundle size, N+1), **code cleanliness** (DRY, naming, structure). When in doubt, prefer the safer or more maintainable option.
+
+## Comments Language
+
+- Write **all** code comments in **English only**, regardless of the language of the user's prompt or the surrounding UI/copy. This applies to inline comments, block comments, docblocks, and TODO/FIXME notes.
+
+</performance-boost-guidelines>

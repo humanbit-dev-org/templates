@@ -1,0 +1,60 @@
+---
+globs: backend/**
+alwaysApply: false
+description: "How Backpack is integrated with the codebase. Apply when the request involves admin/CRUD, Backpack config, routes/backpack, or Backpack UI/translations."
+---
+<backpack-boost-guidelines>
+=== foundation rules ===
+
+## Foundational Context
+
+Package versions (backend + frontend) are auto-generated. See @.cursor/deps-versions.md and @.devin/deps-versions.md
+
+- For Laravel, PHP, testing, and Pint conventions, follow the laravel-boost guidelines when working in backend.
+
+=== backpack rules ===
+
+# Backpack CRUD Panel
+
+- This application uses Backpack for Laravel as the admin (CRUD) panel. Official docs: https://backpackforlaravel.com/docs/7.x/ — use `search-docs` with Backpack packages when adding or changing CRUDs, operations, or theme behaviour or follow backpack-7-documentation.mdc rule.
+- Backpack packages and versions: see @.cursor/deps-versions.md and @.devin/deps-versions.md. Respect these versions when consulting docs or suggesting code.
+
+## Application Backpack Context
+
+### Routes & prefix
+- Admin panel prefix: `admin` (config: `config('backpack.base.route_prefix')`). All Backpack routes live under `admin/` (e.g. `admin/dashboard`, `admin/user`, `admin/login`).
+- Routes: `routes/backpack/custom.php`. Auth routes (login, logout, register, 2FA, email verification) and CRUD routes are registered there. Custom helper routes (logs, duplicate, import/export CSV, bulk, autocomplete, sort) are in the same file. Use `Route::crud('slug', XxxCrudController::class)` for CRUD resources.
+
+### Middleware & access
+- **CheckIfAdmin**: Ensures the visitor is logged in with Backpack guard and has a role considered "admin". Admin roles in this app: `Admin`, `Guest`, `Developer`, `Author` (see `CheckIfAdmin::checkIfUserIsAdmin()`). Redirects to `backpack_url('login')` if not.
+- **CheckAdminPrefix**: Sets `session('is_admin' => true)` when the route name matches `admin.*`, otherwise forgets it. Used to flag admin context.
+- **BackpackModelPermission** (alias `backpack.permission` in `bootstrap/app.php`): Applied per-route with `modelName` and `action`. Uses Gate `backpack-access-model` to allow/deny. If denied, aborts 403.
+- Guard: `backpack` (config: `config('backpack.base.guard')`). Use `backpack_auth()` and `backpack_guard_name()` in Backpack-related code.
+
+### Authorization (roles & model permissions)
+- **Gate**: `backpack-access-model` is defined in `App\Providers\BackpackAuthServiceProvider`. Arguments: `(User $user, string $modelName, string $action)` with `$action` in `read`, `create`, `update`, `delete`.
+- **ModelPermission**: Model with `backpack_role_id`, `model_name` (array of model names, e.g. `["User", "Tiraggio"]`), and booleans `can_read`, `can_create`, `can_update`, `can_delete`. The Gate checks the current user's `backpack_role_id` and matching ModelPermission rows.
+- **BackpackRole**: Model with `name`, `description`; hasMany User, hasMany ModelPermission. Admin users have `backpack_role_id` set; allowed role names for "admin" access are in CheckIfAdmin.
+- **ChecksBackpackPermissions** trait: Used by all CRUD controllers. `setupPermissionChecks()` derives `modelName` from controller class (e.g. `UserCrudController` → `User`), denies all operations by default, then allows list/show (read), create, update, delete based on Gate. Menu visibility uses `userCanAccessMenu($modelName)` and `userCanAccessAnyMenu($items)`; `isDeveloper()` checks role name "developer".
+
+### Controllers layout
+- **CRUD controllers**: Live in `app/Http/Controllers/Admin/`. Each extends `Backpack\CRUD\app\Http\Controllers\CrudController`, uses Operations (ListOperation, CreateOperation, UpdateOperation, DeleteOperation, ShowOperation), implements `setup()`, `setupListOperation()`, `setupCreateOperation()`, `setupUpdateOperation()`. All use trait `ChecksBackpackPermissions` and call `$this->setupPermissionChecks()` in `setup()`. Route name pattern: `admin.{entity}.index`, etc.
+- **AdminController**: Custom controller for non-CRUD admin endpoints (e.g. search users, getUserDetails, toggleUserSuspended, updateTiraggioStatus, updateDeliberaStatus, searchTiraggi, searchDelibere, getMonthlyStats, getRecentAcceptedTiraggi). Not a CrudController.
+- **Auth**: `App\Http\Controllers\Admin\Auth\LoginController` extends Backpack's Auth LoginController; supports optional two-factor auth (config `backpack.base.setup_two_factor_auth`), rate limiting, and custom 2FA views (`vendor.backpack.theme-tabler.auth.login.two-factor`). Register and VerifyEmail controllers in same namespace.
+- **Helper**: `App\Http\Controllers\Admin\Helper\HelperBackend` provides `setFields(Model)` and `setFieldsView(Model)` used by CRUD controllers to auto-generate form fields and list columns from model schema and relationships. Helper namespace also includes: ImportCsvController, ExportCsvController, DuplicateController, BulkOperationsController, AutocompleteController, LogController, FilterHelper; and `Helper\Core\*` for CsvBackupManager, CsvHelper, FieldConfigHandler, FieldTypeHandler, FilterHandler, MediaHandler, RelationHandler, etc. Follow existing Helper usage when adding or changing CRUD field/column behaviour.
+
+### Config
+- `config/backpack/base.php`: route_prefix, web_middleware, middleware_class (CheckIfAdmin, ConvertEmptyStringsToNull, AuthenticateSession, LanguageSwitcherMiddleware), guard, passwords, user_model_fqn, setup_auth_routes, setup_two_factor_auth, setup_email_verification_routes, etc.
+- `config/backpack/crud.php`: translatable options, locales.
+- `config/backpack/theme-tabler.php`, `config/backpack/language-switcher.php`, `config/backpack/operations/*.php` for operation-specific defaults.
+
+### Conventions
+- When adding a new CRUD resource: create a CrudController in `Admin/`, use `ChecksBackpackPermissions` and `setupPermissionChecks()`, register in `routes/backpack/custom.php` with `Route::crud()`. Use `HelperBackend::setFields()` / `setFieldsView()` if the app uses auto-generation for that model; otherwise define columns and fields explicitly. Ensure the model name used for permissions matches the one used in Gate (e.g. `User` for UserCrudController).
+- When changing admin auth or roles: update CheckIfAdmin for role names, BackpackAuthServiceProvider and ModelPermission for permission logic, and menu views for visibility (`userCanAccessMenu` / `userCanAccessAnyMenu`).
+- Run `php artisan backpack:refresh` after changing Backpack assets or config that affect published views/assets.
+
+### Translations (language-switcher)
+- This app uses `backpack/language-switcher`; admin UI supports multiple locales. When adding or changing any user-facing text in Backpack (labels, buttons, messages, CRUD strings, custom views), **always** create or update translation files — never hardcode strings.
+- App translations: `backend/lang/{locale}/` (e.g. `lang/en`, `lang/it`). Backpack package overrides: `backend/lang/vendor/backpack/{locale}/` (e.g. `lang/vendor/backpack/en/base.php`, `crud.php`). Use `__('key')` or `trans('key')` with keys; add the key to both locales (e.g. `en` and `it`) so the language switcher works. Follow existing structure in sibling lang files.
+
+</backpack-boost-guidelines>

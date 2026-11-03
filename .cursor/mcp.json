@@ -1,0 +1,18 @@
+{
+	"mcpServers": {
+		"laravel-boost": {
+			"command": "sh",
+			"args": [
+				"-c",
+				"if command -v docker >/dev/null 2>&1; then docker compose exec -T webserver php backend/artisan boost:mcp; else cd backend && php artisan boost:mcp; fi"
+			]
+		},
+		"next-devtools": {
+			"command": "sh",
+			"args": [
+				"-c",
+				"if command -v docker >/dev/null 2>&1; then docker compose exec -T webserver npx -y next-devtools-mcp@latest; else npx -y next-devtools-mcp@latest; fi"
+			]
+		}
+	}
+}
