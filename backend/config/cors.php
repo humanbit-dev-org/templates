@@ -1,14 +1,23 @@
 <?php
 
 $origins = array_values(
-	array_filter(array_map(static fn($v) => trim($v), explode(",", (string) env("ALLOWED_ORIGINS", ""))))
+    array_filter(array_map(static fn ($v) => trim($v), explode(',', (string) env('ALLOWED_ORIGINS', ''))))
 );
 
-$origins[] = "http://localhost:3000";
+$frontendUrl = env('FRONTEND_URL', '');
+if ($frontendUrl) {
+    $origins[] = $frontendUrl;
+}
+
+// Add localhost only in local/development environment
+if (env('APP_ENV', 'production') === 'local') {
+    $origins[] = 'http://localhost:3000';
+}
+
 $origins = array_values(array_unique($origins));
 
 return [
-	/*
+    /*
     |--------------------------------------------------------------------------
     | Cross-Origin Resource Sharing (CORS) Configuration
     |--------------------------------------------------------------------------
@@ -21,7 +30,7 @@ return [
     |
     */
 
-	/*
+    /*
     |--------------------------------------------------------------------------
     | Sanctum Authentication
     |--------------------------------------------------------------------------
@@ -39,46 +48,54 @@ return [
     | - When Personal Access Token is used, comment all paths except api/* and put supports_credentials to false
     */
 
-	"paths" => [
-		"api/*",
-		// "login",
-		// "logout",
-		// "register",
-		// "sanctum/csrf-cookie",
-		// "/email/verification-notification",
-		// "forgot-password",
-		// "reset-password",
-	],
+    'paths' => [
+        'api/*',
+        // "login",
+        // "logout",
+        // "register",
+        // "sanctum/csrf-cookie",
+        // "/email/verification-notification",
+        // "forgot-password",
+        // "reset-password",
+    ],
 
-	"allowed_methods" => ["*"],
+    'allowed_methods' => ['*'],
 
-	"allowed_origins" => $origins,
+    'allowed_origins' => $origins,
 
-	"allowed_origins_patterns" => [],
+    'allowed_origins_patterns' => [],
 
-	// Allowed headers for API Token Authentication
-	// "allowed_headers" => ["Content-Type", "Accept", "Authorization", "X-Locale", "X-Requested-With"],
+    'allowed_headers' => ['Content-Type', 'Accept', 'Authorization', 'X-Locale', 'X-Requested-With'],
 
-	// Allowed headers for Session Cookie Authentication
-	"allowed_headers" => [
-		"Content-Type",
-		"Accept",
-		"Authorization",
-		"X-Locale",
-		"X-Requested-With",
-		"X-XSRF-TOKEN",
-		"Referer",
-		"cookie",
-	],
+    'exposed_headers' => [],
 
-	"exposed_headers" => [],
+    'max_age' => 0,
 
-	"max_age" => 0,
+    // Set this to true if the client sends cookies with credentials (e.g. session-based authentication).
+    // Example: fetch(..., { credentials: 'include' or 'same-origin' }) → this means cookies are sent with the request.
+    // Keep it false if your API only uses API tokens (e.g. authorization header with API token)
+    'supports_credentials' => false,
 
-	// Set this to true if the client sends cookies with credentials (e.g. session-based authentication).
-	// Example: fetch(..., { credentials: 'include' or 'same-origin' }) → this means cookies are sent with the request.
-	// Keep it false if your API only uses API tokens (e.g. authorization header with API token)
-	"supports_credentials" => true,
+    'iframe_enable' => (bool) env('IFRAME_ENABLE', false),
 
-	"iframe_enable" => (bool) env("IFRAME_ENABLE", false),
+    /*
+     * Public IP addresses allowed to access API documentation without authentication.
+     * Use public IPs only (e.g., office IP, VPN exit IP, partner IPs).
+     *
+     * Supports:
+     * - Exact IPs: '203.0.113.50'
+     * - CIDR notation: '203.0.113.0/24'
+     * - Wildcards: '203.0.113.*'
+     *
+     * Set via ALLOWED_IPS env variable (comma-separated).
+     * If empty, Backpack authentication is required.
+     *
+     * IP_BLOCK_ENABLE is the master switch: when false, all 'ip' checks in
+     * restricted_tools.php are disabled (auth-only fallback) and IP-only
+     * restrictions (e.g. backpack) do not block anything.
+     */
+
+    'ip_block_enable' => (bool) env('IP_BLOCK_ENABLE', false),
+
+    'allowed_ips' => array_filter(array_map(static fn ($v) => trim($v), explode(',', (string) env('ALLOWED_IPS', '')))),
 ];

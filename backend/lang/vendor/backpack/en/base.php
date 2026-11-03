@@ -29,4 +29,8 @@ return [
 	"lines" => "lines",
 	"all" => "ALL",
 	"include_time" => "Include time",
+	"delete_group" => "Delete group",
+	"delete_all_logs" => "Delete all logs",
+	"confirm_delete_group" => "Delete all logs in this group?",
+	"confirm_delete_all_logs" => "Delete ALL system logs? This action cannot be undone.",
 ];

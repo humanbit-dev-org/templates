@@ -52,8 +52,14 @@
 # 5) PHP limits (solo se Apache usa mod_php)
 # -------------------------------------------------------------------------
 <IfModule mod_php.c>
-    php_value upload_max_filesize 10M
-    php_value post_max_size 20M
+    php_value upload_max_filesize 300M
+    php_value post_max_size 300M
+
+    # ponytail: TAMPONE — alzare a 120s serve solo perche' l'immagine non ha ne' gmp
+    # ne' bcmath: brick/math ripiega sul NativeCalculator (big-integer in PHP puro) e la
+    # decifratura RSA dell'ID_Token OIDC impiega ~33s invece di millisecondi.
+    # La correzione vera e' aggiungere bcmath (o gmp) al Dockerfile: allora questa riga va tolta.
+    php_value max_execution_time 120
 </IfModule>
 
 # -------------------------------------------------------------------------

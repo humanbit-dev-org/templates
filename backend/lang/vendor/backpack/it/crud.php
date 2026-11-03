@@ -1,7 +1,7 @@
 <?php
 
 return [
-	/*
+    /*
     |--------------------------------------------------------------------------
     | Backpack Crud Language Lines
     |--------------------------------------------------------------------------
@@ -12,65 +12,104 @@ return [
     |
     */
 
-	// DATATABLES
-	"info" => "_TOTAL_ record",
-	"infoEmpty" => "Nessun record",
-	"infoFiltered" => "(filtrati da _MAX_ record totali)",
-	"lengthMenu" => "_MENU_ record per pagina",
+    // DATATABLES
+    'info' => '_TOTAL_ record',
+    'infoEmpty' => 'Nessun record',
+    'infoFiltered' => '(filtrati da _MAX_ record totali)',
+    'lengthMenu' => '_MENU_ record per pagina',
 
-	//DUPLICATE
-	"duplicate" => "Duplica",
-	"duplicate_confirm" => "Sei sicuro di voler duplicare questo elemento?",
-	"duplicate_confirmation_title" => "Elemento duplicato",
-	"duplicate_confirmation_message" => "L'elemento è stato duplicato con successo.",
-	"duplicate_confirmation_not_title" => "NON duplicato",
-	"duplicate_confirmation_not_message" => "C'è stato un errore. L'elemento potrebbe non essere stato duplicato.",
+    // DUPLICATE
+    'duplicate' => 'Duplica',
+    'duplicate_confirm' => 'Sei sicuro di voler duplicare questo elemento?',
+    'duplicate_confirmation_title' => 'Elemento duplicato',
+    'duplicate_confirmation_message' => "L'elemento è stato duplicato con successo.",
+    'duplicate_confirmation_not_title' => 'NON duplicato',
+    'duplicate_confirmation_not_message' => "C'è stato un errore. L'elemento potrebbe non essere stato duplicato.",
 
-	//HINTS
-	"hint_hide" => "Abilita questa opzione per nascondere il campo ",
+    // HINTS
+    'hint_hide' => 'Abilita questa opzione per nascondere il campo ',
 
-	//NAVIGATION
-	"open" => "Apri ",
-	"relations" => "Relazioni",
-	"add" => "Aggiungi ",
+    // NAVIGATION
+    'open' => 'Apri ',
+    'relations' => 'Relazioni',
+    'add' => 'Aggiungi ',
 
-	// DISCLAIMERS
-	"disclaimer_title" => "<i class='las la-info-circle me-1'></i> Informazioni ",
-	"disclaimer_gallery" => "Fornisce un'anteprima dei file caricati nel media corrente.",
-	"disclaimer_hero" => "Seleziona un'opzione solo se l'immagine media è destinata alla sezione hero di una pagina.",
-	"disclaimer_uploads" => "Puoi caricare più file media contemporaneamente.",
+    // DISCLAIMERS
+    'disclaimer_title' => "<i class='las la-info-circle me-1'></i> Informazioni ",
+    'disclaimer_gallery' => "Fornisce un'anteprima dei file caricati nel media corrente.",
+    'disclaimer_hero' => "Seleziona un'opzione solo se l'immagine media è destinata alla sezione hero di una pagina.",
+    'disclaimer_uploads' => 'Puoi caricare più file media contemporaneamente.',
 
-	// FILTERS
-	"filters" => "Filtri",
-	"reset" => "reimposta risultati",
-	"warning_creating_with_filters" => "Attenzione: il nuovo record avrà campi pre-riempiti in base ai filtri attivi",
-	"warning_export_with_filters" => "Attenzione: l'export CSV includerà solo i record che corrispondono ai filtri attivi",
-	"empty" => "vuoto",
-	"not_empty" => "non vuoto",
+    // FILTERS
+    'filters' => 'Filtri',
+    'reset' => 'reimposta risultati',
+    'warning_creating_with_filters' => 'Attenzione: il nuovo record avrà campi pre-riempiti in base ai filtri attivi',
+    'warning_export_with_filters' => "Attenzione: l'export CSV includerà solo i record che corrispondono ai filtri attivi",
+    'empty' => 'vuoto',
+    'not_empty' => 'non vuoto',
 
-	// SORT
-	"sort" => "Ordina",
+    // SORT
+    'sort' => 'Ordina',
 
-	// IMPORT AND EXPORT
-	"csv_actions" => "Azioni CSV",
-	"csv_export" => "Esporta CSV",
-	"csv_import" => "Importa CSV",
-	"csv_import_disabled" => "Import CSV disabilitato per la sezione :section",
-	"csv_export_in_progress" => "Esportazione in corso...",
-	"csv_export_timeout" => "L'export sta richiedendo più tempo del previsto. Controlla i download o riprova più tardi.",
+    // IMPORT AND EXPORT
+    'export_import' => 'Esporta / Importa',
+    'csv_actions' => 'Azioni CSV',
+    'csv_export' => 'Esporta CSV',
+    'xlsx_export' => 'Esporta Excel',
+    'csv_import' => 'Importa CSV',
+    'xlsx_import' => 'Importa Excel',
+    'csv_import_disabled' => 'Import CSV disabilitato per la sezione :section',
+    'csv_export_in_progress' => 'Esportazione in corso...',
+    'csv_export_timeout' => "L'export sta richiedendo più tempo del previsto. Controlla i download o riprova più tardi.",
 
-	// BULK OPERATIONS
-	"bulk_delete" => "Elimina elementi selezionati",
-	"bulk_delete_confirm" => "Sei sicuro di voler eliminare tutti gli elementi selezionati?",
-	"bulk_delete_confirmation_title" => "Elementi eliminati",
-	"bulk_delete_confirmation_message" => "Gli elementi selezionati sono stati eliminati con successo.",
-	"bulk_duplicate" => "Duplica elementi selezionati",
-	"bulk_duplicate_confirm" => "Sei sicuro di voler duplicare tutti gli elementi selezionati?",
-	"bulk_duplicate_confirmation_title" => "Elementi duplicati",
-	"bulk_duplicate_confirmation_message" => "Gli elementi selezionati sono stati duplicati con successo.",
-	"selected" => "elementi selezionati",
+    // BULK OPERATIONS
+    'bulk_delete' => 'Elimina elementi selezionati',
+    'bulk_delete_confirm' => 'Sei sicuro di voler eliminare tutti gli elementi selezionati?',
+    'bulk_delete_confirmation_title' => 'Elementi eliminati',
+    'bulk_delete_confirmation_message' => 'Gli elementi selezionati sono stati eliminati con successo.',
+    'bulk_duplicate' => 'Duplica elementi selezionati',
+    'bulk_duplicate_confirm' => 'Sei sicuro di voler duplicare tutti gli elementi selezionati?',
+    'bulk_duplicate_confirmation_title' => 'Elementi duplicati',
+    'bulk_duplicate_confirmation_message' => 'Gli elementi selezionati sono stati duplicati con successo.',
+    'bulk_update_field' => 'Seleziona campo',
+    'bulk_update_value' => 'Seleziona valore',
+    'bulk_update_apply' => 'Applica',
+    'bulk_update_confirm' => 'Applicare questo valore a tutti gli elementi selezionati?',
+    'bulk_update_confirmation_title' => 'Elementi aggiornati',
+    'bulk_update_confirmation_not_title' => 'Aggiornamento non completato',
+    'bulk_summary_ok' => 'Aggiornati',
+    'bulk_summary_skipped' => 'Saltati',
+    'bulk_summary_errors' => 'Errori',
+    'bulk_action_processed' => 'Operazione bulk elaborata.',
+    'bulk_generic_error' => 'Operazione bulk non riuscita.',
+    'bulk_reason_not_found' => 'Record non trovato.',
+    'bulk_reason_unexpected' => 'Errore inatteso.',
+    'bulk_reason_fk_constraint' => 'Eliminazione bloccata da un vincolo di chiave esterna.',
+    'bulk_reason_duplicate_conflict' => 'Conflitto con vincolo di unicità.',
+    'bulk_reason_not_null_violation' => 'Un campo obbligatorio non può essere nullo.',
+    'bulk_reason_generic_db' => 'Errore di vincolo database.',
+    'bulk_reason_unique_not_nullable' => 'Impossibile duplicare: il campo univoco :field è obbligatorio.',
+    'bulk_update_invalid_payload' => 'Payload non valido per aggiornamento bulk.',
+    'bulk_update_field_not_allowed' => 'Il campo selezionato non è ammesso per aggiornamento bulk.',
+    'bulk_update_value_not_allowed' => 'Il valore selezionato non è ammesso per questo campo.',
+    'bulk_boolean_quick_actions' => 'Azioni rapide',
+    'bulk_set_field_value' => 'Setta :field come :value',
+    'bulk_activate_field' => 'Attiva :field',
+    'bulk_deactivate_field' => 'Disattiva :field',
+    'bulk_value_true' => 'Vero',
+    'bulk_value_false' => 'Falso',
+    'selected' => 'elementi selezionati',
 
-	// RELATION PREVIEW TOOLTIPS
-	"relation_preview_tooltip" => "Visualizza anteprima",
-	"relation_preview_tooltip_no_relation" => "Per visualizzare l'anteprima è necessario collegare un'entità :fieldName",
+    // RELATION PREVIEW TOOLTIPS
+    'relation_preview_tooltip' => 'Visualizza anteprima',
+    'relation_preview_tooltip_no_relation' => "Per visualizzare l'anteprima è necessario collegare un'entità :fieldName",
+
+    // FILLABLE FIELDS
+    'primary_key_not_editable' => 'Chiave primaria non modificabile (non presente nei fillable del modello)',
+    'field_not_editable' => 'Campo non modificabile (non presente nei fillable del modello)',
+
+    // RELATION COUNTER
+    'records' => 'record',
+    'view_all_related' => 'Visualizza tutti i :count :relation collegati',
+    'view_all_records' => 'Visualizza tutti i :count record',
 ];

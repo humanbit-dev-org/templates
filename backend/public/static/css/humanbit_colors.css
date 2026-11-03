@@ -9,19 +9,19 @@
 [data-bs-theme=light],
 [data-menu-theme=light] {
 
-    /* overwrite */
-    --tblr-tabler: #051269;
-    --tblr-primary: #051269;
-    --tblr-link-color: rgb(5, 18, 105);
-    --bg-switch-checked-color: #051269;
+    /* overwrite — refined banking palette (navy + coral family) */
+    --tblr-tabler: #0a1d5c;
+    --tblr-primary: #0a1d5c;
+    --tblr-link-color: rgb(10, 29, 92);
+    --bg-switch-checked-color: #0a1d5c;
 
-    --tblr-link-hover-color: rgb(5, 18, 105);
-    --tblr-link-hover-color-rgb: 5, 18, 105;
+    --tblr-link-hover-color: rgb(18, 42, 122);
+    --tblr-link-hover-color-rgb: 18, 42, 122;
 
-    --tblr-link-color-rgb: 5, 18, 105;
-    --tblr-primary-rgb: 5, 18, 105;
-    --tblr-tabler-rgb: 5, 18, 105;
-    --tblr-focus-ring-color: rgba(5, 18, 105, 0.25);
+    --tblr-link-color-rgb: 10, 29, 92;
+    --tblr-primary-rgb: 10, 29, 92;
+    --tblr-tabler-rgb: 10, 29, 92;
+    --tblr-focus-ring-color: rgba(10, 29, 92, 0.22);
 
     /* core */
     --tblr-gray: #4c496c;
@@ -82,8 +82,8 @@
     --tblr-body-line-height: 1.4285714286;
     --tblr-body-color: #241f2d;
     --tblr-body-color-rgb: 36, 31, 45;
-    --tblr-body-bg: #f1f5f9;
-    --tblr-body-bg-rgb: 241, 245, 249;
+    --tblr-body-bg: #f5f8fc;
+    --tblr-body-bg-rgb: 245, 248, 252;
     --tblr-emphasis-color: #000;
     --tblr-emphasis-color-rgb: 0, 0, 0;
     --tblr-secondary-color: rgba(36, 31, 45, .75);
@@ -120,7 +120,7 @@
     --tblr-card-border-color: var(--tblr-border-color);
     --tblr-card-border-radius: var(--tblr-border-radius);
     --tblr-card-border-width: var(--tblr-border-width);
-    --tblr-card-box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    --tblr-card-box-shadow: 0 4px 16px rgba(6, 20, 64, 0.06);
     --tblr-table-bg: transparent;
     --tblr-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
     --tblr-shadow-card: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.1);
@@ -233,7 +233,8 @@
     --tblr-form-valid-border-color: #93c29a;
     --tblr-form-invalid-color: #d69090;
     --tblr-form-invalid-border-color: #d69090;
-    --tblr-bg-surface: #16108a; /* background menu */
+    --tblr-bg-surface: #16108a;
+    /* background menu */
     --tblr-navbar-bg: var(--tblr-bg-surface);
     --tblr-dark-mode-border-color: #302b33;
     --tblr-bg-main-color: #181818;

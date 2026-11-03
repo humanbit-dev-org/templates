@@ -1,0 +1,710 @@
+/* SAML Simulation — identity console (Backpack / restricted-tool aesthetic) */
+
+:root {
+    --saml-primary: #051269;
+    --saml-primary-soft: #1a2f8f;
+    --saml-accent: #b8000c;
+    --saml-accent-soft: #e11d48;
+    --saml-bg: #0b1028;
+    --saml-panel: #111936;
+    --saml-panel-2: #0d1430;
+    --saml-border: rgba(94, 207, 255, 0.18);
+    --saml-text: #d8e4ff;
+    --saml-muted: #8fa3cf;
+    --saml-cyan: #5ecfff;
+    --saml-green: #42ba96;
+    --saml-amber: #f59f00;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html {
+    color-scheme: dark;
+}
+
+html,
+body.saml-sim-page {
+    margin: 0;
+    min-height: 100vh;
+    background:
+        radial-gradient(ellipse 80% 50% at 10% -10%, rgba(5, 18, 105, 0.55), transparent 55%),
+        radial-gradient(ellipse 60% 40% at 100% 100%, rgba(184, 0, 12, 0.18), transparent 50%),
+        var(--saml-bg);
+    color: var(--saml-text);
+    font-family: "IBM Plex Sans", system-ui, sans-serif;
+    font-size: 16px;
+    line-height: 1.55;
+}
+
+.saml-sim-scanlines {
+    pointer-events: none;
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    opacity: 0.25;
+    background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0, 0, 0, 0.22) 2px,
+        rgba(0, 0, 0, 0.22) 4px
+    );
+}
+
+.saml-sim-shell {
+    position: relative;
+    z-index: 1;
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 1.5rem 1.25rem 2.5rem;
+}
+
+.saml-sim-header {
+    margin-bottom: 1.5rem;
+}
+
+.saml-sim-header__chrome {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    margin-bottom: 0.75rem;
+    font-family: ui-monospace, "JetBrains Mono", monospace;
+    font-size: 0.78rem;
+    color: var(--saml-muted);
+}
+
+.saml-sim-header__chrome .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+
+.dot-red { background: #ff5f57; }
+.dot-amber { background: #febc2e; }
+.dot-green { background: #28c840; }
+
+.saml-sim-header__badge {
+    display: inline-block;
+    margin-bottom: 0.65rem;
+    padding: 0.2rem 0.55rem;
+    border: 1px solid rgba(184, 0, 12, 0.45);
+    border-radius: 4px;
+    color: #ffb4b4;
+    font-family: ui-monospace, monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+}
+
+.saml-sim-header h1 {
+    margin: 0 0 0.35rem;
+    font-size: clamp(1.65rem, 4vw, 2.2rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+}
+
+.saml-sim-header h1 span {
+    color: var(--saml-cyan);
+}
+
+.saml-sim-header p {
+    margin: 0;
+    color: var(--saml-muted);
+    max-width: 62ch;
+}
+
+.saml-sim-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+}
+
+@media (min-width: 960px) {
+    .saml-sim-grid {
+        grid-template-columns: 1.2fr 0.8fr;
+        align-items: stretch;
+    }
+}
+
+.saml-sim-grid__stack {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    min-height: 100%;
+}
+
+.saml-sim-card--log {
+    flex: 1;
+}
+
+.saml-sim-card--presets {
+    height: 100%;
+}
+
+.saml-sim-card {
+    background: linear-gradient(160deg, rgba(17, 25, 54, 0.96), rgba(13, 20, 48, 0.98));
+    border: 1px solid var(--saml-border);
+    border-radius: 12px;
+    box-shadow:
+        0 12px 40px rgba(0, 0, 0, 0.35),
+        inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    overflow: hidden;
+}
+
+.saml-sim-card__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.85rem 1.1rem;
+    border-bottom: 1px solid var(--saml-border);
+    background: rgba(5, 18, 105, 0.35);
+    font-family: ui-monospace, monospace;
+    font-size: 0.8rem;
+    color: var(--saml-cyan);
+}
+
+.saml-sim-card__body {
+    padding: 1.1rem;
+}
+
+.saml-sim-operator {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1rem;
+    margin-bottom: 1rem;
+    padding: 0.75rem 0.9rem;
+    border-radius: 8px;
+    background: rgba(5, 18, 105, 0.28);
+    border: 1px solid rgba(94, 207, 255, 0.12);
+    font-size: 0.88rem;
+}
+
+.saml-sim-operator dt {
+    color: var(--saml-muted);
+    margin: 0;
+}
+
+.saml-sim-operator dd {
+    margin: 0;
+    font-family: ui-monospace, monospace;
+    color: #fff;
+}
+
+.saml-sim-form--inline .saml-sim-form__row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 0.75rem;
+}
+
+.saml-sim-form--inline .saml-sim-form__field {
+    flex: 1 1 220px;
+    min-width: 0;
+}
+
+.saml-sim-form--inline .saml-sim-btn--primary {
+    flex: 0 0 auto;
+    white-space: nowrap;
+}
+
+.saml-sim-form label {
+    display: block;
+    margin-bottom: 0.35rem;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--saml-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.saml-sim-form input[type="text"] {
+    width: 100%;
+    padding: 0.75rem 0.9rem;
+    border: 1px solid rgba(94, 207, 255, 0.22);
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.28);
+    color: #fff;
+    font-family: ui-monospace, monospace;
+    font-size: 0.95rem;
+}
+
+.saml-sim-form select.saml-sim-select {
+    width: 100%;
+    padding: 0.75rem 2.25rem 0.75rem 0.9rem;
+    border: 1px solid rgba(94, 207, 255, 0.35);
+    border-radius: 8px;
+    background-color: var(--saml-panel-2);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%235ecfff' d='M1.41 0 6 4.58 10.59 0 12 1.41l-6 6-6-6z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.85rem center;
+    color: var(--saml-text);
+    font-family: ui-monospace, monospace;
+    font-size: 0.95rem;
+    cursor: pointer;
+    color-scheme: dark;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+}
+
+.saml-sim-form select.saml-sim-select option {
+    background-color: var(--saml-panel);
+    color: var(--saml-text);
+}
+
+.saml-sim-form select.saml-sim-select option:checked {
+    background-color: var(--saml-primary-soft);
+    color: #fff;
+}
+
+.saml-sim-form input[type="text"]:focus,
+.saml-sim-form select.saml-sim-select:focus {
+    outline: none;
+    border-color: var(--saml-cyan);
+    box-shadow: 0 0 0 3px rgba(94, 207, 255, 0.15);
+}
+
+.saml-sim-form select.saml-sim-select:hover {
+    border-color: rgba(94, 207, 255, 0.45);
+    background-color: var(--saml-panel);
+}
+
+.saml-sim-bank-filter {
+    margin-bottom: 1rem;
+}
+
+.saml-sim-hint {
+    margin: 0.65rem 0 1rem;
+    color: var(--saml-muted);
+    font-size: 0.88rem;
+}
+
+.saml-sim-hint code {
+    padding: 0.1rem 0.35rem;
+    border-radius: 4px;
+    background: rgba(0, 0, 0, 0.35);
+    color: var(--saml-cyan);
+    font-size: 0.86em;
+}
+
+.saml-sim-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.65rem;
+    margin-top: 1rem;
+}
+
+@media (max-width: 959px) {
+    .saml-sim-form--inline .saml-sim-btn--primary {
+        width: 100%;
+    }
+}
+
+.saml-sim-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.65rem 1rem;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+}
+
+.saml-sim-btn:hover:not(:disabled) {
+    transform: translateY(-1px);
+}
+
+.saml-sim-btn:disabled {
+    opacity: 0.42;
+    cursor: not-allowed;
+}
+
+.saml-sim-btn--primary {
+    background: linear-gradient(135deg, var(--saml-accent), #8f0009);
+    color: #fff;
+    box-shadow: 0 6px 20px rgba(184, 0, 12, 0.35);
+}
+
+.saml-sim-btn--ghost {
+    background: rgba(5, 18, 105, 0.45);
+    border-color: rgba(94, 207, 255, 0.25);
+    color: var(--saml-text);
+}
+
+.saml-sim-scenarios {
+    display: grid;
+    gap: 0.65rem;
+}
+
+.saml-sim-group-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--saml-muted);
+    padding: 0.5rem 0 0.15rem;
+    border-bottom: 1px solid var(--saml-border);
+    margin-top: 0.35rem;
+}
+
+.saml-sim-group-label:first-child {
+    margin-top: 0;
+}
+
+.saml-sim-tabs {
+    display: flex;
+    gap: 0.5rem;
+    border-bottom: 1px solid var(--saml-border);
+    padding-bottom: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.saml-sim-tab {
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    padding: 0.4rem 0.85rem;
+    color: var(--saml-muted);
+    font-size: 0.82rem;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.saml-sim-tab:hover {
+    color: var(--saml-text);
+    border-color: var(--saml-border);
+}
+
+.saml-sim-tab.is-active {
+    color: var(--saml-cyan);
+    border-color: var(--saml-cyan);
+    background: rgba(94, 207, 255, 0.08);
+}
+
+.saml-sim-tab-panel {
+    display: grid;
+    gap: 0.65rem;
+}
+
+.saml-sim-tab-panel[hidden] {
+    display: none;
+}
+
+.saml-sim-scenario--error {
+    border-color: rgba(184, 0, 12, 0.25);
+}
+
+.saml-sim-scenario--error .status-error {
+    color: var(--saml-accent-soft);
+    border-color: rgba(225, 29, 72, 0.3);
+    background: rgba(225, 29, 72, 0.08);
+}
+
+.saml-sim-scenario {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 0.75rem;
+    align-items: center;
+    margin: 0;
+    padding: 0.75rem 0.85rem;
+    border: 1px solid rgba(94, 207, 255, 0.14);
+    border-radius: 10px;
+    background: rgba(0, 0, 0, 0.18);
+}
+
+.saml-sim-scenario.is-disabled {
+    opacity: 0.55;
+}
+
+.saml-sim-scenario__status {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 5.5rem;
+    max-width: 9rem;
+    padding: 0.2rem 0.45rem;
+    border-radius: 999px;
+    font-family: ui-monospace, monospace;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    text-align: center;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+}
+
+.status-open { background: rgba(94, 207, 255, 0.18); color: #9ee7ff; }
+.status-requested { background: rgba(245, 159, 0, 0.2); color: #ffd27a; }
+.status-accepted { background: rgba(66, 186, 150, 0.2); color: #9ef0d4; }
+.status-paid { background: rgba(5, 18, 105, 0.65); color: #b8c7ff; border: 1px solid rgba(94, 207, 255, 0.25); }
+.status-dropped { background: rgba(184, 0, 12, 0.22); color: #ffb4b4; }
+
+.saml-sim-scenario__copy strong {
+    display: block;
+    font-size: 0.9rem;
+}
+
+.saml-sim-scenario__copy span {
+    color: var(--saml-muted);
+    font-size: 0.82rem;
+}
+
+.saml-sim-scenario__meta {
+    display: inline;
+    margin-left: 0.4rem;
+    font-family: ui-monospace, monospace;
+    font-size: 0.75rem;
+    color: var(--saml-muted);
+}
+
+.saml-sim-log-table-wrap {
+    overflow-x: auto;
+}
+
+.saml-sim-log-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.84rem;
+}
+
+.saml-sim-log-table th,
+.saml-sim-log-table td {
+    padding: 0.55rem 0.65rem;
+    border-bottom: 1px solid rgba(94, 207, 255, 0.1);
+    text-align: left;
+    vertical-align: top;
+}
+
+.saml-sim-log-table th {
+    color: var(--saml-muted);
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 600;
+}
+
+.saml-sim-log-table code {
+    font-family: ui-monospace, monospace;
+    color: var(--saml-cyan);
+    word-break: break-all;
+}
+
+.saml-sim-pagination {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem 1rem;
+    margin-top: 1rem;
+    padding-top: 0.85rem;
+    border-top: 1px solid rgba(94, 207, 255, 0.1);
+}
+
+.saml-sim-pagination__btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.4rem 0.75rem;
+    border: 1px solid rgba(94, 207, 255, 0.25);
+    border-radius: 6px;
+    background: rgba(5, 18, 105, 0.35);
+    color: var(--saml-cyan);
+    font-size: 0.82rem;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.saml-sim-pagination__btn:hover:not(.is-disabled) {
+    border-color: var(--saml-cyan);
+    color: #fff;
+}
+
+.saml-sim-pagination__btn.is-disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.saml-sim-pagination__info {
+    font-family: ui-monospace, monospace;
+    font-size: 0.8rem;
+    color: var(--saml-muted);
+}
+
+.saml-sim-log-empty {
+    margin: 0;
+    padding: 1.25rem 0.5rem;
+    color: var(--saml-muted);
+    text-align: center;
+    font-style: italic;
+}
+
+.saml-sim-posting {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--saml-bg);
+    color: var(--saml-text);
+    font-family: ui-monospace, monospace;
+}
+
+.saml-sim-posting__panel {
+    text-align: center;
+    padding: 2rem;
+    border: 1px solid var(--saml-border);
+    border-radius: 12px;
+    background: var(--saml-panel);
+}
+
+.saml-sim-posting__spinner {
+    width: 2rem;
+    height: 2rem;
+    margin: 0 auto 1rem;
+    border: 3px solid rgba(94, 207, 255, 0.2);
+    border-top-color: var(--saml-cyan);
+    border-radius: 50%;
+    animation: saml-spin 0.9s linear infinite;
+}
+
+@keyframes saml-spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Protocol selection cards */
+.saml-sim-protocol-toggle {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.saml-sim-protocol-card {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.35rem;
+    padding: 1rem 1.125rem;
+    background: var(--saml-panel-2);
+    border: 1px solid var(--saml-border);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
+    text-align: left;
+    font-family: inherit;
+}
+
+.saml-sim-protocol-card:hover {
+    border-color: rgba(94, 207, 255, 0.35);
+    background: rgba(94, 207, 255, 0.05);
+}
+
+.saml-sim-protocol-card.is-active {
+    border-color: var(--saml-cyan);
+    background: rgba(94, 207, 255, 0.1);
+    box-shadow: 0 0 0 1px var(--saml-cyan), 0 0 12px rgba(94, 207, 255, 0.15);
+}
+
+.saml-sim-protocol-card__badge {
+    display: inline-block;
+    padding: 0.15rem 0.5rem;
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--saml-cyan);
+    background: rgba(94, 207, 255, 0.12);
+    border: 1px solid rgba(94, 207, 255, 0.25);
+    border-radius: 4px;
+    line-height: 1.4;
+}
+
+.saml-sim-protocol-card.is-active .saml-sim-protocol-card__badge {
+    background: rgba(94, 207, 255, 0.2);
+    border-color: var(--saml-cyan);
+}
+
+.saml-sim-protocol-card__name {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--saml-text);
+    letter-spacing: 0.02em;
+}
+
+.saml-sim-protocol-card__desc {
+    display: none;
+}
+
+/* Protocol info banner (when OIDC is not available) */
+.saml-sim-protocol-info {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    padding: 0.75rem 1rem;
+    background: var(--saml-panel-2);
+    border: 1px solid var(--saml-border);
+    border-radius: 6px;
+    font-size: 0.8rem;
+    color: var(--saml-muted);
+}
+
+.saml-sim-protocol-info__badge {
+    display: inline-block;
+    padding: 0.15rem 0.5rem;
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--saml-cyan);
+    background: rgba(94, 207, 255, 0.12);
+    border: 1px solid rgba(94, 207, 255, 0.25);
+    border-radius: 4px;
+    line-height: 1.4;
+    flex-shrink: 0;
+}
+
+/* Bank product info panel */
+.saml-sim-bank-info {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.saml-sim-bank-info__item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    padding: 0.5rem 0.75rem;
+    background: var(--saml-panel-2);
+    border: 1px solid var(--saml-border);
+    border-left: 3px solid var(--saml-border);
+    border-radius: 6px;
+}
+
+.saml-sim-bank-info__item.is-on {
+    border-left-color: var(--saml-green);
+}
+
+.saml-sim-bank-info__label {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--saml-muted);
+}
+
+.saml-sim-bank-info__value {
+    font-size: 0.82rem;
+    color: var(--saml-muted);
+    font-weight: 600;
+}
+
+.saml-sim-bank-info__item.is-on .saml-sim-bank-info__value {
+    color: var(--saml-green);
+}

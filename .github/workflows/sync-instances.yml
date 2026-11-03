@@ -1,0 +1,247 @@
+# .github/workflows/sync-instances.yml
+#
+# Allinea le istanze di TUTTI gli environment e di tutti i tenant a infra e
+# secrets correnti, SENZA build di immagini. Sostituisce Sync Infra e
+# Refetch Secrets, che separati lasciavano le istanze incoerenti (compose
+# nuovo con secrets vecchi, o viceversa).
+#
+# Su ogni istanza, in ordine:
+#   1. sync di rays-infra su main
+#   2. aggiornamento di fetch-secrets.sh da s3://s3-rays-config/scripts/ SOLO
+#      se è cambiato (validato con bash -n, sostituzione atomica, versione
+#      precedente in fetch-secrets.sh.prev)
+#   3. refetch di secrets ed env file (TAG_NAME, che il fetch toglie dal .env,
+#      viene ripristinato)
+#   4. make secrets-check e, con recreate=true, make pull: i container vengono
+#      ricreati con lo stesso TAG_NAME per usare i nuovi valori, seguito dallo
+#      stesso health check del deploy
+#
+# Quando usarlo: secret corretto o ruotato in Secrets Manager, env file
+# cambiato su S3, fix infra (Makefile, compose) da portare subito ovunque.
+# Per una variabile NEXT_PUBLIC_* serve invece Rebuild Frontend (è nel bundle).
+#
+# Perché sempre tutti gli environment e tutti i tenant: i compose sono
+# condivisi tra environment e tenant, quindi infra e secrets devono restare
+# allineati ovunque.
+#
+# Discovery: per ogni environment (job della matrice) le istanze running con
+# tag Tenant in DEPLOY_TENANTS (secret di quell'environment) + tag
+# Environment; in production anche il tag dell'ASG (PROD_ASG_NAME).
+# Gli environment girano in parallelo e indipendenti; dentro un environment
+# il rolling è un'istanza alla volta e si ferma al primo errore.
+
+name: Sync Instances
+
+on:
+  workflow_dispatch:
+    inputs:
+      recreate:
+        description: "Recreate containers (same TAG_NAME) so they pick up the new secrets and env files"
+        type: boolean
+        required: false
+        default: false
+
+concurrency:
+  group: sync-instances
+  cancel-in-progress: false
+
+env:
+  AWS_REGION: eu-west-1
+  DOCKER_BASE_DIR: /data/docker
+
+jobs:
+
+  sync:
+    name: Sync instances (${{ matrix.environment }})
+    runs-on: [self-hosted, rays-ci]
+    environment: ${{ matrix.environment }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        environment: [integration, staging, production]
+
+    steps:
+      - name: Sync via SSM (rolling)
+        env:
+          TARGET_ENV: ${{ matrix.environment }}
+          RECREATE: ${{ inputs.recreate && 'true' || 'false' }}
+          AWS_REGION_VAL: ${{ env.AWS_REGION }}
+          DOCKER_BASE_DIR: ${{ env.DOCKER_BASE_DIR }}
+          RAYS_ACCESS_TOKEN: ${{ secrets.RAYS_ACCESS_TOKEN }}
+          DEPLOY_TENANTS: ${{ secrets.DEPLOY_TENANTS }}
+          ASG_NAME: ${{ secrets.PROD_ASG_NAME }}
+          PROD_TARGET_GROUP_ARN: ${{ secrets.PROD_TARGET_GROUP_ARN }}
+        run: |
+          REGION="$AWS_REGION_VAL"
+
+          [ -n "$DEPLOY_TENANTS" ] || { echo "ERROR: DEPLOY_TENANTS secret is empty or not set"; exit 1; }
+          TENANT_VALUES="Values=${DEPLOY_TENANTS}"
+
+          FILTERS=(
+            "Name=tag:Environment,Values=${TARGET_ENV}"
+            "Name=tag:Tenant,${TENANT_VALUES}"
+            "Name=instance-state-name,Values=running"
+          )
+          if [ "$TARGET_ENV" = "production" ]; then
+            [ -n "${ASG_NAME:-}" ] || { echo "ERROR: PROD_ASG_NAME secret is empty or not set"; exit 1; }
+            FILTERS+=("Name=tag:aws:autoscaling:groupName,Values=${ASG_NAME}")
+          fi
+
+          INSTANCE_IDS=$(aws ec2 describe-instances \
+            --region "$REGION" \
+            --filters "${FILTERS[@]}" \
+            --query "Reservations[].Instances[].InstanceId" \
+            --output text)
+
+          if [ -z "$INSTANCE_IDS" ]; then
+            echo "WARN: no running ${TARGET_ENV} instances found for tenants: $DEPLOY_TENANTS — skipping"
+            exit 0
+          fi
+
+          INSTANCE_COUNT=$(echo "$INSTANCE_IDS" | wc -w | tr -d ' ')
+          echo "Sync on ${TARGET_ENV} (recreate: $RECREATE) — instances found: $INSTANCE_COUNT — $INSTANCE_IDS"
+
+          if [ "$RECREATE" = "true" ]; then SSM_TIMEOUT=1800; else SSM_TIMEOUT=300; fi
+
+          echo "aW1wb3J0IGpzb24sIG9zLCBzaGxleAoKIyBTeW5jIEluc3RhbmNlcyBvbiBvbmUgaW5zdGFuY2UsIGluIG9yZGVyOgojICAgMS4gc3luYyByYXlzLWluZnJhIHRvIGxhdGVzdCBtYWluIChhcyBjb2RldXNlcikKIyAgIDIuIGluc3RhbGwgdGhlIGxhdGVzdCBmZXRjaC1zZWNyZXRzLnNoIGZyb20gUzMgd2hlbiBpdCBjaGFuZ2VkCiMgICAzLiByZS1mZXRjaCBzZWNyZXRzIGFuZCBlbnYgZmlsZXMgKFRBR19OQU1FIGlzIHN0cmlwcGVkIGJ5IHRoZSBmZXRjaDogcmVzdG9yZWQpCiMgICA0LiBtYWtlIHNlY3JldHMtY2hlY2ssIHRoZW4gbWFrZSBwdWxsIHdoZW4gUkVDUkVBVEU9dHJ1ZSAoc2FtZSBUQUdfTkFNRSwKIyAgICAgIG5vIG5ldyBidWlsZDogY29udGFpbmVycyBhcmUgcmVjcmVhdGVkIHRvIHBpY2sgdXAgdGhlIG5ldyB2YWx1ZXMpCnN5bmNfc2NyaXB0ID0gJycnIyEvYmluL2Jhc2gKc2V0IC1ldQpjZCAiJEFQUF9ESVIiCmlmIFsgLWQgLmdpdCBdOyB0aGVuCiAgQVVUSF9IRUFERVI9JChwcmludGYgJ3gtYWNjZXNzLXRva2VuOiVzJyAiJEdIX1RPS0VOIiB8IGJhc2U2NCAtdzApCiAgZ2l0IC1jIHNhZmUuZGlyZWN0b3J5PSIkQVBQX0RJUiIgLWMgaHR0cC5leHRyYWhlYWRlcj0iQVVUSE9SSVpBVElPTjogYmFzaWMgJEFVVEhfSEVBREVSIiBmZXRjaCBvcmlnaW4gbWFpbiAtLXF1aWV0CiAgZ2l0IC1jIHNhZmUuZGlyZWN0b3J5PSIkQVBQX0RJUiIgcmVzZXQgLS1oYXJkIG9yaWdpbi9tYWluIC0tcXVpZXQKICBlY2hvICJPSzogcmF5cy1pbmZyYSBzeW5jZWQgdG8gbGF0ZXN0IG1haW4iCmVsc2UKICBlY2hvICJFUlJPUjogJEFQUF9ESVIgaXMgbm90IGEgZ2l0IGNoZWNrb3V0IgogIGV4aXQgMQpmaQonJycKCmNoZWNrX3NjcmlwdCA9ICcnJyMhL2Jpbi9iYXNoCnNldCAtZXUKY2QgIiRBUFBfRElSIgpncmVwIC1xICdec2VjcmV0cy1jaGVjazonIE1ha2VmaWxlIHx8IHsgZWNobyAiRVJST1I6ICRBUFBfRElSL01ha2VmaWxlIGhhcyBubyBzZWNyZXRzLWNoZWNrIHRhcmdldCI7IGV4aXQgMTsgfQptYWtlIC0tbm8tcHJpbnQtZGlyZWN0b3J5IHNlY3JldHMtY2hlY2sKaWYgWyAiJFJFQ1JFQVRFIiA9ICJ0cnVlIiBdOyB0aGVuCiAgZ3JlcCAtcSAnXlRBR19OQU1FPS4nIC5lbnYgfHwgeyBlY2hvICJFUlJPUjogbm8gVEFHX05BTUUgaW4gJEFQUF9ESVIvLmVudiAtIGRlcGxveSB0aGlzIGluc3RhbmNlIGZpcnN0IjsgZXhpdCAxOyB9CiAgZWNobyAiSU5GTzogcmVjcmVhdGluZyBjb250YWluZXJzIHdpdGggJChncmVwIC1tMSAnXlRBR19OQU1FPScgLmVudikuLi4iCiAgbWFrZSBwdWxsCmZpCicnJwoKZGVmIHdyaXRlX3NjcmlwdF9jbWQocGF0aCwgYm9keSk6CiAgcmV0dXJuIGYiY2F0ID4ge3BhdGh9IDw8ICdDT0RFVVNFUkVPRidcbiIgKyBib2R5ICsgIkNPREVVU0VSRU9GIgoKY29tbWFuZHMgPSBbCiAgInNldCAtZXUiLAogIGYiUkVHSU9OPXtzaGxleC5xdW90ZShvcy5lbnZpcm9uWydSRUdJT05fRU5WJ10pfSIsCiAgZiJET0NLRVJfQkFTRV9ESVI9e3NobGV4LnF1b3RlKG9zLmVudmlyb25bJ0JBU0VfRElSX0VOViddKX0iLAogIGYiR0hfVE9LRU49e3NobGV4LnF1b3RlKG9zLmVudmlyb25bJ1RPS0VOX0VOViddKX0iLAogIGYiUkVDUkVBVEU9e3NobGV4LnF1b3RlKG9zLmVudmlyb25bJ1JFQ1JFQVRFX0VOViddKX0iLAogICJJTURTX1RPS0VOPSQoY3VybCAtc2YgLVggUFVUIGh0dHA6Ly8xNjkuMjU0LjE2OS4yNTQvbGF0ZXN0L2FwaS90b2tlbiAtSCAnWC1hd3MtZWMyLW1ldGFkYXRhLXRva2VuLXR0bC1zZWNvbmRzOiAxMCcgLS1tYXgtdGltZSA1KSIsCiAgIklOU1RBTkNFX0lEPSQoY3VybCAtc2YgLUggXCJYLWF3cy1lYzItbWV0YWRhdGEtdG9rZW46ICRJTURTX1RPS0VOXCIgLS1tYXgtdGltZSA1IGh0dHA6Ly8xNjkuMjU0LjE2OS4yNTQvbGF0ZXN0L21ldGEtZGF0YS9pbnN0YW5jZS1pZCkiLAogICJURU5BTlQ9JChhd3MgZWMyIGRlc2NyaWJlLXRhZ3MgLS1yZWdpb24gXCIkUkVHSU9OXCIgLS1maWx0ZXJzIFwiTmFtZT1yZXNvdXJjZS1pZCxWYWx1ZXM9JHtJTlNUQU5DRV9JRH1cIiBcIk5hbWU9a2V5LFZhbHVlcz1UZW5hbnRcIiAtLXF1ZXJ5IFwiVGFnc1swXS5WYWx1ZVwiIC0tb3V0cHV0IHRleHQpIiwKICAiWyAtbiBcIiRURU5BTlRcIiBdICYmIFsgXCIkVEVOQU5UXCIgIT0gXCJOb25lXCIgXSB8fCB7IGVjaG8gXCJFUlJPUjogVGVuYW50IHRhZyBub3QgZm91bmQgZm9yICRJTlNUQU5DRV9JRFwiOyBleGl0IDE7IH0iLAogICJBUFBfRElSPVwiJERPQ0tFUl9CQVNFX0RJUi8kVEVOQU5UXCIiLAogICJlY2hvIFwiVGVuYW50OiAkVEVOQU5UIC0gQVBQX0RJUjogJEFQUF9ESVJcIiIsCiAgIlsgLWQgXCIkQVBQX0RJUlwiIF0gfHwgeyBlY2hvIFwiRVJST1I6ICRBUFBfRElSIG5vdCBmb3VuZFwiOyBleGl0IDE7IH0iLAogICMgMS4gU3luYyBpbmZyYQogICJzdWRvIGNob3duIC1SIGNvZGV1c2VyOmNvZGV1c2VyIFwiJEFQUF9ESVJcIiIsCiAgd3JpdGVfc2NyaXB0X2NtZCgiL3RtcC9jb2RldXNlcl9zeW5jLnNoIiwgc3luY19zY3JpcHQpLAogICJjaG1vZCAreCAvdG1wL2NvZGV1c2VyX3N5bmMuc2giLAogICJzdWRvIC11IGNvZGV1c2VyIC1IIGVudiBBUFBfRElSPVwiJEFQUF9ESVJcIiBHSF9UT0tFTj1cIiRHSF9UT0tFTlwiIC90bXAvY29kZXVzZXJfc3luYy5zaCIsCiAgInJtIC1mIC90bXAvY29kZXVzZXJfc3luYy5zaCIsCiAgIyAyLiBTZWxmLXVwZGF0ZSBmZXRjaC1zZWNyZXRzLnNoOiBzeW50YXgtY2hlY2tlZCBiZWZvcmUgaW5zdGFsbCwgYXRvbWljIHN3YXAsCiAgIyBwcmV2aW91cyBrZXB0IGFzIC5wcmV2LgogICJGRVRDSF9TQ1JJUFQ9L3Vzci9sb2NhbC9iaW4vZmV0Y2gtc2VjcmV0cy5zaCIsCiAgIlRNUF9TQ1JJUFQ9JChta3RlbXApIiwKICAiYXdzIHMzIGNwIHMzOi8vczMtcmF5cy1jb25maWcvc2NyaXB0cy9mZXRjaC1zZWNyZXRzLnNoIFwiJFRNUF9TQ1JJUFRcIiAtLXJlZ2lvbiBcIiRSRUdJT05cIiAtLXF1aWV0IHx8IHsgcm0gLWYgXCIkVE1QX1NDUklQVFwiOyBlY2hvIFwiRVJST1I6IGNvdWxkIG5vdCBkb3dubG9hZCBmZXRjaC1zZWNyZXRzLnNoIGZyb20gUzNcIjsgZXhpdCAxOyB9IiwKICAiWyAtcyBcIiRUTVBfU0NSSVBUXCIgXSAmJiBiYXNoIC1uIFwiJFRNUF9TQ1JJUFRcIiB8fCB7IHJtIC1mIFwiJFRNUF9TQ1JJUFRcIjsgZWNobyBcIkVSUk9SOiBkb3dubG9hZGVkIGZldGNoLXNlY3JldHMuc2ggaXMgZW1wdHkgb3IgaGFzIHN5bnRheCBlcnJvcnMgLSBub3QgaW5zdGFsbGVkXCI7IGV4aXQgMTsgfSIsCiAgImlmIGNtcCAtcyBcIiRUTVBfU0NSSVBUXCIgXCIkRkVUQ0hfU0NSSVBUXCI7IHRoZW4gZWNobyBcIklORk86IGZldGNoLXNlY3JldHMuc2ggdW5jaGFuZ2VkXCI7IGVsc2UgWyAtZiBcIiRGRVRDSF9TQ1JJUFRcIiBdICYmIHN1ZG8gY3AgLXAgXCIkRkVUQ0hfU0NSSVBUXCIgXCIkRkVUQ0hfU0NSSVBULnByZXZcIjsgc3VkbyBpbnN0YWxsIC1tIDc1NSAtbyByb290IC1nIHJvb3QgXCIkVE1QX1NDUklQVFwiIFwiJEZFVENIX1NDUklQVC5uZXdcIjsgc3VkbyBtdiAtZiBcIiRGRVRDSF9TQ1JJUFQubmV3XCIgXCIkRkVUQ0hfU0NSSVBUXCI7IGVjaG8gXCJPSzogZmV0Y2gtc2VjcmV0cy5zaCB1cGRhdGVkIGZyb20gUzMgKHByZXZpb3VzIGtlcHQgYXMgZmV0Y2gtc2VjcmV0cy5zaC5wcmV2KVwiOyBmaSIsCiAgInJtIC1mIFwiJFRNUF9TQ1JJUFRcIiIsCiAgInN5c3RlbWN0bCBjYXQgZG9ja2VyLXNlY3JldHMtZmV0Y2guc2VydmljZSAyPi9kZXYvbnVsbCB8IGdyZXAgLXEgXCIkRkVUQ0hfU0NSSVBUXCIgfHwgZWNobyBcIldBUk46IGRvY2tlci1zZWNyZXRzLWZldGNoLnNlcnZpY2UgZG9lcyBub3QgcmVmZXJlbmNlICRGRVRDSF9TQ1JJUFQgLSBjaGVjayBpdHMgRXhlY1N0YXJ0XCIiLAogICMgMy4gUmUtZmV0Y2guIFRBR19OQU1FIGlzIHdyaXR0ZW4gb25seSBieSBkZXBsb3lzIGFuZCB0aGUgZmV0Y2ggc3RyaXBzIGl0CiAgIyBmcm9tIC5lbnY6IHJlbWVtYmVyIGl0IGFuZCByZXN0b3JlIGl0LgogICJQUkVWX1RBRz0kKGdyZXAgLW0xICdeVEFHX05BTUU9JyBcIiRBUFBfRElSLy5lbnZcIiAyPi9kZXYvbnVsbCB8IGN1dCAtZD0gLWYyLSB8fCB0cnVlKSIsCiAgImVjaG8gXCJJTkZPOiByZS1mZXRjaGluZyBzZWNyZXRzIGFuZCBlbnYgZmlsZXMuLi5cIiIsCiAgInN1ZG8gc3lzdGVtY3RsIHJlc3RhcnQgZG9ja2VyLXNlY3JldHMtZmV0Y2guc2VydmljZSIsCiAgImlmIFsgLW4gXCIkUFJFVl9UQUdcIiBdICYmICEgZ3JlcCAtcSAnXlRBR19OQU1FPScgXCIkQVBQX0RJUi8uZW52XCIgMj4vZGV2L251bGw7IHRoZW4gZWNobyBcIlRBR19OQU1FPSRQUkVWX1RBR1wiIHwgc3VkbyB0ZWUgLWEgXCIkQVBQX0RJUi8uZW52XCIgPi9kZXYvbnVsbDsgZWNobyBcIklORk86IFRBR19OQU1FIHJlc3RvcmVkIGFmdGVyIGZldGNoXCI7IGZpIiwKICAiZWNobyBcIk9LOiBzZWNyZXRzIHJlLWZldGNoZWRcIiIsCiAgIyA0LiBWZXJpZnksIHRoZW4gb3B0aW9uYWxseSByZWNyZWF0ZQogICJzdWRvIGNob3duIC1SIGNvZGV1c2VyOmNvZGV1c2VyIFwiJEFQUF9ESVJcIiIsCiAgd3JpdGVfc2NyaXB0X2NtZCgiL3RtcC9jb2RldXNlcl9jaGVjay5zaCIsIGNoZWNrX3NjcmlwdCksCiAgImNobW9kICt4IC90bXAvY29kZXVzZXJfY2hlY2suc2giLAogICJzdWRvIC11IGNvZGV1c2VyIC1IIGVudiBBUFBfRElSPVwiJEFQUF9ESVJcIiBSRUNSRUFURT1cIiRSRUNSRUFURVwiIC90bXAvY29kZXVzZXJfY2hlY2suc2giLAogICJybSAtZiAvdG1wL2NvZGV1c2VyX2NoZWNrLnNoIiwKICAiZWNobyBcIk9LOiBpbnN0YW5jZSBzeW5jZWQgZm9yIHRlbmFudCAkVEVOQU5UIChyZWNyZWF0ZTogJFJFQ1JFQVRFKVwiIiwKXQpwcmludChqc29uLmR1bXBzKHsiY29tbWFuZHMiOiBjb21tYW5kc30pKQo=" | base64 -d > /tmp/ssm_sync_instances.py
+
+          DONE=0
+          for INSTANCE_ID in $INSTANCE_IDS; do
+            echo "--- Syncing $INSTANCE_ID ($((DONE+1))/$INSTANCE_COUNT) ---"
+
+            SSM_PARAMS=$(mktemp)
+            REGION_ENV="$REGION" \
+            BASE_DIR_ENV="$DOCKER_BASE_DIR" \
+            TOKEN_ENV="$RAYS_ACCESS_TOKEN" \
+            RECREATE_ENV="$RECREATE" \
+            python3 /tmp/ssm_sync_instances.py > "$SSM_PARAMS"
+
+            COMMAND_ID=$(aws ssm send-command \
+              --region "$REGION" \
+              --instance-ids "$INSTANCE_ID" \
+              --document-name "AWS-RunShellScript" \
+              --parameters "file://$SSM_PARAMS" \
+              --query "Command.CommandId" \
+              --output text)
+
+            rm -f "$SSM_PARAMS"
+            echo "SSM Command ID: $COMMAND_ID — waiting for completion..."
+
+            SSM_ELAPSED=0
+            STATUS=""
+            RESULT=""
+
+            while [ "$SSM_ELAPSED" -le "$SSM_TIMEOUT" ]; do
+              RESULT=$(aws ssm get-command-invocation \
+                --region "$REGION" \
+                --command-id "$COMMAND_ID" \
+                --instance-id "$INSTANCE_ID" \
+                --query '{Status:Status,Output:StandardOutputContent,Error:StandardErrorContent}' \
+                --output json)
+
+              STATUS=$(echo "$RESULT" | python3 -c "import sys,json; print(json.load(sys.stdin)['Status'])")
+
+              case "$STATUS" in
+                Success|Failed|Cancelled|TimedOut) break ;;
+                *) echo "SSM status on $INSTANCE_ID: $STATUS (${SSM_ELAPSED}s)"; sleep 10; SSM_ELAPSED=$((SSM_ELAPSED+10)) ;;
+              esac
+            done
+
+            echo "$RESULT"
+
+            if [ "$STATUS" != "Success" ]; then
+              echo "ERROR: sync failed on $INSTANCE_ID (Status: $STATUS) — rolling stopped, $((INSTANCE_COUNT-DONE-1)) remaining instance(s) untouched"
+              exit 1
+            fi
+
+            if [ "$RECREATE" = "true" ]; then
+              # Health check after (re)creating the containers on $INSTANCE_ID:
+              # integration/staging via the backend /health endpoint, production via the
+              # ALB target groups of the ASG.
+              if [ "$TARGET_ENV" = "production" ]; then
+                if [ -n "${PROD_TARGET_GROUP_ARN:-}" ]; then
+                  TARGET_GROUP_ARNS="$PROD_TARGET_GROUP_ARN"
+                else
+                  TARGET_GROUP_ARNS=$(aws autoscaling describe-auto-scaling-groups \
+                    --region "$REGION" \
+                    --auto-scaling-group-names "$ASG_NAME" \
+                    --query "AutoScalingGroups[0].TargetGroupARNs[]" \
+                    --output text)
+                fi
+
+                [ -n "$TARGET_GROUP_ARNS" ] && [ "$TARGET_GROUP_ARNS" != "None" ] \
+                  || { echo "ERROR: no target group found for ASG ${ASG_NAME}"; exit 1; }
+
+                TG_TIMEOUT=120
+                TG_ELAPSED=0
+                TG_OK=false
+
+                while [ "$TG_ELAPSED" -le "$TG_TIMEOUT" ]; do
+                  ALL_HEALTHY=true
+                  for TG_ARN in $TARGET_GROUP_ARNS; do
+                    STATE=$(aws elbv2 describe-target-health \
+                      --region "$REGION" \
+                      --target-group-arn "$TG_ARN" \
+                      --targets "Id=$INSTANCE_ID" \
+                      --query "TargetHealthDescriptions[0].TargetHealth.State" \
+                      --output text 2>/dev/null || true)
+                    echo "ALB health on $INSTANCE_ID: $STATE (${TG_ELAPSED}s)"
+                    [ "$STATE" = "healthy" ] || ALL_HEALTHY=false
+                  done
+                  $ALL_HEALTHY && TG_OK=true && break
+                  sleep 10
+                  TG_ELAPSED=$((TG_ELAPSED+10))
+                done
+
+                if [ "$TG_OK" != "true" ]; then
+                  echo "ERROR: ALB health check timed out for $INSTANCE_ID — rolling stopped"
+                  exit 1
+                fi
+                echo "OK: ALB health check passed for $INSTANCE_ID"
+              else
+                HEALTH_TIMEOUT=120
+                HEALTH_ELAPSED=0
+                HTTP_CODE="000"
+
+                while [ "$HEALTH_ELAPSED" -le "$HEALTH_TIMEOUT" ]; do
+                  HTTP_CMD_ID=$(aws ssm send-command \
+                    --region "$REGION" \
+                    --instance-ids "$INSTANCE_ID" \
+                    --document-name "AWS-RunShellScript" \
+                    --parameters 'commands=["curl --max-time 5 -s -o /dev/null -w \"%{http_code}\" http://localhost:8080/health || true"]' \
+                    --query "Command.CommandId" \
+                    --output text)
+
+                  sleep 5
+
+                  HTTP_CODE=$(aws ssm get-command-invocation \
+                    --region "$REGION" \
+                    --command-id "$HTTP_CMD_ID" \
+                    --instance-id "$INSTANCE_ID" \
+                    --query "StandardOutputContent" \
+                    --output text | tr -d '[:space:]')
+
+                  echo "Health check on $INSTANCE_ID: HTTP ${HTTP_CODE:-000} (${HEALTH_ELAPSED}s)"
+
+                  if [ "$HTTP_CODE" = "200" ]; then
+                    break
+                  fi
+
+                  sleep 10
+                  HEALTH_ELAPSED=$((HEALTH_ELAPSED + 15))
+                done
+
+                if [ "$HTTP_CODE" != "200" ]; then
+                  echo "ERROR: health check timed out on $INSTANCE_ID after ${HEALTH_TIMEOUT}s (HTTP ${HTTP_CODE:-000}) — rolling stopped"
+                  exit 1
+                fi
+                echo "OK: health check passed on $INSTANCE_ID (HTTP $HTTP_CODE)"
+              fi
+            fi
+
+            DONE=$((DONE+1))
+            echo "OK: $INSTANCE_ID synced"
+          done
+
+          echo "OK: ${TARGET_ENV} sync completed ($INSTANCE_COUNT instances, recreate: $RECREATE)"

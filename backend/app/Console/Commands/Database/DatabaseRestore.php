@@ -135,23 +135,6 @@ class DatabaseRestore extends Command
 	}
 
 	/**
-	 * Get the file creation time, falling back to modified time if not available
-	 */
-	protected function getFileCreationTime($filePath)
-	{
-		// Try to get creation time (not available on all systems)
-		if (function_exists("filectime")) {
-			$ctime = filectime($filePath);
-			if ($ctime !== false) {
-				return $ctime;
-			}
-		}
-
-		// Fall back to modification time
-		return filemtime($filePath);
-	}
-
-	/**
 	 * Verify project name in production
 	 */
 	protected function verifyProjectName()

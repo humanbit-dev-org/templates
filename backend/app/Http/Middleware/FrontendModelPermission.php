@@ -2,7 +2,7 @@
 
 namespace App\Http\Middleware;
 
-use App\Http\Traits\ChecksFrontendPermissions;
+use App\Http\Concerns\ChecksFrontendPermissions;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;

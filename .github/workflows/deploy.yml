@@ -1,0 +1,661 @@
+# .github/workflows/deploy.yml
+#
+# Trigger e gate di ambiente:
+#   vX.Y.Z         -> build + deploy su integration (tutti i tenant in DEPLOY_TENANTS)
+#   vX.Y.Z-rc      -> build + deploy su integration + staging
+#   vX.Y.Z-release -> SOLO promozione di vX.Y.Z-rc: deploy su production
+#                     (creato da Promote RC; vedi sotto)
+#
+# Il job build calcola l'elenco degli environment del tag; il job deploy è
+# una matrice su quell'elenco con max-parallel: 1 e fail-fast: i job della
+# matrice vengono creati nell'ordine dell'elenco (integration, staging,
+# production) e girano uno alla volta; un errore annulla quelli successivi.
+#
+# Promozione rc -> release: un tag vX.Y.Z-release sullo STESSO commit di
+# vX.Y.Z-rc (già provata su integration e staging) non ricostruisce il
+# backend: l'immagine della rc viene ri-etichettata su ECR. Si costruiscono
+# solo i frontend di production (NEXT_PUBLIC_* sono per environment) e si
+# fa il deploy solo su production.
+#
+# GitHub Releases (job release, solo dopo un deploy riuscito):
+#   vX.Y.Z-rc riuscita su integration + staging -> pre-release vX.Y.Z-rc:
+#     le pre-release rc sono le candidate alla promozione.
+#   Come si promuove: Actions -> Promote RC -> Run workflow (promuove la rc
+#     su staging, cioè la più recente non ancora rilasciata), oppure
+#     Releases -> pre-release vX.Y.Z-rc -> Edit -> Release label "Latest".
+#     Promote RC (promote-rc.yml) crea il tag vX.Y.Z-release sul commit
+#     della rc.
+#   vX.Y.Z-release riuscita su production -> la release della rc diventa
+#     "vX.Y.Z" (Latest), con il riferimento al deploy di production.
+#   I tag vX.Y.Z (solo integration) non creano release.
+# Una -release che non è una promozione valida (commit diverso dalla rc, rc
+# mai arrivata con successo su staging, immagine rc assente) viene RIFIUTATA
+# prima di qualsiasi build: in production si arriva solo passando da staging.
+#
+# Velocità: le build frontend girano in parallelo (FRONTEND_BUILD_PARALLELISM)
+# e, dentro un environment, i tenant vengono distribuiti in parallelo
+# (le istanze dello stesso tenant restano in rolling, una alla volta).
+#
+# Discovery istanze via tag EC2:
+#   Filtra per tag Tenant (da DEPLOY_TENANTS) + Environment + running;
+#   in production anche il tag dell'ASG (PROD_ASG_NAME).
+#   Nessun IP o instance ID hardcoded — se un'istanza viene ricreata
+#   viene trovata automaticamente tramite i tag.
+#
+#   DEPLOY_TENANTS (secret per environment): lista tenant separati da virgola
+#   es. nexi-multi,desio,credem
+#
+# Frontend images: una per tenant per environment, NEXT_PUBLIC_* baked at
+# build time. Tag: TAG-ENVIRONMENT-TENANT (come pullato da docker-compose-prod.yml).
+#
+# Su ogni istanza (rolling, stop al primo errore) il deploy esegue in ordine:
+#   1. sync di rays-infra su main
+#   2. aggiornamento di fetch-secrets.sh da S3 se cambiato
+#   3. refetch di secrets ed env file
+#   4. TAG_NAME / ECR_REGISTRY in .env e make pull (secrets-check prima del pull)
+#   5. health check: /health in integration e staging, target group ALB in production
+# Prima di un deploy non serve quindi lanciare Sync Instances.
+#
+# Nessun SSH - tutto via SSM (funziona tra VPC diversi)
+
+name: Build and Deploy
+
+on:
+  push:
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+"
+      - "v[0-9]+.[0-9]+.[0-9]+-rc"
+      - "v[0-9]+.[0-9]+.[0-9]+-release"
+
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  AWS_REGION: eu-west-1
+  ECR_BACKEND_REPO: rays-nexi/backend
+  ECR_FRONTEND_REPO: rays-nexi/frontend
+  DOCKER_BASE_DIR: /data/docker
+
+jobs:
+
+  # ============================================================
+  # JOB 1: Build e push immagini su ECR
+  # ============================================================
+  build:
+    name: Build Docker images
+    runs-on: [self-hosted, rays-ci]
+
+    outputs:
+      tag: ${{ steps.meta.outputs.tag }}
+      mode: ${{ steps.meta.outputs.mode }}
+      environments: ${{ steps.meta.outputs.environments }}
+
+    steps:
+      # Production is reached ONLY by promoting an rc: a -release tag must sit
+      # on the same commit as its -rc tag, whose last Build and Deploy run
+      # (integration + staging) succeeded and whose backend image is in ECR.
+      # Then mode=promote: the release only retags the backend image, builds
+      # the production frontends (NEXT_PUBLIC_* differ per environment) and
+      # deploys production. Any other -release tag is refused here, before
+      # any build. Plain and -rc tags are mode=full.
+      - name: Determine tag metadata
+        id: meta
+        env:
+          GH_TOKEN: ${{ secrets.RAYS_ACCESS_TOKEN }}
+          ECR_BACKEND_REPO_VAL: ${{ env.ECR_BACKEND_REPO }}
+          AWS_REGION_VAL: ${{ env.AWS_REGION }}
+        run: |
+          TAG="${{ github.ref_name }}"
+          echo "tag=${TAG}" >> "$GITHUB_OUTPUT"
+          MODE=full
+          # Environments to deploy, in rollout order (JSON list for the deploy matrix)
+          if echo "$TAG" | grep -q '\-release$'; then
+            RC_TAG="${TAG%-release}-rc"
+            refuse() {
+              echo "ERROR: $1 — ${TAG} is NOT deployed."
+              echo "       Production only accepts a promoted rc: deploy ${RC_TAG}, test it on staging,"
+              echo "       then run Actions -> Promote RC."
+              exit 1
+            }
+            RELEASE_SHA=$(gh api "repos/${GITHUB_REPOSITORY}/commits/${TAG}" --jq .sha)
+            RC_SHA=$(gh api "repos/${GITHUB_REPOSITORY}/commits/${RC_TAG}" --jq .sha 2>/dev/null || true)
+            [ -n "$RC_SHA" ] || refuse "${RC_TAG} not found"
+            [ "$RC_SHA" = "$RELEASE_SHA" ] || refuse "${RC_TAG} is on ${RC_SHA}, ${TAG} on ${RELEASE_SHA}"
+            RC_CONCLUSION=$(gh run list --repo "$GITHUB_REPOSITORY" --workflow deploy.yml --branch "$RC_TAG" --limit 1 \
+              --json conclusion --jq '.[0].conclusion' 2>/dev/null || true)
+            [ "$RC_CONCLUSION" = "success" ] \
+              || refuse "the last Build and Deploy run of ${RC_TAG} is not successful (${RC_CONCLUSION:-no run found})"
+            aws ecr describe-images --region "$AWS_REGION_VAL" --repository-name "$ECR_BACKEND_REPO_VAL" \
+              --image-ids imageTag="$RC_TAG" >/dev/null 2>&1 || refuse "backend image ${RC_TAG} not found in ECR"
+            MODE=promote
+            ENVIRONMENTS='["production"]'
+            echo "INFO: ${TAG} is on the same commit as ${RC_TAG} (${RELEASE_SHA}), deployed successfully — promoting the rc"
+          elif echo "$TAG" | grep -q '\-rc$'; then
+            ENVIRONMENTS='["integration","staging"]'
+          else
+            ENVIRONMENTS='["integration"]'
+          fi
+          echo "mode=${MODE}" >> "$GITHUB_OUTPUT"
+          echo "environments=${ENVIRONMENTS}" >> "$GITHUB_OUTPUT"
+          echo "Tag ${TAG} -> mode ${MODE}, environments ${ENVIRONMENTS}"
+
+      - name: Clean Docker disk space before build
+        run: |
+          docker system prune -af --volumes
+          df -h /
+
+      - name: Checkout rays
+        uses: actions/checkout@v5
+        with:
+          path: codebase
+
+      - name: Checkout rays-infra
+        uses: actions/checkout@v5
+        with:
+          repository: humanbit-dev-org/rays-infra
+          ref: main
+          token: ${{ secrets.RAYS_ACCESS_TOKEN }}
+          path: infra
+          clean: true
+
+      - name: Move codebase into infra build context
+        run: mv codebase infra/codebase
+
+      - name: Clear Laravel bootstrap cache
+        run: |
+          rm -f infra/codebase/backend/bootstrap/cache/*.php
+          touch infra/codebase/backend/bootstrap/cache/.gitkeep
+
+      # Dependency Audit page (Backpack Tools): the report is written into
+      # backend/resources/audit/ before the backend image is built, so every
+      # image carries the audit of its own code. Only when the image is built
+      # (a promoted release reuses the rc image, report included). Never blocks
+      # the deploy: a failure ends up inside the report.
+      - name: Generate dependency audit report
+        if: steps.meta.outputs.mode == 'full'
+        continue-on-error: true
+        run: bash infra/codebase/.github/scripts/audit-report.sh infra/codebase "${{ steps.meta.outputs.tag }}" "${{ github.sha }}"
+
+      - name: Download Font Awesome from S3
+        run: |
+          mkdir -p infra/codebase/frontend/public/fonts
+          aws s3 cp \
+            s3://s3-rays-config/assets/fontawesome-pro-6.5.1-web.zip \
+            infra/codebase/frontend/public/fonts/fontawesome-pro-6.5.1-web.zip \
+            --region ${{ env.AWS_REGION }}
+          unzip -oq infra/codebase/frontend/public/fonts/fontawesome-pro-6.5.1-web.zip \
+            -d infra/codebase/frontend/public/fonts/
+          rm -f infra/codebase/frontend/public/fonts/fontawesome-pro-6.5.1-web.zip
+
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v4
+        with:
+          driver: docker-container
+
+      - name: Build and push backend image
+        working-directory: infra
+        env:
+          MODE: ${{ steps.meta.outputs.mode }}
+          TAG: ${{ steps.meta.outputs.tag }}
+          ECR_BACKEND_REPO_VAL: ${{ env.ECR_BACKEND_REPO }}
+          AWS_REGION_VAL: ${{ env.AWS_REGION }}
+        run: |
+          # Promotion: add the release tag to the rc image manifest in ECR
+          # (registry-side, no pull and no build). Same code, same image.
+          if [ "$MODE" = "promote" ]; then
+            RC_TAG="${TAG%-release}-rc"
+            ecr_image() {
+              aws ecr batch-get-image --region "$AWS_REGION_VAL" --repository-name "$ECR_BACKEND_REPO_VAL" \
+                --image-ids imageTag="$RC_TAG" --query "images[0].$1" --output text
+            }
+            ecr_image imageManifest > /tmp/backend-manifest.json
+            MEDIA_TYPE=$(ecr_image imageManifestMediaType)
+            if aws ecr put-image --region "$AWS_REGION_VAL" --repository-name "$ECR_BACKEND_REPO_VAL" \
+                --image-tag "$TAG" --image-manifest file:///tmp/backend-manifest.json \
+                --image-manifest-media-type "$MEDIA_TYPE" > /dev/null 2> /tmp/backend-put.err; then
+              echo "OK: backend ${RC_TAG} promoted to ${TAG}"
+            elif grep -q ImageAlreadyExistsException /tmp/backend-put.err; then
+              echo "INFO: backend ${TAG} already points to the ${RC_TAG} image (re-run)"
+            else
+              cat /tmp/backend-put.err
+              echo "ERROR: could not tag backend ${RC_TAG} as ${TAG}"
+              exit 1
+            fi
+            rm -f /tmp/backend-manifest.json /tmp/backend-put.err
+            exit 0
+          fi
+
+          IMAGE="${{ secrets.ECR_REGISTRY }}/${{ env.ECR_BACKEND_REPO }}:${TAG}"
+          CACHE_IMAGE="${{ secrets.ECR_REGISTRY }}/${{ env.ECR_BACKEND_REPO }}:cache"
+
+          docker buildx build \
+            --target core-prod \
+            --build-arg PHP_APACHE_IMAGE="php:8.4-apache" \
+            --build-arg INSTALL_PYTHON_TOOLS="0" \
+            --build-arg CODEBASE="/var/www/html/codebase" \
+            --build-arg CODEUSER="codeuser" \
+            --build-arg HOST_UID="1002" \
+            --build-arg HOST_GID="1002" \
+            --cache-from type=registry,ref="${CACHE_IMAGE}" \
+            --cache-to type=registry,ref="${CACHE_IMAGE}",mode=max \
+            --tag "$IMAGE" \
+            --push \
+            .
+
+      # --------------------------------------------------------
+      # Frontend images: one per TENANT per environment of the tag.
+      # NEXT_PUBLIC_* variables are baked at build time and differ
+      # per tenant (domains, NEXT_PUBLIC_TENANT_ID) — a single shared
+      # image across tenants would leak one tenant's config into
+      # another's deployment.
+      # Which tenants: per environment, those with RUNNING EC2 instances
+      # tagged Environment + Tenant — the same discovery the deploy job
+      # uses — limited to DEPLOY_TENANTS. (This job has no `environment`,
+      # so it only sees the repo-level DEPLOY_TENANTS, not the
+      # per-environment one: the EC2 tags say where a tenant really runs.)
+      # A tenant that runs in an environment but has no .env.frontend on
+      # S3 for it is an error: its instances would pull a missing image.
+      # Tag convention: TAG-ENVIRONMENT-TENANT — matches ENVIRONMENT +
+      # TENANT_NAME written to .env by fetch-secrets.sh on each instance.
+      # --------------------------------------------------------
+
+      # Builds run in parallel (FRONTEND_BUILD_PARALLELISM at a time; each
+      # Next.js build needs 2-4 GB and the runner has no swap). The Dockerfile
+      # copies .env.frontend from the context root, so every build gets its own
+      # hard-linked copy of the context with its own .env.frontend.
+      - name: Build and push frontend images
+        working-directory: infra
+        env:
+          DEPLOY_TENANTS: ${{ secrets.DEPLOY_TENANTS }}
+          ENVIRONMENTS: ${{ steps.meta.outputs.environments }}
+          TAG: ${{ steps.meta.outputs.tag }}
+          ECR_REGISTRY: ${{ secrets.ECR_REGISTRY }}
+          ECR_FRONTEND_REPO_VAL: ${{ env.ECR_FRONTEND_REPO }}
+          AWS_REGION_VAL: ${{ env.AWS_REGION }}
+          FRONTEND_BUILD_PARALLELISM: 2
+        run: |
+          TENANT_FILTER="$(echo "$DEPLOY_TENANTS" | tr -d '[:space:]')"
+          [ -n "$TENANT_FILTER" ] || { echo "ERROR: DEPLOY_TENANTS secret is empty or not set — cannot build frontend images"; exit 1; }
+          ENV_LIST=$(echo "$ENVIRONMENTS" | python3 -c "import json,sys; print(' '.join(json.load(sys.stdin)))")
+          echo "Building frontend — environments: $ENV_LIST (${FRONTEND_BUILD_PARALLELISM} at a time)"
+
+          WORK_DIR="${RUNNER_TEMP:-/tmp}/frontend-builds"
+          rm -rf "$WORK_DIR"
+          mkdir -p "$WORK_DIR/logs"
+
+          # Usage: build_frontend ENVIRONMENT TENANT — writes logs/ENV-TENANT.{log,rc}
+          build_frontend() {
+            local environment="$1" tenant="$2"
+            local ctx="$WORK_DIR/ctx-${environment}-${tenant}"
+            cp -al "$PWD" "$ctx" 2>/dev/null || cp -a "$PWD" "$ctx"
+            rm -f "$ctx/.env.frontend"
+
+            if ! aws s3 cp \
+                "s3://s3-rays-config/${tenant}/${environment}/.env.frontend" \
+                "$ctx/.env.frontend" --region "$AWS_REGION_VAL" 2>/dev/null; then
+              echo "ERROR: could not download s3://s3-rays-config/${tenant}/${environment}/.env.frontend"
+              rm -rf "$ctx"
+              return 1
+            fi
+
+            local image="${ECR_REGISTRY}/${ECR_FRONTEND_REPO_VAL}:${TAG}-${environment}-${tenant}"
+            local cache_image="${ECR_REGISTRY}/${ECR_FRONTEND_REPO_VAL}:cache-${environment}-${tenant}"
+            local tenant_id
+            tenant_id="$(grep "^NEXT_PUBLIC_TENANT_ID=" "$ctx/.env.frontend" 2>/dev/null | cut -d= -f2- | tr -d '"' || true)"
+
+            docker buildx build \
+              --target front-prod \
+              --build-arg PHP_APACHE_IMAGE="php:8.4-apache" \
+              --build-arg APP_NAME="RAYS Nexi" \
+              --build-arg CODEBASE="/var/www/html/codebase" \
+              --build-arg CODEUSER="codeuser" \
+              --build-arg HOST_UID="1002" \
+              --build-arg HOST_GID="1002" \
+              $([ -n "$tenant_id" ] && echo "--build-arg NEXT_PUBLIC_TENANT_ID=$tenant_id") \
+              --cache-from type=registry,ref="${cache_image}" \
+              --cache-to type=registry,ref="${cache_image}",mode=max \
+              --tag "$image" --push "$ctx"
+            local rc=$?
+            rm -rf "$ctx"
+            [ "$rc" -eq 0 ] && echo "OK: pushed ${image}"
+            return "$rc"
+          }
+
+          MISSING=""
+          for ENVIRONMENT in $ENV_LIST; do
+            # Tenants with running instances in this environment (sorted, unique)
+            ENV_TENANTS=$(aws ec2 describe-instances --region "$AWS_REGION_VAL" \
+              --filters "Name=tag:Environment,Values=${ENVIRONMENT}" "Name=tag:Tenant,Values=${TENANT_FILTER}" \
+                "Name=instance-state-name,Values=running" \
+              --query "Reservations[].Instances[].[Tags[?Key=='Tenant'] | [0].Value]" \
+              --output text | sort -u)
+            if [ -z "$ENV_TENANTS" ]; then
+              echo "--- ${ENVIRONMENT}: no running instances for tenants ${TENANT_FILTER} — nothing to build"
+              continue
+            fi
+            echo "--- ${ENVIRONMENT}: tenants with running instances: $(echo $ENV_TENANTS)"
+
+            for TENANT in $ENV_TENANTS; do
+              NAME="${ENVIRONMENT}-${TENANT}"
+              if ! aws s3 ls "s3://s3-rays-config/${TENANT}/${ENVIRONMENT}/.env.frontend" \
+                  --region "$AWS_REGION_VAL" >/dev/null 2>&1; then
+                echo "ERROR: frontend ${NAME}: ${TENANT} runs in ${ENVIRONMENT} but s3://s3-rays-config/${TENANT}/${ENVIRONMENT}/.env.frontend is missing"
+                MISSING="$MISSING $NAME"
+                continue
+              fi
+              while [ "$(jobs -rp | wc -l)" -ge "$FRONTEND_BUILD_PARALLELISM" ]; do wait -n || true; done
+              echo "--- started: frontend ${NAME}"
+              # Inside `if`, bash -e does not abort the function: its cleanup always runs
+              { if build_frontend "$ENVIRONMENT" "$TENANT" > "$WORK_DIR/logs/${NAME}.log" 2>&1; then echo 0; else echo 1; fi > "$WORK_DIR/logs/${NAME}.rc"; } &
+            done
+          done
+          wait
+
+          FAILED="$MISSING"
+          for LOG in "$WORK_DIR"/logs/*.log; do
+            [ -e "$LOG" ] || continue
+            NAME="$(basename "$LOG" .log)"
+            RC="$(cat "$WORK_DIR/logs/${NAME}.rc" 2>/dev/null || echo 1)"
+            echo "::group::frontend ${NAME} (exit ${RC})"
+            cat "$LOG"
+            echo "::endgroup::"
+            [ "$RC" -eq 0 ] || FAILED="$FAILED $NAME"
+          done
+          rm -rf "$WORK_DIR"
+
+          [ -z "$FAILED" ] || { echo "ERROR: frontend build failed for:$FAILED"; exit 1; }
+          echo "OK: frontend images built"
+
+      # Production frontends of a promotion are built before the approval:
+      # the deploy job (environment: production) still waits for it.
+
+  # ============================================================
+  # JOB 2: Deploy via SSM, un job della matrice per environment
+  # Ordine e gate: elenco calcolato dal job build in base al tag;
+  # max-parallel: 1 + fail-fast = un environment alla volta, nell'ordine
+  # dell'elenco, stop al primo errore (come la vecchia catena di needs).
+  # Dentro un environment: rolling un'istanza alla volta.
+  # ============================================================
+  deploy:
+    name: Deploy to ${{ matrix.environment }}
+    needs: build
+    runs-on: [self-hosted, rays-ci]
+    environment: ${{ matrix.environment }}
+
+    strategy:
+      max-parallel: 1
+      fail-fast: true
+      matrix:
+        environment: ${{ fromJSON(needs.build.outputs.environments) }}
+
+    steps:
+      - name: Deploy via SSM (rolling)
+        env:
+          TARGET_ENV: ${{ matrix.environment }}
+          TAG: ${{ needs.build.outputs.tag }}
+          ECR_REGISTRY: ${{ secrets.ECR_REGISTRY }}
+          AWS_REGION_VAL: ${{ env.AWS_REGION }}
+          DOCKER_BASE_DIR: ${{ env.DOCKER_BASE_DIR }}
+          RAYS_ACCESS_TOKEN: ${{ secrets.RAYS_ACCESS_TOKEN }}
+          DEPLOY_TENANTS: ${{ secrets.DEPLOY_TENANTS }}
+          ASG_NAME: ${{ secrets.PROD_ASG_NAME }}
+          PROD_TARGET_GROUP_ARN: ${{ secrets.PROD_TARGET_GROUP_ARN }}
+        run: |
+          REGION="${AWS_REGION_VAL}"
+
+          [ -n "$DEPLOY_TENANTS" ] || { echo "ERROR: DEPLOY_TENANTS secret is empty or not set"; exit 1; }
+          TENANT_VALUES="Values=${DEPLOY_TENANTS}"
+          echo "Deploying to tenants: $DEPLOY_TENANTS (environment: $TARGET_ENV)"
+
+          FILTERS=(
+            "Name=tag:Environment,Values=${TARGET_ENV}"
+            "Name=tag:Tenant,${TENANT_VALUES}"
+            "Name=instance-state-name,Values=running"
+          )
+          if [ "$TARGET_ENV" = "production" ]; then
+            [ -n "${ASG_NAME:-}" ] || { echo "ERROR: PROD_ASG_NAME secret is empty or not set"; exit 1; }
+            FILTERS+=("Name=tag:aws:autoscaling:groupName,Values=${ASG_NAME}")
+          fi
+
+          # One line per instance: "INSTANCE_ID<TAB>TENANT"
+          INSTANCES=$(aws ec2 describe-instances \
+            --region "$REGION" \
+            --filters "${FILTERS[@]}" \
+            --query "Reservations[].Instances[].[InstanceId, Tags[?Key=='Tenant'] | [0].Value]" \
+            --output text)
+
+          if [ -z "$INSTANCES" ]; then
+            echo "WARN: no running ${TARGET_ENV} instances found for tenants: $DEPLOY_TENANTS — skipping"
+            exit 0
+          fi
+
+          INSTANCE_COUNT=$(echo "$INSTANCES" | wc -l | tr -d ' ')
+          TENANTS=$(echo "$INSTANCES" | awk '{print $2}' | sort -u)
+          echo "${TARGET_ENV} instances found: $INSTANCE_COUNT — tenants: $(echo $TENANTS)"
+
+          echo "aW1wb3J0IGpzb24sIG9zLCBzaGxleAoKIyBEZXBsb3kgb24gb25lIGluc3RhbmNlLCBpbiBvcmRlcjoKIyAgIDEuIHN5bmMgcmF5cy1pbmZyYSB0byBsYXRlc3QgbWFpbiAoYXMgY29kZXVzZXIpCiMgICAyLiBpbnN0YWxsIHRoZSBsYXRlc3QgZmV0Y2gtc2VjcmV0cy5zaCBmcm9tIFMzIHdoZW4gaXQgY2hhbmdlZAojICAgMy4gcmUtZmV0Y2ggc2VjcmV0cyBhbmQgZW52IGZpbGVzIChjcmVhdGVzIHBsYWNlaG9sZGVycyBmb3Igb3B0aW9uYWwgc2VjcmV0cykKIyAgIDQuIHdyaXRlIFRBR19OQU1FIC8gRUNSX1JFR0lTVFJZIGFuZCBydW4gbWFrZSBwdWxsIChzZWNyZXRzLWNoZWNrIGZpcnN0KQojIFN0ZXBzIDItMyBtYWtlIGV2ZXJ5IGRlcGxveSBzZWxmLXN1ZmZpY2llbnQ6IHRoZSBvcHRpb25hbC1zZWNyZXQgcGxhY2Vob2xkZXJzCiMgY29tZSBmcm9tIHRoZSBpbnN0YWxsZWQgZmV0Y2gtc2VjcmV0cy5zaCwgc28gYSBzdGFsZSBjb3B5IHdvdWxkIGxlYXZlIGEgbmV3CiMgY29tcG9zZSBzZWNyZXQgd2l0aG91dCBpdHMgZmlsZSBhbmQgbWFrZSBwdWxsIHdvdWxkIHN0b3AgYXQgc2VjcmV0cy1jaGVjay4Kc3luY19zY3JpcHQgPSAnJycjIS9iaW4vYmFzaApzZXQgLWV1CmNkICIkQVBQX0RJUiIKaWYgWyAtZCAuZ2l0IF07IHRoZW4KICBBVVRIX0hFQURFUj0kKHByaW50ZiAneC1hY2Nlc3MtdG9rZW46JXMnICIkR0hfVE9LRU4iIHwgYmFzZTY0IC13MCkKICBnaXQgLWMgc2FmZS5kaXJlY3Rvcnk9IiRBUFBfRElSIiAtYyBodHRwLmV4dHJhaGVhZGVyPSJBVVRIT1JJWkFUSU9OOiBiYXNpYyAkQVVUSF9IRUFERVIiIGZldGNoIG9yaWdpbiBtYWluIC0tcXVpZXQKICBnaXQgLWMgc2FmZS5kaXJlY3Rvcnk9IiRBUFBfRElSIiByZXNldCAtLWhhcmQgb3JpZ2luL21haW4gLS1xdWlldAogIGVjaG8gIk9LOiByYXlzLWluZnJhIHN5bmNlZCB0byBsYXRlc3QgbWFpbiIKZWxzZQogIGVjaG8gIkVSUk9SOiAkQVBQX0RJUiBpcyBub3QgYSBnaXQgY2hlY2tvdXQiCiAgZXhpdCAxCmZpCicnJwoKZGVwbG95X3NjcmlwdCA9ICcnJyMhL2Jpbi9iYXNoCnNldCAtZXUKY2QgIiRBUFBfRElSIgpncmVwIC1xICdeVEFHX05BTUU9JyAuZW52ICYmIHNlZCAtaSAic3xeVEFHX05BTUU9Lip8VEFHX05BTUU9JFRBR19OQU1FfCIgLmVudiB8fCBlY2hvICJUQUdfTkFNRT0kVEFHX05BTUUiID4+IC5lbnYKZ3JlcCAtcSAnXkVDUl9SRUdJU1RSWT0nIC5lbnYgJiYgc2VkIC1pICJzfF5FQ1JfUkVHSVNUUlk9Lip8RUNSX1JFR0lTVFJZPSRFQ1JfUkVHSVNUUll8IiAuZW52IHx8IGVjaG8gIkVDUl9SRUdJU1RSWT0kRUNSX1JFR0lTVFJZIiA+PiAuZW52Cm1ha2UgcHVsbAonJycKCmRlZiB3cml0ZV9zY3JpcHRfY21kKHBhdGgsIGJvZHkpOgogIHJldHVybiBmImNhdCA+IHtwYXRofSA8PCAnQ09ERVVTRVJFT0YnXG4iICsgYm9keSArICJDT0RFVVNFUkVPRiIKCmNvbW1hbmRzID0gWwogICJzZXQgLWV1IiwKICBmIlJFR0lPTj17c2hsZXgucXVvdGUob3MuZW52aXJvblsnUkVHSU9OX0VOViddKX0iLAogIGYiVEFHX05BTUU9e3NobGV4LnF1b3RlKG9zLmVudmlyb25bJ1RBR19FTlYnXSl9IiwKICBmIkVDUl9SRUdJU1RSWT17c2hsZXgucXVvdGUob3MuZW52aXJvblsnRUNSX0VOViddKX0iLAogIGYiRE9DS0VSX0JBU0VfRElSPXtzaGxleC5xdW90ZShvcy5lbnZpcm9uWydCQVNFX0RJUl9FTlYnXSl9IiwKICBmIkdIX1RPS0VOPXtzaGxleC5xdW90ZShvcy5lbnZpcm9uWydUT0tFTl9FTlYnXSl9IiwKICAiSU1EU19UT0tFTj0kKGN1cmwgLXNmIC1YIFBVVCBodHRwOi8vMTY5LjI1NC4xNjkuMjU0L2xhdGVzdC9hcGkvdG9rZW4gLUggJ1gtYXdzLWVjMi1tZXRhZGF0YS10b2tlbi10dGwtc2Vjb25kczogMTAnIC0tbWF4LXRpbWUgNSkiLAogICJJTlNUQU5DRV9JRD0kKGN1cmwgLXNmIC1IIFwiWC1hd3MtZWMyLW1ldGFkYXRhLXRva2VuOiAkSU1EU19UT0tFTlwiIC0tbWF4LXRpbWUgNSBodHRwOi8vMTY5LjI1NC4xNjkuMjU0L2xhdGVzdC9tZXRhLWRhdGEvaW5zdGFuY2UtaWQpIiwKICAiVEVOQU5UPSQoYXdzIGVjMiBkZXNjcmliZS10YWdzIC0tcmVnaW9uIFwiJFJFR0lPTlwiIC0tZmlsdGVycyBcIk5hbWU9cmVzb3VyY2UtaWQsVmFsdWVzPSR7SU5TVEFOQ0VfSUR9XCIgXCJOYW1lPWtleSxWYWx1ZXM9VGVuYW50XCIgLS1xdWVyeSBcIlRhZ3NbMF0uVmFsdWVcIiAtLW91dHB1dCB0ZXh0KSIsCiAgIlsgLW4gXCIkVEVOQU5UXCIgXSAmJiBbIFwiJFRFTkFOVFwiICE9IFwiTm9uZVwiIF0gfHwgeyBlY2hvIFwiRVJST1I6IFRlbmFudCB0YWcgbm90IGZvdW5kIGZvciAkSU5TVEFOQ0VfSURcIjsgZXhpdCAxOyB9IiwKICAiQVBQX0RJUj1cIiRET0NLRVJfQkFTRV9ESVIvJFRFTkFOVFwiIiwKICAiZWNobyBcIlRlbmFudDogJFRFTkFOVCAtIEFQUF9ESVI6ICRBUFBfRElSXCIiLAogICJbIC1kIFwiJEFQUF9ESVJcIiBdIHx8IHsgZWNobyBcIkVSUk9SOiAkQVBQX0RJUiBub3QgZm91bmRcIjsgZXhpdCAxOyB9IiwKICAjIDEuIFN5bmMgaW5mcmEKICAic3VkbyBjaG93biAtUiBjb2RldXNlcjpjb2RldXNlciBcIiRBUFBfRElSXCIiLAogIHdyaXRlX3NjcmlwdF9jbWQoIi90bXAvY29kZXVzZXJfc3luYy5zaCIsIHN5bmNfc2NyaXB0KSwKICAiY2htb2QgK3ggL3RtcC9jb2RldXNlcl9zeW5jLnNoIiwKICAic3VkbyAtdSBjb2RldXNlciAtSCBlbnYgQVBQX0RJUj1cIiRBUFBfRElSXCIgR0hfVE9LRU49XCIkR0hfVE9LRU5cIiAvdG1wL2NvZGV1c2VyX3N5bmMuc2giLAogICJybSAtZiAvdG1wL2NvZGV1c2VyX3N5bmMuc2giLAogICMgMi4gU2VsZi11cGRhdGUgZmV0Y2gtc2VjcmV0cy5zaCAoc2FtZSBsb2dpYyBhcyB0aGUgUmVmZXRjaCBTZWNyZXRzIHdvcmtmbG93KToKICAjIHN5bnRheC1jaGVja2VkIGJlZm9yZSBpbnN0YWxsLCBhdG9taWMgc3dhcCwgcHJldmlvdXMga2VwdCBhcyAucHJldi4KICAiRkVUQ0hfU0NSSVBUPS91c3IvbG9jYWwvYmluL2ZldGNoLXNlY3JldHMuc2giLAogICJUTVBfU0NSSVBUPSQobWt0ZW1wKSIsCiAgImF3cyBzMyBjcCBzMzovL3MzLXJheXMtY29uZmlnL3NjcmlwdHMvZmV0Y2gtc2VjcmV0cy5zaCBcIiRUTVBfU0NSSVBUXCIgLS1yZWdpb24gXCIkUkVHSU9OXCIgLS1xdWlldCB8fCB7IHJtIC1mIFwiJFRNUF9TQ1JJUFRcIjsgZWNobyBcIkVSUk9SOiBjb3VsZCBub3QgZG93bmxvYWQgZmV0Y2gtc2VjcmV0cy5zaCBmcm9tIFMzXCI7IGV4aXQgMTsgfSIsCiAgIlsgLXMgXCIkVE1QX1NDUklQVFwiIF0gJiYgYmFzaCAtbiBcIiRUTVBfU0NSSVBUXCIgfHwgeyBybSAtZiBcIiRUTVBfU0NSSVBUXCI7IGVjaG8gXCJFUlJPUjogZG93bmxvYWRlZCBmZXRjaC1zZWNyZXRzLnNoIGlzIGVtcHR5IG9yIGhhcyBzeW50YXggZXJyb3JzIC0gbm90IGluc3RhbGxlZFwiOyBleGl0IDE7IH0iLAogICJpZiBjbXAgLXMgXCIkVE1QX1NDUklQVFwiIFwiJEZFVENIX1NDUklQVFwiOyB0aGVuIGVjaG8gXCJJTkZPOiBmZXRjaC1zZWNyZXRzLnNoIHVuY2hhbmdlZFwiOyBlbHNlIFsgLWYgXCIkRkVUQ0hfU0NSSVBUXCIgXSAmJiBzdWRvIGNwIC1wIFwiJEZFVENIX1NDUklQVFwiIFwiJEZFVENIX1NDUklQVC5wcmV2XCI7IHN1ZG8gaW5zdGFsbCAtbSA3NTUgLW8gcm9vdCAtZyByb290IFwiJFRNUF9TQ1JJUFRcIiBcIiRGRVRDSF9TQ1JJUFQubmV3XCI7IHN1ZG8gbXYgLWYgXCIkRkVUQ0hfU0NSSVBULm5ld1wiIFwiJEZFVENIX1NDUklQVFwiOyBlY2hvIFwiT0s6IGZldGNoLXNlY3JldHMuc2ggdXBkYXRlZCBmcm9tIFMzIChwcmV2aW91cyBrZXB0IGFzIGZldGNoLXNlY3JldHMuc2gucHJldilcIjsgZmkiLAogICJybSAtZiBcIiRUTVBfU0NSSVBUXCIiLAogICJzeXN0ZW1jdGwgY2F0IGRvY2tlci1zZWNyZXRzLWZldGNoLnNlcnZpY2UgMj4vZGV2L251bGwgfCBncmVwIC1xIFwiJEZFVENIX1NDUklQVFwiIHx8IGVjaG8gXCJXQVJOOiBkb2NrZXItc2VjcmV0cy1mZXRjaC5zZXJ2aWNlIGRvZXMgbm90IHJlZmVyZW5jZSAkRkVUQ0hfU0NSSVBUIC0gY2hlY2sgaXRzIEV4ZWNTdGFydFwiIiwKICAjIDMuIFJlLWZldGNoIHNlY3JldHMgYW5kIGVudiBmaWxlcyAoVEFHX05BTUUgaXMgc3RyaXBwZWQgZnJvbSAuZW52LCBzdGVwIDQgcmV3cml0ZXMgaXQpCiAgImVjaG8gXCJJTkZPOiByZS1mZXRjaGluZyBzZWNyZXRzIGFuZCBlbnYgZmlsZXMuLi5cIiIsCiAgInN1ZG8gc3lzdGVtY3RsIHJlc3RhcnQgZG9ja2VyLXNlY3JldHMtZmV0Y2guc2VydmljZSIsCiAgImVjaG8gXCJPSzogc2VjcmV0cyByZS1mZXRjaGVkXCIiLAogICMgNC4gRGVwbG95CiAgInN1ZG8gY2hvd24gLVIgY29kZXVzZXI6Y29kZXVzZXIgXCIkQVBQX0RJUlwiIiwKICB3cml0ZV9zY3JpcHRfY21kKCIvdG1wL2NvZGV1c2VyX2RlcGxveS5zaCIsIGRlcGxveV9zY3JpcHQpLAogICJjaG1vZCAreCAvdG1wL2NvZGV1c2VyX2RlcGxveS5zaCIsCiAgInN1ZG8gLXUgY29kZXVzZXIgLUggZW52IEFQUF9ESVI9XCIkQVBQX0RJUlwiIFRBR19OQU1FPVwiJFRBR19OQU1FXCIgRUNSX1JFR0lTVFJZPVwiJEVDUl9SRUdJU1RSWVwiIC90bXAvY29kZXVzZXJfZGVwbG95LnNoIiwKICAicm0gLWYgL3RtcC9jb2RldXNlcl9kZXBsb3kuc2giLAogICJlY2hvIFwiT0s6IGRlcGxveSBjb21wbGV0ZWQgZm9yIHRlbmFudCAkVEVOQU5UXCIiLApdCnByaW50KGpzb24uZHVtcHMoeyJjb21tYW5kcyI6IGNvbW1hbmRzfSkpCg==" | base64 -d > /tmp/ssm_deploy.py
+
+          # Usage: deploy_instance INSTANCE_ID — SSM deploy + health check;
+          # any failure exits the (per-tenant) subshell.
+          deploy_instance() {
+            INSTANCE_ID="$1"
+            echo "--- Deploying to $INSTANCE_ID ---"
+
+            SSM_PARAMS=$(mktemp)
+            REGION_ENV="$REGION" \
+            TAG_ENV="$TAG" \
+            ECR_ENV="$ECR_REGISTRY" \
+            BASE_DIR_ENV="$DOCKER_BASE_DIR" \
+            TOKEN_ENV="$RAYS_ACCESS_TOKEN" \
+            python3 /tmp/ssm_deploy.py > "$SSM_PARAMS"
+
+            COMMAND_ID=$(aws ssm send-command \
+              --region "$REGION" \
+              --instance-ids "$INSTANCE_ID" \
+              --document-name "AWS-RunShellScript" \
+              --parameters "file://$SSM_PARAMS" \
+              --query "Command.CommandId" \
+              --output text)
+
+            rm -f "$SSM_PARAMS"
+
+            echo "SSM Command ID: $COMMAND_ID — waiting for completion..."
+
+            SSM_TIMEOUT=1800
+            SSM_ELAPSED=0
+            STATUS=""
+            RESULT=""
+
+            while [ "$SSM_ELAPSED" -le "$SSM_TIMEOUT" ]; do
+              RESULT=$(aws ssm get-command-invocation \
+                --region "$REGION" \
+                --command-id "$COMMAND_ID" \
+                --instance-id "$INSTANCE_ID" \
+                --query '{Status:Status,Output:StandardOutputContent,Error:StandardErrorContent}' \
+                --output json)
+
+              STATUS=$(echo "$RESULT" | python3 -c "import sys,json; print(json.load(sys.stdin)['Status'])")
+
+              case "$STATUS" in
+                Success|Failed|Cancelled|TimedOut) break ;;
+                *) echo "SSM status on $INSTANCE_ID: $STATUS (${SSM_ELAPSED}s)"; sleep 15; SSM_ELAPSED=$((SSM_ELAPSED+15)) ;;
+              esac
+            done
+
+            echo "$RESULT"
+
+            if [ "$STATUS" != "Success" ]; then
+              echo "ERROR: SSM command failed on $INSTANCE_ID (Status: $STATUS) — rolling stopped"
+              exit 1
+            fi
+
+            # Health check after (re)creating the containers on $INSTANCE_ID:
+            # integration/staging via the backend /health endpoint, production via the
+            # ALB target groups of the ASG.
+            if [ "$TARGET_ENV" = "production" ]; then
+              if [ -n "${PROD_TARGET_GROUP_ARN:-}" ]; then
+                TARGET_GROUP_ARNS="$PROD_TARGET_GROUP_ARN"
+              else
+                TARGET_GROUP_ARNS=$(aws autoscaling describe-auto-scaling-groups \
+                  --region "$REGION" \
+                  --auto-scaling-group-names "$ASG_NAME" \
+                  --query "AutoScalingGroups[0].TargetGroupARNs[]" \
+                  --output text)
+              fi
+
+              [ -n "$TARGET_GROUP_ARNS" ] && [ "$TARGET_GROUP_ARNS" != "None" ] \
+                || { echo "ERROR: no target group found for ASG ${ASG_NAME}"; exit 1; }
+
+              TG_TIMEOUT=120
+              TG_ELAPSED=0
+              TG_OK=false
+
+              while [ "$TG_ELAPSED" -le "$TG_TIMEOUT" ]; do
+                ALL_HEALTHY=true
+                for TG_ARN in $TARGET_GROUP_ARNS; do
+                  STATE=$(aws elbv2 describe-target-health \
+                    --region "$REGION" \
+                    --target-group-arn "$TG_ARN" \
+                    --targets "Id=$INSTANCE_ID" \
+                    --query "TargetHealthDescriptions[0].TargetHealth.State" \
+                    --output text 2>/dev/null || true)
+                  echo "ALB health on $INSTANCE_ID: $STATE (${TG_ELAPSED}s)"
+                  [ "$STATE" = "healthy" ] || ALL_HEALTHY=false
+                done
+                $ALL_HEALTHY && TG_OK=true && break
+                sleep 10
+                TG_ELAPSED=$((TG_ELAPSED+10))
+              done
+
+              if [ "$TG_OK" != "true" ]; then
+                echo "ERROR: ALB health check timed out for $INSTANCE_ID — rolling stopped"
+                exit 1
+              fi
+              echo "OK: ALB health check passed for $INSTANCE_ID"
+            else
+              HEALTH_TIMEOUT=120
+              HEALTH_ELAPSED=0
+              HTTP_CODE="000"
+
+              while [ "$HEALTH_ELAPSED" -le "$HEALTH_TIMEOUT" ]; do
+                HTTP_CMD_ID=$(aws ssm send-command \
+                  --region "$REGION" \
+                  --instance-ids "$INSTANCE_ID" \
+                  --document-name "AWS-RunShellScript" \
+                  --parameters 'commands=["curl --max-time 5 -s -o /dev/null -w \"%{http_code}\" http://localhost:8080/health || true"]' \
+                  --query "Command.CommandId" \
+                  --output text)
+
+                sleep 5
+
+                HTTP_CODE=$(aws ssm get-command-invocation \
+                  --region "$REGION" \
+                  --command-id "$HTTP_CMD_ID" \
+                  --instance-id "$INSTANCE_ID" \
+                  --query "StandardOutputContent" \
+                  --output text | tr -d '[:space:]')
+
+                echo "Health check on $INSTANCE_ID: HTTP ${HTTP_CODE:-000} (${HEALTH_ELAPSED}s)"
+
+                if [ "$HTTP_CODE" = "200" ]; then
+                  break
+                fi
+
+                sleep 10
+                HEALTH_ELAPSED=$((HEALTH_ELAPSED + 15))
+              done
+
+              if [ "$HTTP_CODE" != "200" ]; then
+                echo "ERROR: health check timed out on $INSTANCE_ID after ${HEALTH_TIMEOUT}s (HTTP ${HTTP_CODE:-000}) — rolling stopped"
+                exit 1
+              fi
+              echo "OK: health check passed on $INSTANCE_ID (HTTP $HTTP_CODE)"
+            fi
+          }
+
+          # Usage: deploy_tenant TENANT — rolling over the tenant's instances, one at a time
+          deploy_tenant() {
+            local id
+            for id in $(echo "$INSTANCES" | awk -v t="$1" '$2 == t {print $1}'); do
+              deploy_instance "$id"
+            done
+          }
+
+          # Different tenants live on different instances: deploy them in
+          # parallel, each one rolling over its own instances (several
+          # instances of one tenant behind the ALB never go down together).
+          # A failing tenant stops its own rolling; the others finish, then
+          # the job fails and fail-fast cancels the next environments.
+          LOG_DIR=$(mktemp -d)
+          for TENANT in $TENANTS; do
+            { ( deploy_tenant "$TENANT" ) 2>&1 | sed -u "s/^/[$TENANT] /"; echo "${PIPESTATUS[0]}" > "$LOG_DIR/$TENANT.rc"; } &
+          done
+          wait
+
+          FAILED=""
+          for TENANT in $TENANTS; do
+            [ "$(cat "$LOG_DIR/$TENANT.rc" 2>/dev/null || echo 1)" = "0" ] || FAILED="$FAILED $TENANT"
+          done
+          rm -rf "$LOG_DIR"
+
+          [ -z "$FAILED" ] || { echo "ERROR: ${TARGET_ENV} deploy failed for tenant(s):$FAILED — their remaining instances were not touched"; exit 1; }
+          echo "OK: ${TARGET_ENV} deploy completed ($INSTANCE_COUNT instances, tenants: $(echo $TENANTS))"
+
+  # ============================================================
+  # JOB 3: GitHub release, solo se build e deploy sono riusciti
+  #   -rc      -> pre-release vX.Y.Z-rc: candidata alla promozione
+  #               (Promote RC -> Run workflow, oppure Release label
+  #               "Latest" dalla pagina Releases).
+  #   -release -> la release della rc diventa "vX.Y.Z", Latest, con il
+  #               riferimento al deploy di production.
+  #   vX.Y.Z   -> nessuna release (solo integration).
+  # Usa il GITHUB_TOKEN: le modifiche fatte con questo token non avviano
+  # workflow, quindi segnare qui la rc come release non riavvia Promote RC.
+  # ============================================================
+  release:
+    name: Update the GitHub release
+    needs: [build, deploy]
+    runs-on: [self-hosted, rays-ci]
+    permissions:
+      contents: write
+
+    steps:
+      - name: Create the rc pre-release or mark the promoted release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ needs.build.outputs.tag }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          REPO="$GITHUB_REPOSITORY"
+          case "$TAG" in
+            *-rc)
+              # A re-run keeps the existing release untouched
+              if gh release view "$TAG" --repo "$REPO" >/dev/null 2>&1; then
+                echo "INFO: release ${TAG} already exists — left untouched"
+                exit 0
+              fi
+              gh release create "$TAG" --repo "$REPO" --prerelease --title "$TAG" --generate-notes
+              echo "OK: pre-release ${TAG} created — to promote it: Actions -> Promote RC -> Run workflow"
+              ;;
+            *-release)
+              RC_TAG="${TAG%-release}-rc"
+              VERSION="${TAG%-release}"
+              MARKER="In production as \`${TAG}\`"
+              # rcs deployed before this job existed may have no release yet
+              gh release view "$RC_TAG" --repo "$REPO" >/dev/null 2>&1 \
+                || gh release create "$RC_TAG" --repo "$REPO" --title "$VERSION" --generate-notes
+              NOTES=$(mktemp)
+              gh release view "$RC_TAG" --repo "$REPO" --json body --jq .body > "$NOTES"
+              if ! grep -qF "$MARKER" "$NOTES"; then
+                { echo "**${MARKER}** — $(date -u '+%Y-%m-%d %H:%M UTC'), [production deploy](${RUN_URL})"; echo; cat "$NOTES"; } > "$NOTES.new"
+                mv "$NOTES.new" "$NOTES"
+              fi
+              gh release edit "$RC_TAG" --repo "$REPO" --title "$VERSION" --prerelease=false --latest --notes-file "$NOTES"
+              rm -f "$NOTES"
+              echo "OK: release ${VERSION} (${RC_TAG}) marked as in production"
+              ;;
+            *)
+              echo "INFO: ${TAG} is an integration build — no GitHub release"
+              ;;
+          esac

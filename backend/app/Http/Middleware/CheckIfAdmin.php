@@ -30,8 +30,7 @@ class CheckIfAdmin
 		return $user &&
 			($user->backpackRole->name == "Admin" ||
 				$user->backpackRole->name == "Guest" ||
-				$user->backpackRole->name == "Developer" ||
-				$user->backpackRole->name == "Author");
+				$user->backpackRole->name == "Developer");
 		//return true;
 	}
 

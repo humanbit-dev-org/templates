@@ -1,0 +1,638 @@
+/* API Sandbox documentation page */
+
+html {
+    scroll-behavior: smooth;
+}
+
+.api-sandbox-page {
+    margin: 0;
+    overflow-x: hidden;
+    background: #f4f6f8;
+    color: #212529;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+}
+
+/* Mobile endpoint picker — replaces the hidden sidebar under 900px. */
+.api-sandbox-nav-mobile {
+    display: none;
+}
+
+.api-sandbox-layout {
+    display: flex;
+    align-items: flex-start;
+    gap: 2rem;
+    max-width: 1200px;
+    /* The gap below the header (tabs + banner) lives here, so the black
+       bar attaches flush to the tabs above it. */
+    margin: 2rem auto 0;
+    padding: 0 1.5rem;
+}
+
+.api-sandbox-nav {
+    position: sticky;
+    top: 4rem;
+    flex: 0 0 230px;
+    padding: 2rem 0;
+}
+
+/* Fixed to the viewport bottom at the nav column's left edge — always
+   visible, unlike an in-flow link which only shows after the links list.
+   left = layout padding on narrow screens, else centered-layout offset.
+   Lives outside <nav> so the mobile rules below can keep it working. */
+.api-sandbox-nav-top {
+    position: fixed;
+    bottom: 0;
+    left: max(1.5rem, calc(50vw - 600px));
+    box-sizing: border-box;
+    width: 230px;
+    margin-left: -0.5rem;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    border-top: 1px solid #dee2e6;
+    background: #f4f6f8;
+    font-weight: 600;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(100%);
+    transition: transform 0.3s ease, opacity 0.3s ease, visibility 0.3s;
+    pointer-events: none;
+}
+
+.api-sandbox-nav-top.visible {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+.api-sandbox-nav-title {
+    margin: 0 0 0.6rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #6c757d;
+}
+
+.api-sandbox-nav-link {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.35rem 0.5rem;
+    border-radius: 4px;
+    color: #212529;
+    text-decoration: none;
+    font-size: 0.88rem;
+}
+
+.api-sandbox-nav-link:hover {
+    background: #e9ecef;
+}
+
+.api-sandbox-nav-link.active {
+    background: #fff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.api-sandbox-nav-link .api-sandbox-method {
+    min-width: 3rem;
+    padding: 0.1rem 0.3rem;
+    font-size: 0.62rem;
+    text-align: center;
+}
+
+.api-sandbox-main {
+    flex: 1;
+    min-width: 0;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem 0 4rem;
+}
+
+
+
+.api-sandbox-title {
+    font-size: 2rem;
+    font-weight: 400;
+    margin: 0 0 0.5rem;
+    color: #0d6efd;
+}
+
+.api-sandbox-lead {
+    margin: 0 0 2rem;
+    font-size: 1.1rem;
+    color: #495057;
+}
+
+.api-sandbox-lead-sandbox {
+    margin-top: -1.25rem;
+    font-size: 0.95rem;
+}
+
+.api-sandbox-badge {
+    display: inline-block;
+    margin-left: 0.6rem;
+    padding: 0.15rem 0.6rem;
+    border-radius: 4px;
+    background: #fd7e14;
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    vertical-align: middle;
+}
+
+.api-sandbox-card {
+    background: #fff;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    /* Anchor jumps must clear the sticky banner, not land underneath it. */
+    scroll-margin-top: 4.5rem;
+}
+
+.api-sandbox-subtitle {
+    font-size: 1.05rem;
+    font-weight: 600;
+    margin: 1.25rem 0 0.5rem;
+}
+
+.api-sandbox-card > .api-sandbox-subtitle:first-child,
+.api-sandbox-endpoint-title {
+    margin-top: 0;
+}
+
+.api-sandbox-endpoint-title {
+    font-size: 1.35rem;
+    font-weight: 500;
+    margin-bottom: 0.75rem;
+}
+
+.api-sandbox-path {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin: 0 0 0.75rem;
+}
+
+.api-sandbox-method {
+    padding: 0.2rem 0.7rem;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 0.8rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #fff;
+    background: #6c757d;
+}
+
+.api-sandbox-method.method-get {
+    background: #198754;
+}
+
+.api-sandbox-method.method-patch {
+    background: #0d6efd;
+}
+
+.api-sandbox-method.method-post {
+    background: #6f42c1;
+}
+
+.api-sandbox-method.method-delete {
+    background: #dc3545;
+}
+
+.api-sandbox-path-code {
+    font-size: 0.95rem;
+    word-break: break-all;
+}
+
+.api-sandbox-description {
+    margin: 0 0 1rem;
+    color: #495057;
+}
+
+.api-sandbox-params {
+    margin-bottom: 1rem;
+}
+
+.api-sandbox-table-wrap {
+    overflow-x: auto;
+}
+
+.api-sandbox-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+}
+
+.api-sandbox-table th,
+.api-sandbox-table td {
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #dee2e6;
+    text-align: left;
+    vertical-align: top;
+}
+
+.api-sandbox-table th {
+    background: #f1f3f5;
+    font-weight: 600;
+}
+
+.api-sandbox-param-name {
+    font-weight: 600;
+}
+
+.api-sandbox-required {
+    color: #dc3545;
+    font-weight: 700;
+    margin-left: 0.15rem;
+}
+
+.api-sandbox-responses .api-sandbox-response {
+    margin-bottom: 1rem;
+}
+
+.api-sandbox-status {
+    display: inline-block;
+    min-width: 2.5rem;
+    padding: 0.1rem 0.5rem;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-align: center;
+    color: #fff;
+    background: #6c757d;
+}
+
+.api-sandbox-status.status-2xx {
+    background: #198754;
+}
+
+.api-sandbox-status.status-4xx {
+    background: #fd7e14;
+}
+
+.api-sandbox-status.status-5xx {
+    background: #dc3545;
+}
+
+.api-sandbox-code {
+    margin: 0.5rem 0 0;
+    padding: 0.75rem 1rem;
+    border-radius: 6px;
+    background: #212529;
+    color: #e9ecef;
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    overflow-x: auto;
+    white-space: pre;
+}
+
+/* ---- Impersonation banner ---- */
+
+.api-sandbox-banner {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+    min-height: 3rem;
+    box-sizing: border-box;
+    padding: 0.6rem 1.5rem;
+    background: #212529;
+    color: #f8f9fa;
+    font-size: 0.85rem;
+}
+
+.api-sandbox-banner-impersonate {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.api-sandbox-banner button {
+    padding: 0.3rem 0.7rem;
+    border: 0;
+    border-radius: 4px;
+    background: #0d6efd;
+    color: #fff;
+    font-family: inherit;
+    font-size: inherit;
+    cursor: pointer;
+}
+
+.api-sandbox-banner button:disabled {
+    opacity: 0.6;
+    cursor: default;
+}
+
+[hidden] {
+    display: none !important;
+}
+
+.api-sandbox-banner-token {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-width: 0;
+}
+
+.api-sandbox-banner-token code {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: #8ce99a;
+}
+
+/* Lifecycle group (expiry + refresh) pinned to the right of the bar. */
+.api-sandbox-banner-user {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-left: auto;
+    color: #adb5bd;
+}
+
+.api-sandbox-banner-user button {
+    padding: 0.1rem 0.4rem;
+    background: #dc3545;
+}
+
+/* ---- Try-it panel ---- */
+
+.api-sandbox-tryit {
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid #dee2e6;
+}
+
+.api-sandbox-tryit-note {
+    font-size: 0.85rem;
+    font-style: italic;
+    color: #6c757d;
+    margin: 0 0 0.75rem;
+}
+
+.api-sandbox-tryit-buttons {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.api-sandbox-tryit-btn {
+    margin-top: 0.5rem;
+    padding: 0.45rem 1.1rem;
+    border: 0;
+    border-radius: 4px;
+    background: #0d6efd;
+    color: #fff;
+    font-family: inherit;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.api-sandbox-tryit-btn:hover {
+    background: #0b5ed7;
+}
+
+.api-sandbox-tryit-btn:disabled {
+    opacity: 0.6;
+    cursor: default;
+}
+
+.api-sandbox-tryit-buttons .api-sandbox-tryit-btn {
+    margin-top: 0;
+}
+
+.api-sandbox-tryit-result {
+    margin-top: 0.75rem;
+}
+
+.api-sandbox-tryit-call {
+    margin: 0 0 0.5rem;
+    font-size: 0.85rem;
+    color: #6c757d;
+}
+
+.api-sandbox-tryit-call code {
+    word-break: break-all;
+}
+
+.api-sandbox-tryit-error {
+    color: #dc3545;
+    font-size: 0.9rem;
+    margin: 0;
+}
+
+.api-sandbox-tryit-loading {
+    color: #6c757d;
+    font-style: italic;
+    margin: 0;
+}
+
+.api-sandbox-lead code {
+    font-size: 0.85em;
+}
+
+/* ---- Environment tabs (Sandbox | Portal switch on /api-docs) ---- */
+
+.api-docs-tabs {
+    max-width: 1200px;
+    margin: 1rem auto 0;
+}
+
+/* The shared .api-sandbox-tabs class below re-adds margin-bottom for the
+   in-page bank tabs; the env toggle must stay flush with the top bar. */
+.api-sandbox-tabs.api-docs-tabs {
+    margin-bottom: 0;
+}
+
+.api-docs-tabs a.api-sandbox-tab {
+    text-decoration: none;
+}
+
+/* Staff-only access-token log on the Portal tab: capped and scrollable. */
+.api-docs-token-log {
+    max-height: 50vh;
+    overflow-y: auto;
+}
+
+/* ---- Bank tabs ---- */
+
+.api-sandbox-tabs {
+    display: flex;
+    align-items: stretch;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin: 0 0 2rem;
+    padding: 0.5rem;
+    background: #e9ecef;
+    border-radius: 8px;
+}
+
+.api-sandbox-tab {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.15rem;
+    padding: 0.6rem 1rem;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    background: transparent;
+    color: #495057;
+    font-family: inherit;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.api-sandbox-tab small {
+    font-size: 0.75rem;
+    font-weight: 400;
+    color: #868e96;
+}
+
+.api-sandbox-tab:hover {
+    background: #f8f9fa;
+}
+
+.api-sandbox-tab.active {
+    background: #fff;
+    border-color: #dee2e6;
+    color: #0d6efd;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.api-sandbox-conguaglio {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-left: auto;
+    padding: 0.6rem 1rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #495057;
+    cursor: pointer;
+}
+
+@media (max-width: 900px) {
+    .api-sandbox-nav {
+        display: none;
+    }
+
+    /* The banner scrolls away on mobile (unlike desktop where it is the
+       pinned navbar); its rows wrap and center instead of overflowing. */
+    .api-sandbox-banner {
+        position: static;
+        justify-content: center;
+        text-align: center;
+        padding: 0.5rem 1rem;
+        font-size: 0.8rem;
+    }
+
+    .api-sandbox-banner-impersonate,
+    .api-sandbox-banner-token {
+        flex-wrap: wrap;
+        min-width: 0;
+        justify-content: center;
+    }
+
+    /* The desktop right-pin would fight the centered wrap. */
+    .api-sandbox-banner-user {
+        margin-left: 0;
+    }
+
+    .api-sandbox-banner-token code {
+        max-width: 40vw;
+    }
+
+    .api-sandbox-title {
+        font-size: 1.6rem;
+    }
+
+    /* Segmented control: the tabs split the row evenly instead of
+       wrapping into a stacked list; the conguaglio toggle drops below.
+       border-box so padding doesn't push past the 100%/flexed width. */
+    .api-sandbox-tab {
+        flex: 1 1 0;
+        min-width: 0;
+        box-sizing: border-box;
+        align-items: center;
+        text-align: center;
+        padding: 0.5rem 0.6rem;
+    }
+
+    .api-sandbox-conguaglio {
+        flex: 0 0 100%;
+        box-sizing: border-box;
+        margin-left: 0;
+        justify-content: center;
+    }
+
+    /* The picker is a body child, so sticky pins it for the rest of the
+       page once the banner has scrolled away. */
+    .api-sandbox-nav-mobile {
+        position: sticky;
+        top: 0;
+        z-index: 9;
+        display: block;
+        width: 100%;
+        margin: 0;
+        padding: 0.6rem 1.5rem;
+        border: 0;
+        border-bottom: 1px solid #dee2e6;
+        border-radius: 0;
+        background: #fff;
+        color: #212529;
+        font-family: inherit;
+        font-size: 0.95rem;
+    }
+
+    /* No nav column on mobile: "Torna su" becomes a floating circular
+       button, bottom-right like Stripe/PayPal docs. The .visible toggle
+       and slide transition carry over unchanged. */
+    .api-sandbox-nav-top {
+        left: auto;
+        right: 1rem;
+        bottom: 1rem;
+        width: 2.75rem;
+        height: 2.75rem;
+        margin-left: 0;
+        padding: 0;
+        justify-content: center;
+        border: 1px solid #dee2e6;
+        border-radius: 50%;
+        font-size: 1.25rem;
+        font-weight: 400;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    .api-sandbox-nav-top-label {
+        display: none;
+    }
+
+    /* Anchored sections must clear the taller sticky header. */
+    .api-sandbox-endpoint {
+        scroll-margin-top: 7rem;
+    }
+
+    .api-sandbox-layout {
+        padding: 0;
+    }
+
+    .api-sandbox-main {
+        padding: 2rem 1.5rem 4rem;
+    }
+}

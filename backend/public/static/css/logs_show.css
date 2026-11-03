@@ -1,0 +1,105 @@
+/* ===========================================
+   Log Show Page Styles
+   =========================================== */
+
+.log-content {
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', monospace;
+    font-size: 0.8rem;
+    line-height: 1.6;
+    padding: 1rem;
+    margin: 0;
+    background: #1e1e1e;
+    color: #d4d4d4;
+    overflow-x: auto;
+    white-space: pre-wrap;
+    word-break: break-word;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+/* Log entries */
+.log-content .log-entry {
+    padding: 0.1rem 0;
+    position: relative;
+}
+
+.log-content .log-entry:hover {
+    background: rgba(255,255,255,0.03);
+}
+
+.log-content .log-entry:hover .log-copy-btn {
+    opacity: 1;
+}
+
+/* Time-based grouping */
+.log-content .log-group-start {
+    margin-top: 0.4rem;
+    border-left: 2px solid rgba(116,192,252,0.4);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    padding-left: 0.5rem;
+}
+
+.log-content .log-group-cont {
+    border-left: 2px solid rgba(116,192,252,0.15);
+    padding-left: 0.5rem;
+    padding-top: 0.05rem;
+    padding-bottom: 0.05rem;
+}
+
+.log-content .log-time-dim {
+    visibility: hidden;
+}
+
+/* Copy button per entry */
+.log-content .log-copy-btn {
+    position: absolute;
+    right: 0.5rem;
+    top: 0.15rem;
+    background: #2a2a3e;
+    border: 1px solid #3a3a4e;
+    border-radius: 3px;
+    color: #adb5bd;
+    cursor: pointer;
+    font-size: 0.7rem;
+    padding: 0.1rem 0.35rem;
+    opacity: 0;
+    transition: opacity 0.15s ease, color 0.15s ease;
+    z-index: 1;
+}
+
+.log-content .log-copy-btn:hover {
+    color: #74c0fc;
+    border-color: #74c0fc;
+}
+
+.log-content .log-copy-btn.copied {
+    color: #69db7c;
+    border-color: #69db7c;
+    opacity: 1;
+}
+
+/* Log levels */
+.log-content .log-emergency,
+.log-content .log-alert,
+.log-content .log-critical { color: #ff6b6b; font-weight: bold; }
+.log-content .log-error { color: #ff8787; }
+.log-content .log-warning { color: #ffd43b; }
+.log-content .log-notice { color: #74c0fc; }
+.log-content .log-info { color: #69db7c; }
+.log-content .log-debug { color: #868e96; }
+
+/* Time */
+.log-content .log-time { color: #adb5bd; font-weight: 500; }
+
+/* Environment */
+.log-content .log-env { color: #da77f2; }
+
+/* Stack trace */
+.log-content .log-stacktrace { color: #868e96; font-size: 0.75rem; padding-left: 1.5rem; }
+
+/* JSON formatting */
+.log-content .json-key { color: #74c0fc; }
+.log-content .json-string { color: #69db7c; }
+.log-content .json-number { color: #ffd43b; }
+.log-content .json-boolean { color: #ff8787; }
+.log-content .json-null { color: #868e96; font-style: italic; }

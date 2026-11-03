@@ -1,4 +1,3 @@
-
 .csv-header {
     white-space: nowrap;
     overflow: hidden;
@@ -94,6 +93,11 @@
     font-weight: 600;
     color: var(--tblr-primary);
     border-bottom: 2px solid rgba(var(--tblr-primary-rgb), 0.1);
+    padding: 0.75rem 1rem !important;
+}
+
+.mapping-table td {
+    padding: 0.5rem 1rem !important;
 }
 
 .mapping-row {
@@ -107,21 +111,6 @@
 
 .mapping-row:hover {
     background-color: rgba(var(--tblr-primary-rgb), 0.01);
-}
-
-/* Stile per la cella del numero di indice */
-.column-index-cell {
-    width: 3%;
-    padding: 0.5rem 0.25rem !important;
-}
-
-/* Stile fisso per il badge del numero di indice */
-.column-index {
-    padding: 0.25rem 0.4rem;
-    font-size: 0.75rem;
-    font-weight: 600;
-    min-width: 1.5rem;
-    display: inline-block;
 }
 
 /* Miglioramento della cella della colonna tabella */
@@ -200,7 +189,7 @@
     display: none !important;
 }
 
-/* Colori per Auto-Map - sfondo fisso */
+/* Colori per mapping match - sfondo fisso */
 .field-mapping-select.mapping-match-exact {
     background-color: rgba(var(--tblr-success-rgb), 0.1) !important;
     border-color: rgba(var(--tblr-success-rgb), 0.7) !important;
@@ -274,438 +263,60 @@
     transform: translateY(-50%) scale(1);
 }
 
-/* Overlay per Auto-Map */
-.auto-map-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    z-index: 9999;
-    display: none;
-    justify-content: center;
-    align-items: center;
-    overflow: hidden;
+/* Matching Fields Mapping Section */
+#matching-fields-mapping-section {
+    margin-bottom: 1.5rem;
 }
 
-.auto-map-animation {
-    background-color: white;
-    padding: 2rem;
-    border-radius: 8px;
-    text-align: center;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-    position: relative;
-    z-index: 10;
-    animation: float-animation 3s ease-in-out infinite;
+#matching-fields-mapping-section h6 {
+    font-size: 0.9rem;
 }
 
-@keyframes float-animation {
-    0% {
-        transform: translateY(0);
-    }
-
-    50% {
-        transform: translateY(-7px);
-    }
-
-    100% {
-        transform: translateY(0);
-    }
+.matching-fields-mapping-table {
+    margin-bottom: 0;
 }
 
-.auto-map-animation i {
-    font-size: 3rem;
-    color: var(--tblr-primary);
-    display: block;
-    margin-bottom: 1rem;
-    animation: rotate-icon 2.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+.matching-fields-mapping-table .mapping-row {
+    animation: slideInFromRight 0.3s ease-out;
 }
 
-@keyframes rotate-icon {
-    0% {
-        transform: rotate(0deg) scale(1);
-        color: var(--tblr-primary);
-    }
-
-    25% {
-        transform: rotate(90deg) scale(1.1);
-        color: #a178ff;
-    }
-
-    50% {
-        transform: rotate(180deg) scale(1);
-        color: #ff78a1;
-    }
-
-    75% {
-        transform: rotate(270deg) scale(1.1);
-        color: #78c0ff;
-    }
-
-    100% {
-        transform: rotate(360deg) scale(1);
-        color: var(--tblr-primary);
-    }
+/* Remove zebra striping from matching table */
+.matching-fields-mapping-table tbody tr,
+.matching-fields-mapping-table tbody tr:nth-child(odd),
+.matching-fields-mapping-table tbody tr:nth-child(even),
+.matching-fields-mapping-table .mapping-row,
+.matching-fields-mapping-table .mapping-row:nth-child(odd),
+.matching-fields-mapping-table .mapping-row:nth-child(even),
+#matching-fields-mapping-tbody tr,
+#matching-fields-mapping-tbody tr:nth-child(odd),
+#matching-fields-mapping-tbody tr:nth-child(even) {
+    background-color: #fff !important;
+    --tblr-table-bg: #fff !important;
+    --tblr-table-striped-bg: #fff !important;
 }
 
-.auto-map-animation span {
-    font-size: 1.2rem;
-    font-weight: 500;
+/* Reset developer field styles when in matching section */
+#matching-fields-mapping-tbody .developer-field-row {
+    background-color: transparent !important;
 }
 
-/* Stile per il bottone Auto Map */
-#auto-map-btn {
-    margin-left: auto;
-    box-shadow: 0 2px 5px rgba(var(--tblr-primary-rgb), 0.2);
-    transition: all 0.2s ease;
-    font-weight: 500;
+#matching-fields-mapping-tbody .developer-field-row .developer-field-select {
+    opacity: 1 !important;
 }
 
-#auto-map-btn:hover {
-    box-shadow: 0 3px 8px rgba(var(--tblr-primary-rgb), 0.3);
+#matching-fields-mapping-tbody .developer-field-row td {
+    background-color: transparent !important;
 }
 
-#auto-map-btn i {
-    font-size: 1.1rem;
-}
-
-/* Effetto stelline che cadono - MIGLIORATO */
-.stars-container {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    pointer-events: none;
-    z-index: 5;
-}
-
-.star {
-    position: absolute;
-    width: 10px;
-    height: 10px;
-    background-size: contain;
-    background-repeat: no-repeat;
-    animation: falling-star-improved 2s linear infinite;
-    opacity: 0;
-    filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.9));
-    z-index: 100;
-}
-
-/* Stelle con diverse dimensioni ma tutti luminose */
-.star:nth-child(3n+1) {
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23ffffff'><path d='M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.62L12 2 9.19 8.62 2 9.24l5.46 4.73L5.82 21 12 17.27z'/></svg>");
-    width: 14px;
-    height: 14px;
-    animation-duration: 1.5s;
-}
-
-.star:nth-child(3n+2) {
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23f8f9fa'><path d='M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.62L12 2 9.19 8.62 2 9.24l5.46 4.73L5.82 21 12 17.27z'/></svg>");
-    width: 8px;
-    height: 8px;
-    filter: drop-shadow(0 0 12px rgba(255, 255, 255, 1));
-    animation-duration: 1.2s;
-}
-
-.star:nth-child(3n) {
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23ffefcf'><path d='M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.62L12 2 9.19 8.62 2 9.24l5.46 4.73L5.82 21 12 17.27z'/></svg>");
-    width: 12px;
-    height: 12px;
-    filter: drop-shadow(0 0 15px rgba(255, 246, 211, 1));
-    animation-duration: 1.8s;
-}
-
-/* Stelle cadenti con scia luminosa */
-.star:nth-child(5n)::before {
-    content: "";
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 2px;
-    height: 25px;
-    background: linear-gradient(to top, transparent, rgba(255, 255, 255, 0.7));
-    transform: translate(-50%, -50%) rotate(15deg);
-    transform-origin: bottom center;
-    z-index: -1;
-    opacity: 0.7;
-    filter: blur(1.5px);
-    border-radius: 50%;
-}
-
-/* Aggiungiamo stelle scintillanti statiche */
-.star:nth-child(even) {
-    animation: falling-star-improved 2s linear infinite, twinkle 1s ease-in-out infinite alternate;
-}
-
-@keyframes falling-star-improved {
-    0% {
-        top: -10%;
-        transform: translateX(5px) rotate(0deg) scale(1);
+@keyframes slideInFromRight {
+    from {
         opacity: 0;
+        transform: translateX(20px);
     }
 
-    5% {
+    to {
         opacity: 1;
-    }
-
-    80% {
-        opacity: 0.9;
-    }
-
-    100% {
-        top: 110%;
-        transform: translateX(-10px) rotate(360deg) scale(0.3);
-        opacity: 0;
-    }
-}
-
-/* Stelline minuscole e velocissime */
-.tiny-star {
-    position: absolute;
-    width: 4px;
-    height: 4px;
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23ffffff'><path d='M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.62L12 2 9.19 8.62 2 9.24l5.46 4.73L5.82 21 12 17.27z'/></svg>");
-    background-size: contain;
-    background-repeat: no-repeat;
-    animation: tiny-falling-star 1s linear infinite;
-    opacity: 0.9;
-    filter: drop-shadow(0 0 6px rgba(255, 255, 255, 1));
-    z-index: 90;
-}
-
-/* Posizioni diverse per ogni stella */
-.star:nth-child(1) {
-    left: 5%;
-    animation-delay: 0s;
-}
-
-.star:nth-child(2) {
-    left: 15%;
-    animation-delay: 0.3s;
-}
-
-.star:nth-child(3) {
-    left: 25%;
-    animation-delay: 0.6s;
-}
-
-.star:nth-child(4) {
-    left: 35%;
-    animation-delay: 0.9s;
-}
-
-.star:nth-child(5) {
-    left: 45%;
-    animation-delay: 1.2s;
-}
-
-.star:nth-child(6) {
-    left: 55%;
-    animation-delay: 1.5s;
-}
-
-.star:nth-child(7) {
-    left: 65%;
-    animation-delay: 1.8s;
-}
-
-.star:nth-child(8) {
-    left: 75%;
-    animation-delay: 2.1s;
-}
-
-.star:nth-child(9) {
-    left: 85%;
-    animation-delay: 0.4s;
-}
-
-.star:nth-child(10) {
-    left: 95%;
-    animation-delay: 0.7s;
-}
-
-.star:nth-child(11) {
-    left: 10%;
-    animation-delay: 0.5s;
-}
-
-.star:nth-child(12) {
-    left: 20%;
-    animation-delay: 0.2s;
-}
-
-.star:nth-child(13) {
-    left: 30%;
-    animation-delay: 0.8s;
-}
-
-.star:nth-child(14) {
-    left: 40%;
-    animation-delay: 0.6s;
-}
-
-.star:nth-child(15) {
-    left: 50%;
-    animation-delay: 0.9s;
-}
-
-.star:nth-child(16) {
-    left: 60%;
-    animation-delay: 0.2s;
-}
-
-.star:nth-child(17) {
-    left: 70%;
-    animation-delay: 0.5s;
-}
-
-.star:nth-child(18) {
-    left: 80%;
-    animation-delay: 0.8s;
-}
-
-.star:nth-child(19) {
-    left: 90%;
-    animation-delay: 0.4s;
-}
-
-.star:nth-child(20) {
-    left: 97%;
-    animation-delay: 0.1s;
-}
-
-/* Posizioni diverse per ogni stellina */
-.tiny-star:nth-child(3n+1) {
-    left: calc(10% + var(--random-offset, 0%));
-    --random-offset: 2%;
-    animation-duration: 0.8s;
-}
-
-.tiny-star:nth-child(3n+2) {
-    left: calc(50% + var(--random-offset, 0%));
-    --random-offset: -5%;
-    animation-duration: 0.6s;
-}
-
-.tiny-star:nth-child(3n) {
-    left: calc(80% + var(--random-offset, 0%));
-    --random-offset: 3%;
-    animation-duration: 1.0s;
-}
-
-/* Alternare i ritardi per le stelline */
-.tiny-star:nth-child(1) {
-    animation-delay: 0s;
-}
-
-.tiny-star:nth-child(2) {
-    animation-delay: 0.1s;
-}
-
-.tiny-star:nth-child(3) {
-    animation-delay: 0.2s;
-}
-
-.tiny-star:nth-child(4) {
-    animation-delay: 0.3s;
-}
-
-.tiny-star:nth-child(5) {
-    animation-delay: 0.4s;
-}
-
-.tiny-star:nth-child(6) {
-    animation-delay: 0.5s;
-}
-
-.tiny-star:nth-child(7) {
-    animation-delay: 0.6s;
-}
-
-.tiny-star:nth-child(8) {
-    animation-delay: 0.7s;
-}
-
-.tiny-star:nth-child(9) {
-    animation-delay: 0.15s;
-}
-
-.tiny-star:nth-child(10) {
-    animation-delay: 0.25s;
-}
-
-.tiny-star:nth-child(11) {
-    animation-delay: 0.35s;
-}
-
-.tiny-star:nth-child(12) {
-    animation-delay: 0.45s;
-}
-
-.tiny-star:nth-child(13) {
-    animation-delay: 0.55s;
-}
-
-.tiny-star:nth-child(14) {
-    animation-delay: 0.65s;
-}
-
-.tiny-star:nth-child(15) {
-    animation-delay: 0.75s;
-}
-
-@keyframes tiny-falling-star {
-    0% {
-        top: -5%;
-        transform: translateX(2px) rotate(0deg);
-        opacity: 0.9;
-    }
-
-    100% {
-        top: 105%;
-        transform: translateX(-2px) rotate(180deg);
-        opacity: 0;
-    }
-}
-
-/* Effetto polvere magica migliorato - RIMOSSO */
-.auto-map-animation::before {
-    content: none;
-    animation: none;
-}
-
-@keyframes magic-dust {
-
-    0%,
-    25%,
-    50%,
-    75%,
-    100% {
-        box-shadow: none;
-        background-image: none;
-    }
-}
-
-@keyframes popInQuestion {
-    0% {
-        opacity: 0;
-    }
-
-    100% {
-        opacity: 0;
-    }
-}
-
-@keyframes pulseQuestion {
-    0% {
-        opacity: 0;
-    }
-
-    100% {
-        opacity: 0;
+        transform: translateX(0);
     }
 }
 
@@ -822,6 +433,17 @@
     display: inline-block;
 }
 
+.csv-actions-group {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.175rem;
+}
+
+.csv-actions-btn-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
 /* Stile del popup */
 .csv-popup {
     display: none;
@@ -898,10 +520,13 @@
 }
 
 @keyframes warning-pulse {
-    0%, 100% {
+
+    0%,
+    100% {
         opacity: 0.5;
         transform: scale(1);
     }
+
     50% {
         opacity: 1;
         transform: scale(1.2);
@@ -951,6 +576,33 @@
     display: flex;
     gap: 8px;
     justify-content: center;
+}
+
+/* Export/Import group separator */
+.export-import-group {
+    padding: 4px 0;
+}
+
+.export-import-group+.export-import-group {
+    border-top: 1px solid #e9ecef;
+    margin-top: 8px;
+    padding-top: 12px;
+}
+
+.export-import-group-title {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #6c757d;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.export-import-group-title i {
+    font-size: 0.9rem;
 }
 
 /* Effetto hover per i bottoni */
@@ -1144,6 +796,172 @@
     font-weight: 500;
     padding: 0.2rem 0.4rem;
     vertical-align: middle;
+    cursor: help;
+    transition: all 0.3s ease;
+    animation: requiredPulse 2s ease-in-out infinite;
+}
+
+.required-field-badge:hover {
+    transform: scale(1.05);
+    box-shadow: 0 2px 6px rgba(var(--tblr-danger-rgb), 0.3);
+    animation: none;
+}
+
+/* Relaxed state for required fields in update-only mode */
+.required-field-badge-relaxed {
+    opacity: 0.5;
+    animation: none;
+}
+
+.required-field-badge-relaxed:hover {
+    opacity: 0.8;
+}
+
+/* Primary Key badge */
+.pk-badge {
+    margin-left: 0.5rem;
+    font-size: 0.7rem;
+    font-weight: 500;
+    padding: 0.2rem 0.4rem;
+    vertical-align: middle;
+    cursor: help;
+    transition: all 0.3s ease;
+    animation: pkPulse 2s ease-in-out infinite;
+}
+
+/* Force dark text color for better readability on yellow background */
+.pk-badge.text-warning-emphasis {
+    color: #664d03 !important;
+}
+
+.pk-badge:hover {
+    transform: scale(1.05);
+    box-shadow: 0 2px 6px rgba(var(--tblr-warning-rgb), 0.3);
+    animation: none;
+}
+
+@keyframes pkPulse {
+
+    0%,
+    100% {
+        box-shadow: 0 0 0 0 rgba(var(--tblr-warning-rgb), 0.4);
+    }
+
+    50% {
+        box-shadow: 0 0 0 4px rgba(var(--tblr-warning-rgb), 0);
+    }
+}
+
+/* Foreign Key badge */
+.fk-badge {
+    margin-left: 0.5rem;
+    font-size: 0.7rem;
+    font-weight: 500;
+    padding: 0.2rem 0.4rem;
+    vertical-align: middle;
+    cursor: help;
+    transition: all 0.3s ease;
+    animation: fkPulse 2s ease-in-out infinite;
+}
+
+/* Force dark text color for better readability */
+.fk-badge.text-info-emphasis {
+    color: #055160 !important;
+}
+
+.fk-badge:hover {
+    transform: scale(1.05);
+    box-shadow: 0 2px 6px rgba(var(--tblr-info-rgb), 0.3);
+    animation: none;
+}
+
+@keyframes fkPulse {
+
+    0%,
+    100% {
+        box-shadow: 0 0 0 0 rgba(var(--tblr-info-rgb), 0.4);
+    }
+
+    50% {
+        box-shadow: 0 0 0 4px rgba(var(--tblr-info-rgb), 0);
+    }
+}
+
+/* Unique Constraint badge */
+.unique-constraint-badge {
+    margin-left: 0.5rem;
+    font-size: 0.7rem;
+    font-weight: 500;
+    padding: 0.2rem 0.4rem;
+    vertical-align: middle;
+    cursor: help;
+    transition: all 0.3s ease;
+    animation: uniquePulse 2s ease-in-out infinite;
+}
+
+/* Purple color for unique constraint */
+.bg-purple-subtle {
+    background-color: rgba(139, 92, 246, 0.12) !important;
+}
+
+.text-purple-emphasis {
+    color: rgb(109, 40, 217) !important;
+}
+
+.unique-constraint-badge:hover {
+    transform: scale(1.05);
+    box-shadow: 0 2px 6px rgba(139, 92, 246, 0.3);
+    animation: none;
+}
+
+@keyframes uniquePulse {
+
+    0%,
+    100% {
+        box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.4);
+    }
+
+    50% {
+        box-shadow: 0 0 0 4px rgba(139, 92, 246, 0);
+    }
+}
+
+/* Warning state for unique constraint in update-only mode */
+.unique-constraint-badge.unique-constraint-warning {
+    background-color: rgba(var(--tblr-danger-rgb), 0.15) !important;
+    color: var(--tblr-danger) !important;
+    border: 1px solid rgba(var(--tblr-danger-rgb), 0.4);
+    animation: uniqueWarningPulse 2s ease-in-out infinite;
+}
+
+.unique-constraint-badge.unique-constraint-warning:hover {
+    animation: none;
+    transform: scale(1.05);
+    box-shadow: 0 2px 8px rgba(var(--tblr-danger-rgb), 0.4);
+}
+
+@keyframes uniqueWarningPulse {
+
+    0%,
+    100% {
+        box-shadow: 0 0 0 0 rgba(var(--tblr-danger-rgb), 0.4);
+    }
+
+    50% {
+        box-shadow: 0 0 0 4px rgba(var(--tblr-danger-rgb), 0);
+    }
+}
+
+@keyframes requiredPulse {
+
+    0%,
+    100% {
+        box-shadow: 0 0 0 0 rgba(var(--tblr-danger-rgb), 0.4);
+    }
+
+    50% {
+        box-shadow: 0 0 0 4px rgba(var(--tblr-danger-rgb), 0);
+    }
 }
 
 /* Stile base per i campi obbligatori - sottile bordo sinistro rosso */
@@ -1166,9 +984,12 @@
 }
 
 @keyframes pulse-error {
-    0%, 100% {
+
+    0%,
+    100% {
         box-shadow: 0 0 0 0 rgba(var(--tblr-danger-rgb), 0.6);
     }
+
     50% {
         box-shadow: 0 0 0 0.5rem rgba(var(--tblr-danger-rgb), 0);
     }
@@ -1219,15 +1040,17 @@
     border-radius: 8px;
     cursor: pointer;
     transition: all 0.2s ease;
-    background-color: transparent; /* Rimozione dello sfondo che causava il doppio effetto */
+    background-color: transparent;
+    /* Rimozione dello sfondo che causava il doppio effetto */
     position: relative;
-    font-weight: normal; /* Normal by default */
+    font-weight: normal;
+    /* Normal by default */
 }
 
 .import-behavior-radios .form-check-label:hover {
     background-color: rgba(var(--tblr-primary-rgb), 0.08);
     border-color: rgba(var(--tblr-primary-rgb), 0.3);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 /* Icona ingrandita e posizionata a sinistra */
@@ -1241,15 +1064,16 @@
 }
 
 /* Stile per i radio button selezionati */
-.import-behavior-radios .form-check-input:checked + .form-check-label {
+.import-behavior-radios .form-check-input:checked+.form-check-label {
     background-color: rgba(var(--tblr-primary-rgb), 0.12);
     border-color: var(--tblr-primary);
     box-shadow: 0 2px 5px rgba(var(--tblr-primary-rgb), 0.2);
-    font-weight: 600 !important; /* Bold when selected */
+    font-weight: 600 !important;
+    /* Bold when selected */
 }
 
 /* Effetto pulse per l'icona del radio selezionato */
-.import-behavior-radios .form-check-input:checked + .form-check-label i {
+.import-behavior-radios .form-check-input:checked+.form-check-label i {
     animation: radio-icon-pulse 2s infinite;
     color: var(--tblr-primary);
 }
@@ -1258,9 +1082,11 @@
     0% {
         transform: translateY(-50%) scale(1);
     }
+
     50% {
         transform: translateY(-50%) scale(1.15);
     }
+
     100% {
         transform: translateY(-50%) scale(1);
     }
@@ -1278,10 +1104,14 @@
 }
 
 @keyframes flash-animation {
-    0%, 100% {
+
+    0%,
+    100% {
         background-color: transparent;
     }
-    20%, 80% {
+
+    20%,
+    80% {
         background-color: rgba(var(--tblr-primary-rgb), 0.15);
     }
 }
@@ -1305,6 +1135,7 @@
         opacity: 0;
         transform: translateY(-5px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -1326,10 +1157,12 @@
         transform: scale(1);
         box-shadow: 0 0 0 0 rgba(var(--tblr-primary-rgb), 0.5);
     }
+
     50% {
         transform: scale(1.02);
         box-shadow: 0 0 0 5px rgba(var(--tblr-primary-rgb), 0);
     }
+
     100% {
         transform: scale(1);
         box-shadow: 0 0 0 0 rgba(var(--tblr-primary-rgb), 0);
@@ -1355,9 +1188,12 @@
 }
 
 @keyframes pulse-loading {
-    0%, 100% {
+
+    0%,
+    100% {
         opacity: 0.3;
     }
+
     50% {
         opacity: 0.7;
     }
@@ -1372,6 +1208,7 @@
     0% {
         transform: rotate(0deg);
     }
+
     100% {
         transform: rotate(360deg);
     }
@@ -1418,4 +1255,428 @@
     padding: 0.25rem 0.5rem;
     border-radius: 0.25rem;
     font-size: 0.9em;
+}
+
+/* Stili per la pagina CSV Upload */
+.csv-upload-info-alert {
+    display: block !important;
+}
+
+.csv-upload-info-alert h5 {
+    display: block !important;
+    width: 100% !important;
+}
+
+.csv-upload-info-alert ul {
+    display: block !important;
+    width: 100% !important;
+}
+
+.type-selection-container {
+    display: none;
+}
+
+.detected-type-info {
+    display: none;
+}
+
+/* Stili per la tabella delle tipologie */
+.csv-types-table th:nth-child(1) {
+    width: 25%;
+}
+
+.csv-types-table th:nth-child(2) {
+    width: 50%;
+}
+
+.csv-types-table th:nth-child(3) {
+    width: 25%;
+}
+
+/* Stile per la riga evidenziata nella tabella */
+.type-row.highlighted-row {
+    transition: background-color 0.3s ease;
+}
+
+/* ========================================
+   Developer Section Styles (Import CSV)
+   ======================================== */
+.developer-section-card {
+    opacity: 0.9;
+    transition: opacity 0.3s ease;
+    border-color: rgba(108, 117, 125, 0.3) !important;
+    background-color: rgba(108, 117, 125, 0.02);
+}
+
+.developer-section-card:hover {
+    opacity: 1;
+}
+
+.developer-section-card .card-header {
+    background-color: rgba(108, 117, 125, 0.08) !important;
+    border-bottom-color: rgba(108, 117, 125, 0.15) !important;
+}
+
+.developer-section-card .card-header h5 {
+    color: #495057 !important;
+}
+
+.developer-section-card .card-header i.la-code {
+    color: #6c757d !important;
+}
+
+.developer-section-card .alert-secondary {
+    background-color: rgba(108, 117, 125, 0.06);
+    border-color: rgba(108, 117, 125, 0.15);
+    color: #495057;
+}
+
+/* Switch alignment fix */
+.developer-section-card .form-check.form-switch {
+    display: flex;
+    align-items: center;
+    margin: 0;
+    padding-left: 2.5em;
+}
+
+.developer-section-card .form-check-input {
+    margin-top: 0;
+}
+
+.developer-fields-table {
+    transition: opacity 0.3s ease;
+}
+
+.developer-field-row {
+    background-color: rgba(108, 117, 125, 0.03);
+}
+
+.developer-field-row.developer-enabled {
+    background-color: rgba(108, 117, 125, 0.08);
+}
+
+/* Badge auto-generated with pulse animation - only for auto-generated badge */
+.developer-field-row .auto-generated-badge {
+    background-color: rgba(var(--tblr-primary-rgb), 0.12) !important;
+    color: var(--tblr-primary) !important;
+    cursor: help;
+    transition: all 0.3s ease;
+    animation: badge-pulse 2s ease-in-out infinite;
+}
+
+.developer-field-row .auto-generated-badge:hover {
+    background-color: rgba(var(--tblr-primary-rgb), 0.25) !important;
+    transform: scale(1.05);
+    box-shadow: 0 2px 8px rgba(var(--tblr-primary-rgb), 0.3);
+    animation: none;
+}
+
+/* Preserve correct colors for constraint badges in developer section */
+/* Use the same colors as Bootstrap's -subtle and -emphasis classes */
+.developer-field-row .pk-badge.bg-warning-subtle {
+    background-color: var(--tblr-warning-bg-subtle, rgba(255, 193, 7, 0.15)) !important;
+}
+
+.developer-field-row .pk-badge.text-warning-emphasis {
+    color: var(--tblr-warning-text-emphasis, #664d03) !important;
+}
+
+.developer-field-row .fk-badge.bg-info-subtle {
+    background-color: var(--tblr-info-bg-subtle, rgba(13, 202, 240, 0.15)) !important;
+}
+
+.developer-field-row .fk-badge.text-info-emphasis {
+    color: var(--tblr-info-text-emphasis, #055160) !important;
+}
+
+.developer-field-row .unique-constraint-badge.bg-purple-subtle {
+    background-color: rgba(139, 92, 246, 0.12) !important;
+}
+
+.developer-field-row .unique-constraint-badge.text-purple-emphasis {
+    color: rgb(109, 40, 217) !important;
+}
+
+@keyframes badge-pulse {
+
+    0%,
+    100% {
+        box-shadow: 0 0 0 0 rgba(var(--tblr-primary-rgb), 0.4);
+    }
+
+    50% {
+        box-shadow: 0 0 0 4px rgba(var(--tblr-primary-rgb), 0);
+    }
+}
+
+/* User import: badge "Vuota" (password not generated) — orange subtle/emphasis, orange pulse */
+.developer-field-row #password-field-badge.password-badge-empty {
+    background-color: rgba(253, 126, 20, 0.15) !important;
+    color: #c26100 !important;
+    border: 1px solid rgba(253, 126, 20, 0.3);
+    animation: badge-pulse-orange 2s ease-in-out infinite !important;
+}
+
+.developer-field-row #password-field-badge.password-badge-empty:hover {
+    background-color: rgba(253, 126, 20, 0.25) !important;
+    box-shadow: 0 2px 8px rgba(253, 126, 20, 0.25);
+    animation: none;
+}
+
+@keyframes badge-pulse-orange {
+
+    0%,
+    100% {
+        box-shadow: 0 0 0 0 rgba(253, 126, 20, 0.4);
+    }
+
+    50% {
+        box-shadow: 0 0 0 4px rgba(253, 126, 20, 0);
+    }
+}
+
+/* User import: password row — keep field name, badge and checkbox on one line */
+tr.password-import-row td:first-child {
+    display: flex !important;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+tr.password-import-row td:first-child .password-badge-checkbox-wrap {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    flex-wrap: nowrap;
+    gap: 0.5rem;
+}
+
+/* Select opacity only when disabled */
+.developer-field-select:disabled {
+    background-color: #f8f9fa;
+    cursor: not-allowed;
+    opacity: 0.4;
+}
+
+.developer-field-select:not(:disabled) {
+    border-color: var(--tblr-primary);
+    opacity: 1;
+}
+
+/* Matching Fields (Composite Key) Styles */
+#matching-fields-container {
+    max-width: 100%;
+}
+
+.matching-field-row {
+    animation: fadeInSlide 0.3s ease;
+}
+
+@keyframes fadeInSlide {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.matching-field-row .matching-field-select {
+    flex: 1;
+    min-width: 200px;
+}
+
+.matching-field-row .remove-matching-field {
+    flex-shrink: 0;
+    padding: 0.375rem 0.5rem;
+    transition: all 0.2s ease;
+}
+
+.matching-field-row .remove-matching-field:hover {
+    background-color: var(--tblr-danger);
+    color: white;
+    border-color: var(--tblr-danger);
+}
+
+#add-matching-field {
+    transition: all 0.2s ease;
+}
+
+#add-matching-field:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(var(--tblr-primary-rgb), 0.3);
+}
+
+/* Badge for multiple matching fields count */
+.matching-fields-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    background-color: var(--tblr-primary);
+    color: white;
+    border-radius: 10px;
+    margin-left: 8px;
+}
+
+/* Matching field required in mapping table */
+.mapping-row.matching-field-required {
+    background-color: rgba(var(--tblr-primary-rgb), 0.08) !important;
+    border-left: 3px solid var(--tblr-primary) !important;
+}
+
+.mapping-row.matching-field-required .table-column {
+    font-weight: 600;
+}
+
+/* Matching badge - RED required style */
+.matching-field-badge {
+    font-size: 0.7rem;
+    padding: 0.25em 0.6em;
+    font-weight: 500;
+    cursor: help;
+    transition: all 0.2s ease;
+}
+
+/* Matching Required badge - red like required */
+.matching-field-badge.matching-required-badge {
+    background-color: rgba(var(--tblr-danger-rgb), 0.12) !important;
+    color: var(--tblr-danger) !important;
+    border: 1px solid rgba(var(--tblr-danger-rgb), 0.3);
+    animation: matchingRequiredPulse 2s ease-in-out infinite;
+}
+
+.matching-field-badge.matching-required-badge:hover {
+    animation: none;
+    transform: scale(1.05);
+    box-shadow: 0 2px 8px rgba(var(--tblr-danger-rgb), 0.3);
+    background-color: rgba(var(--tblr-danger-rgb), 0.2) !important;
+}
+
+@keyframes matchingRequiredPulse {
+
+    0%,
+    100% {
+        box-shadow: 0 0 0 0 rgba(var(--tblr-danger-rgb), 0.4);
+    }
+
+    50% {
+        box-shadow: 0 0 0 4px rgba(var(--tblr-danger-rgb), 0);
+    }
+}
+
+/* Select pulse animation when not filled */
+.mapping-row.matching-field-required select.is-invalid {
+    border-color: var(--tblr-primary) !important;
+    background-color: rgba(var(--tblr-primary-rgb), 0.05);
+    animation: selectPulse 2s ease-in-out infinite;
+}
+
+@keyframes selectPulse {
+
+    0%,
+    100% {
+        box-shadow: 0 0 0 0 rgba(var(--tblr-primary-rgb), 0.4);
+    }
+
+    50% {
+        box-shadow: 0 0 0 4px rgba(var(--tblr-primary-rgb), 0.15);
+    }
+}
+
+.mapping-row.matching-field-required select:not(.is-invalid) {
+    border-color: var(--tblr-success);
+    background-color: rgba(var(--tblr-success-rgb), 0.05);
+}
+
+/* Warning alert for unmapped matching fields */
+#matching-fields-warning {
+    border-left: 4px solid var(--tblr-warning);
+    animation: shake 0.5s ease-in-out;
+}
+
+@keyframes shake {
+
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+
+    25% {
+        transform: translateX(-5px);
+    }
+
+    75% {
+        transform: translateX(5px);
+    }
+}
+
+#unmapped-matching-fields-list {
+    font-weight: 600;
+    color: var(--tblr-dark);
+}
+
+/* Preview row badges — error and warning with pulse animation */
+.preview-error-badge {
+    font-size: 0.7rem;
+    font-weight: 500;
+    padding: 0.2rem 0.4rem;
+    vertical-align: middle;
+    cursor: help;
+    transition: all 0.3s ease;
+    animation: previewErrorPulse 2s ease-in-out infinite;
+}
+
+.preview-error-badge:hover {
+    transform: scale(1.05);
+    box-shadow: 0 2px 6px rgba(var(--tblr-danger-rgb), 0.3);
+    animation: none;
+}
+
+@keyframes previewErrorPulse {
+
+    0%,
+    100% {
+        box-shadow: 0 0 0 0 rgba(var(--tblr-danger-rgb), 0.4);
+    }
+
+    50% {
+        box-shadow: 0 0 0 4px rgba(var(--tblr-danger-rgb), 0);
+    }
+}
+
+.preview-warning-badge {
+    font-size: 0.7rem;
+    font-weight: 500;
+    padding: 0.2rem 0.4rem;
+    vertical-align: middle;
+    cursor: help;
+    transition: all 0.3s ease;
+    animation: previewWarningPulse 2s ease-in-out infinite;
+}
+
+.preview-warning-badge:hover {
+    transform: scale(1.05);
+    box-shadow: 0 2px 6px rgba(var(--tblr-warning-rgb), 0.3);
+    animation: none;
+}
+
+@keyframes previewWarningPulse {
+
+    0%,
+    100% {
+        box-shadow: 0 0 0 0 rgba(var(--tblr-warning-rgb), 0.4);
+    }
+
+    50% {
+        box-shadow: 0 0 0 4px rgba(var(--tblr-warning-rgb), 0);
+    }
 }

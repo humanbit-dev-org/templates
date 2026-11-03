@@ -11,22 +11,32 @@
 @section('content')
 <div class="row" bp-section="crud-operation-import">
     <div class="col-md-12">
-        <!-- Unique Field Highlight -->
+        <!-- Matching Fields Selection -->
         <div class="card mb-3 border-primary unique-field-card">
             <div class="card-body">
                 <div class="d-flex align-items-center mb-2">
                     <i class="la la-key text-primary fs-3 me-1"></i>
-                    <h4 class="mb-0 fw-bold">{{ trans('backpack::import.unique_field') }}</h4>
+                    <h4 class="mb-0 fw-bold">{{ trans('backpack::import.matching_fields') }}</h4>
                 </div>
+                <p class="text-muted small mb-3">{{ trans('backpack::import.matching_fields_description') }}</p>
 
-                <select name="unique_field" id="unique_field" class="form-control form-select">
-                    <option value="">{{ trans('backpack::import.no_unique_field') }}</option>
-                    <optgroup label="{{ trans('backpack::import.table_field') }}">
-                        @foreach($tableColumns as $column)
-                        <option value="{{ $column }}">{{ $column }}</option>
-                        @endforeach
-                    </optgroup>
-                </select>
+                <div id="matching-fields-container">
+                    <div class="matching-field-row d-flex align-items-center gap-2 mb-2">
+                        <select name="matching_fields[]" class="form-control form-select matching-field-select">
+                            <option value="">{{ trans('backpack::import.select_field') }}</option>
+                            @foreach($matchableColumns as $column)
+                            <option value="{{ $column }}">{{ $column }}</option>
+                            @endforeach
+                        </select>
+                        <button type="button" class="btn btn-outline-danger btn-sm remove-matching-field" style="display: none;">
+                            <i class="la la-times"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <button type="button" id="add-matching-field" class="btn btn-outline-primary btn-sm mt-2" style="display: none;">
+                    <i class="la la-plus"></i> {{ trans('backpack::import.add_matching_field') }}
+                </button>
                 
                 <!-- Import Behavior Options -->
                 <div id="import-behavior-options" class="mt-3 pt-3 border-top" style="display: none;">
@@ -54,17 +64,10 @@
         <!-- CSV Column Mapping -->
         <div class="card import-card">
             <div class="card-header border-bottom">
-                <div class="d-flex justify-content-between align-items-center w-100">
-                    <h3 class="card-title mb-0">
-                        <i class="la la-exchange-alt"></i>
-                        {{ trans('backpack::import.column_mapping') }}
-                    </h3>
-                    <div>
-                        <button type="button" id="auto-map-btn" class="btn btn-primary">
-                            <i class="la la-magic"></i> {{ trans('backpack::import.auto_map') }}
-                        </button>
-                    </div>
-                </div>
+                <h3 class="card-title mb-0">
+                    <i class="la la-exchange-alt"></i>
+                    {{ trans('backpack::import.column_mapping') }}
+                </h3>
             </div>
             <div class="card-body">
                 <form id="import-mapping-form" class="import-form" method="POST" action="{{ url($crud_route.'/import-csv/process') }}">
@@ -83,25 +86,67 @@
                         {{ trans('backpack::import.mapping_instructions') }}
                     </div>
 
+                    {{-- Matching Fields Mapping Section - rows move here when selected --}}
+                    <div id="matching-fields-mapping-section" class="mb-4" style="display: none;">
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="la la-key text-primary me-2"></i>
+                            <h6 class="mb-0 fw-bold text-primary">{{ trans('backpack::import.matching_fields_mapping_title') }}</h6>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-sm mapping-table matching-fields-mapping-table">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th width="50%">{{ trans('backpack::import.table_field') }}</th>
+                                        <th width="50%">{{ trans('backpack::import.csv_column') }}</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="matching-fields-mapping-tbody">
+                                    {{-- Matching field rows will be moved here dynamically --}}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
                     <div class="table-responsive">
-                        <table class="table table-sm table-hover mapping-table">
+                        <table class="table table-sm table-hover mapping-table" id="main-mapping-table">
                             <thead class="table-light">
                                 <tr>
-                                    <th width="3%">#</th>
-                                    <th width="47%">{{ trans('backpack::import.table_field') }}</th>
+                                    <th width="50%">{{ trans('backpack::import.table_field') }}</th>
                                     <th width="50%">{{ trans('backpack::import.csv_column') }}</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach($tableColumns as $columnIndex => $column)
-                                <tr class="mapping-row" data-table-column="{{ $column }}">
-                                    <td class="text-center align-middle column-index-cell">
-                                        <span class="badge bg-primary-subtle text-primary-emphasis column-index">{{ $columnIndex + 1 }}</span>
-                                    </td>
+                                <tr class="mapping-row" data-table-column="{{ $column }}"
+                                    @if(isset($databaseConstraints['primaryKey']) && $databaseConstraints['primaryKey'] === $column) data-is-pk="true" @endif
+                                    @if(isset($databaseConstraints['foreignKeys'][$column])) data-is-fk="true" data-fk-table="{{ $databaseConstraints['foreignKeys'][$column] }}" @endif
+                                    @if(isset($databaseConstraints['uniqueConstraints'][$column]) && count($databaseConstraints['uniqueConstraints'][$column]) > 0) data-unique-with="{{ implode(',', $databaseConstraints['uniqueConstraints'][$column]) }}" @endif
+                                >
                                     <td class="align-middle table-column">
                                         <span class="fw-medium">{{ $column }}</span>
+                                        @if(isset($databaseConstraints['primaryKey']) && $databaseConstraints['primaryKey'] === $column)
+                                            <span class="badge bg-warning-subtle text-warning-emphasis pk-badge"
+                                                  data-bs-toggle="tooltip" 
+                                                  data-bs-placement="top" 
+                                                  title="{{ trans('backpack::import.primary_key_hint') }}"><i class="la la-key me-1"></i>{{ trans('backpack::import.primary_key') }}</span>
+                                        @endif
+                                        @if(isset($databaseConstraints['foreignKeys'][$column]))
+                                            <span class="badge bg-info-subtle text-info-emphasis fk-badge"
+                                                  data-bs-toggle="tooltip" 
+                                                  data-bs-placement="top" 
+                                                  title="{{ str_replace(':table', $databaseConstraints['foreignKeys'][$column], trans('backpack::import.foreign_key_hint')) }}"><i class="la la-link me-1"></i>{{ trans('backpack::import.foreign_key') }}</span>
+                                        @endif
+                                        @if(isset($databaseConstraints['uniqueConstraints'][$column]) && count($databaseConstraints['uniqueConstraints'][$column]) > 0)
+                                            <span class="badge bg-purple-subtle text-purple-emphasis unique-constraint-badge"
+                                                  data-bs-toggle="tooltip" 
+                                                  data-bs-placement="top" 
+                                                  title="{{ str_replace(':fields', implode(', ', $databaseConstraints['uniqueConstraints'][$column]), trans('backpack::import.unique_constraint_hint')) }}"><i class="la la-fingerprint me-1"></i>{{ trans('backpack::import.unique_constraint') }}: {{ implode(', ', $databaseConstraints['uniqueConstraints'][$column]) }}</span>
+                                        @endif
                                         @if(in_array($column, $requiredColumns))
-                                            <span class="badge bg-danger-subtle text-danger-emphasis required-field-badge">{{ trans('backpack::import.required_field') }}</span>
+                                            <span class="badge bg-danger-subtle text-danger-emphasis required-field-badge"
+                                                  data-bs-toggle="tooltip" 
+                                                  data-bs-placement="top" 
+                                                  title="{{ trans('backpack::import.required_field_hint') }}">{{ trans('backpack::import.required_field') }}</span>
                                         @endif
                                     </td>
                                     <td>
@@ -125,14 +170,117 @@
                         </table>
                     </div>
 
+                    {{-- Developer Section for auto-generated fields --}}
+                    @if(isset($autoGeneratedFields) && count($autoGeneratedFields) > 0)
+                    <div class="card mt-4 developer-section-card" id="developer-section">
+                        <div class="card-header">
+                            <div class="d-flex align-items-center justify-content-between w-100">
+                                <div class="d-flex align-items-center">
+                                    <i class="la la-code fs-4 me-2"></i>
+                                    <h5 class="mb-0 fw-bold">{{ trans('backpack::import.developer_section_title') }}</h5>
+                                </div>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="enable-developer-fields" role="switch">
+                                    <label class="form-check-label small" for="enable-developer-fields">{{ trans('backpack::import.enable_developer_fields') }}</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="alert alert-secondary mb-3">
+                                <i class="la la-info-circle me-1"></i>
+                                {{ trans('backpack::import.developer_section_warning') }}
+                            </div>
+                            
+                            <div class="table-responsive">
+                                <table class="table table-sm table-hover mapping-table developer-fields-table">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th width="50%">{{ trans('backpack::import.table_field') }}</th>
+                                            <th width="50%">{{ trans('backpack::import.csv_column') }}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach($autoGeneratedFields as $column => $hintKey)
+                                        <tr class="mapping-row developer-field-row @if(!empty($isUserModel) && $column === 'password') password-import-row @endif" data-table-column="{{ $column }}"
+                                            @if(isset($databaseConstraints['primaryKey']) && $databaseConstraints['primaryKey'] === $column) data-is-pk="true" @endif
+                                            @if(isset($databaseConstraints['foreignKeys'][$column])) data-is-fk="true" data-fk-table="{{ $databaseConstraints['foreignKeys'][$column] }}" @endif
+                                            @if(isset($databaseConstraints['uniqueConstraints'][$column]) && count($databaseConstraints['uniqueConstraints'][$column]) > 0) data-unique-with="{{ implode(',', $databaseConstraints['uniqueConstraints'][$column]) }}" @endif
+                                        >
+                                            <td class="align-middle table-column">
+                                                <span class="fw-medium">{{ $column }}</span>
+                                                @if(isset($databaseConstraints['primaryKey']) && $databaseConstraints['primaryKey'] === $column)
+                                                    <span class="badge bg-warning-subtle text-warning-emphasis pk-badge"
+                                                          data-bs-toggle="tooltip" 
+                                                          data-bs-placement="top" 
+                                                          title="{{ trans('backpack::import.primary_key_hint') }}"><i class="la la-key me-1"></i>{{ trans('backpack::import.primary_key') }}</span>
+                                                @endif
+                                                @if(isset($databaseConstraints['foreignKeys'][$column]))
+                                                    <span class="badge bg-info-subtle text-info-emphasis fk-badge"
+                                                          data-bs-toggle="tooltip" 
+                                                          data-bs-placement="top" 
+                                                          title="{{ str_replace(':table', $databaseConstraints['foreignKeys'][$column], trans('backpack::import.foreign_key_hint')) }}"><i class="la la-link me-1"></i>{{ trans('backpack::import.foreign_key') }}</span>
+                                                @endif
+                                                @if(isset($databaseConstraints['uniqueConstraints'][$column]) && count($databaseConstraints['uniqueConstraints'][$column]) > 0)
+                                                    <span class="badge bg-purple-subtle text-purple-emphasis unique-constraint-badge"
+                                                          data-bs-toggle="tooltip" 
+                                                          data-bs-placement="top" 
+                                                          title="{{ str_replace(':fields', implode(', ', $databaseConstraints['uniqueConstraints'][$column]), trans('backpack::import.unique_constraint_hint')) }}"><i class="la la-fingerprint me-1"></i>{{ trans('backpack::import.unique_constraint') }}: {{ implode(', ', $databaseConstraints['uniqueConstraints'][$column]) }}</span>
+                                                @endif
+                                                @if(!empty($isUserModel) && $column === 'password')
+                                                    <span class="password-badge-checkbox-wrap ms-1">
+                                                        <span id="password-field-badge" class="badge auto-generated-badge bg-success-subtle text-success-emphasis" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="{{ e(trans('backpack::import.' . $hintKey)) }}"
+                                                              data-title-auto="{{ e(trans('backpack::import.' . $hintKey)) }}"
+                                                              data-title-empty="{{ e(trans('backpack::import.generate_passwords_warning')) }}"
+                                                              data-text-auto="{{ e(trans('backpack::import.auto_generated')) }}"
+                                                              data-text-empty="{{ e(trans('backpack::import.password_empty_badge')) }}">
+                                                            <i class="la la-magic password-badge-icon"></i> <span class="password-badge-text">{{ trans('backpack::import.auto_generated') }}</span>
+                                                        </span>
+                                                        <span class="form-check form-check-inline mb-0 ms-auto flex-shrink-0">
+                                                            <input class="form-check-input" type="checkbox" name="generate_passwords" id="generate_passwords" value="1" checked>
+                                                            <label class="form-check-label small mb-0" for="generate_passwords">{{ trans('backpack::import.generate_passwords_label') }}</label>
+                                                        </span>
+                                                    </span>
+                                                @else
+                                                <span class="badge ms-1 auto-generated-badge" 
+                                                      data-bs-toggle="tooltip" 
+                                                      data-bs-placement="top" 
+                                                      title="{{ trans('backpack::import.' . $hintKey) }}">
+                                                    <i class="la la-magic"></i> {{ trans('backpack::import.auto_generated') }}
+                                                </span>
+                                                @endif
+                                            </td>
+                                            <td>
+                                                <div class="d-flex align-items-center position-relative gap-2 flex-wrap">
+                                                    <span class="mapping-type-indicator" data-column="{{ $column }}"></span>
+                                                    <select name="column_mapping_reverse[{{ $column }}]" class="form-select field-mapping-select csv-field-select developer-field-select" disabled>
+                                                        <option value="">{{ trans('backpack::import.do_not_import') }}</option>
+                                                        <optgroup label="{{ trans('backpack::import.csv_column') }}">
+                                                            @foreach($csvHeaders as $index => $header)
+                                                            <option value="{{ $index }}" data-csv-header="{{ $header }}" class="csv-option">
+                                                                {{ $header }}
+                                                            </option>
+                                                            @endforeach
+                                                        </optgroup>
+                                                    </select>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+
                     <div class="form-group mt-4 import-form-actions">
                         <a href="{{ url($crud_route) }}" class="btn btn-outline-secondary import-cancel-btn">
                             <i class="la la-ban"></i>
                             {{ trans('backpack::import.cancel') }}
                         </a>
-                        <button type="submit" class="btn btn-success import-submit-btn" id="start-import">
-                            <i class="la la-play"></i>
-                            {{ trans('backpack::import.start_import') }}
+                        <button type="button" class="btn btn-success import-submit-btn" id="start-import">
+                            <i class="la la-eye"></i>
+                            Mostra anteprima
                         </button>
                     </div>
                 </form>
@@ -152,7 +300,7 @@
                                         <div class="wave"></div>
                                     </div>
                                 </div>
-                                <span id="progress-text" class="badge bg-primary fs-6">0%</span>
+                                <span id="progress-text" class="badge text-white bg-primary fs-6">0%</span>
                             </div>
                         </div>
 
@@ -236,7 +384,7 @@
                                 <i class="la la-check-circle"></i>
                             {{ trans('backpack::import.import_completed') }}
                         </h4>
-                            <span id="result-progress-text" class="badge bg-success fs-6">100%</span>
+                            <span id="result-progress-text" class="badge text-white bg-success fs-6">100%</span>
                         </div>
 
                         <div id="result-stats" class="stats-container mt-3">
@@ -325,6 +473,105 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Preview Results Section -->
+                <div id="import-preview-results" style="display: none;">
+                    <div class="progress-container p-4 border rounded bg-light">
+                        <div class="d-flex align-items-center gap-3 flex-wrap mb-3 import-status-header">
+                            <h4 class="text-info mb-0 d-flex align-items-center gap-2">
+                                <i class="la la-eye"></i>
+                                Anteprima import
+                            </h4>
+                            <span id="preview-status-badge" class="badge text-white bg-info fs-6">Analisi...</span>
+                        </div>
+
+                        <!-- Preview Summary Stats -->
+                        <div id="preview-stats" class="stats-container mt-3">
+                            <div class="row">
+                                <div class="col-sm-6 col-md-3 mb-2">
+                                    <div class="card border-0 shadow-sm h-100">
+                                        <div class="card-body text-center">
+                                            <div class="h5 text-muted mb-2">Righe totali</div>
+                                            <div class="h3" id="preview-total-rows">0</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6 col-md-3 mb-2">
+                                    <div class="card border-0 shadow-sm h-100">
+                                        <div class="card-body text-center">
+                                            <div class="h5 text-muted mb-2">Nuovi record</div>
+                                            <div class="h3 text-success" id="preview-will-insert">0</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6 col-md-3 mb-2">
+                                    <div class="card border-0 shadow-sm h-100">
+                                        <div class="card-body text-center">
+                                            <div class="h5 text-muted mb-2">Record aggiornati</div>
+                                            <div class="h3 text-primary" id="preview-will-update">0</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6 col-md-3 mb-2">
+                                    <div class="card border-0 shadow-sm h-100">
+                                        <div class="card-body text-center">
+                                            <div class="h5 text-muted mb-2">Record saltati</div>
+                                            <div class="h3 text-warning" id="preview-will-skip">0</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Preview Rows Table (all rows, problems first) -->
+                        <div id="preview-rows-section" class="mt-4">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h5 class="mb-0">
+                                    <i class="la la-list me-2"></i>
+                                    Anteprima righe (<span id="preview-rows-shown-count">0</span> di <span id="preview-rows-total-count">0</span>)
+                                </h5>
+                                <div class="d-flex align-items-center gap-2">
+                                    <label class="form-label mb-0 small text-muted">Righe per pagina:</label>
+                                    <select id="preview-page-size" class="form-select form-select-sm" style="width: auto;">
+                                        <option value="50">50</option>
+                                        <option value="100" selected>100</option>
+                                        <option value="200">200</option>
+                                        <option value="500">500</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div style="max-height: 500px; overflow-y: auto; overflow-x: auto; border: 1px solid #dee2e6;">
+                                <table class="table table-sm table-hover table-striped mb-0" id="preview-rows-table">
+                                    <thead class="table-light" id="preview-rows-thead" style="position: sticky; top: 0; z-index: 1; background-color: #f8f9fa;">
+                                    </thead>
+                                    <tbody id="preview-rows-tbody">
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mt-2" id="preview-pagination" style="display: none;">
+                                <span class="small text-muted" id="preview-page-info"></span>
+                                <div class="btn-group btn-group-sm">
+                                    <button type="button" class="btn btn-outline-secondary" id="preview-prev-page" disabled>
+                                        <i class="la la-angle-left"></i>
+                                    </button>
+                                    <span class="btn btn-light" id="preview-page-num">1</span>
+                                    <button type="button" class="btn btn-outline-secondary" id="preview-next-page">
+                                        <i class="la la-angle-right"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between mt-4">
+                            <button type="button" class="btn btn-outline-secondary" id="preview-close-btn">
+                                <i class="la la-arrow-left"></i> Torna al mapping
+                            </button>
+                            <button type="submit" class="btn btn-success" id="preview-confirm-btn" form="import-mapping-form">
+                                <i class="la la-play"></i> Avvia import
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -333,48 +580,6 @@
 <!-- Tooltip container to show full text -->
 <div class="content-tooltip" id="contentTooltip"></div>
 
-<!-- Overlay for Auto-Map effect -->
-<div id="auto-map-overlay" class="auto-map-overlay">
-    <div class="stars-container">
-        <div class="star"></div>
-        <div class="star"></div>
-        <div class="star"></div>
-        <div class="star"></div>
-        <div class="star"></div>
-        <div class="star"></div>
-        <div class="star"></div>
-        <div class="star"></div>
-        <div class="star"></div>
-        <div class="star"></div>
-        <div class="star"></div>
-        <div class="star"></div>
-        <div class="star"></div>
-        <div class="star"></div>
-        <div class="star"></div>
-        <div class="star"></div>
-        <div class="star"></div>
-        <div class="star"></div>
-        <div class="star"></div>
-        <div class="star"></div>
-        <div class="tiny-star"></div>
-        <div class="tiny-star"></div>
-        <div class="tiny-star"></div>
-        <div class="tiny-star"></div>
-        <div class="tiny-star"></div>
-        <div class="tiny-star"></div>
-        <div class="tiny-star"></div>
-        <div class="tiny-star"></div>
-        <div class="tiny-star"></div>
-        <div class="tiny-star"></div>
-        <div class="tiny-star"></div>
-        <div class="tiny-star"></div>
-        <div class="tiny-star"></div>
-    </div>
-    <div class="auto-map-animation">
-        <i class="la la-magic fa-spin"></i>
-        <span>{{ trans('backpack::import.mapping_in_progress') }}</span>
-    </div>
-</div>
 @endsection
 
 @push('after_scripts')
@@ -717,87 +922,483 @@
         });
 
         // Variable to track the original form
-        const uniqueField = document.getElementById('unique_field');
         const importMappingForm = document.getElementById('import-mapping-form');
+        const matchingFieldsContainer = document.getElementById('matching-fields-container');
+        const addMatchingFieldBtn = document.getElementById('add-matching-field');
+        const behaviorOptions = document.getElementById('import-behavior-options');
         
-        // Handle uniqueField changes
-        document.querySelector('#unique_field').addEventListener('change', function(e) {
-            const uniqueFieldValue = e.target.value;
-            
-            // Handle showing/hiding behavior options
-            const behaviorOptions = document.getElementById('import-behavior-options');
-            if (uniqueFieldValue) {
-                // Highlight this field in the table
-                highlightUniqueField(uniqueFieldValue);
-                
-                // Show behavior options with animation
-                behaviorOptions.style.display = 'block';
-                behaviorOptions.style.opacity = '0';
-                
-                // Fade in the behavior options
-                setTimeout(() => {
-                    behaviorOptions.style.opacity = '1';
-                    
-                    // Scroll to and highlight the radio buttons with zoom effect
-                    const radioContainer = document.querySelector('.import-behavior-radios');
-                    
-                    if (radioContainer) {
-                        // Scroll to radio buttons
-                        radioContainer.scrollIntoView({ 
-                            behavior: 'smooth', 
-                            block: 'center' 
-                        });
-                        
-                        // Apply zoom effect to entire option containers
-                        const radioOptions = radioContainer.querySelectorAll('.form-check');
-                        radioOptions.forEach(option => {
-                            option.style.transition = 'transform 0.5s ease';
-                            option.style.transform = 'scale(1.009)';
-                            
-                            // Return to normal size after animation
-                            setTimeout(() => {
-                                option.style.transform = 'scale(1)';
-                            }, 500);
-                        });
-                    }
-                }, 100);
-            } else {
-                // Hide behavior options if no unique field is selected
-                behaviorOptions.style.display = 'none';
-                
-                // Remove highlights
-                document.querySelectorAll('.mapping-row').forEach(row => {
-                    row.classList.remove('unique-field-selected');
-                });
-            }
-        });
+        // Template for new matching field row
+        const matchingFieldTemplate = `
+            <div class="matching-field-row d-flex align-items-center gap-2 mb-2">
+                <select name="matching_fields[]" class="form-control form-select matching-field-select">
+                    <option value="">{{ trans('backpack::import.select_field') }}</option>
+                    @foreach($matchableColumns as $column)
+                    <option value="{{ $column }}">{{ $column }}</option>
+                    @endforeach
+                </select>
+                <button type="button" class="btn btn-outline-danger btn-sm remove-matching-field">
+                    <i class="la la-times"></i>
+                </button>
+            </div>
+        `;
+        
+        // Get all selected matching fields
+        function getSelectedMatchingFields() {
+            const fields = [];
+            document.querySelectorAll('.matching-field-select').forEach(select => {
+                if (select.value) {
+                    fields.push(select.value);
+                }
+            });
+            return fields;
+        }
 
-        // Function to highlight the unique field in the table
-        function highlightUniqueField(fieldName) {
-            // Remove existing highlights
-            document.querySelectorAll('.mapping-row').forEach(row => {
-                row.classList.remove('unique-field-selected');
+        // Get all mapped table columns (selected in the mapping table)
+        function getMappedTableColumns() {
+            const mapped = [];
+            // Check main mapping table - get table column from row's data attribute when select has value
+            document.querySelectorAll('.mapping-row:not(.developer-field-row)').forEach(row => {
+                const select = row.querySelector('.csv-field-select');
+                if (select && select.value) {
+                    const tableColumn = row.getAttribute('data-table-column');
+                    if (tableColumn) {
+                        mapped.push(tableColumn);
+                    }
+                }
+            });
+            // Also check developer section selects
+            // Note: for matching fields, we check value even if disabled (matching fields force-enable their selects)
+            document.querySelectorAll('.mapping-row.developer-field-row').forEach(row => {
+                const select = row.querySelector('.developer-field-select');
+                const isMatchingRequired = row.classList.contains('matching-field-required');
+                // Include if: has value AND (is matching field OR not disabled)
+                if (select && select.value && (isMatchingRequired || !select.disabled)) {
+                    const tableColumn = row.getAttribute('data-table-column');
+                    if (tableColumn) {
+                        mapped.push(tableColumn);
+                    }
+                }
+            });
+            return mapped;
+        }
+
+        // Check if all matching fields are mapped and return unmapped ones
+        function getUnmappedMatchingFields() {
+            const matchingFields = getSelectedMatchingFields();
+            const mappedColumns = getMappedTableColumns();
+            return matchingFields.filter(field => !mappedColumns.includes(field));
+        }
+
+        // Update UI based on selected matching fields
+        function updateMatchingFieldsUI() {
+            const selectedFields = getSelectedMatchingFields();
+            const rows = document.querySelectorAll('.matching-field-row');
+            
+            // Show/hide add button based on whether first field is selected
+            if (selectedFields.length > 0) {
+                addMatchingFieldBtn.style.display = 'inline-block';
+                behaviorOptions.style.display = 'block';
+                behaviorOptions.style.opacity = '1';
+            } else {
+                addMatchingFieldBtn.style.display = 'none';
+                behaviorOptions.style.display = 'none';
+            }
+            
+            // Show/hide remove buttons (hide if only one row)
+            rows.forEach((row, index) => {
+                const removeBtn = row.querySelector('.remove-matching-field');
+                if (rows.length > 1) {
+                    removeBtn.style.display = 'inline-block';
+                } else {
+                    removeBtn.style.display = 'none';
+                }
             });
             
-            // Add highlight to the selected field
-            const selectedRow = document.querySelector(`.mapping-row[data-table-column="${fieldName}"]`);
-            if (selectedRow) {
-                selectedRow.classList.add('unique-field-selected');
+            // Update highlights in mapping table
+            highlightMatchingFields(selectedFields);
+            
+            // Disable already selected options in other selects
+            updateSelectOptions();
+        }
+        
+        // Disable already selected options in other selects
+        function updateSelectOptions() {
+            const allSelects = document.querySelectorAll('.matching-field-select');
+            const selectedValues = [];
+            
+            allSelects.forEach(select => {
+                if (select.value) {
+                    selectedValues.push(select.value);
+                }
+            });
+            
+            allSelects.forEach(select => {
+                const currentValue = select.value;
+                select.querySelectorAll('option').forEach(option => {
+                    if (option.value && option.value !== currentValue && selectedValues.includes(option.value)) {
+                        option.disabled = true;
+                    } else {
+                        option.disabled = false;
+                    }
+                });
+            });
+        }
+        
+        // Store original positions for rows
+        const originalRowPositions = new Map();
+        
+        // Initialize original positions on page load
+        document.querySelectorAll('.mapping-row').forEach(row => {
+            const column = row.getAttribute('data-table-column');
+            const isDeveloper = row.classList.contains('developer-field-row');
+            const parent = row.parentElement;
+            const siblings = Array.from(parent.children);
+            originalRowPositions.set(column, {
+                parent: parent,
+                index: siblings.indexOf(row),
+                isDeveloper: isDeveloper
+            });
+        });
+        
+        // Move matching fields to top section or back to original position
+        function highlightMatchingFields(fields) {
+            const matchingSection = document.getElementById('matching-fields-mapping-section');
+            const matchingTbody = document.getElementById('matching-fields-mapping-tbody');
+            const mainTableTbody = document.querySelector('#main-mapping-table tbody');
+            const developerTableTbody = document.querySelector('.developer-fields-table tbody');
+            
+            // First, move ALL rows back to their original positions
+            document.querySelectorAll('.mapping-row.matching-field-required').forEach(row => {
+                const column = row.getAttribute('data-table-column');
+                const originalPos = originalRowPositions.get(column);
+                
+                // Remove matching classes and badge
+                row.classList.remove('unique-field-selected');
+                row.classList.remove('matching-field-required');
+                const existingBadge = row.querySelector('.matching-field-badge');
+                if (existingBadge) {
+                    // Dispose tooltip before removing badge
+                    const tooltip = bootstrap.Tooltip.getInstance(existingBadge);
+                    if (tooltip) {
+                        tooltip.dispose();
+                    }
+                    existingBadge.remove();
+                }
+                
+                // Show the required badge again if it was hidden
+                const requiredBadge = row.querySelector('.required-field-badge');
+                if (requiredBadge) {
+                    requiredBadge.style.display = '';
+                }
+                
+                // Re-enable "do not import" option
+                const select = row.querySelector('.csv-field-select, .developer-field-select');
+                if (select) {
+                    const emptyOption = select.querySelector('option[value=""]');
+                    if (emptyOption) {
+                        emptyOption.disabled = false;
+                    }
+                    select.classList.remove('is-invalid');
+                    
+                    // If it's a developer field, disable it again (unless developer section is enabled)
+                    if (originalPos && originalPos.isDeveloper) {
+                        const developerToggle = document.getElementById('enable-developer-fields');
+                        if (developerToggle && !developerToggle.checked) {
+                            select.disabled = true;
+                        }
+                    }
+                }
+                
+                // Move back to original position
+                if (originalPos) {
+                    const targetParent = originalPos.isDeveloper ? developerTableTbody : mainTableTbody;
+                    if (targetParent && row.parentElement !== targetParent) {
+                        // Insert at original index or at end
+                        const siblings = Array.from(targetParent.children);
+                        if (originalPos.index < siblings.length) {
+                            targetParent.insertBefore(row, siblings[originalPos.index]);
+                        } else {
+                            targetParent.appendChild(row);
+                        }
+                    }
+                }
+            });
+            
+            // Now move selected fields to matching section
+            if (fields.length > 0) {
+                matchingSection.style.display = 'block';
+                
+                fields.forEach(fieldName => {
+                    const selectedRow = document.querySelector(`.mapping-row[data-table-column="${fieldName}"]`);
+                    if (selectedRow) {
+                        selectedRow.classList.add('unique-field-selected');
+                        selectedRow.classList.add('matching-field-required');
+                        
+                        // Hide the required badge (matching badge replaces it)
+                        const requiredBadge = selectedRow.querySelector('.required-field-badge');
+                        if (requiredBadge) {
+                            requiredBadge.style.display = 'none';
+                        }
+                        
+                        // Add matching badge next to field name (red, required style)
+                        const tableColumn = selectedRow.querySelector('.table-column');
+                        if (tableColumn && !tableColumn.querySelector('.matching-field-badge')) {
+                            const badge = document.createElement('span');
+                            badge.className = 'badge ms-2 matching-field-badge matching-required-badge';
+                            badge.setAttribute('data-bs-toggle', 'tooltip');
+                            badge.setAttribute('data-bs-placement', 'top');
+                            badge.setAttribute('title', "{{ trans('backpack::import.matching_field_hint') }}");
+                            badge.innerHTML = '<i class="la la-key me-1"></i>{{ trans("backpack::import.matching_required") }}';
+                            tableColumn.appendChild(badge);
+                            // Initialize tooltip
+                            new bootstrap.Tooltip(badge);
+                        }
+                        
+                        // Enable and make required the select
+                        const select = selectedRow.querySelector('.csv-field-select, .developer-field-select');
+                        if (select) {
+                            select.disabled = false; // Always enable for matching fields
+                            const emptyOption = select.querySelector('option[value=""]');
+                            if (emptyOption) {
+                                emptyOption.disabled = true;
+                            }
+                            if (!select.value) {
+                                select.classList.add('is-invalid');
+                            }
+                        }
+                        
+                        // Move row to matching section
+                        matchingTbody.appendChild(selectedRow);
+                    }
+                });
+            } else {
+                matchingSection.style.display = 'none';
+            }
+            
+            // Update import behavior UI (for unique constraint warnings)
+            handleImportBehaviorChange();
+        }
+        
+        // Handle change on matching field selects
+        function handleMatchingFieldChange(e) {
+            updateMatchingFieldsUI();
+        }
+        
+        // Add event listeners to existing selects
+        document.querySelectorAll('.matching-field-select').forEach(select => {
+            select.addEventListener('change', handleMatchingFieldChange);
+        });
+
+        // Handle mapping select change - update validation state
+        function handleMappingSelectChange(e) {
+            const select = e.target;
+            const row = select.closest('.mapping-row');
+            
+            // Remove invalid state if value is selected
+            if (select.value && row && row.classList.contains('matching-field-required')) {
+                select.classList.remove('is-invalid');
             }
         }
 
-        // Handle the unique_field field that has been moved outside the form
-        if (uniqueField && importMappingForm) {
-            // When the form is submitted, intercept the event and handle submission via AJAX
-            importMappingForm.addEventListener('submit', function(e) {
-                e.preventDefault(); // Prevent standard form submission
+        // Add event listeners to mapping table selects
+        document.querySelectorAll('.csv-field-select').forEach(select => {
+            select.addEventListener('change', handleMappingSelectChange);
+        });
 
-                // Add a hidden input for the value of the unique_field field
-                const hiddenInput = document.createElement('input');
-                hiddenInput.type = 'hidden';
-                hiddenInput.name = 'unique_field';
-                hiddenInput.value = uniqueField.value;
-                this.appendChild(hiddenInput);
+        // Add event listeners to developer section selects
+        document.querySelectorAll('.developer-field-select').forEach(select => {
+            select.addEventListener('change', handleMappingSelectChange);
+        });
+        
+        // Add new matching field row
+        addMatchingFieldBtn.addEventListener('click', function() {
+            const newRow = document.createElement('div');
+            newRow.innerHTML = matchingFieldTemplate;
+            const rowElement = newRow.firstElementChild;
+            matchingFieldsContainer.appendChild(rowElement);
+            
+            // Add event listeners to new elements
+            rowElement.querySelector('.matching-field-select').addEventListener('change', handleMatchingFieldChange);
+            rowElement.querySelector('.remove-matching-field').addEventListener('click', function() {
+                rowElement.remove();
+                updateMatchingFieldsUI();
+            });
+            
+            updateMatchingFieldsUI();
+        });
+        
+        // Handle remove button on first row (delegated)
+        document.querySelectorAll('.remove-matching-field').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const row = this.closest('.matching-field-row');
+                const rows = document.querySelectorAll('.matching-field-row');
+                if (rows.length > 1) {
+                    row.remove();
+                    updateMatchingFieldsUI();
+                }
+            });
+        });
+
+        // Handle import behavior change (update-only vs upsert)
+        function handleImportBehaviorChange() {
+            const selectedMatchingFields = getSelectedMatchingFields();
+            const hasMatchingFields = selectedMatchingFields.length > 0;
+            
+            // If no matching fields selected, treat as normal insert mode (not update-only)
+            const isUpdateOnly = hasMatchingFields && document.getElementById('behavior-update-only').checked;
+            
+            const requiredBadges = document.querySelectorAll('#main-mapping-table .required-field-badge');
+            const requiredSelects = document.querySelectorAll('#main-mapping-table .required-field-select');
+            
+            requiredBadges.forEach(badge => {
+                // Dispose existing tooltip
+                const existingTooltip = bootstrap.Tooltip.getInstance(badge);
+                if (existingTooltip) {
+                    existingTooltip.dispose();
+                }
+                
+                if (isUpdateOnly) {
+                    // Opacify badge and change tooltip for update-only mode
+                    badge.classList.add('required-field-badge-relaxed');
+                    badge.setAttribute('title', "{{ trans('backpack::import.required_field_hint_update_only') }}");
+                    badge.setAttribute('data-bs-html', 'true');
+                } else {
+                    // Restore normal required state
+                    badge.classList.remove('required-field-badge-relaxed');
+                    badge.setAttribute('title', "{{ trans('backpack::import.required_field_hint') }}");
+                    badge.removeAttribute('data-bs-html');
+                }
+                
+                // Re-initialize tooltip with HTML support when needed
+                new bootstrap.Tooltip(badge, { html: isUpdateOnly });
+            });
+            
+            requiredSelects.forEach(select => {
+                const row = select.closest('.mapping-row');
+                const emptyOption = select.querySelector('option[value=""]');
+                
+                if (isUpdateOnly) {
+                    // In update-only mode, required fields are no longer mandatory
+                    if (emptyOption) {
+                        emptyOption.disabled = false;
+                    }
+                    select.classList.remove('is-invalid');
+                    if (row) {
+                        row.classList.remove('has-invalid-field');
+                    }
+                } else {
+                    // In upsert mode, restore required validation
+                    if (!select.value) {
+                        select.classList.add('is-invalid');
+                        if (row) {
+                            row.classList.add('has-invalid-field');
+                        }
+                    }
+                }
+            });
+            
+            // Handle unique constraint warnings in update-only mode
+            handleUniqueConstraintWarnings(isUpdateOnly);
+            
+            // Re-validate required fields
+            validateRequiredFields();
+        }
+        
+        // Handle unique constraint warnings for update-only mode
+        function handleUniqueConstraintWarnings(isUpdateOnly) {
+            // Get all selected matching fields
+            const selectedMatchingFields = getSelectedMatchingFields();
+            
+            // Find all rows with unique constraints
+            document.querySelectorAll('.mapping-row[data-unique-with]').forEach(row => {
+                const column = row.getAttribute('data-table-column');
+                const uniqueWith = row.getAttribute('data-unique-with').split(',').filter(f => f);
+                const uniqueBadge = row.querySelector('.unique-constraint-badge');
+                
+                if (!uniqueBadge || uniqueWith.length === 0) return;
+                
+                // Dispose existing tooltip
+                const existingTooltip = bootstrap.Tooltip.getInstance(uniqueBadge);
+                if (existingTooltip) {
+                    existingTooltip.dispose();
+                }
+                
+                // Check if any of the unique constraint partners is selected as matching field
+                const partnerSelected = uniqueWith.some(partner => selectedMatchingFields.includes(partner));
+                // Check if this field itself is selected as matching
+                const selfSelected = selectedMatchingFields.includes(column);
+                // Check if ALL constraint fields are selected (complete constraint coverage)
+                const allConstraintFieldsSelected = selfSelected && uniqueWith.every(partner => selectedMatchingFields.includes(partner));
+                
+                // Show warning if:
+                // 1. We're in update-only mode AND
+                // 2. At least one partner is selected but not this field (incomplete constraint)
+                // OR
+                // 3. This field is selected but not all partners are (incomplete constraint)
+                const incompleteConstraint = (partnerSelected && !selfSelected) || (selfSelected && !allConstraintFieldsSelected);
+                
+                // Build the full list of constraint fields (this field + partners)
+                const allConstraintFields = [column, ...uniqueWith].join(', ');
+                
+                if (isUpdateOnly && incompleteConstraint) {
+                    // Warning: incomplete constraint coverage - potential integrity issue
+                    uniqueBadge.classList.add('unique-constraint-warning');
+                    const warningText = "{{ trans('backpack::import.unique_constraint_warning') }}".replace(':fields', allConstraintFields);
+                    uniqueBadge.setAttribute('title', warningText);
+                } else {
+                    // Normal state
+                    uniqueBadge.classList.remove('unique-constraint-warning');
+                    const originalHint = "{{ trans('backpack::import.unique_constraint_hint') }}".replace(':fields', uniqueWith.join(', '));
+                    uniqueBadge.setAttribute('title', originalHint);
+                }
+                
+                // Re-initialize tooltip
+                new bootstrap.Tooltip(uniqueBadge);
+            });
+        }
+        
+        // Add event listeners to import behavior radio buttons
+        document.querySelectorAll('input[name="import_behavior"]').forEach(radio => {
+            radio.addEventListener('change', handleImportBehaviorChange);
+        });
+
+        // Handle the form submission
+        if (importMappingForm) {
+            importMappingForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+
+                // Validate that all matching fields are mapped
+                const unmappedFields = getUnmappedMatchingFields();
+                if (unmappedFields.length > 0) {
+                    // Mark unmapped fields as invalid and scroll to first one
+                    let firstInvalid = null;
+                    unmappedFields.forEach(fieldName => {
+                        const row = document.querySelector(`.mapping-row[data-table-column="${fieldName}"]`);
+                        if (row) {
+                            const select = row.querySelector('.csv-field-select, .developer-field-select');
+                            if (select) {
+                                select.classList.add('is-invalid');
+                                if (!firstInvalid) firstInvalid = select;
+                            }
+                        }
+                    });
+                    if (firstInvalid) {
+                        firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                    return false;
+                }
+
+                // Collect matching fields
+                const matchingFields = getSelectedMatchingFields();
+                
+                // Add hidden inputs for matching fields
+                matchingFields.forEach((field, index) => {
+                    const hiddenInput = document.createElement('input');
+                    hiddenInput.type = 'hidden';
+                    hiddenInput.name = `matching_fields[${index}]`;
+                    hiddenInput.value = field;
+                    this.appendChild(hiddenInput);
+                });
                 
                 // Add the import behavior value to the form data
                 const selectedBehavior = document.querySelector('input[name="import_behavior"]:checked');
@@ -809,24 +1410,32 @@
                     this.appendChild(behaviorInput);
                 }
 
-                // Convert the reverse mapping to the original mapping expected by the backend
+                // Convert the reverse mapping to the original mapping expected by the backend.
+                // Multiple table columns can map to the same CSV column (e.g. importo_transato and importo_transato_previsto).
                 const reverseMapping = {};
                 document.querySelectorAll('.csv-field-select').forEach(select => {
-                    const tableColumn = select.closest('.mapping-row').getAttribute('data-table-column');
-                    const csvIndex = select.value;
-
-                    if (csvIndex) {
-                        reverseMapping[csvIndex] = tableColumn;
+                    const row = select.closest('.mapping-row');
+                    if (row) {
+                        const tableColumn = row.getAttribute('data-table-column');
+                        const csvIndex = select.value;
+                        if (csvIndex) {
+                            if (!reverseMapping[csvIndex]) {
+                                reverseMapping[csvIndex] = [];
+                            }
+                            reverseMapping[csvIndex].push(tableColumn);
+                        }
                     }
                 });
 
-                // Add hidden inputs for the original mapping
-                Object.entries(reverseMapping).forEach(([csvIndex, tableColumn]) => {
-                    const hiddenMapping = document.createElement('input');
-                    hiddenMapping.type = 'hidden';
-                    hiddenMapping.name = `column_mapping[${csvIndex}]`;
-                    hiddenMapping.value = tableColumn;
-                    this.appendChild(hiddenMapping);
+                // Add hidden inputs: one per (csvIndex, tableColumn) so the same CSV column can fill multiple DB columns
+                Object.entries(reverseMapping).forEach(([csvIndex, tableColumns]) => {
+                    tableColumns.forEach(tableColumn => {
+                        const hiddenMapping = document.createElement('input');
+                        hiddenMapping.type = 'hidden';
+                        hiddenMapping.name = `column_mapping[${csvIndex}][]`;
+                        hiddenMapping.value = tableColumn;
+                        this.appendChild(hiddenMapping);
+                    });
                 });
 
                 // Collect all form data
@@ -834,11 +1443,11 @@
 
                 // Show the progress panel
                 $('#import-mapping-form').hide();
+                $('#import-preview-results').hide();
                 $('#import-progress').show();
                 
                 // Hide other navigation elements during import
                 $('.unique-field-card').hide();
-                $('#auto-map-btn').hide();
                 $('.card-header').hide();
                 $('.import-card').find('h3').hide();
                 $('.import-card .card-header').hide();
@@ -875,7 +1484,6 @@
                                             }
                                         } catch (jsonError) {
                                             // Ignora i JSON non validi o incompleti
-                                            console.log('JSON incompleto o non valido:', jsonStrings[i]);
                                         }
                                     }
                                     
@@ -912,7 +1520,6 @@
                                             // L'importazione è completa, mostra i risultati
                                             // Hide import elements
                                             $('.unique-field-card').hide();
-                                            $('#auto-map-btn').hide();
                                             $('.card-header').hide();
                                             $('.import-card').find('h3').hide();
                                             $('.import-card .card-header').hide();
@@ -968,7 +1575,6 @@
                         // Questa parte viene eseguita solo se la risposta è un JSON valido singolo
                         // Poiché stiamo usando l'approccio di streaming, gran parte della logica
                         // è stata spostata nell'handler "onprogress" qui sopra
-                        console.log('Importazione completata con successo');
                         
                         // Assicuriamoci che il log delle operazioni sia copiato nei risultati
                         if (!$('#result-operation-log-container').length) {
@@ -1034,9 +1640,10 @@
         }
 
         // Initial setting of select fields to exact matching fields (if they exist)
+        // Excludes developer section fields to avoid confusion
         function setInitialExactMatches() {
-            // Get all mapping rows
-            const tableColumns = Array.from(document.querySelectorAll('.mapping-row')).map(row => {
+            // Get all mapping rows EXCLUDING developer section
+            const tableColumns = Array.from(document.querySelectorAll('.mapping-row:not(.developer-field-row)')).map(row => {
                 return {
                     element: row,
                     column: row.getAttribute('data-table-column'),
@@ -1096,57 +1703,10 @@
         // Run the function at page startup
         setTimeout(setInitialExactMatches, 500);
 
-        // Highlight the unique field selected in the mapping table
-        function highlightUniqueFieldInTable() {
-            // Remove existing highlighting
-            document.querySelectorAll('.mapping-row.unique-field-row').forEach(row => {
-                row.classList.remove('unique-field-row');
-            });
-            
-            // Rimuoviamo la classe highlighted-field da tutti gli elementi prima
-            document.querySelectorAll('.fw-medium.highlighted-field').forEach(el => {
-                el.classList.remove('highlighted-field');
-            });
-
-            // Get the selected value in the unique_field field
-            const uniqueFieldSelect = document.getElementById('unique_field');
-            if (!uniqueFieldSelect || !uniqueFieldSelect.value) return;
-
-            // Find the corresponding row in the mapping table
-            const mappingRow = document.querySelector(`.mapping-row[data-table-column="${uniqueFieldSelect.value}"]`);
-            if (mappingRow) {
-                // Highlight the row
-                mappingRow.classList.add('unique-field-row');
-                
-                // Troviamo l'elemento che contiene il nome della colonna
-                const columnNameEl = mappingRow.querySelector('.table-column .fw-medium');
-                if (columnNameEl) {
-                    // Aggiungiamo la classe highlighted-field che mostra l'icona chiave e l'animazione pulse
-                    columnNameEl.classList.add('highlighted-field');
-                }
-                
-                // Effettuiamo lo scroll alle radio button di import behavior
-                const behaviorOptions = document.getElementById('import-behavior-options');
-                if (behaviorOptions) {
-                    // Facciamo lo scroll con un leggero ritardo per lasciare il tempo di applicare gli stili
-                    setTimeout(() => {
-                        behaviorOptions.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    }, 100);
-                }
-            }
-        }
-
-        // Listen for changes in the unique_field select
-        const uniqueFieldSelect = document.getElementById('unique_field');
-        if (uniqueFieldSelect) {
-            uniqueFieldSelect.addEventListener('change', function() {
-                // Aggiorniamo l'evidenziazione della riga nella tabella
-                highlightUniqueFieldInTable();
-            });
-
-            // Also check at the beginning if there is already a selected value
-            setTimeout(highlightUniqueFieldInTable, 500);
-        }
+        // Initialize matching fields UI on page load
+        setTimeout(function() {
+            updateMatchingFieldsUI();
+        }, 500);
         
         // Function to monitor import status
         function monitorImportProgress(importId) {
@@ -1155,7 +1715,6 @@
             // Function to update the interface with current status
             function updateProgressUI(data) {
                 // Log complete data object for debugging
-                console.log('Progress data received:', data);
                 
                 // Update progress bar with real percentage
                 const progressPercentage = Math.round((data.processed / data.total) * 100);
@@ -1171,7 +1730,7 @@
                 if (data.status === 'completed') {
                     // Hide import elements
                     $('.unique-field-card').hide();
-                    $('#auto-map-btn').hide(); // Correct: use ID instead of class
+ // Correct: use ID instead of class
                     $('.card-header').hide(); // Hide the card header completely
                     $('.import-card').find('h3').hide(); // Hide the "Column Mapping" title
                     $('.import-card .card-header').hide(); // Hide the card header
@@ -1193,7 +1752,6 @@
                     }
 
                     // Try all possible backup filename keys and log everything
-                    console.log('Complete data object:', data);
                     
                     // Update the backup message to show only directory, not filename
                     $('#backup-filename').closest('.alert').find('span').html(
@@ -1219,7 +1777,7 @@
                 if (data.status === 'success') {
                     // Hide import elements
                     $('.unique-field-card').hide();
-                    $('#auto-map-btn').hide(); // Correct: use ID instead of class
+ // Correct: use ID instead of class
                     $('.card-header').hide(); // Hide the card header completely
                     $('.import-card').find('h3').hide(); // Hide the "Column Mapping" title
                     $('.import-card .card-header').hide(); // Hide the card header
@@ -1235,7 +1793,6 @@
                     $('#result-progress-text').text('100%');
 
                     // Try all possible backup filename keys and log everything
-                    console.log('Complete data object:', data);
                     
                     // Update the backup message to show only directory, not filename
                     $('#backup-filename').closest('.alert').find('span').html(
@@ -1368,292 +1925,6 @@
             });
         });
         
-        // Auto-Map functionality
-        const autoMapBtn = document.getElementById('auto-map-btn');
-        const autoMapOverlay = document.getElementById('auto-map-overlay');
-
-        autoMapBtn.addEventListener('click', function() {
-            // Show overlay with animation
-            autoMapOverlay.style.display = 'flex';
-
-            // Remove any previous mapping classes
-            document.querySelectorAll('.field-mapping-select').forEach(select => {
-                select.classList.remove('mapping-match-exact', 'mapping-match-similar', 'mapping-match-none');
-            });
-
-            // Collect all necessary data
-            const tableColumns = Array.from(document.querySelectorAll('.mapping-row')).map(row => {
-                return {
-                    element: row,
-                    column: row.getAttribute('data-table-column'),
-                    select: row.querySelector('.csv-field-select')
-                };
-            });
-
-            const csvHeaders = Array.from(document.querySelectorAll('.csv-option')).map(option => {
-                return {
-                    index: option.value,
-                    header: option.getAttribute('data-csv-header'),
-                    element: option
-                };
-            });
-
-            // Timeout to simulate processing
-            setTimeout(() => {
-                // Track CSV columns already mapped with exact matches
-                const exactlyMappedCsvIndices = new Set();
-                const mappings = [];
-
-                // First pass: find all exact matches
-                tableColumns.forEach(tableCol => {
-                    // Step 1: Look for exact matches (case insensitive)
-                    const exactMatches = csvHeaders.filter(csv =>
-                        csv.header.toLowerCase() === tableCol.column.toLowerCase());
-
-                    // If there is an exact match
-                    if (exactMatches.length > 0) {
-                        const matchIndex = exactMatches[0].index;
-                        tableCol.select.value = matchIndex;
-                        mappings.push({
-                            element: tableCol.select,
-                            type: 'exact'
-                        });
-                        
-                        // Check if this is a required field
-                        const isRequired = tableCol.select.classList.contains('required-field-select');
-                        if (isRequired) {
-                            tableCol.select.classList.remove('is-invalid');
-                            const row = tableCol.select.closest('.mapping-row');
-                            if (row) {
-                                row.classList.remove('has-invalid-field');
-                            }
-                        }
-                        
-                        // Add this CSV column to the exactly mapped ones
-                        exactlyMappedCsvIndices.add(matchIndex);
-                    }
-                });
-
-                // Second pass: look for similar matches only for columns not yet mapped
-                tableColumns.forEach(tableCol => {
-                    // Skip if this table column already has an exact match
-                    if (mappings.some(m => m.element === tableCol.select)) {
-                        return;
-                    }
-
-                    // Step 2: Look for matches with similarity score
-                    const similarityScores = csvHeaders
-                        .filter(csv => !exactlyMappedCsvIndices.has(csv.index) || 
-                            csv.header.toLowerCase() === tableCol.column.toLowerCase())
-                        .map(csv => {
-                            // Normalize column names
-                            const tableColName = tableCol.column.toLowerCase();
-                            const csvHeaderName = csv.header.toLowerCase();
-                            
-                            // Translation pairs (both ways)
-                            const translationPairs = {
-                                'abstract': ['sommario', 'riassunto', 'estratto'],
-                                'author': ['autore', 'autori', 'scrittore'],
-                                'title': ['titolo'],
-                                'subtitle': ['sottotitolo'],
-                                'description': ['descrizione'],
-                                'italian': ['italiano', 'ita', 'it'],
-                                'english': ['inglese', 'eng', 'en'],
-                                'name': ['nome'],
-                                'category': ['categoria'],
-                                'tag': ['tag', 'etichetta'],
-                                'image': ['immagine', 'img'],
-                                'content': ['contenuto'],
-                                'body': ['corpo', 'testo'],
-                                'date': ['data'],
-                                'status': ['stato'],
-                                'active': ['attivo'],
-                                'published': ['pubblicato'],
-                                'slug': ['slug', 'permalink'],
-                                'url': ['url', 'link'],
-                                'meta': ['meta'],
-                            };
-                            
-                            // Create object for scoring
-                            const score = {
-                                stringDistance: 0,
-                                translation: 0,
-                                partMatch: 0,
-                                total: 0
-                            };
-                            
-                            // Calculate string similarity (Levenshtein)
-                            function levenshteinDistance(a, b) {
-                                if (!a || !b) return Math.max(a ? a.length : 0, b ? b.length : 0);
-                                
-                                const matrix = [];
-                                for (let i = 0; i <= b.length; i++) matrix[i] = [i];
-                                for (let j = 0; j <= a.length; j++) matrix[0][j] = j;
-                                
-                                for (let i = 1; i <= b.length; i++) {
-                                    for (let j = 1; j <= a.length; j++) {
-                                        const cost = a[j-1] === b[i-1] ? 0 : 1;
-                                        matrix[i][j] = Math.min(
-                                            matrix[i-1][j] + 1,
-                                            matrix[i][j-1] + 1,
-                                            matrix[i-1][j-1] + cost
-                                        );
-                                    }
-                                }
-                                
-                                return matrix[b.length][a.length];
-                            }
-                            
-                            function similarity(a, b) {
-                                if (!a || !b) return 0;
-                                const maxLen = Math.max(a.length, b.length);
-                                if (maxLen === 0) return 100;
-                                return (1 - levenshteinDistance(a, b) / maxLen) * 100;
-                            }
-                            
-                            // Check overall string similarity for typos
-                            const fullSimilarity = similarity(tableColName, csvHeaderName);
-                            if (fullSimilarity > 85) score.stringDistance = 40;
-                            else if (fullSimilarity > 75) score.stringDistance = 25;
-                            
-                            // Split into parts
-                            const tableParts = tableColName.split(/[_\s-]|(?=[A-Z])/).filter(p => p.length >= 2);
-                            const csvParts = csvHeaderName.split(/[_\s-]|(?=[A-Z])/).filter(p => p.length >= 2);
-                            
-                            // Check for translations
-                            for (const tablePart of tableParts) {
-                                for (const [eng, translations] of Object.entries(translationPairs)) {
-                                    // Check if table part is English and CSV has translation
-                                    if (tablePart === eng) {
-                                        for (const csvPart of csvParts) {
-                                            if (translations.includes(csvPart)) {
-                                                score.translation += 15;
-                                                break;
-                                            }
-                                        }
-                                    }
-                                    
-                                    // Check if table part is translation and CSV has English
-                                    if (translations.includes(tablePart)) {
-                                        for (const csvPart of csvParts) {
-                                            if (csvPart === eng) {
-                                                score.translation += 15;
-                                                break;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                            
-                            // Check part matching
-                            for (const tablePart of tableParts) {
-                                // Exact part match
-                                if (csvParts.includes(tablePart)) {
-                                    score.partMatch += 5;
-                                    continue;
-                                }
-                                
-                                // Part similarity
-                                for (const csvPart of csvParts) {
-                                    const partSimilarity = similarity(tablePart, csvPart);
-                                    if (partSimilarity > 85) score.partMatch += 4;
-                                    else if (partSimilarity > 75) score.partMatch += 2;
-                                }
-                            }
-                            
-                            // Calculate total score
-                            score.total = score.stringDistance + score.translation + score.partMatch;
-                            
-                            return {
-                                csv,
-                                score: score.total
-                            };
-                        });
-
-                    // Sort by similarity score
-                    similarityScores.sort((a, b) => b.score - a.score);
-
-                    // If there's at least one match with positive score
-                    if (similarityScores.length > 0 && similarityScores[0].score > 0) {
-                        tableCol.select.value = similarityScores[0].csv.index;
-                        mappings.push({
-                            element: tableCol.select,
-                            type: 'similar'
-                        });
-                        return;
-                    }
-
-                    // No match found
-                    mappings.push({
-                        element: tableCol.select,
-                        type: 'none'
-                    });
-                });
-
-                // Hide the overlay after 2 seconds and then apply classes for animations
-                setTimeout(() => {
-                    autoMapOverlay.style.display = 'none';
-
-                    // Apply the classes for animations after the overlay is gone
-                    setTimeout(() => {
-                        mappings.forEach(mapping => {
-                            // Find the indicator associated with this select
-                            const row = mapping.element.closest('.mapping-row');
-                            const column = row.getAttribute('data-table-column');
-                            const indicator = row.querySelector('.mapping-type-indicator');
-
-                            if (mapping.type === 'exact') {
-                                mapping.element.classList.add('mapping-match-exact');
-                                if (indicator) {
-                                    indicator.innerHTML = "<i class='la la-check'></i> {{ trans('backpack::import.exact_match') }}";
-                                    indicator.className = 'mapping-type-indicator mapping-type-exact';
-                                    indicator.classList.add('show');
-
-                                    // Hide after 3 seconds but keep visible on hover
-                                    setTimeout(() => {
-                                        indicator.classList.add('hide-after-delay');
-                                        indicator.classList.remove('show');
-                                    }, 3000);
-                                }
-                            } else if (mapping.type === 'similar') {
-                                mapping.element.classList.add('mapping-match-similar');
-                                if (indicator) {
-                                    indicator.innerHTML = "<i class='la la-question'></i> {{ trans('backpack::import.similar_match') }}";
-                                    indicator.className = 'mapping-type-indicator mapping-type-similar';
-                                    indicator.classList.add('show');
-
-                                    // Hide after 3 seconds but keep visible on hover
-                                    setTimeout(() => {
-                                        indicator.classList.add('hide-after-delay');
-                                        indicator.classList.remove('show');
-                                    }, 3000);
-                                }
-                            } else {
-                                mapping.element.classList.add('mapping-match-none');
-                                if (indicator) {
-                                    indicator.innerHTML = "<i class='la la-times'></i> {{ trans('backpack::import.no_match') }}";
-                                    indicator.className = 'mapping-type-indicator mapping-type-none';
-                                    indicator.classList.add('show');
-
-                                    // Hide after 3 seconds but keep visible on hover
-                                    setTimeout(() => {
-                                        indicator.classList.add('hide-after-delay');
-                                        indicator.classList.remove('show');
-                                    }, 3000);
-                                }
-                            }
-                        });
-                        
-                        // Reinitialize tooltips for truncated elements
-                        setTimeout(makeAllTruncatedElementsClickable, 100);
-                        
-                        // Validate all fields to update button state
-                        validateRequiredFields();
-                    }, 50); // A small delay to make sure the overlay is gone
-                }, 2000);
-            }, 1000);
-        });
-
         // Add event handling for change on select boxes
         document.querySelectorAll('.csv-field-select').forEach(select => {
             select.addEventListener('change', function() {
@@ -1674,12 +1945,25 @@
 
         // Function to validate required fields and update the status of the submit button
         function validateRequiredFields() {
-            let requiredFields = document.querySelectorAll('.required-field-select');
+            // Check if update-only mode is active
+            const isUpdateOnly = document.getElementById('behavior-update-only')?.checked || false;
+            
+            // Only validate required fields in main table (not in matching section)
+            let requiredFields = document.querySelectorAll('#main-mapping-table .required-field-select');
             let missingRequiredFields = [];
             let isValid = true;
             
             requiredFields.forEach(function(field) {
                 const row = field.closest('.mapping-row');
+                
+                // In update-only mode, required fields are not mandatory
+                if (isUpdateOnly) {
+                    field.classList.remove('is-invalid');
+                    if (row) {
+                        row.classList.remove('has-invalid-field');
+                    }
+                    return;
+                }
                 
                 // Field is invalid only when "Do not import" is selected (empty value)
                 if (!field.value) {
@@ -1764,6 +2048,90 @@
             });
         });
 
+        // Toggle password badge (Auto-generated / Vuota) and tooltip when "generate passwords" is unchecked (User import only)
+        const generatePasswordsCheckbox = document.getElementById('generate_passwords');
+        const passwordFieldBadge = document.getElementById('password-field-badge');
+        if (generatePasswordsCheckbox && passwordFieldBadge) {
+            const titleAuto = passwordFieldBadge.getAttribute('data-title-auto') || '';
+            const titleEmpty = passwordFieldBadge.getAttribute('data-title-empty') || '';
+            const textAuto = passwordFieldBadge.getAttribute('data-text-auto') || '';
+            const textEmpty = passwordFieldBadge.getAttribute('data-text-empty') || '';
+
+            function updatePasswordBadge() {
+                const checked = generatePasswordsCheckbox.checked;
+                var tooltipContent = checked ? titleAuto : titleEmpty;
+                if (checked) {
+                    passwordFieldBadge.classList.remove('password-badge-empty');
+                    passwordFieldBadge.classList.add('bg-success-subtle', 'text-success-emphasis');
+                    passwordFieldBadge.innerHTML = '<i class="la la-magic password-badge-icon"></i> <span class="password-badge-text">' + escapeHtml(textAuto) + '</span>';
+                } else {
+                    passwordFieldBadge.classList.remove('bg-success-subtle', 'text-success-emphasis');
+                    passwordFieldBadge.classList.add('password-badge-empty');
+                    passwordFieldBadge.innerHTML = '<i class="la la-exclamation-triangle password-badge-icon"></i> <span class="password-badge-text">' + escapeHtml(textEmpty) + '</span>';
+                }
+                passwordFieldBadge.setAttribute('title', tooltipContent);
+                if (passwordFieldBadge.hasAttribute('data-bs-title')) { passwordFieldBadge.setAttribute('data-bs-title', tooltipContent); }
+                var tip = bootstrap.Tooltip.getInstance(passwordFieldBadge);
+                if (tip) { tip.dispose(); }
+                new bootstrap.Tooltip(passwordFieldBadge);
+            }
+            function escapeHtml(str) {
+                const div = document.createElement('div');
+                div.textContent = str;
+                return div.innerHTML;
+            }
+            generatePasswordsCheckbox.addEventListener('change', updatePasswordBadge);
+            updatePasswordBadge();
+        }
+
+        // Developer Section toggle functionality
+        const developerToggle = document.getElementById('enable-developer-fields');
+        if (developerToggle) {
+            developerToggle.addEventListener('change', function() {
+                // Only affect developer rows that are still in the developer section (not moved to matching)
+                const developerTableTbody = document.querySelector('.developer-fields-table tbody');
+                const developerTable = document.querySelector('.developer-fields-table');
+                
+                if (this.checked) {
+                    // Enable developer fields with confirmation
+                    if (confirm("{{ trans('backpack::import.developer_confirm_enable') }}")) {
+                        if (developerTableTbody) {
+                            developerTableTbody.querySelectorAll('.developer-field-row').forEach(row => {
+                                const select = row.querySelector('.developer-field-select');
+                                if (select) {
+                                    select.disabled = false;
+                                    select.classList.remove('disabled-select');
+                                }
+                                row.classList.add('developer-enabled');
+                            });
+                        }
+                        if (developerTable) {
+                            developerTable.classList.add('enabled');
+                        }
+                    } else {
+                        // User cancelled, revert toggle
+                        this.checked = false;
+                    }
+                } else {
+                    // Disable developer fields and reset values (only those in developer section)
+                    if (developerTableTbody) {
+                        developerTableTbody.querySelectorAll('.developer-field-row').forEach(row => {
+                            const select = row.querySelector('.developer-field-select');
+                            if (select) {
+                                select.disabled = true;
+                                select.value = '';
+                                select.classList.add('disabled-select');
+                            }
+                            row.classList.remove('developer-enabled');
+                        });
+                    }
+                    if (developerTable) {
+                        developerTable.classList.remove('enabled');
+                    }
+                }
+            });
+        }
+
         // Funzione per aggiornare il log delle operazioni
         function updateOperationLog(op) {
             // Crea un ID univoco per questa operazione in base a tipo e ID
@@ -1825,6 +2193,8 @@
                 
                 if (op.reason === 'update_only_mode') {
                     operationDetails = "{{ trans('backpack::import.update_only_reason') }}";
+                } else if (op.reason === 'user_not_found') {
+                    operationDetails = "{{ trans('backpack::import.skip_reason_user_not_found') }}";
                 }
                 
                 logMessage += `<span class="${logClass}"><i class="la la-ban me-1"></i> ${operationTitle}</span>`;
@@ -1856,6 +2226,300 @@
             void currentOpBox[0].offsetWidth; // Trigger reflow
             currentOpBox.addClass('pulse-animation');
         }
+
+        // ─── Import Preview functionality ───
+
+        function collectImportFormData() {
+            const form = document.getElementById('import-mapping-form');
+            const formData = new FormData(form);
+
+            // Collect column_mapping (reverse mapping: db_column => csv_index)
+            const columnMapping = {};
+            const reverseMapping = formData.getAll('column_mapping_reverse[]');
+            document.querySelectorAll('select[name^="column_mapping_reverse"]').forEach(select => {
+                const name = select.name;
+                const match = name.match(/column_mapping_reverse\[(.+)\]/);
+                if (match && select.value) {
+                    const dbColumn = match[1];
+                    const csvIndex = parseInt(select.value);
+                    if (!columnMapping[csvIndex]) {
+                        columnMapping[csvIndex] = dbColumn;
+                    } else if (Array.isArray(columnMapping[csvIndex])) {
+                        columnMapping[csvIndex].push(dbColumn);
+                    } else {
+                        columnMapping[csvIndex] = [columnMapping[csvIndex], dbColumn];
+                    }
+                }
+            });
+
+            // Collect matching fields
+            const matchingFields = [];
+            document.querySelectorAll('.matching-field-select').forEach(select => {
+                if (select.value) matchingFields.push(select.value);
+            });
+
+            return {
+                file_path: formData.get('file_path'),
+                column_mapping: columnMapping,
+                matching_fields: matchingFields,
+                delimiter: formData.get('delimiter'),
+                import_behavior: document.querySelector('input[name="import_behavior"]:checked')?.value || 'update_insert',
+            };
+        }
+
+        function renderPreviewResults(data) {
+            const s = data.summary;
+            const meta = data.meta || {};
+            const pk = meta.primary_key || 'id';
+            const uniqueCols = meta.unique_columns || [];
+            const alwaysShowCols = new Set([pk, ...uniqueCols]);
+
+            $('#preview-total-rows').text(s.total_rows);
+            $('#preview-will-insert').text(s.will_insert);
+            $('#preview-will-update').text(s.will_update);
+            $('#preview-will-skip').text(s.will_skip);
+
+            // Count errors and warnings
+            const errorCount = data.warnings.filter(w => w.severity === 'error').length;
+            const warningCount = data.warnings.filter(w => w.severity === 'warning').length;
+
+            // Status badge
+            const badge = $('#preview-status-badge');
+            badge.removeClass('bg-info bg-success bg-warning bg-danger');
+            if (errorCount > 0) {
+                badge.addClass('bg-danger').text(errorCount + ' errori, ' + warningCount + ' avvisi');
+            } else if (warningCount > 0) {
+                badge.addClass('bg-warning').text(warningCount + ' avvisi');
+            } else {
+                badge.addClass('bg-success').text('Nessun problema');
+            }
+
+            // Block or allow import based on errors
+            const confirmBtn = $('#preview-confirm-btn');
+            if (errorCount > 0) {
+                confirmBtn.prop('disabled', true);
+            } else {
+                confirmBtn.prop('disabled', false);
+            }
+
+            // Group warnings by row number
+            const warningsByRow = {};
+            data.warnings.forEach(function(w) {
+                if (w.row > 0) {
+                    if (!warningsByRow[w.row]) warningsByRow[w.row] = [];
+                    warningsByRow[w.row].push(w);
+                }
+            });
+
+            // Render main rows table: # | PK + unique cols | Dati (inline changes) | Azione
+            // Rows with problems come first, then the rest
+            const thead = document.getElementById('preview-rows-thead');
+            thead.innerHTML = '';
+
+            // Build header
+            const pkCols = Array.from(alwaysShowCols);
+            let theadHtml = '<tr><th style="font-size:0.75rem">#</th>';
+            pkCols.forEach(function(col) {
+                theadHtml += '<th class="text-nowrap">' + escapeHtml(col) + '</th>';
+            });
+            theadHtml += '<th>Dati</th><th>Azione</th></tr>';
+            thead.innerHTML = theadHtml;
+
+            $('#preview-rows-total-count').text(data.rows.length);
+
+            // Sort rows: problem rows first (by row number), then non-problem rows
+            const sortedRows = data.rows.slice().sort(function(a, b) {
+                const aHasProblem = !!warningsByRow[a.row];
+                const bHasProblem = !!warningsByRow[b.row];
+                if (aHasProblem && !bHasProblem) return -1;
+                if (!aHasProblem && bHasProblem) return 1;
+                return a.row - b.row;
+            });
+
+            // Pagination state
+            let currentPage = 1;
+            let pageSize = parseInt($('#preview-page-size').val()) || 100;
+            let totalPages = Math.ceil(sortedRows.length / pageSize);
+
+            function renderPage() {
+                const tbody = document.getElementById('preview-rows-tbody');
+                const startIdx = (currentPage - 1) * pageSize;
+                const endIdx = Math.min(startIdx + pageSize, sortedRows.length);
+                const pageRows = sortedRows.slice(startIdx, endIdx);
+
+                // Build all rows as single HTML string for performance
+                let rowsHtml = '';
+                pageRows.forEach(function(r) {
+                    // Row number: becomes a badge with tooltip if there are problems
+                    let rowNumHtml;
+                    if (warningsByRow[r.row]) {
+                        const hasError = warningsByRow[r.row].some(w => w.severity === 'error');
+                        const tooltipText = warningsByRow[r.row].map(w => escapeHtml(w.type + ': ' + w.message)).join('&#10;');
+                        if (hasError) {
+                            rowNumHtml = '<td><span class="badge bg-danger-subtle text-danger-emphasis preview-error-badge" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-html="true" title="' + tooltipText + '"><i class="la la-exclamation-circle me-1"></i>' + r.row + '</span></td>';
+                        } else {
+                            rowNumHtml = '<td><span class="badge bg-warning-subtle text-warning-emphasis preview-warning-badge" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-html="true" title="' + tooltipText + '"><i class="la la-exclamation-triangle me-1"></i>' + r.row + '</span></td>';
+                        }
+                    } else {
+                        rowNumHtml = '<td class="text-muted" style="font-size:0.75rem">' + r.row + '</td>';
+                    }
+
+                    let trHtml = '<tr>' + rowNumHtml;
+
+                    // PK + unique columns
+                    pkCols.forEach(function(col) {
+                        const val = r.data[col] !== undefined ? r.data[col] : '';
+                        trHtml += '<td class="small fw-bold">' + escapeHtml(String(val)) + '</td>';
+                    });
+
+                    // Dati column: inline changed fields with old→new
+                    let datiStr = '';
+                    let changedCount = 0;
+                    Object.entries(r.data).forEach(function(e) {
+                        const col = e[0];
+                        const val = e[1];
+                        if (col.endsWith('_old') || alwaysShowCols.has(col)) return;
+
+                        const oldVal = r.data[col + '_old'];
+                        const isChanged = r.changed_fields && r.changed_fields.includes(col);
+
+                        if (isChanged && oldVal !== undefined) {
+                            datiStr += '<span class="d-inline-block me-2">' +
+                                '<span class="text-muted small">' + escapeHtml(col) + '</span>: ' +
+                                '<span class="text-decoration-line-through text-danger small">' + escapeHtml(String(oldVal)) + '</span>' +
+                                '<span class="text-muted mx-1">→</span>' +
+                                '<span class="text-success fw-bold small">' + escapeHtml(String(val)) + '</span>' +
+                                '</span>';
+                            changedCount++;
+                        } else if (r.action === 'insert' || r.action === 'skip') {
+                            datiStr += '<span class="d-inline-block me-2">' +
+                                '<span class="text-muted small">' + escapeHtml(col) + '</span>: ' +
+                                '<span class="text-dark small">' + escapeHtml(String(val)) + '</span>' +
+                                '</span>';
+                        }
+                    });
+                    if (r.action === 'update' && changedCount === 0) {
+                        datiStr = '<span class="text-muted small">Nessuna modifica</span>';
+                    }
+                    trHtml += '<td class="small">' + datiStr + '</td>';
+
+                    // Action at end (no warning icon)
+                    const actionClass = r.action === 'insert' ? 'success' : (r.action === 'update' ? 'primary' : 'warning');
+                    const actionLabel = r.action === 'insert' ? 'Nuovo' : (r.action === 'update' ? 'Aggiorna' : 'Salta');
+                    trHtml += '<td><span class="badge bg-' + actionClass + '-subtle text-' + actionClass + '-emphasis">' + actionLabel + '</span></td>';
+
+                    trHtml += '</tr>';
+                    rowsHtml += trHtml;
+                });
+                tbody.innerHTML = rowsHtml;
+
+                // Update pagination controls
+                $('#preview-rows-shown-count').text(endIdx - startIdx);
+                $('#preview-page-num').text(currentPage);
+                $('#preview-page-info').text('Righe ' + (startIdx + 1) + '–' + endIdx + ' di ' + sortedRows.length);
+                $('#preview-prev-page').prop('disabled', currentPage <= 1);
+                $('#preview-next-page').prop('disabled', currentPage >= totalPages);
+                $('#preview-pagination').toggle(totalPages > 1);
+
+                // Initialize tooltips on current page
+                $('#preview-rows-tbody [data-bs-toggle="tooltip"]').each(function() {
+                    if (typeof bootstrap !== 'undefined' && bootstrap.Tooltip) {
+                        new bootstrap.Tooltip(this);
+                    }
+                });
+
+                // Scroll table to top on page change
+                $('#preview-rows-table').closest('div[style*="max-height"]').scrollTop(0);
+            }
+
+            // Page size change handler
+            $('#preview-page-size').off('change').on('change', function() {
+                pageSize = parseInt($(this).val()) || 100;
+                totalPages = Math.ceil(sortedRows.length / pageSize);
+                currentPage = 1;
+                renderPage();
+            });
+
+            // Prev/Next handlers
+            $('#preview-prev-page').off('click').on('click', function() {
+                if (currentPage > 1) { currentPage--; renderPage(); }
+            });
+            $('#preview-next-page').off('click').on('click', function() {
+                if (currentPage < totalPages) { currentPage++; renderPage(); }
+            });
+
+            // Initial render
+            renderPage();
+
+            // Show preview section
+            $('#import-preview-results').slideDown();
+            $('html, body').animate({ scrollTop: $('#import-preview-results').offset().top - 50 }, 500);
+        }
+
+        function escapeHtml(str) {
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        }
+
+        // Start import button → triggers mandatory preview first
+        $('#start-import').on('click', function() {
+            const btn = $(this);
+            const formData = collectImportFormData();
+
+            if (Object.keys(formData.column_mapping).length === 0) {
+                alert('Nessuna colonna mappata. Configurare il mapping prima di procedere.');
+                return;
+            }
+
+            btn.prop('disabled', true).html('<i class="la la-spinner fa-spin"></i> Analisi in corso...');
+
+            $.ajax({
+                url: '{{ url($crud_route . "/import-csv/preview") }}',
+                method: 'POST',
+                data: JSON.stringify(formData),
+                contentType: 'application/json',
+                headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') || '{{ csrf_token() }}' },
+                success: function(response) {
+                    // Hide mapping form and card, show only preview
+                    $('#import-mapping-form').hide();
+                    $('.unique-field-card').hide();
+                    $('.import-card .card-header').hide();
+                    renderPreviewResults(response);
+                },
+                error: function(xhr) {
+                    let msg = 'Errore durante l\'analisi dell\'anteprima.';
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        msg += '\n' + xhr.responseJSON.message;
+                    }
+                    alert(msg);
+                },
+                complete: function() {
+                    btn.prop('disabled', false).html('<i class="la la-eye"></i> Mostra anteprima');
+                }
+            });
+        });
+
+        // Close preview button → show mapping again
+        $('#preview-close-btn').on('click', function() {
+            $('#import-preview-results').slideUp();
+            $('#import-mapping-form').show();
+            $('.unique-field-card').show();
+            $('.import-card .card-header').show();
+        });
+
+        // Warning filter buttons
+        $(document).on('click', '.preview-filter-btn', function() {
+            $('.preview-filter-btn').removeClass('active');
+            $(this).addClass('active');
+            const filter = $(this).data('filter');
+            if (filter === 'all') {
+                $('#preview-warnings-list .alert').show();
+            } else {
+                $('#preview-warnings-list .alert').hide();
+                $('#preview-warnings-list .alert[data-severity="' + filter + '"]').show();
+            }
+        });
     });
 </script>
 @endpush

@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
+use App\Models\Traits\HasDisplayAttributes;
 use Backpack\CRUD\app\Models\Traits\CrudTrait;
 use Illuminate\Database\Eloquent\Model;
 
 class Role extends Model
 {
-    use CrudTrait;
+    use CrudTrait, HasDisplayAttributes;
 
     protected $fillable = ['name', 'description'];
 
@@ -21,7 +22,8 @@ class Role extends Model
         return $this->hasMany(ModelPermission::class);
     }
 
-    public function getDisplayAttribute()
+    // see HasDisplayAttributes for full doc
+    public function getDisplayAttribute(): string
     {
         return $this->name;
     }

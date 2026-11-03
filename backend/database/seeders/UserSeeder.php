@@ -88,18 +88,6 @@ class UserSeeder extends Seeder
 			"email_verified_at" => now(),
 		]);
 		User::create([
-			"username" => "aponzano",
-			"name" => "Andrea",
-			"surname" => "Ponzano",
-			"address" => "Via della Moscova, 40",
-			"email" => "ponzano@humanbit.com",
-			"phone" => fake()->phoneNumber(),
-			"backpack_role_id" => BackpackRole::where("name", "Developer")->first()->id,
-			"role_id" => Role::where("name", "User")->first()->id,
-			'password' => bcrypt(config('backpack.base.admin_panel_password')),
-			"email_verified_at" => now(),
-		]);
-		User::create([
 			"username" => "csolia",
 			"name" => "Christian",
 			"surname" => "Solia",

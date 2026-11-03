@@ -17,21 +17,21 @@ class EmailVerificationNotificationController extends Controller
 	{
 		$user = User::find($id);
 		if ($user == null) {
-			return response()->json(["status" => "error", "message" => "User not found"], 404);
+			return response()->json(["status" => "error", "message" => __("api.user_not_found")], 404);
 		}
 
 		if ($user->hasVerifiedEmail()) {
-			return response()->json(["status" => "already-verified", "message" => "Email already verified"], 200);
+			return response()->json(["status" => "already-verified", "message" => __("api.email_already_verified")], 200);
 		}
 
 		try {
 			$user->sendEmailVerificationNotification();
 			return response()->json([
 				"status" => "verification-link-sent",
-				"message" => "Verification email sent successfully",
+				"message" => __("api.verification_email_sent"),
 			]);
 		} catch (\Exception $e) {
-			return response()->json(["status" => "error", "message" => "Failed to send verification email"], 500);
+			return response()->json(["status" => "error", "message" => __("api.verification_email_failed")], 500);
 		}
 	}
 }

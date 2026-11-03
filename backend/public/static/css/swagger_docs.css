@@ -1,0 +1,201 @@
+/* ===========================================
+   Swagger/Scramble Documentation Styles
+   =========================================== */
+
+html, body {
+    margin: 0;
+    height: 100%;
+}
+
+body {
+    background-color: var(--color-canvas);
+}
+
+/* Dark theme fixes for stoplight/mosaic-code-viewer
+ * https://github.com/stoplightio/elements/issues/2188#issuecomment-1485461965
+ */
+[data-theme="dark"] .token.property {
+    color: rgb(128, 203, 196) !important;
+}
+
+[data-theme="dark"] .token.operator {
+    color: rgb(255, 123, 114) !important;
+}
+
+[data-theme="dark"] .token.number {
+    color: rgb(247, 140, 108) !important;
+}
+
+[data-theme="dark"] .token.string {
+    color: rgb(165, 214, 255) !important;
+}
+
+[data-theme="dark"] .token.boolean {
+    color: rgb(121, 192, 255) !important;
+}
+
+[data-theme="dark"] .token.punctuation {
+    color: #dbdbdb !important;
+}
+
+/* ===========================================
+   API Token Banner
+   =========================================== */
+.api-token-banner {
+    background: linear-gradient(135deg, #1e3a5f 0%, #2d5a87 100%);
+    color: #fff;
+    padding: 10px 20px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 99999;
+}
+
+/* Offset body content to account for fixed banner */
+body.has-token-banner {
+    padding-top: 52px;
+}
+
+/* Impersonate Section */
+.api-token-banner .impersonate-section {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.api-token-banner .impersonate-section label {
+    font-weight: 500;
+    color: #7dd3fc;
+}
+
+.api-token-banner .impersonate-section input {
+    padding: 6px 10px;
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 4px;
+    background: rgba(255,255,255,0.1);
+    color: #fff;
+    font-size: 12px;
+    width: 120px;
+}
+
+.api-token-banner .impersonate-section input::placeholder {
+    color: rgba(255,255,255,0.5);
+}
+
+.api-token-banner .impersonate-section input:focus {
+    outline: none;
+    border-color: #7dd3fc;
+    background: rgba(255,255,255,0.15);
+}
+
+.api-token-banner .impersonate-btn {
+    background: #f59e0b;
+    border: none;
+    color: white;
+    padding: 6px 14px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 500;
+    transition: background 0.2s;
+}
+
+.api-token-banner .impersonate-btn:hover {
+    background: #d97706;
+}
+
+.api-token-banner .impersonate-btn:disabled {
+    background: #6b7280;
+    cursor: not-allowed;
+}
+
+/* Token Section */
+.api-token-banner .token-section {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+}
+
+.api-token-banner strong {
+    color: #7dd3fc;
+}
+
+.api-token-banner code {
+    background: rgba(255,255,255,0.15);
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-size: 11px;
+    user-select: all;
+    cursor: pointer;
+    border: 1px solid rgba(255,255,255,0.2);
+    max-width: 300px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.api-token-banner code:hover {
+    background: rgba(255,255,255,0.25);
+}
+
+.api-token-banner .copy-btn {
+    background: #22c55e;
+    border: none;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 500;
+    transition: background 0.2s;
+}
+
+.api-token-banner .copy-btn:hover {
+    background: #16a34a;
+}
+
+.api-token-banner .copy-btn.copied {
+    background: #3b82f6;
+}
+
+.api-token-banner .user-info {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+}
+
+.api-token-banner .revoke-btn {
+    background: #ef4444;
+    border: none;
+    color: white;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: bold;
+    transition: background 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.api-token-banner .revoke-btn:hover {
+    background: #dc2626;
+}
+
+/* Dark theme variant */
+[data-theme="dark"] .api-token-banner {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+}

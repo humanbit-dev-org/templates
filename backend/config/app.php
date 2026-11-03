@@ -1,23 +1,24 @@
 <?php
 
 $secret = static function (?string $pathOrValue): ?string {
-	if ($pathOrValue === null || $pathOrValue === "") {
-		return null;
-	}
+    if ($pathOrValue === null || $pathOrValue === '') {
+        return null;
+    }
 
-	if (str_starts_with($pathOrValue, "/")) {
-		if (!is_file($pathOrValue) || !is_readable($pathOrValue)) {
-			return null;
-		}
-		$c = file_get_contents($pathOrValue);
-		return $c === false ? null : rtrim($c, "\r\n");
-	}
+    if (str_starts_with($pathOrValue, '/')) {
+        if (! is_file($pathOrValue) || ! is_readable($pathOrValue)) {
+            return null;
+        }
+        $c = file_get_contents($pathOrValue);
 
-	return $pathOrValue;
+        return $c === false ? null : rtrim($c, "\r\n");
+    }
+
+    return $pathOrValue;
 };
 
 return [
-	/*
+    /*
     |--------------------------------------------------------------------------
     | Application Name
     |--------------------------------------------------------------------------
@@ -28,9 +29,11 @@ return [
     |
     */
 
-	"name" => env("APP_NAME", "Laravel"),
+    'name' => env('APP_NAME', 'Laravel'),
 
-	/*
+    'tenant' => env('TENANT_ID') ?: 'nexi-multi',
+
+    /*
     |--------------------------------------------------------------------------
     | Application Environment
     |--------------------------------------------------------------------------
@@ -41,9 +44,13 @@ return [
     |
     */
 
-	"env" => env("APP_ENV", "production"),
+    /*
+    | Supported values: local, staging, integration, production, testing (PHPUnit).
+    | Internal tool availability per env: config/restricted_tools.php
+    */
+    'env' => env('APP_ENV', 'production'),
 
-	/*
+    /*
     |--------------------------------------------------------------------------
     | Application Debug Mode
     |--------------------------------------------------------------------------
@@ -54,9 +61,9 @@ return [
     |
     */
 
-	"debug" => (bool) env("APP_DEBUG", false),
+    'debug' => (bool) env('APP_DEBUG', false),
 
-	/*
+    /*
     |--------------------------------------------------------------------------
     | Application URL
     |--------------------------------------------------------------------------
@@ -67,7 +74,7 @@ return [
     |
     */
 
-	"url" => env("APP_URL", "http://localhost"),
+    'url' => env('APP_URL', 'http://localhost'),
 
     /*
     |--------------------------------------------------------------------------
@@ -80,9 +87,9 @@ return [
     |
     */
 
-	"frontend_url" => env("FRONTEND_URL", "http://localhost"),
+    'frontend_url' => env('FRONTEND_URL', 'http://localhost'),
 
-	/*
+    /*
     |--------------------------------------------------------------------------
     | Application Timezone
     |--------------------------------------------------------------------------
@@ -93,9 +100,9 @@ return [
     |
     */
 
-	"timezone" => env("APP_TIMEZONE", "UTC"),
+    'timezone' => env('APP_TIMEZONE', 'UTC'),
 
-	/*
+    /*
     |--------------------------------------------------------------------------
     | Application Locale Configuration
     |--------------------------------------------------------------------------
@@ -106,13 +113,13 @@ return [
     |
     */
 
-	"locale" => env("APP_LOCALE", "en"),
+    'locale' => env('APP_LOCALE', 'en'),
 
-	"fallback_locale" => env("APP_FALLBACK_LOCALE", "en"),
+    'fallback_locale' => env('APP_FALLBACK_LOCALE', 'en'),
 
-	"faker_locale" => env("APP_FAKER_LOCALE", "en_US"),
+    'faker_locale' => env('APP_FAKER_LOCALE', 'en_US'),
 
-	/*
+    /*
     |--------------------------------------------------------------------------
     | Encryption Key
     |--------------------------------------------------------------------------
@@ -123,13 +130,13 @@ return [
     |
     */
 
-	"cipher" => "AES-256-CBC",
+    'cipher' => 'AES-256-CBC',
 
-	"key" => $secret(env("APP_KEY_FILE", env("APP_KEY"))),
+    'key' => $secret(env('APP_KEY_FILE', env('APP_KEY'))),
 
-	"previous_keys" => [...array_filter(explode(",", env("APP_PREVIOUS_KEYS", "")))],
+    'previous_keys' => [...array_filter(explode(',', env('APP_PREVIOUS_KEYS', '')))],
 
-	/*
+    /*
     |--------------------------------------------------------------------------
     | Maintenance Mode Driver
     |--------------------------------------------------------------------------
@@ -142,8 +149,8 @@ return [
     |
     */
 
-	"maintenance" => [
-		"driver" => env("APP_MAINTENANCE_DRIVER", "file"),
-		"store" => env("APP_MAINTENANCE_STORE", "database"),
-	],
+    'maintenance' => [
+        'driver' => env('APP_MAINTENANCE_DRIVER', 'file'),
+        'store' => env('APP_MAINTENANCE_STORE', 'database'),
+    ],
 ];

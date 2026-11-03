@@ -2,62 +2,68 @@
 
 namespace App\Notifications;
 
+use App\Notifications\Concerns\UsesBankMailBranding;
 use Illuminate\Bus\Queueable;
-use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\URL;
-use Illuminate\Notifications\Notification;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Notifications\Notification;
 
 class PasswordUpdatedNotification extends Notification
 {
-	use Queueable;
+    use Queueable, UsesBankMailBranding;
 
-	/**
-	 * Create a new notification instance.
-	 */
-	public function __construct()
-	{
-		//
-	}
+    /**
+     * Create a new notification instance.
+     */
+    public function __construct(protected string $lang = 'it') {}
 
-	/**
-	 * Get the notification's delivery channels.
-	 *
-	 * @return array<int, string>
-	 */
-	public function via(object $notifiable): array
-	{
-		return ["mail"];
-	}
+    /**
+     * Get the notification's delivery channels.
+     *
+     * @return array<int, string>
+     */
+    public function via(object $notifiable): array
+    {
+        return ['mail'];
+    }
 
-	/**
-	 * Get the mail representation of the notification.
-	 */
-	public function toMail(object $notifiable): MailMessage
-	{
-		$verificationUrl = $this->verificationUrl($notifiable);
+    /**
+     * Get the mail representation of the notification.
+     */
+    public function toMail(object $notifiable): MailMessage
+    {
+        $bancaNome = $notifiable->banca?->nome ?? '';
+        $isEnglish = $this->lang === 'en';
 
-		return (new MailMessage())->subject("Password Updated")->line("Your password has been updated successfully.");
-	}
+        if ($isEnglish) {
+            return $this->withBankMailBranding(
+                (new MailMessage)
+                    ->subject("{$bancaNome} - Password updated")
+                    ->greeting('Hello,')
+                    ->line('Your password has been updated successfully.')
+                    ->line('If you did not make this change, please contact support immediately.')
+                    ->salutation("Regards,\n{$bancaNome}"),
+                $notifiable->banca
+            );
+        }
 
-	protected function verificationUrl($notifiable)
-	{
-		return URL::temporarySignedRoute("user.verification.verify", Carbon::now()->addMinutes(60), [
-			"id" => $notifiable->getKey(),
-			"hash" => sha1($notifiable->getEmailForVerification()),
-		]);
-	}
+        return $this->withBankMailBranding(
+            (new MailMessage)
+                ->subject("{$bancaNome} - Password aggiornata")
+                ->greeting('Gentile utente,')
+                ->line('La tua password è stata aggiornata con successo.')
+                ->line('Se non hai effettuato questa modifica, contatta immediatamente l\'assistenza.')
+                ->salutation("Cordiali saluti,\n{$bancaNome}"),
+            $notifiable->banca
+        );
+    }
 
-	/**
-	 * Get the array representation of the notification.
-	 *
-	 * @return array<string, mixed>
-	 */
-	public function toArray(object $notifiable): array
-	{
-		return [
-				//
-			];
-	}
+    /**
+     * Get the array representation of the notification.
+     *
+     * @return array<string, mixed>
+     */
+    public function toArray(object $notifiable): array
+    {
+        return [];
+    }
 }

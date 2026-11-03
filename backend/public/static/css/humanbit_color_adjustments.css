@@ -8,6 +8,36 @@
     color: color-mix(in srgb, var(--tblr-link-color) 50%, white);
 }
 
+/* Banking UI — shared motion for interactive elements */
+.btn,
+.nav-link,
+.dropdown-item,
+.card,
+.form-control,
+.form-select,
+.page-link,
+.useful-link-btn {
+    transition:
+        background-color 0.22s cubic-bezier(0.4, 0, 0.2, 1),
+        border-color 0.22s cubic-bezier(0.4, 0, 0.2, 1),
+        color 0.15s ease,
+        box-shadow 0.22s cubic-bezier(0.4, 0, 0.2, 1),
+        transform 0.15s ease;
+}
+
+.btn:hover:not(:disabled):not(.disabled) {
+    transform: translateY(-1px);
+}
+
+.btn:active:not(:disabled):not(.disabled) {
+    transform: translateY(0);
+}
+
+/* Subtle row entrance for datatables */
+#crudTable tbody tr {
+    animation: fadeIn 0.25s ease both;
+}
+
 /* Colori per le animazioni */
 @keyframes pulseEffect {
     0% {
