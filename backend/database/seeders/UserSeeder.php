@@ -24,7 +24,7 @@ class UserSeeder extends Seeder
 			"phone" => fake()->phoneNumber(),
 			"backpack_role_id" => BackpackRole::where("name", "Admin")->first()->id,
 			"role_id" => Role::where("name", "User")->first()->id,
-			'password' => bcrypt(config('backpack.base.backpack_admin_password')),
+			'password' => bcrypt(config('backpack.base.admin_panel_password')),
 			"email_verified_at" => now(),
 		]);
 		User::create([
@@ -36,7 +36,7 @@ class UserSeeder extends Seeder
 			"phone" => fake()->phoneNumber(),
 			"backpack_role_id" => BackpackRole::where("name", "Author")->first()->id,
 			"role_id" => Role::where("name", "User")->first()->id,
-			'password' => bcrypt(config('backpack.base.backpack_admin_password')),
+			'password' => bcrypt(config('backpack.base.admin_panel_password')),
 			"email_verified_at" => now(),
 		]);
 		User::create([
@@ -48,7 +48,7 @@ class UserSeeder extends Seeder
 			"phone" => fake()->phoneNumber(),
 			"backpack_role_id" => BackpackRole::where("name", "Guest")->first()->id,
 			"role_id" => Role::where("name", "User")->first()->id,
-			'password' => bcrypt(config('backpack.base.backpack_admin_password')),
+			'password' => bcrypt(config('backpack.base.admin_panel_password')),
 			"email_verified_at" => now(),
 		]);
 		User::create([
@@ -60,7 +60,7 @@ class UserSeeder extends Seeder
 			"phone" => fake()->phoneNumber(),
 			"backpack_role_id" => BackpackRole::where("name", "Developer")->first()->id,
 			"role_id" => Role::where("name", "User")->first()->id,
-			'password' => bcrypt(config('backpack.base.backpack_admin_password')),
+			'password' => bcrypt(config('backpack.base.admin_panel_password')),
 			"email_verified_at" => now(),
 		]);
 		User::create([
@@ -72,7 +72,7 @@ class UserSeeder extends Seeder
 			"phone" => fake()->phoneNumber(),
 			"backpack_role_id" => BackpackRole::where("name", "Developer")->first()->id,
 			"role_id" => Role::where("name", "User")->first()->id,
-			'password' => bcrypt(config('backpack.base.backpack_admin_password')),
+			'password' => bcrypt(config('backpack.base.admin_panel_password')),
 			"email_verified_at" => now(),
 		]);
 		User::create([
@@ -84,7 +84,7 @@ class UserSeeder extends Seeder
 			"phone" => fake()->phoneNumber(),
 			"backpack_role_id" => BackpackRole::where("name", "Developer")->first()->id,
 			"role_id" => Role::where("name", "User")->first()->id,
-			'password' => bcrypt(config('backpack.base.backpack_admin_password')),
+			'password' => bcrypt(config('backpack.base.admin_panel_password')),
 			"email_verified_at" => now(),
 		]);
 		User::create([
@@ -96,7 +96,7 @@ class UserSeeder extends Seeder
 			"phone" => fake()->phoneNumber(),
 			"backpack_role_id" => BackpackRole::where("name", "Developer")->first()->id,
 			"role_id" => Role::where("name", "User")->first()->id,
-			'password' => bcrypt(config('backpack.base.backpack_admin_password')),
+			'password' => bcrypt(config('backpack.base.admin_panel_password')),
 			"email_verified_at" => now(),
 		]);
 		User::create([
@@ -108,7 +108,7 @@ class UserSeeder extends Seeder
 			"phone" => fake()->phoneNumber(),
 			"backpack_role_id" => BackpackRole::where("name", "Developer")->first()->id,
 			"role_id" => Role::where("name", "User")->first()->id,
-			'password' => bcrypt(config('backpack.base.backpack_admin_password')),
+			'password' => bcrypt(config('backpack.base.admin_panel_password')),
 			"email_verified_at" => now(),
 		]);
 		User::factory()->count(5)->create();
