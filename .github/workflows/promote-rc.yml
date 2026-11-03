@@ -1,0 +1,151 @@
+# .github/workflows/promote-rc.yml
+#
+# Promuove una rc in production: crea il tag vX.Y.Z-release sullo STESSO
+# commit di vX.Y.Z-rc. Il tag avvia Build and Deploy in modalità
+# promozione: il backend della rc viene solo ri-etichettato su ECR, si
+# costruiscono i frontend di production e si fa il deploy solo su
+# production (con l'approvazione dell'environment production).
+#
+# Volutamente solo manuale, da interfaccia, in due modi:
+#   - Actions -> Promote RC -> Run workflow: nessun input, promuove ciò che
+#     è su staging, cioè la rc più recente tra quelle più nuove dell'ultima
+#     release e non ancora promosse, se il suo ultimo deploy è riuscito. Se
+#     quella rc è fallita o in corso si ferma: non ripiega su una rc più
+#     vecchia, che potrebbe non essere più su staging.
+#   - Releases -> pre-release vX.Y.Z-rc -> Edit -> Release label "Latest"
+#     (non più pre-release). Funziona solo per le rc create dopo
+#     l'introduzione di questo trigger: per gli eventi release GitHub usa
+#     questo file come si trova nel commit della rc.
+# Build and Deploy crea la pre-release vX.Y.Z-rc solo quando la rc è
+# riuscita su integration e staging, e a deploy di production riuscito la
+# rinomina in vX.Y.Z e la segna Latest (in entrambi i modi).
+#
+# È l'unico modo di arrivare in production: Build and Deploy rifiuta ogni tag
+# -release che non sia la promozione di una rc riuscita su staging.
+#
+# Controlli prima di creare il tag (ripetuti anche da Build and Deploy):
+#   - il tag è una rc vX.Y.Z-rc e vX.Y.Z-release non esiste ancora;
+#   - la rc è più recente dell'ultima release (niente downgrade);
+#   - l'ultimo run di Build and Deploy della rc (integration + staging)
+#     è finito con successo.
+# Se un controllo fallisce non si crea nulla; se la promozione era partita
+# da Releases, la release torna pre-release (la rc resta candidata).
+#
+# Il tag è creato con RAYS_ACCESS_TOKEN: un tag creato con il GITHUB_TOKEN
+# del workflow non avvierebbe Build and Deploy (regola di GitHub). Il resto
+# usa il GITHUB_TOKEN, che non avvia workflow (riportare la release a
+# pre-release non genera nuovi eventi).
+
+name: Promote RC
+
+on:
+  workflow_dispatch:
+  release:
+    types: [released]
+
+concurrency:
+  group: promote-rc
+  cancel-in-progress: false
+
+jobs:
+
+  promote:
+    name: Promote RC to release
+    runs-on: [self-hosted, rays-ci]
+    permissions:
+      contents: write
+      actions: read
+
+    steps:
+      - name: Create the release tag on the rc commit
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RAYS_ACCESS_TOKEN: ${{ secrets.RAYS_ACCESS_TOKEN }}
+          # Set only when started from Releases; empty for Run workflow
+          EVENT_TAG: ${{ github.event.release.tag_name }}
+        run: |
+          REPO="$GITHUB_REPOSITORY"
+          RC_TAG="$EVENT_TAG"
+
+          # Stop without creating anything; a release marked by hand goes back to pre-release
+          refuse() {
+            echo "ERROR: $1"
+            [ -n "$EVENT_TAG" ] || exit 1
+            if gh release edit "$EVENT_TAG" --repo "$REPO" --prerelease >/dev/null; then
+              echo "       ${EVENT_TAG} is a pre-release again: nothing was promoted."
+            else
+              echo "WARN: could not set ${EVENT_TAG} back to pre-release — do it on the Releases page"
+            fi
+            exit 1
+          }
+
+          # Usage: last_run TAG -> "id conclusion-or-status url" of its latest Build and Deploy run
+          last_run() {
+            gh run list --repo "$REPO" --workflow deploy.yml --branch "$1" --limit 1 \
+              --json databaseId,conclusion,status,url \
+              --jq '.[0] | "\(.databaseId) \(if (.conclusion // "") == "" then .status else .conclusion end) \(.url)"' 2>/dev/null || true
+          }
+
+          case "$RC_TAG" in
+            *-release)
+              echo "INFO: ${RC_TAG} is a production release, not a candidate — nothing to do"
+              exit 0
+              ;;
+          esac
+
+          TAGS=$(gh api "repos/${REPO}/git/matching-refs/tags/v" --paginate --jq '.[].ref' | sed 's|^refs/tags/||')
+          LATEST_RELEASE=$(echo "$TAGS" | sed -n 's/^\(v[0-9]\+\.[0-9]\+\.[0-9]\+\)-release$/\1/p' | sort -V | tail -1)
+          # Usage: newer_than_release VERSION — true when VERSION > latest release (or there is none)
+          newer_than_release() {
+            [ -z "$LATEST_RELEASE" ] || [ "$(printf '%s\n%s\n' "$1" "$LATEST_RELEASE" | sort -V | tail -1)" != "$LATEST_RELEASE" ]
+          }
+
+          if [ -z "$RC_TAG" ]; then
+            # Run workflow: what is on staging = the newest rc not yet released
+            NEWEST=""
+            for VERSION in $(echo "$TAGS" | sed -n 's/^\(v[0-9]\+\.[0-9]\+\.[0-9]\+\)-rc$/\1/p' | sort -V -r); do
+              newer_than_release "$VERSION" || break
+              echo "$TAGS" | grep -qx "${VERSION}-release" && continue
+              NEWEST="${VERSION}-rc"
+              break
+            done
+            [ -n "$NEWEST" ] \
+              || refuse "nothing to promote: no rc newer than the latest release ${LATEST_RELEASE:-(none)}-release — deploy a vX.Y.Z-rc tag first"
+            RC_TAG="$NEWEST"
+            echo "INFO: newest rc not yet released: ${RC_TAG}"
+          fi
+
+          echo "$RC_TAG" | grep -qE '^v[0-9]+\.[0-9]+\.[0-9]+-rc$' \
+            || refuse "only vX.Y.Z-rc pre-releases can be promoted, ${RC_TAG} is not one"
+          VERSION="${RC_TAG%-rc}"
+          RELEASE_TAG="${VERSION}-release"
+
+          if echo "$TAGS" | grep -qx "$RELEASE_TAG"; then
+            echo "INFO: ${RELEASE_TAG} already exists — ${VERSION} is already promoted, nothing to do"
+            exit 0
+          fi
+
+          RC_SHA=$(gh api "repos/${REPO}/commits/${RC_TAG}" --jq .sha 2>/dev/null || true)
+          [ -n "$RC_SHA" ] || refuse "tag ${RC_TAG} not found"
+
+          # Never downgrade production
+          newer_than_release "$VERSION" \
+            || refuse "${VERSION} is not newer than the latest release ${LATEST_RELEASE}-release — promoting it would downgrade production"
+
+          # The rc must have reached integration and staging successfully
+          RC_RUN=$(last_run "$RC_TAG")
+          RC_CONCLUSION=$(echo "$RC_RUN" | awk '{print $2}')
+          [ "$RC_CONCLUSION" = "success" ] \
+            || refuse "the last Build and Deploy run of ${RC_TAG} is not successful (${RC_CONCLUSION:-no run found}) — fix and redeploy the rc first"
+
+          GH_TOKEN="$RAYS_ACCESS_TOKEN" gh api "repos/${REPO}/git/refs" -f ref="refs/tags/${RELEASE_TAG}" -f sha="$RC_SHA" >/dev/null \
+            || refuse "could not create ${RELEASE_TAG}"
+          echo "OK: ${RELEASE_TAG} created on ${RC_SHA} (same commit as ${RC_TAG}) — Build and Deploy starts in promote mode"
+
+          {
+            echo "### Promoted ${RC_TAG} → ${RELEASE_TAG}"
+            echo ""
+            echo "- Commit: \`${RC_SHA}\`"
+            echo "- RC deploy: $(echo "$RC_RUN" | awk '{print $3}')"
+            echo "- Production deploy: Actions → Build and Deploy → ${RELEASE_TAG} (needs the production approval)"
+          } >> "$GITHUB_STEP_SUMMARY"

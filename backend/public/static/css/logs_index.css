@@ -1,0 +1,67 @@
+/* ===========================================
+   Log Index Page Styles
+   =========================================== */
+
+.log-page .log-row {
+    cursor: pointer;
+    transition: background-color 0.1s ease;
+}
+
+.log-page .log-row:hover {
+    background-color: rgba(var(--tblr-primary-rgb), 0.04);
+}
+
+.log-page .log-row:hover .file-name {
+    color: var(--tblr-primary);
+}
+
+.log-page .file-name {
+    font-weight: 500;
+    transition: color 0.1s ease;
+}
+
+.log-page .table-sm td {
+    padding: 0.5rem 0.25rem;
+    vertical-align: middle;
+}
+
+.log-page .btn-group-sm .btn {
+    padding: 0.15rem 0.4rem;
+}
+
+.log-page .log-action-btn.btn-outline-success,
+.log-page .log-action-btn.btn-outline-danger {
+    border-color: currentColor;
+}
+
+.log-page .log-action-btn.btn-outline-success:hover,
+.log-page .log-action-btn.btn-outline-success:focus {
+    background-color: rgba(25, 135, 84, 0.1) !important;
+    color: #198754 !important;
+}
+
+.log-page .log-action-btn.btn-outline-danger:hover,
+.log-page .log-action-btn.btn-outline-danger:focus {
+    background-color: rgba(220, 53, 69, 0.1) !important;
+    color: #dc3545 !important;
+}
+
+.log-page .log-group-path {
+    font-size: 0.8rem;
+}
+
+.log-page .log-group-delete-btn {
+    margin-left: 1rem;
+    flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+    .log-page .log-group-header {
+        align-items: flex-start !important;
+        gap: 0.5rem;
+    }
+
+    .log-page .log-group-meta {
+        min-width: 0;
+    }
+}

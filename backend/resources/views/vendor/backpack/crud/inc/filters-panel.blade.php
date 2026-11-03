@@ -1,1914 +1,1166 @@
 @php
-use App\Http\Controllers\Admin\Helper\FilterHelper;
+use App\Support\Backpack\FilterHelper;
+use Illuminate\Support\Str;
 
-// Get filter configuration using helper
+// Get filter configuration using helper (unchanged backend contract)
 $filterConfig = FilterHelper::getFilterConfiguration($crud);
-extract($filterConfig); // Extract all variables for backward compatibility
+extract($filterConfig);
+
+$activeFilters = FilterHelper::getActiveFilters($columns);
+
+/*
+|--------------------------------------------------------------------------
+| Build plain-language pills for every active filter
+|--------------------------------------------------------------------------
+| Each pill: ['label' => ..., 'value' => ..., 'remove' => removal URL]
+| Param names are NOT changed: removal URLs are built with request()->except()
+*/
+$pills = [];
+$currentUrl = request()->url();
+
+$buildRemoveUrl = function (array $exceptKeys) use ($currentUrl) {
+    $params = request()->except(array_merge(['page'], $exceptKeys));
+    $params['persistent-table'] = '1';
+    return $currentUrl . '?' . http_build_query($params);
+};
+
+foreach ($activeFilters as $key => $value) {
+    // Skip UI-only leftovers
+    if (str_ends_with($key, '_type') || $key === 'persistent-table') {
+        continue;
+    }
+
+    // 1) Relation count filter (relname_count_op)
+    if (str_ends_with($key, '_count_op')) {
+        $relName = str_replace('_count_op', '', $key);
+        $pills[] = [
+            'label' => FilterHelper::cleanFieldName($relName),
+            'value' => FilterHelper::getFilterDisplayValue($key, $value, $columns, $crud),
+            'remove' => $buildRemoveUrl([$relName.'_count_op', $relName.'_count', $relName.'_filter_mode']),
+            'kind' => 'relation',
+            'cluster' => 'rel:'.$relName,
+        ];
+        continue;
+    }
+
+    // 2) HasMany relation field filter (relname_rel_field[...])
+    $relFieldCtx = FilterHelper::parseHasManyRelationFieldFilterKey($key, $relationsWithFieldFilters);
+    if ($relFieldCtx) {
+        $pills[] = [
+            'label' => FilterHelper::getHasManyRelationFieldFilterLabel($relFieldCtx),
+            'value' => FilterHelper::getHasManyRelationFieldFilterDisplayValue($key, $value, $relFieldCtx),
+            'remove' => $currentUrl . '?' . http_build_query(array_merge(
+                FilterHelper::getHasManyRelationFieldFilterRemoveParams($key, $relFieldCtx),
+                ['persistent-table' => '1']
+            )),
+            'kind' => 'relation',
+            'cluster' => 'rel:'.$relFieldCtx['relation_name'],
+        ];
+        continue;
+    }
+
+    // 3) HasMany search / presence keys (relname_field, relname_field_not_empty, ...)
+    $matchedHasMany = null;
+    $baseKey = preg_replace('/_(not_empty|empty)$/', '', $key);
+    foreach ($hasManyRelations as $rel) {
+        foreach (($rel['searchable_keys'] ?? []) as $keyInfo) {
+            if ($baseKey === $rel['name'].'_'.$keyInfo['field']) {
+                $matchedHasMany = $rel;
+                break 2;
+            }
+        }
+    }
+    if ($matchedHasMany) {
+        $relLabel = FilterHelper::cleanFieldName($matchedHasMany['name']);
+        if (str_ends_with($key, '_not_empty')) {
+            $pillValue = trans('backpack::filters.has_related');
+        } elseif (str_ends_with($key, '_empty')) {
+            $pillValue = trans('backpack::filters.has_not_related');
+        } else {
+            $relModelClass = $matchedHasMany['model'] ?? ('App\\Models\\'.Str::studly($matchedHasMany['name']));
+            $pillValue = class_exists($relModelClass)
+                ? FilterHelper::getHasManyFilterDisplayValue($relModelClass, $value)
+                : (string) $value;
+        }
+        $pills[] = [
+            'label' => $relLabel,
+            'value' => $pillValue,
+            'remove' => $buildRemoveUrl([$baseKey, $baseKey.'_not_empty', $baseKey.'_empty', $matchedHasMany['name'].'_filter_mode']),
+            'kind' => 'relation',
+            'cluster' => 'rel:'.$matchedHasMany['name'],
+        ];
+        continue;
+    }
+
+    // 4) not_empty / empty on plain columns or belongsTo
+    if (str_ends_with($key, '_not_empty') || str_ends_with($key, '_empty')) {
+        $col = $columns->firstWhere('name', $baseKey);
+        $label = $col['label'] ?? FilterHelper::cleanFieldName($baseKey, $baseKey === $primaryKey);
+        $pills[] = [
+            'label' => $label,
+            'value' => str_ends_with($key, '_not_empty')
+                ? trans('backpack::filters.not_empty')
+                : trans('backpack::filters.empty'),
+            'remove' => $buildRemoveUrl([$baseKey.'_not_empty', $baseKey.'_empty']),
+            'kind' => 'field',
+        ];
+        continue;
+    }
+
+    // 5) Date range marker from getActiveFilters (key === value === baseField)
+    if ($key === $value && (request()->filled($key.'_from') || request()->filled($key.'_to'))) {
+        // getFilterDisplayValue returns "Label: da X - Y" already
+        $pills[] = [
+            'label' => '',
+            'value' => FilterHelper::getFilterDisplayValue($key, $value, $columns, $crud),
+            'remove' => $buildRemoveUrl([$key, $key.'_from', $key.'_to', $key.'_type']),
+            'kind' => 'field',
+        ];
+        continue;
+    }
+
+    // 6) Plain value / select / boolean / belongsTo filters
+    $col = $columns->firstWhere('name', $key === 'page_filter' ? 'page' : $key);
+    $label = $col['label'] ?? null;
+    if (! $label) {
+        $relatedCtx = FilterHelper::resolveRelatedFilterContext($crud, $key);
+        $label = $relatedCtx['label'] ?? FilterHelper::cleanFieldName($key, $key === $primaryKey);
+    }
+    $pills[] = [
+        'label' => $label,
+        'value' => FilterHelper::getFilterDisplayValue($key, $value, $columns, $crud),
+        'remove' => $buildRemoveUrl([$key, $key.'_from', $key.'_to', $key.'_type']),
+        'kind' => FilterHelper::isForeignKeyColumn($key, $tableName, $primaryKey) ? 'relation' : 'field',
+    ];
+}
+
+$resetUrl = $currentUrl . '?persistent-table=1';
+
+// Group HasMany relation pills that share AND semantics into visual clusters
+$clusters = [];
+foreach ($pills as $pill) {
+    if (! empty($pill['cluster'])) {
+        $clusters[$pill['cluster']][] = $pill;
+    }
+}
+
+$pillRenderItems = [];
+$seenClusters = [];
+foreach ($pills as $pill) {
+    if (! empty($pill['cluster'])) {
+        if (isset($seenClusters[$pill['cluster']])) {
+            continue;
+        }
+        $seenClusters[$pill['cluster']] = true;
+        $clusterPills = $clusters[$pill['cluster']];
+        if (count($clusterPills) > 1) {
+            $pillRenderItems[] = ['type' => 'cluster', 'pills' => $clusterPills];
+        } else {
+            $pillRenderItems[] = ['type' => 'single', 'pill' => $clusterPills[0]];
+        }
+        continue;
+    }
+
+    $pillRenderItems[] = ['type' => 'single', 'pill' => $pill];
+}
+
+// Group labels reuse existing translation keys
+$groupValue    = trans('backpack::filters.value_filters');
+$groupStatus   = trans('backpack::filters.status');
+$groupSelect   = trans('backpack::filters.select_filters');
+$groupDate     = trans('backpack::filters.date_filters');
+$groupFile     = trans('backpack::filters.uploaded_files');
+$groupRelation = trans('backpack::filters.relations');
+$groupAdvanced = trans('backpack::filters.advanced_filters');
 @endphp
 
-<!-- Filter Panel (Collapsed by Default) -->
-<div class="collapse" id="filterPanel">
-  <form action="" method="GET" class="mt-3" id="filterForm">
-    <!-- Hidden fields to preserve empty/not_empty filters -->
-    @foreach($textColumns as $column)
-      @if(request()->get($column['name'] . '_not_empty'))
-        <input type="hidden" name="{{ $column['name'] }}_not_empty" value="{{ request()->get($column['name'] . '_not_empty') }}">
-      @endif
-      @if(request()->get($column['name'] . '_empty'))
-        <input type="hidden" name="{{ $column['name'] }}_empty" value="{{ request()->get($column['name'] . '_empty') }}">
-      @endif
-    @endforeach
-
-    <!-- Text Filters Accordion -->
-    <div class="accordion mb-2" id="filtersAccordion">
-      @if($textColumns->count() > 0)
-      <div class="accordion-item">
-        <h2 class="accordion-header">
-          <button class="accordion-button collapsed" type="button"
-            data-bs-toggle="collapse" data-bs-target="#textFiltersCollapse"
-            aria-expanded="false" aria-controls="textFiltersCollapse">
-            <i class="la la-align-left"></i> {{ trans('backpack::filters.value_filters') }}
-            @if($textFilterCount > 0)
-            <span class="badge bg-primary rounded-pill ms-2">{{ $textFilterCount }}</span>
-            @endif
-            <span class="filter-badges-container ms-2">
-              @foreach($textColumns->pluck('name') as $name)
-                <span class="filter-item-badge">{{ \App\Http\Controllers\Admin\Helper\FilterHelper::cleanFieldName($name) }}</span>
-              @endforeach
-            </span>
-          </button>
-        </h2>
-        <div id="textFiltersCollapse" class="accordion-collapse collapse" data-bs-parent="#filtersAccordion">
-          <div class="accordion-body">
-            <div class="row g-1">
-              @foreach ($textColumns as $column)
-              @php
-              $label = isset($column['label']) ? $column['label'] : $column['name'];
-              $inputType = FilterHelper::getInputType($column, $tableName);
-              $step = $inputType === 'number' ? FilterHelper::getNumberStep($column, $tableName) : null;
-              
-              // Check if this field has active filters
-              $hasActiveFilter = request()->get($column['name']) || 
-                                request()->get($column['name'] . '_not_empty') || 
-                                request()->get($column['name'] . '_empty');
-              @endphp
-              <div class="col-lg-3 col-md-6 col-sm-12">
-                <div class="filter-field-container {{ $hasActiveFilter ? 'has-active-filter' : '' }}">
-                  <div class="d-flex align-items-center justify-content-between mb-1">
-                    <label for="{{ $column['name'] }}" class="form-label small text-muted mb-0 filter-label fw-semibold" style="font-size: 0.8rem;">{{ $label }}</label>
-                    <div class="filter-radio-group" role="group">
-                      <input type="radio" class="btn-check" name="{{ $column['name'] }}_empty_filter" 
-                             id="{{ $column['name'] }}_all" value=""
-                             {{ !request()->get($column['name'] . '_not_empty') && !request()->get($column['name'] . '_empty') ? 'checked' : '' }}>
-                      <label class="btn btn-outline-primary" for="{{ $column['name'] }}_all">Tutti</label>
-
-                      <input type="radio" class="btn-check" name="{{ $column['name'] }}_empty_filter" 
-                             id="{{ $column['name'] }}_not_empty" value="not_empty"
-                             {{ request()->get($column['name'] . '_not_empty') == '1' ? 'checked' : '' }}>
-                      <label class="btn btn-outline-success" for="{{ $column['name'] }}_not_empty">Non vuoto</label>
-
-                      <input type="radio" class="btn-check" name="{{ $column['name'] }}_empty_filter" 
-                             id="{{ $column['name'] }}_empty" value="empty"
-                             {{ request()->get($column['name'] . '_empty') == '1' ? 'checked' : '' }}>
-                      <label class="btn btn-outline-danger" for="{{ $column['name'] }}_empty">Vuoto</label>
-                    </div>
-                  </div>
-                  <div class="position-relative">
-                    <input autocomplete="off" 
-                           type="{{ $inputType }}" 
-                           name="{{ $column['name'] }}"
-                           value="{{ request()->get($column['name']) }}"
-                           class="form-control form-control-sm autocomplete-input"
-                           data-column="{{ $column['name'] }}"
-                           data-table="{{ $crud->model->getTable() }}"
-                           data-autocomplete-url="{{ backpack_url('autocomplete-values') }}"
-                           id="{{ $column['name'] }}"
-                           placeholder="filtra per {{ strtolower($label) }}"
-                           style="font-size: 0.75rem; padding: 0.25rem 0.4rem;"
-                           @if($step) step="{{ $step }}" @endif>
-                    <div class="autocomplete-suggestions" id="autocomplete-{{ $column['name'] }}"></div>
-                  </div>
-                </div>
-              </div>
-              @endforeach
-            </div>
-            <div class="d-flex justify-content-end mt-2">
-              <button type="submit" class="btn btn-primary btn-sm filter-search-btn" form="filterForm">
-                <i class="la la-search"></i> {{ trans('backpack::crud.search') }}
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-      @endif
-
-      <!-- Path Fields Filters Accordion -->
-      @if($pathFields->count() > 0)
-      <div class="accordion-item">
-        <h2 class="accordion-header">
-          <button class="accordion-button collapsed" type="button"
-            data-bs-toggle="collapse" data-bs-target="#pathFiltersCollapse"
-            aria-expanded="false" aria-controls="pathFiltersCollapse">
-            <i class="la la-file"></i> {{ trans('backpack::filters.uploaded_files') }}
-            @if($pathFilterCount > 0)
-            <span class="badge bg-primary rounded-pill ms-2">{{ $pathFilterCount }}</span>
-            @endif
-          </button>
-        </h2>
-        <div id="pathFiltersCollapse" class="accordion-collapse collapse" data-bs-parent="#filtersAccordion">
-          <div class="accordion-body">
-            <div class="row g-1">
-              @foreach ($pathFields as $column)
-              @php
-              $label = isset($column['label']) ? $column['label'] : str_replace('_path', '', $column['name']);
-              $label = ucfirst($label);
-              @endphp
-
-              <div class="col-lg-3 col-md-4 col-sm-6 mb-2">
-                <div class="form-check form-switch mt-1">
-                  <input type="checkbox" class="form-check-input" name="{{ $column['name'] }}" value="1"
-                    id="{{ $column['name'] }}" {{ request()->get($column['name']) == '1' ? 'checked' : '' }}>
-                  <label class="form-check-label filter-label" for="{{ $column['name'] }}">{{ $label }}</label>
-                </div>
-              </div>
-              @endforeach
-            </div>
-            <div class="d-flex justify-content-end mt-2">
-              <button type="submit" class="btn btn-primary btn-sm filter-search-btn" form="filterForm">
-                <i class="la la-search"></i> {{ trans('backpack::crud.search') }}
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-      @endif
-
-      <!-- Boolean Filters Accordion -->
-      @if($booleanColumns->count() > 0)
-      <div class="accordion-item">
-        <h2 class="accordion-header">
-          <button class="accordion-button collapsed" type="button"
-            data-bs-toggle="collapse" data-bs-target="#booleanFiltersCollapse"
-            aria-expanded="false" aria-controls="booleanFiltersCollapse">
-            <i class="la la-check-square"></i> {{ trans('backpack::filters.status') }}
-            @if($booleanFilterCount > 0)
-            <span class="badge bg-primary rounded-pill ms-2">{{ $booleanFilterCount }}</span>
-            @endif
-            <span class="filter-badges-container ms-2">
-              @foreach($booleanColumns->pluck('name') as $name)
-                <span class="filter-item-badge">{{ \App\Http\Controllers\Admin\Helper\FilterHelper::cleanFieldName($name) }}</span>
-              @endforeach
-            </span>
-          </button>
-        </h2>
-        <div id="booleanFiltersCollapse" class="accordion-collapse collapse" data-bs-parent="#filtersAccordion">
-          <div class="accordion-body">
-            <div class="row g-1">
-              @foreach ($booleanColumns as $column)
-              @php
-              $label = isset($column['label']) ? $column['label'] : $column['name'];
-              
-              // Check if this field has active filters
-              $hasActiveFilter = request()->get($column['name']) !== null && request()->get($column['name']) !== '';
-              @endphp
-
-              <div class="col-lg-3 col-md-6 col-sm-12">
-                <div class="filter-field-container {{ $hasActiveFilter ? 'has-active-filter' : '' }}">
-                  <div class="d-flex align-items-center justify-content-between mb-1">
-                    <label class="form-label small text-muted mb-0 filter-label fw-semibold" style="font-size: 0.8rem;">{{ $label }}</label>
-                    <div class="filter-radio-group" role="group">
-                      <input type="radio" class="btn-check" name="{{ $column['name'] }}" id="{{ $column['name'] }}_all"
-                        {{ request()->get($column['name']) === null || request()->get($column['name']) === '' ? 'checked' : '' }} value="">
-                      <label class="btn btn-outline-secondary" for="{{ $column['name'] }}_all">{{ trans('backpack::filters.all') }}</label>
-
-                      <input type="radio" class="btn-check" name="{{ $column['name'] }}" id="{{ $column['name'] }}_yes"
-                        {{ request()->get($column['name']) == '1' ? 'checked' : '' }} value="1">
-                      <label class="btn btn-outline-success" for="{{ $column['name'] }}_yes">{{ trans('backpack::filters.yes') }}</label>
-
-                      <input type="radio" class="btn-check" name="{{ $column['name'] }}" id="{{ $column['name'] }}_no"
-                        {{ request()->get($column['name']) == '0' ? 'checked' : '' }} value="0">
-                      <label class="btn btn-outline-danger" for="{{ $column['name'] }}_no">{{ trans('backpack::filters.no') }}</label>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              @endforeach
-            </div>
-            <div class="d-flex justify-content-end mt-2">
-              <button type="submit" class="btn btn-primary btn-sm filter-search-btn" form="filterForm">
-                <i class="la la-search"></i> {{ trans('backpack::crud.search') }}
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-      @endif
-
-      <!-- Date Filters Accordion -->
-      @if($dateColumns->count() > 0)
-      <div class="accordion-item">
-        <h2 class="accordion-header">
-          <button class="accordion-button collapsed" type="button"
-            data-bs-toggle="collapse" data-bs-target="#dateFiltersCollapse"
-            aria-expanded="false" aria-controls="dateFiltersCollapse">
-            <i class="la la-calendar"></i> {{ trans('backpack::filters.date_filters') }}
-            @if($dateFilterCount > 0)
-            <span class="badge bg-primary rounded-pill ms-2">{{ $dateFilterCount }}</span>
-            @endif
-            <span class="filter-badges-container ms-2">
-              @foreach($dateColumns->pluck('name') as $name)
-                <span class="filter-item-badge">{{ \App\Http\Controllers\Admin\Helper\FilterHelper::cleanFieldName($name) }}</span>
-              @endforeach
-            </span>
-          </button>
-        </h2>
-        <div id="dateFiltersCollapse" class="accordion-collapse collapse" data-bs-parent="#filtersAccordion">
-          <div class="accordion-body">
-            <div class="row g-1">
-              @foreach ($dateColumns as $column)
-              @php
-              $label = isset($column['label']) ? $column['label'] : ucfirst($column['name']);
-              $inputType = 'date'; // Always use simple date picker (time defaults to midnight)
-              $hasRange = request()->get($column['name'] . '_from') || request()->get($column['name'] . '_to');
-              
-              // Check if this field has active filters
-              $hasActiveFilter = request()->get($column['name']) || 
-                                request()->get($column['name'] . '_from') || 
-                                request()->get($column['name'] . '_to');
-              @endphp
-              <div class="col-lg-3 col-md-6 col-sm-12">
-                <div class="filter-field-container {{ $hasActiveFilter ? 'has-active-filter' : '' }}">
-                  <div class="d-flex align-items-center justify-content-between mb-1">
-                    <label class="form-label small text-muted mb-0 filter-label fw-semibold" style="font-size: 0.8rem;">{{ $label }}</label>
-                    <!-- Date Filter Type Toggle -->
-                    <div class="btn-group btn-group-sm date-filter-toggle" role="group">
-                      <input type="radio" class="btn-check" name="{{ $column['name'] }}_type" id="{{ $column['name'] }}_exact"
-                             value="exact" {{ !$hasRange ? 'checked' : '' }}>
-                      <label class="btn btn-outline-secondary" for="{{ $column['name'] }}_exact">
-                        <i class="la la-calendar me-1"></i>{{ trans('backpack::filters.exact_date') }}
-                      </label>
-
-                      <input type="radio" class="btn-check" name="{{ $column['name'] }}_type" id="{{ $column['name'] }}_range"
-                             value="range" {{ $hasRange ? 'checked' : '' }}>
-                      <label class="btn btn-outline-secondary" for="{{ $column['name'] }}_range">
-                        <i class="la la-calendar-check me-1"></i>{{ trans('backpack::filters.date_range') }}
-                      </label>
-                    </div>
-                  </div>
-
-                  <!-- Exact Date Input -->
-                  <div id="{{ $column['name'] }}_exact_section" class="date-filter-section" style="{{ $hasRange ? 'display: none;' : '' }}">
-                    <input autocomplete="off"
-                           type="{{ $inputType }}"
-                           name="{{ $column['name'] }}"
-                           value="{{ request()->get($column['name']) }}"
-                           class="form-control form-control-sm"
-                           id="{{ $column['name'] }}"
-                           placeholder="{{ trans('backpack::filters.select_date') }}"
-                           style="font-size: 0.75rem; padding: 0.25rem 0.4rem;">
-                  </div>
-
-                  <!-- Date Range Inputs -->
-                  <div id="{{ $column['name'] }}_range_section" class="date-filter-section date-range-inputs" style="{{ !$hasRange ? 'display: none;' : '' }}">
-                    <div class="row g-1">
-                      <div class="col-6">
-                        <input autocomplete="off"
-                               type="{{ $inputType }}"
-                               name="{{ $column['name'] }}_from"
-                               value="{{ request()->get($column['name'] . '_from') }}"
-                               class="form-control form-control-sm"
-                               id="{{ $column['name'] }}_from"
-                               placeholder="{{ trans('backpack::filters.start_date') }}"
-                               style="font-size: 0.75rem; padding: 0.25rem 0.4rem;">
-                      </div>
-                      <div class="col-6">
-                        <input autocomplete="off"
-                               type="{{ $inputType }}"
-                               name="{{ $column['name'] }}_to"
-                               value="{{ request()->get($column['name'] . '_to') }}"
-                               class="form-control form-control-sm"
-                               id="{{ $column['name'] }}_to"
-                               placeholder="{{ trans('backpack::filters.end_date') }}"
-                               style="font-size: 0.75rem; padding: 0.25rem 0.4rem;">
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              @endforeach
-            </div>
-            <div class="d-flex justify-content-end mt-2">
-              <button type="submit" class="btn btn-primary btn-sm filter-search-btn" form="filterForm">
-                <i class="la la-search"></i> {{ trans('backpack::crud.search') }}
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-      @endif
-
-      <!-- Select Filters Accordion (Status, Enums, etc.) -->
-      @if($selectColumns->count() > 0)
-      <div class="accordion-item">
-        <h2 class="accordion-header">
-          <button class="accordion-button collapsed" type="button"
-            data-bs-toggle="collapse" data-bs-target="#selectFiltersCollapse"
-            aria-expanded="false" aria-controls="selectFiltersCollapse">
-            <i class="la la-list"></i> {{ trans('backpack::filters.select_filters') }}
-            @if($selectFilterCount > 0)
-            <span class="badge bg-primary rounded-pill ms-2">{{ $selectFilterCount }}</span>
-            @endif
-            <span class="filter-badges-container ms-2">
-              @foreach($selectColumns->pluck('name') as $name)
-                <span class="filter-item-badge">{{ \App\Http\Controllers\Admin\Helper\FilterHelper::cleanFieldName($name) }}</span>
-              @endforeach
-            </span>
-          </button>
-        </h2>
-        <div id="selectFiltersCollapse" class="accordion-collapse collapse" data-bs-parent="#filtersAccordion">
-          <div class="accordion-body">
-            <div class="row g-1">
-              @foreach ($selectColumns as $column)
-              @php
-              $label = isset($column['label']) ? $column['label'] : ucfirst($column['name']);
-              $options = FilterHelper::getSelectOptions($column, $tableName);
-              $currentValue = request()->get($column['name']);
-              
-              // Check if this field has active filters
-              $hasActiveFilter = $currentValue !== null && $currentValue !== '';
-              @endphp
-
-              <div class="col-lg-3 col-md-6 col-sm-12">
-                <div class="filter-field-container {{ $hasActiveFilter ? 'has-active-filter' : '' }}">
-                  <label for="{{ $column['name'] }}" class="form-label small text-muted mb-1 filter-label fw-semibold" style="font-size: 0.8rem;">{{ $label }}</label>
-                  <select name="{{ $column['name'] }}" class="form-select form-select-sm" id="{{ $column['name'] }}" style="font-size: 0.75rem; padding: 0.25rem 0.4rem;">
-                    <option value="">{{ trans('backpack::filters.all') }}</option>
-                    @foreach ($options as $value => $optionLabel)
-                    <option value="{{ $value }}" {{ $currentValue == $value ? 'selected' : '' }}>
-                      {{ $optionLabel }}
-                    </option>
-                    @endforeach
-                  </select>
-                </div>
-              </div>
-              @endforeach
-            </div>
-            <div class="d-flex justify-content-end mt-2">
-              <button type="submit" class="btn btn-primary btn-sm filter-search-btn" form="filterForm">
-                <i class="la la-search"></i> {{ trans('backpack::crud.search') }}
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-      @endif
-
-      <!-- Relation Filters Accordion (includes both belongsTo and hasMany) -->
+{{-- Active filters: hidden when a preset is active (redundant with preset pills) --}}
+@if(count($pills) && !\App\Support\Backpack\PresetFilterHandler::getActivePreset())
+<div class="hb-active-strip" aria-label="{{ trans('backpack::filters.active_filters') }}">
+  <span class="hb-active-strip-title">{{ trans('backpack::filters.active_filters') }}</span>
+  <div class="hb-active-pills">
+    @foreach($pillRenderItems as $item)
+    @if($item['type'] === 'cluster')
+    <span class="hb-pill-chain" role="group">
+      @foreach($item['pills'] as $pill)
       @php
-      // Check if hasMany filters are active
-      $hasActiveHasManyFilter = false;
-      if (!empty($hasManyRelations)) {
-        foreach ($hasManyRelations as $relation) {
-          if (isset($relation['searchable_keys'])) {
-            foreach ($relation['searchable_keys'] as $keyInfo) {
-              if (request()->filled($relation['name'] . '_' . $keyInfo['field'])) {
-                $hasActiveHasManyFilter = true;
-                break 2;
-              }
-            }
-          }
-        }
+      $segmentLabel = $pill['label'];
+      if (!$loop->first && str_contains($segmentLabel, ' · ')) {
+          $segmentLabel = explode(' · ', $segmentLabel, 2)[1];
       }
-      
-      // Combined count and open state
-      $totalRelationFilterCount = $relationFilterCount + $hasManyRelationsCount;
-      // All accordions stay closed by default
-      $shouldOpenRelations = false;
-      
-      // Combine all relation names (belongsTo + hasMany) for title
-      $allRelationNames = $relationColumns->pluck('name')
-        ->merge(collect($hasManyRelations)->pluck('name'))
-        ->map(function($name) { 
-          return \App\Http\Controllers\Admin\Helper\FilterHelper::cleanFieldName($name); 
-        })
-        ->implode(', ');
-        
-      // Get current model name for section titles
-      $modelName = class_basename($crud->model);
       @endphp
-      
-      @if($relationColumns->count() > 0 || !empty($hasManyRelations))
-      <div class="accordion-item">
-        <h2 class="accordion-header">
-          <button class="accordion-button collapsed" type="button"
-            data-bs-toggle="collapse" data-bs-target="#relationFiltersCollapse"
-            aria-expanded="false" aria-controls="relationFiltersCollapse">
-            <i class="la la-link"></i> {{ trans('backpack::filters.relations') }}
-            @if($totalRelationFilterCount > 0)
-            <span class="badge bg-primary rounded-pill ms-2">{{ $totalRelationFilterCount }}</span>
-            @endif
-            <span class="filter-badges-container ms-2">
-              @foreach($relationColumns->pluck('name')->merge(collect($hasManyRelations)->pluck('name')) as $name)
-                <span class="filter-item-badge">{{ \App\Http\Controllers\Admin\Helper\FilterHelper::cleanFieldName($name) }}</span>
-              @endforeach
-            </span>
-            @if($activeFilters->count() > 0)
-            <small class="text-info ms-2 fw-bold" style="font-size: 0.7rem;">
-              <i class="la la-filter me-1"></i>Le relazioni mostrate sono filtrate dai filtri attivi
-            </small>
-            @endif
-          </button>
-        </h2>
-        <div id="relationFiltersCollapse" class="accordion-collapse collapse" data-bs-parent="#filtersAccordion">
-          <div class="accordion-body">
-            <div class="row g-1">
-            @if($relationColumns->count() > 0)
-            {{-- BelongsTo Relations --}}
-                @foreach ($relationColumns as $column)
-              @php
-              $label = isset($column['label']) ? $column['label'] : $column['name'];
-              @endphp
+      @if(!$loop->first)
+      <span class="hb-pill-and" aria-hidden="true">AND</span>
+      @endif
+      <a href="{{ $pill['remove'] }}" class="hb-pill hb-pill--relation"
+         title="{{ trans('backpack::filters.remove_filter') }}" aria-label="{{ trans('backpack::filters.remove_filter') }}">
+        @if($segmentLabel !== '')
+        <span class="hb-pill-label">{{ $segmentLabel }}</span>
+        @endif
+        <span class="hb-pill-value">{{ Str::limit($pill['value'], 48) }}</span>
+        <span class="hb-pill-x" aria-hidden="true">×</span>
+      </a>
+      @endforeach
+    </span>
+    @else
+    @php $pill = $item['pill']; @endphp
+    <a href="{{ $pill['remove'] }}" class="hb-pill {{ $pill['kind'] === 'relation' ? 'hb-pill--relation' : '' }}"
+       title="{{ trans('backpack::filters.remove_filter') }}" aria-label="{{ trans('backpack::filters.remove_filter') }}">
+      @if($pill['label'] !== '')
+      <span class="hb-pill-label">{{ $pill['label'] }}</span>
+      @endif
+      <span class="hb-pill-value">{{ Str::limit($pill['value'], 48) }}</span>
+      <span class="hb-pill-x" aria-hidden="true">×</span>
+    </a>
+    @endif
+    @endforeach
+  </div>
+</div>
+@endif
 
-                <div class="col-lg-3 col-md-6 col-sm-12">
-                  @php
-                  $currentValue = request()->get($column['name']);
-                  $hasActiveFilter = $currentValue !== null && $currentValue !== '' || 
-                                    request()->get($column['name'] . '_not_empty') == '1' || 
-                                    request()->get($column['name'] . '_empty') == '1';
-                  
-                  // Get relation info for description text and placeholder
-                  $relationInfo = FilterHelper::getRelationFilterInfo($column, $crud, false);
-                  $placeholderText = "cerca " . strtolower($relationInfo['primary_key']) . " di " . strtolower($relationInfo['related_table_singular']) . " e trova " . strtolower($relationInfo['current_table_singular']);
-                  @endphp
-                  <div class="filter-field-container {{ $hasActiveFilter ? 'has-active-filter' : '' }}">
-                    <div class="d-flex align-items-center justify-content-between mb-1">
-                      <label for="{{ $column['name'] }}" class="form-label small text-muted mb-0 filter-label fw-semibold" style="font-size: 0.8rem;">{{ $label }}</label>
-                      <div class="filter-radio-group" role="group">
-                        <input type="radio" class="btn-check" name="{{ $column['name'] }}_empty_filter" 
-                               id="{{ $column['name'] }}_all" value=""
-                               {{ !request()->get($column['name'] . '_not_empty') && !request()->get($column['name'] . '_empty') ? 'checked' : '' }}>
-                        <label class="btn btn-outline-primary" for="{{ $column['name'] }}_all">Tutti</label>
+<!-- ============================================================ -->
+<!-- Filter Panel — composable rule-builder redesign              -->
+<!-- ============================================================ -->
+<div class="collapse" id="filterPanel">
+  <form action="" method="GET" id="filterForm" class="hb-filters mt-2" autocomplete="off">
 
-                        <input type="radio" class="btn-check" name="{{ $column['name'] }}_empty_filter" 
-                               id="{{ $column['name'] }}_not_empty" value="not_empty"
-                               {{ request()->get($column['name'] . '_not_empty') == '1' ? 'checked' : '' }}>
-                        <label class="btn btn-outline-success" for="{{ $column['name'] }}_not_empty">Non vuoto</label>
+    {{-- ── Toolbar: add-filter + search ─────────────────────── --}}
+    <div class="hb-filters-toolbar">
+      <div class="hb-addfilter">
+        <button type="button" class="hb-addfilter-btn" id="hbAddFilterBtn"
+                aria-haspopup="true" aria-expanded="false" aria-controls="hbAddFilterPop">
+          <i class="la la-plus"></i> {{ trans('backpack::filters.add_filter') }}
+        </button>
 
-                        <input type="radio" class="btn-check" name="{{ $column['name'] }}_empty_filter" 
-                               id="{{ $column['name'] }}_empty" value="empty"
-                               {{ request()->get($column['name'] . '_empty') == '1' ? 'checked' : '' }}>
-                        <label class="btn btn-outline-danger" for="{{ $column['name'] }}_empty">Vuoto</label>
-                      </div>
-                    </div>
-                    <div class="position-relative">
-                      @php
-                      // Get display value for current value if exists
-                      $displayValue = $currentValue;
-                      if ($currentValue) {
-                          $displayValue = \App\Http\Controllers\Admin\Helper\FilterHelper::getFilterDisplayValue($column['name'], $currentValue, collect([$column]), $crud);
-                      }
-                      @endphp
-                      <input autocomplete="off" 
-                             type="text" 
-                             class="form-control form-control-sm autocomplete-input relation-autocomplete-input"
-                             data-column="{{ $column['name'] }}"
-                             data-table="{{ $crud->model->getTable() }}"
-                             data-relation-column="{{ $column['name'] }}"
-                             id="{{ $column['name'] }}_display"
-                             value="{{ $displayValue }}"
-                             placeholder="{{ $placeholderText }}"
-                             style="font-size: 0.75rem; padding: 0.25rem 0.4rem;">
-                      <input type="hidden" 
-                             name="{{ $column['name'] }}"
-                             id="{{ $column['name'] }}"
-                             value="{{ $currentValue }}">
-                      <div class="autocomplete-suggestions" id="autocomplete-{{ $column['name'] }}_display"></div>
-                    </div>
-                  </div>
-                </div>
-                @endforeach
-            @endif
-            
-            @if(!empty($hasManyRelations))
-            {{-- HasMany Relations (Inverse) --}}
-                @foreach ($hasManyRelations as $relation)
-              @php
-              $relationLabel = ucfirst(str_replace('_', ' ', $relation['name']));
-              
-              // Check if ANY searchable key has an active filter for this relation
-              $hasActiveFilter = false;
-              $selectedLabel = 'cerca';
-              if (isset($relation['searchable_keys'])) {
-                  foreach ($relation['searchable_keys'] as $keyInfo) {
-                      $filterKey = $relation['name'] . '_' . $keyInfo['field'];
-                      $value = request()->get($filterKey);
-                      if ($value !== null && $value !== '') {
-                          $hasActiveFilter = true;
-                          $selectedLabel = $keyInfo['label'] . ': ' . $value;
-                          break;
-                      }
-                  }
-              }
-              @endphp
-
-              {{-- HasMany relation filter - same style as belongsTo --}}
-              @if(isset($relation['searchable_keys']))
-              <div class="col-lg-3 col-md-6 col-sm-12">
-                @php
-                // Get first searchable key (primary key or unique field)
-                $firstKey = $relation['searchable_keys'][0];
-                $filterKey = $relation['name'] . '_' . $firstKey['field'];
-                $currentValue = request()->get($filterKey);
-                $hasActiveFilter = $currentValue !== null && $currentValue !== '' || 
-                                  request()->get($filterKey . '_not_empty') == '1' || 
-                                  request()->get($filterKey . '_empty') == '1';
-                
-                // Get relation info for placeholder
-                $hasManyRelationInfo = FilterHelper::getRelationFilterInfo(null, $crud, true, $relation);
-                $placeholderText = "cerca " . strtolower($hasManyRelationInfo['primary_key']);
-                if ($hasManyRelationInfo['unique_field']) {
-                    $placeholderText .= " o " . strtolower($hasManyRelationInfo['unique_field']);
-                }
-                $placeholderText .= " di " . strtolower($hasManyRelationInfo['related_table_singular']) . " e trova " . strtolower($hasManyRelationInfo['current_table_singular']);
-                @endphp
-                <div class="filter-field-container {{ $hasActiveFilter ? 'has-active-filter' : '' }}">
-                  <div class="d-flex align-items-center justify-content-between mb-1">
-                    <label for="{{ $filterKey }}" class="form-label small text-muted mb-0 filter-label fw-semibold" style="font-size: 0.8rem;">{{ $relationLabel }}</label>
-                    <div class="filter-radio-group" role="group">
-                      <input type="radio" class="btn-check" name="{{ $filterKey }}_empty_filter" 
-                             id="{{ $filterKey }}_all" value=""
-                             {{ !request()->get($filterKey . '_not_empty') && !request()->get($filterKey . '_empty') ? 'checked' : '' }}>
-                      <label class="btn btn-outline-primary" for="{{ $filterKey }}_all">Tutti</label>
-
-                      <input type="radio" class="btn-check" name="{{ $filterKey }}_empty_filter" 
-                             id="{{ $filterKey }}_not_empty" value="not_empty"
-                             {{ request()->get($filterKey . '_not_empty') == '1' ? 'checked' : '' }}>
-                      <label class="btn btn-outline-success" for="{{ $filterKey }}_not_empty">Non vuoto</label>
-
-                      <input type="radio" class="btn-check" name="{{ $filterKey }}_empty_filter" 
-                             id="{{ $filterKey }}_empty" value="empty"
-                             {{ request()->get($filterKey . '_empty') == '1' ? 'checked' : '' }}>
-                      <label class="btn btn-outline-danger" for="{{ $filterKey }}_empty">Vuoto</label>
-                    </div>
-                  </div>
-                  <div class="position-relative">
-                    @php
-                    // Get display value for current value if exists (for hasMany, use helper to get unique field or primary key)
-                    $displayValue = $currentValue;
-                    if ($currentValue) {
-                        $relatedModelClass = $relation['model'] ?? null;
-                        if (!$relatedModelClass && isset($relation['name'])) {
-                            $relatedModelName = \Illuminate\Support\Str::studly($relation['name']);
-                            $relatedModelClass = "App\Models\\" . $relatedModelName;
-                        }
-                        if ($relatedModelClass && class_exists($relatedModelClass)) {
-                            $displayValue = \App\Http\Controllers\Admin\Helper\FilterHelper::getHasManyFilterDisplayValue($relatedModelClass, $currentValue);
-                        }
-                    }
-                    @endphp
-                    <input autocomplete="off" 
-                           type="text" 
-                           class="form-control form-control-sm autocomplete-input relation-autocomplete-input hasmany-autocomplete-input"
-                           data-column="{{ $firstKey['field'] }}"
-                           data-table="{{ $crud->model->getTable() }}"
-                           data-relation="{{ $relation['name'] }}"
-                           data-model="{{ is_string($crud->model) ? $crud->model : get_class($crud->model) }}"
-                           data-searchable-keys="{{ base64_encode(json_encode($relation['searchable_keys'])) }}"
-                           id="{{ $filterKey }}_display"
-                           value="{{ $displayValue }}"
-                           placeholder="{{ $placeholderText }}"
-                           style="font-size: 0.75rem; padding: 0.25rem 0.4rem;">
-                    <input type="hidden" 
-                           name="{{ $filterKey }}"
-                           id="{{ $filterKey }}"
-                           value="{{ $currentValue }}">
-                    <div class="autocomplete-suggestions" id="autocomplete-{{ $filterKey }}_display"></div>
-                  </div>
-                </div>
-              </div>
-              @endif
-                @endforeach
-            @endif
-            <div class="d-flex justify-content-end mt-2">
-              <button type="submit" class="btn btn-primary btn-sm filter-search-btn" form="filterForm">
-                <i class="la la-search"></i> {{ trans('backpack::crud.search') }}
-              </button>
-            </div>
-            </div>
+        {{-- Command-palette style popover, populated by JS from the rows below --}}
+        <div class="hb-addfilter-pop d-none" id="hbAddFilterPop" role="menu">
+          <input type="text" class="hb-addfilter-search" id="hbAddFilterSearch"
+                 placeholder="{{ trans('backpack::filters.filter_search_placeholder') }}">
+          <div class="hb-addfilter-list" id="hbAddFilterList"></div>
+          <div class="hb-addfilter-empty d-none" id="hbAddFilterEmpty">
+            {{ trans('backpack::filters.no_filter_found') }}
           </div>
         </div>
       </div>
-      @endif
 
-      <!-- Advanced Filters Accordion -->
-      @if($advancedTextColumns->count() > 0 || $advancedRelationColumns->count() > 0 || $advancedDateColumns->count() > 0)
-      <div class="accordion-item">
-        <h2 class="accordion-header">
-          <button class="accordion-button collapsed" type="button"
-            data-bs-toggle="collapse" data-bs-target="#advancedFiltersCollapse"
-            aria-expanded="false" aria-controls="advancedFiltersCollapse">
-            <i class="la la-cog"></i> {{ trans('backpack::filters.advanced_filters') }}
-            @if($advancedFilterCount > 0)
-            <span class="badge bg-warning rounded-pill ms-2">{{ $advancedFilterCount }}</span>
-            @endif
-            <span class="filter-badges-container ms-2">
-              @foreach($advancedTextColumns->pluck('name')->merge($advancedRelationColumns->pluck('name'))->merge($advancedDateColumns->pluck('name')) as $name)
-                <span class="filter-item-badge">{{ \App\Http\Controllers\Admin\Helper\FilterHelper::cleanFieldName($name) }}</span>
-              @endforeach
-            </span>
-          </button>
-        </h2>
-        <div id="advancedFiltersCollapse" class="accordion-collapse collapse" data-bs-parent="#filtersAccordion">
-          <div class="accordion-body">
-            <div class="row g-1">
-              <!-- Advanced Text Filters -->
-              @foreach ($advancedTextColumns as $column)
-              @php
-              $label = isset($column['label']) ? $column['label'] : $column['name'];
-              $inputType = FilterHelper::getInputType($column, $tableName);
-              $step = $inputType === 'number' ? FilterHelper::getNumberStep($column, $tableName) : null;
-              
-              // Check if this field has active filters
-              $hasActiveFilter = request()->get($column['name']) !== null && request()->get($column['name']) !== '' ||
-                                request()->get($column['name'] . '_not_empty') == '1' ||
-                                request()->get($column['name'] . '_empty') == '1';
-              @endphp
-              <div class="col-lg-3 col-md-6 col-sm-12">
-                <div class="filter-field-container {{ $hasActiveFilter ? 'has-active-filter' : '' }}">
-                  <div class="d-flex align-items-center justify-content-between mb-1">
-                    <label for="{{ $column['name'] }}" class="form-label small text-muted mb-0 filter-label fw-semibold" style="font-size: 0.8rem;">{{ $label }}</label>
-                    <div class="filter-radio-group" role="group">
-                      <input type="radio" class="btn-check" name="{{ $column['name'] }}_empty_filter" 
-                             id="{{ $column['name'] }}_all" value=""
-                             {{ !request()->get($column['name'] . '_not_empty') && !request()->get($column['name'] . '_empty') ? 'checked' : '' }}>
-                      <label class="btn btn-outline-primary" for="{{ $column['name'] }}_all">Tutti</label>
-
-                      <input type="radio" class="btn-check" name="{{ $column['name'] }}_empty_filter" 
-                             id="{{ $column['name'] }}_not_empty" value="not_empty"
-                             {{ request()->get($column['name'] . '_not_empty') == '1' ? 'checked' : '' }}>
-                      <label class="btn btn-outline-success" for="{{ $column['name'] }}_not_empty">Non vuoto</label>
-
-                      <input type="radio" class="btn-check" name="{{ $column['name'] }}_empty_filter" 
-                             id="{{ $column['name'] }}_empty" value="empty"
-                             {{ request()->get($column['name'] . '_empty') == '1' ? 'checked' : '' }}>
-                      <label class="btn btn-outline-danger" for="{{ $column['name'] }}_empty">Vuoto</label>
-                    </div>
-                  </div>
-                  <div class="position-relative">
-                    <input autocomplete="off" 
-                           type="{{ $inputType }}" 
-                           name="{{ $column['name'] }}"
-                           value="{{ request()->get($column['name']) }}"
-                           class="form-control form-control-sm autocomplete-input"
-                           data-column="{{ $column['name'] }}"
-                           data-table="{{ $crud->model->getTable() }}"
-                           data-autocomplete-url="{{ backpack_url('autocomplete-values') }}"
-                           id="{{ $column['name'] }}"
-                           placeholder="filtra per {{ strtolower($label) }}"
-                           style="font-size: 0.75rem; padding: 0.25rem 0.4rem;"
-                           @if($step) step="{{ $step }}" @endif>
-                    <div class="autocomplete-suggestions" id="autocomplete-{{ $column['name'] }}"></div>
-                  </div>
-                </div>
-              </div>
-              @endforeach
-
-              <!-- Advanced Relation Filters -->
-              @foreach ($advancedRelationColumns as $column)
-              @php
-              $label = isset($column['label']) ? $column['label'] : $column['name'];
-              $currentValue = request()->get($column['name']);
-              $hasActiveFilter = $currentValue !== null && $currentValue !== '' || 
-                                request()->get($column['name'] . '_not_empty') == '1' || 
-                                request()->get($column['name'] . '_empty') == '1';
-              
-              // Get relation options to check if we should use select instead of autocomplete
-              $relationOptions = \App\Http\Controllers\Admin\Helper\FilterHelper::getRelationOptions($column, $crud);
-              $useSelect = count($relationOptions) <= 50; // Use select if 50 or fewer options
-              @endphp
-              <div class="col-lg-3 col-md-6 col-sm-12">
-                <div class="filter-field-container {{ $hasActiveFilter ? 'has-active-filter' : '' }}">
-                  <div class="d-flex align-items-center justify-content-between mb-1">
-                    <label for="{{ $column['name'] }}" class="form-label small text-muted mb-0 filter-label fw-semibold" style="font-size: 0.8rem;">{{ $label }}</label>
-                    <div class="filter-radio-group" role="group">
-                      <input type="radio" class="btn-check" name="{{ $column['name'] }}_empty_filter" 
-                             id="{{ $column['name'] }}_all" value=""
-                             {{ !request()->get($column['name'] . '_not_empty') && !request()->get($column['name'] . '_empty') ? 'checked' : '' }}>
-                      <label class="btn btn-outline-primary" for="{{ $column['name'] }}_all">Tutti</label>
-
-                      <input type="radio" class="btn-check" name="{{ $column['name'] }}_empty_filter" 
-                             id="{{ $column['name'] }}_not_empty" value="not_empty"
-                             {{ request()->get($column['name'] . '_not_empty') == '1' ? 'checked' : '' }}>
-                      <label class="btn btn-outline-success" for="{{ $column['name'] }}_not_empty">Non vuoto</label>
-
-                      <input type="radio" class="btn-check" name="{{ $column['name'] }}_empty_filter" 
-                             id="{{ $column['name'] }}_empty" value="empty"
-                             {{ request()->get($column['name'] . '_empty') == '1' ? 'checked' : '' }}>
-                      <label class="btn btn-outline-danger" for="{{ $column['name'] }}_empty">Vuoto</label>
-                    </div>
-                  </div>
-                    <div class="position-relative">
-                      @if($useSelect)
-                        {{-- Use select dropdown for small datasets --}}
-                        <select name="{{ $column['name'] }}" 
-                                class="form-select form-select-sm" 
-                                id="{{ $column['name'] }}" 
-                                style="font-size: 0.75rem; padding: 0.25rem 0.4rem;">
-                          <option value="">{{ trans('backpack::filters.all') }}</option>
-                          @foreach ($relationOptions as $optionValue => $optionLabel)
-                          <option value="{{ $optionValue }}" {{ $currentValue == $optionValue ? 'selected' : '' }}>
-                            {{ $optionLabel }}
-                          </option>
-                          @endforeach
-                        </select>
-                      @else
-                        {{-- Use autocomplete for larger datasets --}}
-                        @php
-                        // Get relation info for placeholder
-                        $relationInfo = FilterHelper::getRelationFilterInfo($column, $crud, false);
-                        $placeholderText = "cerca " . strtolower($relationInfo['primary_key']) . " di " . strtolower($relationInfo['related_table_singular']) . " e trova " . strtolower($relationInfo['current_table_singular']);
-                        
-                        // Get display value for current value if exists
-                        $displayValue = $currentValue;
-                        if ($currentValue) {
-                            $displayValue = \App\Http\Controllers\Admin\Helper\FilterHelper::getFilterDisplayValue($column['name'], $currentValue, collect([$column]), $crud);
-                        }
-                        @endphp
-                        <input autocomplete="off" 
-                               type="text" 
-                               class="form-control form-control-sm autocomplete-input relation-autocomplete-input"
-                               data-column="{{ $column['name'] }}"
-                               data-table="{{ $crud->model->getTable() }}"
-                               data-relation-column="{{ $column['name'] }}"
-                               id="{{ $column['name'] }}_display"
-                               value="{{ $displayValue }}"
-                               placeholder="{{ $placeholderText }}"
-                               style="font-size: 0.75rem; padding: 0.25rem 0.4rem;">
-                        <input type="hidden" 
-                               name="{{ $column['name'] }}"
-                               id="{{ $column['name'] }}"
-                               value="{{ $currentValue }}">
-                        <div class="autocomplete-suggestions" id="autocomplete-{{ $column['name'] }}_display"></div>
-                      @endif
-                    </div>
-                </div>
-              </div>
-              @endforeach
-              
-              <!-- Advanced Date Filters (created_at, updated_at) -->
-              @foreach ($advancedDateColumns as $column)
-              @php
-              $label = isset($column['label']) ? $column['label'] : ucfirst($column['name']);
-              $inputType = 'date'; // Always use simple date picker (time defaults to midnight)
-              $hasRange = request()->get($column['name'] . '_from') || request()->get($column['name'] . '_to');
-
-              // Check if this field has active filters
-              $hasActiveFilter = request()->get($column['name']) ||
-                                request()->get($column['name'] . '_from') ||
-                                request()->get($column['name'] . '_to');
-              @endphp
-              <div class="col-lg-3 col-md-6 col-sm-12">
-                <div class="filter-field-container {{ $hasActiveFilter ? 'has-active-filter' : '' }}">
-                  <div class="d-flex align-items-center justify-content-between mb-1">
-                    <label class="form-label small text-muted mb-0 filter-label fw-semibold" style="font-size: 0.8rem;">{{ $label }}</label>
-                    <!-- Date Filter Type Toggle -->
-                    <div class="btn-group btn-group-sm date-filter-toggle" role="group">
-                      <input type="radio" class="btn-check" name="{{ $column['name'] }}_type" id="{{ $column['name'] }}_exact"
-                             value="exact" {{ !$hasRange ? 'checked' : '' }}>
-                      <label class="btn btn-outline-secondary" for="{{ $column['name'] }}_exact">
-                        <i class="la la-calendar me-1"></i>{{ trans('backpack::filters.exact_date') }}
-                      </label>
-
-                      <input type="radio" class="btn-check" name="{{ $column['name'] }}_type" id="{{ $column['name'] }}_range"
-                             value="range" {{ $hasRange ? 'checked' : '' }}>
-                      <label class="btn btn-outline-secondary" for="{{ $column['name'] }}_range">
-                        <i class="la la-calendar-check me-1"></i>{{ trans('backpack::filters.date_range') }}
-                      </label>
-                    </div>
-                  </div>
-
-                  <!-- Exact Date Input -->
-                  <div id="{{ $column['name'] }}_exact_section" class="date-filter-section" style="{{ $hasRange ? 'display: none;' : '' }}">
-                    <input autocomplete="off"
-                           type="{{ $inputType }}"
-                           name="{{ $column['name'] }}"
-                           value="{{ request()->get($column['name']) }}"
-                           class="form-control form-control-sm"
-                           id="{{ $column['name'] }}"
-                           placeholder="{{ trans('backpack::filters.select_date') }}"
-                           style="font-size: 0.75rem; padding: 0.25rem 0.4rem;">
-                  </div>
-
-                  <!-- Date Range Inputs -->
-                  <div id="{{ $column['name'] }}_range_section" class="date-filter-section date-range-inputs" style="{{ !$hasRange ? 'display: none;' : '' }}">
-                    <div class="row g-1">
-                      <div class="col-6">
-                        <input autocomplete="off"
-                               type="{{ $inputType }}"
-                               name="{{ $column['name'] }}_from"
-                               value="{{ request()->get($column['name'] . '_from') }}"
-                               class="form-control form-control-sm"
-                               id="{{ $column['name'] }}_from"
-                               placeholder="{{ trans('backpack::filters.start_date') }}"
-                               style="font-size: 0.75rem; padding: 0.25rem 0.4rem;">
-                      </div>
-                      <div class="col-6">
-                        <input autocomplete="off"
-                               type="{{ $inputType }}"
-                               name="{{ $column['name'] }}_to"
-                               value="{{ request()->get($column['name'] . '_to') }}"
-                               class="form-control form-control-sm"
-                               id="{{ $column['name'] }}_to"
-                               placeholder="{{ trans('backpack::filters.end_date') }}"
-                               style="font-size: 0.75rem; padding: 0.25rem 0.4rem;">
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              @endforeach
-            </div>
-            <div class="d-flex justify-content-end mt-2">
-              <button type="submit" class="btn btn-primary btn-sm filter-search-btn" form="filterForm">
-                <i class="la la-search"></i> {{ trans('backpack::crud.search') }}
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-      @endif
+      <button type="submit" class="hb-search-btn ms-auto">
+        <i class="la la-search"></i> {{ trans('backpack::crud.search') }}
+      </button>
     </div>
 
-    <!-- Preserve persistent-table status -->
+    {{-- ── Filter rows: compact grid + relation grid (separate to avoid layout holes) ── --}}
+    <div class="hb-frows-wrap">
+    <div class="hb-frows hb-frows--compact" id="hbFilterRows">
+
+      {{-- TEXT / VALUE FILTERS ------------------------------------------------ --}}
+      @foreach ($textColumns as $column)
+      @php
+      $name = $column['name'];
+      $isPk = $name === $primaryKey;
+      $label = $column['label'] ?? FilterHelper::cleanFieldName($name, $isPk);
+      $inputType = FilterHelper::getInputType($column, $tableName);
+      $isNumberField = $inputType === 'number';
+      $step = $isNumberField ? FilterHelper::getNumberStep($column, $tableName) : null;
+      $isPercentage = FilterHelper::isPercentageColumn($name);
+      $filterValue = $isNumberField
+          ? FilterHelper::formatNumberFilterValue(request()->get($name))
+          : request()->get($name);
+      $rowActive = request()->filled($name)
+          || request()->get($name.'_not_empty') === '1'
+          || request()->get($name.'_empty') === '1';
+      @endphp
+      <div class="hb-frow {{ $rowActive ? 'is-active' : 'd-none' }}"
+           data-frow-key="{{ $name }}" data-frow-label="{{ $label }}" data-frow-group="{{ $groupValue }}">
+        <div class="hb-frow-head">
+          <label class="hb-frow-label" for="{{ $name }}">{{ $label }}</label>
+          <div class="hb-frow-tools">
+            <div class="hb-seg" role="group">
+              <input type="radio" class="btn-check" name="{{ $name }}_empty_filter" id="{{ $name }}_all" value=""
+                     {{ !request()->get($name.'_not_empty') && !request()->get($name.'_empty') ? 'checked' : '' }}>
+              <label class="hb-seg-btn" for="{{ $name }}_all">{{ trans('backpack::filters.all') }}</label>
+
+              <input type="radio" class="btn-check" name="{{ $name }}_empty_filter" id="{{ $name }}_not_empty" value="not_empty"
+                     {{ request()->get($name.'_not_empty') == '1' ? 'checked' : '' }}>
+              <label class="hb-seg-btn" for="{{ $name }}_not_empty">{{ trans('backpack::filters.not_empty') }}</label>
+
+              <input type="radio" class="btn-check" name="{{ $name }}_empty_filter" id="{{ $name }}_empty" value="empty"
+                     {{ request()->get($name.'_empty') == '1' ? 'checked' : '' }}>
+              <label class="hb-seg-btn" for="{{ $name }}_empty">{{ trans('backpack::filters.empty') }}</label>
+            </div>
+            <button type="button" class="hb-frow-remove" aria-label="{{ trans('backpack::filters.remove_filter') }}">×</button>
+          </div>
+        </div>
+        <p class="hb-presence-hint d-none">{{ trans('backpack::filters.presence_value_disabled') }}</p>
+        <div class="hb-frow-body position-relative">
+          @if($isNumberField)
+          <div class="input-group input-group-sm">
+            <input type="number" name="{{ $name }}" id="{{ $name }}"
+                   value="{{ $filterValue }}"
+                   class="form-control form-control-sm hb-filter-number"
+                   step="{{ $step }}"
+                   @if($isPercentage) min="1" max="100" @endif
+                   aria-label="{{ $label }}">
+            @if($isPercentage)
+            <span class="input-group-text">%</span>
+            @endif
+          </div>
+          @else
+          <input type="{{ $inputType }}" name="{{ $name }}" id="{{ $name }}"
+                 value="{{ $filterValue }}"
+                 class="form-control form-control-sm hb-autocomplete-value"
+                 data-column="{{ $name }}" data-table="{{ $tableName }}"
+                 data-autocomplete-url="{{ backpack_url('autocomplete-values') }}"
+                 placeholder="{{ trans('backpack::filters.filter_by_field', ['field' => strtolower($label)]) }}">
+          <div class="autocomplete-suggestions" id="autocomplete-{{ $name }}"></div>
+          @endif
+        </div>
+      </div>
+      @endforeach
+
+      {{-- BOOLEAN / STATUS FILTERS -------------------------------------------- --}}
+      @foreach ($booleanColumns as $column)
+      @php
+      $name = $column['name'];
+      $label = $column['label'] ?? FilterHelper::cleanFieldName($name);
+      $rowActive = request()->get($name) !== null && request()->get($name) !== '';
+      @endphp
+      <div class="hb-frow hb-frow--inline {{ $rowActive ? 'is-active' : 'd-none' }}"
+           data-frow-key="{{ $name }}" data-frow-label="{{ $label }}" data-frow-group="{{ $groupStatus }}">
+        <div class="hb-frow-head">
+          <span class="hb-frow-label">{{ $label }}</span>
+          <div class="hb-frow-tools">
+            <div class="hb-seg" role="group">
+              <input type="radio" class="btn-check" name="{{ $name }}" id="{{ $name }}_all" value=""
+                     {{ request()->get($name) === null || request()->get($name) === '' ? 'checked' : '' }}>
+              <label class="hb-seg-btn" for="{{ $name }}_all">{{ trans('backpack::filters.all') }}</label>
+
+              <input type="radio" class="btn-check" name="{{ $name }}" id="{{ $name }}_yes" value="1"
+                     {{ request()->get($name) == '1' ? 'checked' : '' }}>
+              <label class="hb-seg-btn hb-seg-btn--yes" for="{{ $name }}_yes">{{ trans('backpack::filters.yes') }}</label>
+
+              <input type="radio" class="btn-check" name="{{ $name }}" id="{{ $name }}_no" value="0"
+                     {{ request()->get($name) == '0' ? 'checked' : '' }}>
+              <label class="hb-seg-btn hb-seg-btn--no" for="{{ $name }}_no">{{ trans('backpack::filters.no') }}</label>
+            </div>
+            <button type="button" class="hb-frow-remove" aria-label="{{ trans('backpack::filters.remove_filter') }}">×</button>
+          </div>
+        </div>
+      </div>
+      @endforeach
+
+      {{-- PATH / FILE FILTERS --------------------------------------------------- --}}
+      @foreach ($pathFields as $column)
+      @php
+      $name = $column['name'];
+      $label = ucfirst(str_replace('_path', '', $name));
+      $rowActive = request()->get($name) == '1';
+      @endphp
+      <div class="hb-frow hb-frow--inline {{ $rowActive ? 'is-active' : 'd-none' }}"
+           data-frow-key="{{ $name }}" data-frow-label="{{ $label }}" data-frow-group="{{ $groupFile }}">
+        <div class="hb-frow-head">
+          <span class="hb-frow-label">{{ $label }}</span>
+          <div class="hb-frow-tools">
+            <div class="form-check form-switch m-0">
+              <input type="checkbox" class="form-check-input" name="{{ $name }}" value="1"
+                     id="{{ $name }}" {{ $rowActive ? 'checked' : '' }}>
+              <label class="form-check-label hb-frow-switch-label" for="{{ $name }}">{{ trans('backpack::filters.with_file') }}</label>
+            </div>
+            <button type="button" class="hb-frow-remove" aria-label="{{ trans('backpack::filters.remove_filter') }}">×</button>
+          </div>
+        </div>
+      </div>
+      @endforeach
+
+      {{-- SELECT / ENUM FILTERS ------------------------------------------------- --}}
+      @foreach ($selectColumns as $column)
+      @php
+      $name = $column['name'];
+      $label = $column['label'] ?? ucfirst($name);
+      $options = FilterHelper::getSelectOptions($column, $tableName);
+      $currentValue = request()->get($name);
+      $rowActive = $currentValue !== null && $currentValue !== '';
+      @endphp
+      <div class="hb-frow {{ $rowActive ? 'is-active' : 'd-none' }}"
+           data-frow-key="{{ $name }}" data-frow-label="{{ $label }}" data-frow-group="{{ $groupSelect }}">
+        <div class="hb-frow-head">
+          <label class="hb-frow-label" for="{{ $name }}">{{ $label }}</label>
+          <div class="hb-frow-tools">
+            <button type="button" class="hb-frow-remove" aria-label="{{ trans('backpack::filters.remove_filter') }}">×</button>
+          </div>
+        </div>
+        <div class="hb-frow-body">
+          <select name="{{ $name }}" id="{{ $name }}" class="form-select form-select-sm">
+            <option value="">{{ trans('backpack::filters.all') }}</option>
+            @foreach ($options as $optValue => $optLabel)
+            <option value="{{ $optValue }}" {{ $currentValue == $optValue ? 'selected' : '' }}>{{ $optLabel }}</option>
+            @endforeach
+          </select>
+        </div>
+      </div>
+      @endforeach
+
+      {{-- DATE FILTERS ----------------------------------------------------------- --}}
+      @foreach ($dateColumns->merge($advancedDateColumns) as $column)
+      @php
+      $name = $column['name'];
+      $isAdvanced = in_array($name, $advancedFields);
+      $label = $column['label'] ?? ucfirst(FilterHelper::cleanFieldName($name));
+      $hasRange = request()->filled($name.'_from') || request()->filled($name.'_to');
+      $rowActive = request()->filled($name) || $hasRange;
+      @endphp
+      <div class="hb-frow hb-frow--date {{ $rowActive ? 'is-active' : 'd-none' }}"
+           data-frow-key="{{ $name }}" data-frow-label="{{ $label }}"
+           data-frow-group="{{ $isAdvanced ? $groupAdvanced : $groupDate }}">
+        <div class="hb-frow-head">
+          <span class="hb-frow-label">{{ $label }}</span>
+          <div class="hb-frow-tools">
+            <div class="hb-seg" role="group">
+              <input type="radio" class="btn-check hb-date-type" name="{{ $name }}_type" id="{{ $name }}_exact" value="exact" {{ !$hasRange ? 'checked' : '' }}>
+              <label class="hb-seg-btn" for="{{ $name }}_exact">{{ trans('backpack::filters.exact_date') }}</label>
+
+              <input type="radio" class="btn-check hb-date-type" name="{{ $name }}_type" id="{{ $name }}_range" value="range" {{ $hasRange ? 'checked' : '' }}>
+              <label class="hb-seg-btn" for="{{ $name }}_range">{{ trans('backpack::filters.date_range') }}</label>
+            </div>
+            <button type="button" class="hb-frow-remove" aria-label="{{ trans('backpack::filters.remove_filter') }}">×</button>
+          </div>
+        </div>
+        <div class="hb-frow-body">
+          <div id="{{ $name }}_exact_section" class="hb-date-section" style="{{ $hasRange ? 'display:none;' : '' }}">
+            <input type="date" name="{{ $name }}" id="{{ $name }}"
+                   value="{{ request()->get($name) }}" class="form-control form-control-sm">
+          </div>
+          <div id="{{ $name }}_range_section" class="hb-date-section hb-date-range" style="{{ !$hasRange ? 'display:none;' : '' }}">
+            <input type="date" name="{{ $name }}_from" id="{{ $name }}_from"
+                   value="{{ request()->get($name.'_from') }}" class="form-control form-control-sm"
+                   aria-label="{{ trans('backpack::filters.start_date') }}">
+            <span class="hb-date-sep">→</span>
+            <input type="date" name="{{ $name }}_to" id="{{ $name }}_to"
+                   value="{{ request()->get($name.'_to') }}" class="form-control form-control-sm"
+                   aria-label="{{ trans('backpack::filters.end_date') }}">
+          </div>
+        </div>
+      </div>
+      @endforeach
+
+      {{-- ADVANCED TEXT FILTERS --------------------------------------------------- --}}
+      @foreach ($advancedTextColumns as $column)
+      @php
+      $name = $column['name'];
+      $label = $column['label'] ?? FilterHelper::cleanFieldName($name);
+      $inputType = FilterHelper::getInputType($column, $tableName);
+      $isNumberField = $inputType === 'number';
+      $step = $isNumberField ? FilterHelper::getNumberStep($column, $tableName) : null;
+      $isPercentage = FilterHelper::isPercentageColumn($name);
+      $filterValue = $isNumberField
+          ? FilterHelper::formatNumberFilterValue(request()->get($name))
+          : request()->get($name);
+      $rowActive = request()->filled($name)
+          || request()->get($name.'_not_empty') === '1'
+          || request()->get($name.'_empty') === '1';
+      @endphp
+      <div class="hb-frow {{ $rowActive ? 'is-active' : 'd-none' }}"
+           data-frow-key="{{ $name }}" data-frow-label="{{ $label }}" data-frow-group="{{ $groupAdvanced }}">
+        <div class="hb-frow-head">
+          <label class="hb-frow-label" for="{{ $name }}">{{ $label }}</label>
+          <div class="hb-frow-tools">
+            <div class="hb-seg" role="group">
+              <input type="radio" class="btn-check" name="{{ $name }}_empty_filter" id="{{ $name }}_all" value=""
+                     {{ !request()->get($name.'_not_empty') && !request()->get($name.'_empty') ? 'checked' : '' }}>
+              <label class="hb-seg-btn" for="{{ $name }}_all">{{ trans('backpack::filters.all') }}</label>
+              <input type="radio" class="btn-check" name="{{ $name }}_empty_filter" id="{{ $name }}_not_empty" value="not_empty"
+                     {{ request()->get($name.'_not_empty') == '1' ? 'checked' : '' }}>
+              <label class="hb-seg-btn" for="{{ $name }}_not_empty">{{ trans('backpack::filters.not_empty') }}</label>
+              <input type="radio" class="btn-check" name="{{ $name }}_empty_filter" id="{{ $name }}_empty" value="empty"
+                     {{ request()->get($name.'_empty') == '1' ? 'checked' : '' }}>
+              <label class="hb-seg-btn" for="{{ $name }}_empty">{{ trans('backpack::filters.empty') }}</label>
+            </div>
+            <button type="button" class="hb-frow-remove" aria-label="{{ trans('backpack::filters.remove_filter') }}">×</button>
+          </div>
+        </div>
+        <p class="hb-presence-hint d-none">{{ trans('backpack::filters.presence_value_disabled') }}</p>
+        <div class="hb-frow-body position-relative">
+          @if($isNumberField)
+          <div class="input-group input-group-sm">
+            <input type="number" name="{{ $name }}" id="{{ $name }}"
+                   value="{{ $filterValue }}"
+                   class="form-control form-control-sm hb-filter-number"
+                   step="{{ $step }}"
+                   @if($isPercentage) min="1" max="100" @endif
+                   aria-label="{{ $label }}">
+            @if($isPercentage)
+            <span class="input-group-text">%</span>
+            @endif
+          </div>
+          @else
+          <input type="{{ $inputType }}" name="{{ $name }}" id="{{ $name }}"
+                 value="{{ $filterValue }}"
+                 class="form-control form-control-sm hb-autocomplete-value"
+                 data-column="{{ $name }}" data-table="{{ $tableName }}"
+                 data-autocomplete-url="{{ backpack_url('autocomplete-values') }}"
+                 placeholder="{{ trans('backpack::filters.filter_by_field', ['field' => strtolower($label)]) }}">
+          <div class="autocomplete-suggestions" id="autocomplete-{{ $name }}"></div>
+          @endif
+        </div>
+      </div>
+      @endforeach
+
+      {{-- BELONGSTO RELATION FILTERS (normal + advanced) --------------------------- --}}
+      @foreach ($relationColumns->merge($advancedRelationColumns) as $column)
+      @include('crud::inc.filter-belongsto-card', [
+          'column' => $column,
+          'crud' => $crud,
+          'singularRelationsByFk' => $singularRelationsByFk,
+          'frowGroup' => in_array($column['name'], $advancedFields) ? $groupAdvanced : $groupRelation,
+      ])
+      @endforeach
+
+    </div>
+
+    <div class="hb-frows hb-frows--relations" id="hbFilterRowsRelations">
+      {{-- HASMANY RELATION CARDS ----------------------------------------------------- --}}
+      @foreach ($hasManyRelations as $relation)
+      @include('crud::inc.filter-hasmany-card', [
+          'relation' => $relation,
+          'crud' => $crud,
+          'frowGroup' => $groupRelation,
+      ])
+      @endforeach
+    </div>
+    </div>
+
+    <div class="hb-filters-footer">
+      <button type="submit" class="hb-search-btn">
+        <i class="la la-search"></i> {{ trans('backpack::crud.search') }}
+      </button>
+    </div>
+
     <input type="hidden" name="persistent-table" value="1">
   </form>
 </div>
 
-
 <script>
-// Flash animation removed for cleaner UX
+/* ==========================================================================
+ * Filter panel — composable rule-builder behaviour
+ * Keeps the exact same GET parameter contract as the legacy panel.
+ * ========================================================================== */
+(function () {
+    'use strict';
 
-document.addEventListener('DOMContentLoaded', function() {
-    // Initialize relation autocomplete functionality
-    initializeRelationAutocomplete();
-    
-    // Initialize value filters autocomplete
-    initializeValueFiltersAutocomplete();
+    const form = document.getElementById('filterForm');
+    if (!form) return;
 
-    // Initialize date filter toggles
-    initializeDateFilterToggles();
+    const filterRowsRoot = form;
+    const layoutWrap = document.querySelector('.hb-frows-wrap');
+    const addBtn   = document.getElementById('hbAddFilterBtn');
+    const pop      = document.getElementById('hbAddFilterPop');
+    const popList  = document.getElementById('hbAddFilterList');
+    const popInput = document.getElementById('hbAddFilterSearch');
+    const popEmpty = document.getElementById('hbAddFilterEmpty');
+    const groupRelation = @json($groupRelation);
+    const groupAdvanced = @json($groupAdvanced);
 
-    // Initialize empty filter radio buttons
-    initializeEmptyFilterRadios();
+    const GRID_COLS = 6;
+    const ROW_UNIT = 4;
+    const MOBILE_BREAKPOINT = 640;
+    const masonrySupported = typeof CSS !== 'undefined'
+        && CSS.supports('(grid-template-rows: masonry)');
 
-    // Initialize boolean filter radio buttons with auto-submit
-    initializeBooleanFilterRadios();
-    
-    const filterForm = document.querySelector('#filterPanel form');
-    
-    if (filterForm) {
-        filterForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            // Reset DataTables state in localStorage to go back to page 1
-            const currentPath = window.location.pathname;
-            const datatablesKey = 'DataTables_crudTable_' + currentPath;
-            
-            try {
-                const currentState = localStorage.getItem(datatablesKey);
-                if (currentState) {
-                    const state = JSON.parse(currentState);
-                    // Reset start to 0 to go back to first page
-                    state.start = 0;
-                    localStorage.setItem(datatablesKey, JSON.stringify(state));
-                    console.log('DataTables state reset to page 1');
+    let packRaf = 0;
+    const rowObservers = new WeakMap();
+
+    function syncSearchVisibility() {
+        const hasRows = filterRowsRoot.querySelectorAll('.hb-frow:not(.d-none)').length > 0;
+        form.classList.toggle('has-active-rows', hasRows);
+    }
+
+    function parseGapPx(wrap) {
+        const gap = getComputedStyle(wrap).gap || '0.5rem';
+        if (gap.endsWith('px')) return parseFloat(gap);
+        if (gap.endsWith('rem')) return parseFloat(gap) * 16;
+        return 8;
+    }
+
+    function getGridCols(wrap) {
+        return wrap.clientWidth <= MOBILE_BREAKPOINT ? 1 : GRID_COLS;
+    }
+
+    function getColSpan(item, cols) {
+        if (cols === 1) return 1;
+        const override = parseInt(item.dataset.frowCols, 10);
+        if (!Number.isNaN(override) && override > 0) {
+            return Math.min(override, cols);
+        }
+        if (item.classList.contains('hb-frow--inline')) return 1;
+        if (item.classList.contains('hb-frow--card')) return cols;
+        if (item.classList.contains('hb-frow--date')) return 3;
+        if (item.classList.contains('hb-frow--relation')) return 2;
+        return 1;
+    }
+
+    function rowSpanForHeight(height, gapPx) {
+        if (height <= 0) return 1;
+        let span = 1;
+        while (span * ROW_UNIT + Math.max(0, span - 1) * gapPx < height) {
+            span++;
+        }
+        return span;
+    }
+
+    function rectsOverlap(a, b) {
+        return a.col < b.col + b.colSpan
+            && a.col + a.colSpan > b.col
+            && a.row < b.row + b.rowSpan
+            && a.row + a.rowSpan > b.row;
+    }
+
+    function findPlacement(placed, colSpan, rowSpan, cols) {
+        for (let row = 0; row < 10000; row++) {
+            for (let col = 0; col <= cols - colSpan; col++) {
+                const candidate = { row: row, col: col, rowSpan: rowSpan, colSpan: colSpan };
+                let blocked = false;
+                for (let i = 0; i < placed.length; i++) {
+                    if (rectsOverlap(placed[i], candidate)) {
+                        blocked = true;
+                        break;
+                    }
                 }
-            } catch (error) {
-                console.warn('Could not reset DataTables state:', error);
+                if (!blocked) return candidate;
             }
-            
-            // Collect form data
-            const formData = new FormData(filterForm);
-            const params = new URLSearchParams();
-            
-            // Add persistent-table to maintain state
-            params.append('persistent-table', '1');
-            
-            // First, collect all empty filter radio groups to handle them properly
-            const emptyFilterRadios = filterForm.querySelectorAll('input[name$="_empty_filter"]:checked');
-            const processedEmptyFilters = new Set();
-            const allEmptyFilterFieldNames = new Set();
-            
-            // First pass: collect all field names that have empty filter radio groups
-            filterForm.querySelectorAll('input[name$="_empty_filter"]').forEach(radio => {
-                const fieldName = radio.name.replace('_empty_filter', '');
-                allEmptyFilterFieldNames.add(fieldName);
+        }
+        return { row: 0, col: 0, rowSpan: rowSpan, colSpan: colSpan };
+    }
+
+    function resetItemLayout(item) {
+        item.style.gridColumn = '';
+        item.style.gridRow = '';
+        item.style.width = '';
+    }
+
+    function packFilterRows() {
+        syncSearchVisibility();
+        if (!layoutWrap) return;
+
+        const items = Array.from(layoutWrap.querySelectorAll('.hb-frow:not(.d-none)'));
+        const cols = getGridCols(layoutWrap);
+        const gapPx = parseGapPx(layoutWrap);
+
+        items.forEach(resetItemLayout);
+        layoutWrap.style.gridTemplateRows = '';
+
+        if (!items.length) {
+            layoutWrap.classList.remove('is-layout-ready');
+            return;
+        }
+
+        if (masonrySupported) {
+            items.forEach(function (item) {
+                const colSpan = getColSpan(item, cols);
+                item.style.gridColumn = 'span ' + colSpan;
+                item.style.gridRow = 'auto';
             });
-            
-            // Second pass: process checked radios
-            emptyFilterRadios.forEach(radio => {
-                const fieldName = radio.name.replace('_empty_filter', '');
-                processedEmptyFilters.add(fieldName);
-                const value = radio.value;
-                
-                // Remove existing empty filter parameters first
-                params.delete(fieldName + '_not_empty');
-                params.delete(fieldName + '_empty');
-                
-                // Add appropriate parameter based on radio value
-                // Remove conflicting filter first to avoid conflicts
-                if (value === 'not_empty') {
-                    params.delete(fieldName + '_empty'); // Remove conflicting empty filter
-                    params.append(fieldName + '_not_empty', '1');
-                    // Clear the input value when selecting "not_empty"
-                    params.delete(fieldName);
-                } else if (value === 'empty') {
-                    params.delete(fieldName + '_not_empty'); // Remove conflicting not_empty filter
-                    params.append(fieldName + '_empty', '1');
-                    // Clear the input value when selecting "empty"
-                    params.delete(fieldName);
-                }
-                // If value is empty (Tutti), no parameter is added - existing params already deleted
-            });
-            
-            // Third pass: remove params for fields with radio groups where "Tutti" is selected (no checked radio with value)
-            allEmptyFilterFieldNames.forEach(fieldName => {
-                if (!processedEmptyFilters.has(fieldName)) {
-                    // This field has a radio group but "Tutti" is selected (empty value)
-                    // Ensure both parameters are removed
-                    params.delete(fieldName + '_not_empty');
-                    params.delete(fieldName + '_empty');
-                }
-            });
-            
-            // Add all other form fields that have values (excluding last_filter_section and empty_filter radios)
-            for (let [key, value] of formData.entries()) {
-                if (key === 'last_filter_section' || key.endsWith('_empty_filter')) {
-                    continue;
-                }
-                
-                // Skip _type fields if the corresponding date field is not active
-                if (key.endsWith('_type')) {
-                    const dateFieldName = key.replace('_type', '');
-                    const hasDateValue = formData.get(dateFieldName) && formData.get(dateFieldName).trim() !== '';
-                    const hasDateFrom = formData.get(dateFieldName + '_from') && formData.get(dateFieldName + '_from').trim() !== '';
-                    const hasDateTo = formData.get(dateFieldName + '_to') && formData.get(dateFieldName + '_to').trim() !== '';
-                    
-                    // Only include _type if the date filter is actually active
-                    if (!hasDateValue && !hasDateFrom && !hasDateTo) {
-                        continue;
-                    }
-                }
-                
-                // Skip _from and _to fields if they are empty
-                if (key.endsWith('_from') || key.endsWith('_to')) {
-                    if (!value || value.trim() === '') {
-                        continue;
-                    }
-                }
-                
-                // Only add fields with non-empty values
-                if (value && value.trim() !== '') {
-                    // Skip if this field has an active empty filter (not_empty or empty)
-                    // If a field has not_empty or empty filter active, don't include its input value
-                    const hasActiveEmptyFilter = params.has(key + '_not_empty') || params.has(key + '_empty');
-                    if (!hasActiveEmptyFilter) {
-                        params.append(key, value);
-                    }
-                }
-            }
-            
-            // Clean up: remove any _type parameters that don't have corresponding active date filters
-            const allParams = Array.from(params.keys());
-            allParams.forEach(paramKey => {
-                if (paramKey.endsWith('_type')) {
-                    const dateFieldName = paramKey.replace('_type', '');
-                    const dateValue = params.get(dateFieldName);
-                    const dateFrom = params.get(dateFieldName + '_from');
-                    const dateTo = params.get(dateFieldName + '_to');
-                    
-                    const hasDateValue = dateValue && dateValue.trim() !== '';
-                    const hasDateFrom = dateFrom && dateFrom.trim() !== '';
-                    const hasDateTo = dateTo && dateTo.trim() !== '';
-                    
-                    // Remove _type if no date filter is active
-                    if (!hasDateValue && !hasDateFrom && !hasDateTo) {
-                        params.delete(paramKey);
-                    }
-                }
-            });
-            
-            // Always remove last_filter_section to prevent automatic accordion opening
-            params.delete('last_filter_section');
-            
-            // Do NOT close filter panel when clicking "Cerca" - keep it open
-            // Removed filter panel closing logic
-            
-            // Redirect to the same page with filter parameters
-            const currentUrl = window.location.pathname;
-            const newUrl = currentUrl + '?' + params.toString();
-            
-            console.log('Redirecting to:', newUrl);
-            window.location.href = newUrl;
+            layoutWrap.classList.add('is-layout-ready');
+            observeFilterRows(items);
+            return;
+        }
+
+        /* Measure each item at its target column width (stacked in one column). */
+        items.forEach(function (item) {
+            const colSpan = getColSpan(item, cols);
+            item.style.gridColumn = '1 / span ' + colSpan;
+            item.style.gridRow = 'auto';
+        });
+        layoutWrap.offsetHeight;
+
+        const measurements = items.map(function (item) {
+            const colSpan = getColSpan(item, cols);
+            const rowSpan = rowSpanForHeight(item.offsetHeight, gapPx);
+            resetItemLayout(item);
+            return { item: item, colSpan: colSpan, rowSpan: rowSpan };
+        });
+
+        const placed = [];
+
+        measurements.forEach(function (entry) {
+            const slot = findPlacement(placed, entry.colSpan, entry.rowSpan, cols);
+            placed.push(slot);
+
+            entry.item.style.gridColumn = (slot.col + 1) + ' / span ' + slot.colSpan;
+            entry.item.style.gridRow = (slot.row + 1) + ' / span ' + slot.rowSpan;
+        });
+
+        /* Trim trailing empty grid rows created during placement search. */
+        const maxRow = placed.reduce(function (max, slot) {
+            return Math.max(max, slot.row + slot.rowSpan);
+        }, 0);
+        layoutWrap.style.gridTemplateRows = 'repeat(' + maxRow + ', ' + ROW_UNIT + 'px)';
+
+        layoutWrap.classList.add('is-layout-ready');
+        observeFilterRows(items);
+    }
+
+    function observeFilterRows(items) {
+        if (typeof ResizeObserver === 'undefined') return;
+        items.forEach(function (item) {
+            if (rowObservers.has(item)) return;
+            const observer = new ResizeObserver(schedulePackFilterRows);
+            observer.observe(item);
+            rowObservers.set(item, observer);
         });
     }
-    
-    // Handle reset button click to also reset DataTables state
-    const resetBtn = document.getElementById('resetFiltersBtn');
-    if (resetBtn) {
-        resetBtn.addEventListener('click', function(e) {
-            // Reset DataTables state in localStorage
-            const currentPath = window.location.pathname;
-            const datatablesKey = 'DataTables_crudTable_' + currentPath;
-            
-            try {
-                const currentState = localStorage.getItem(datatablesKey);
-                if (currentState) {
-                    const state = JSON.parse(currentState);
-                    // Reset start to 0 to go back to first page
-                    state.start = 0;
-                    localStorage.setItem(datatablesKey, JSON.stringify(state));
-                    console.log('DataTables state reset to page 1 (reset button)');
-                }
-            } catch (error) {
-                console.warn('Could not reset DataTables state:', error);
-            }
+
+    function schedulePackFilterRows() {
+        if (packRaf) cancelAnimationFrame(packRaf);
+        packRaf = requestAnimationFrame(function () {
+            packRaf = 0;
+            packFilterRows();
         });
     }
-    
-    // Relation filters now use autocomplete (same as value filters) - no modal needed
-});
 
-// Initialize date filter toggles
-function initializeDateFilterToggles() {
-    // Find all date filter type radio buttons
-    const dateTypeRadios = document.querySelectorAll('input[name$="_type"]');
-    
-    dateTypeRadios.forEach(radio => {
-        radio.addEventListener('change', function() {
-            const fieldName = this.name.replace('_type', '');
-            const isExact = this.value === 'exact';
-            
-            // Toggle visibility of sections
-            const exactSection = document.getElementById(fieldName + '_exact_section');
-            const rangeSection = document.getElementById(fieldName + '_range_section');
-            
-            if (exactSection && rangeSection) {
-                if (isExact) {
-                    exactSection.style.display = 'block';
-                    rangeSection.style.display = 'none';
-                    
-                    // Don't clear range inputs - preserve values
-                } else {
-                    exactSection.style.display = 'none';
-                    rangeSection.style.display = 'block';
-                    
-                    // Don't clear exact input - preserve values
-                }
+    /* ----------------------------------------------------------------------
+     * 1. Build the add-filter index from the server-rendered rows
+     * -------------------------------------------------------------------- */
+    const rows = Array.from(filterRowsRoot.querySelectorAll('[data-frow-key]'));
+    const groupOrder = [];
+    const itemsByKey = {};
+
+    rows.forEach(function (row) {
+        const group = row.dataset.frowGroup;
+        if (!groupOrder.includes(group)) groupOrder.push(group);
+    });
+
+    function renderPopList() {
+        popList.innerHTML = '';
+        groupOrder.forEach(function (group) {
+            const groupRows = rows.filter(r => r.dataset.frowGroup === group);
+            if (!groupRows.length) return;
+
+            const block = document.createElement('div');
+            block.className = 'hb-addfilter-group-block';
+
+            const head = document.createElement('div');
+            head.className = 'hb-addfilter-group';
+            if (group === groupRelation) {
+                head.classList.add('hb-addfilter-group--relation');
+            } else if (group === groupAdvanced) {
+                head.classList.add('hb-addfilter-group--advanced');
             }
+            head.textContent = group;
+            block.appendChild(head);
+
+            const itemsWrap = document.createElement('div');
+            itemsWrap.className = 'hb-addfilter-group-items';
+
+            groupRows.forEach(function (row) {
+                const item = document.createElement('button');
+                item.type = 'button';
+                item.className = 'hb-addfilter-item';
+                item.dataset.key = row.dataset.frowKey;
+                item.dataset.search = (row.dataset.frowLabel + ' ' + group).toLowerCase();
+                item.textContent = row.dataset.frowLabel;
+                if (!row.classList.contains('d-none')) item.classList.add('is-added');
+                item.addEventListener('click', function () { addRow(row, item); });
+                itemsWrap.appendChild(item);
+                itemsByKey[row.dataset.frowKey] = item;
+            });
+
+            block.appendChild(itemsWrap);
+            popList.appendChild(block);
+        });
+    }
+    renderPopList();
+
+    /* ----------------------------------------------------------------------
+     * 2. Popover open/close + search
+     * -------------------------------------------------------------------- */
+    function openPop() {
+        pop.classList.remove('d-none');
+        addBtn.setAttribute('aria-expanded', 'true');
+        popInput.value = '';
+        filterPopItems('');
+        popInput.focus();
+    }
+    function closePop() {
+        pop.classList.add('d-none');
+        addBtn.setAttribute('aria-expanded', 'false');
+    }
+    addBtn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        pop.classList.contains('d-none') ? openPop() : closePop();
+    });
+    document.addEventListener('click', function (e) {
+        if (!pop.contains(e.target) && e.target !== addBtn) closePop();
+    });
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') closePop();
+    });
+
+    function filterPopItems(term) {
+        term = term.toLowerCase().trim();
+        let visible = 0;
+        popList.querySelectorAll('.hb-addfilter-item').forEach(function (item) {
+            const show = !term || item.dataset.search.includes(term);
+            item.classList.toggle('d-none', !show);
+            if (show && !item.classList.contains('is-added')) visible++;
+        });
+        // Hide group blocks with no visible items
+        popList.querySelectorAll('.hb-addfilter-group-block').forEach(function (block) {
+            const any = block.querySelector('.hb-addfilter-item:not(.d-none)');
+            block.classList.toggle('d-none', !any);
+        });
+        popEmpty.classList.toggle('d-none', visible > 0);
+    }
+    popInput.addEventListener('input', function () { filterPopItems(this.value); });
+
+    /* ----------------------------------------------------------------------
+     * 3. Add / remove rows
+     * -------------------------------------------------------------------- */
+    function addRow(row, item) {
+        row.classList.remove('d-none');
+        row.classList.add('is-added-now');
+        if (item) item.classList.add('is-added');
+        closePop();
+        const firstInput = row.querySelector('input:not([type=radio]):not([type=hidden]):not([type=checkbox]), select');
+        if (firstInput) firstInput.focus();
+        row.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+        schedulePackFilterRows();
+    }
+
+    function clearRow(row) {
+        row.querySelectorAll('input[type=text], input[type=number], input[type=email], input[type=url], input[type=date], input[type=hidden]:not([name="persistent-table"])')
+            .forEach(function (i) { i.value = ''; });
+        row.querySelectorAll('select').forEach(function (s) { s.selectedIndex = 0; });
+        row.querySelectorAll('input[type=checkbox]').forEach(function (c) { c.checked = false; });
+        // Radios: re-check the "all/empty value" option of each group
+        const radioGroups = {};
+        row.querySelectorAll('input[type=radio]').forEach(function (r) { (radioGroups[r.name] ||= []).push(r); });
+        Object.values(radioGroups).forEach(function (group) {
+            const def = group.find(r => r.value === '') || group.find(r => r.value === 'exact');
+            group.forEach(r => { r.checked = (r === def); });
+        });
+        row.querySelectorAll('.hb-relsection').forEach(updateSectionState);
+        syncPresenceValueRow(row);
+    }
+
+    filterRowsRoot.addEventListener('click', function (e) {
+        const btn = e.target.closest('.hb-frow-remove');
+        if (!btn) return;
+        const row = btn.closest('[data-frow-key]');
+        clearRow(row);
+        row.classList.add('d-none');
+        const item = itemsByKey[row.dataset.frowKey];
+        if (item) item.classList.remove('is-added');
+        schedulePackFilterRows();
+    });
+
+    /* ----------------------------------------------------------------------
+     * 4. Relation card sections — stacked, combinable (AND)
+     * -------------------------------------------------------------------- */
+    function panelHasValue(panel) {
+        return Array.from(panel.querySelectorAll('input:not([type=radio]), select')).some(function (el) {
+            if (el.disabled || el.classList.contains('hb-autocomplete-display')) return false;
+            if (el.name && el.name.endsWith('_count_op')) return false;
+            if (el.type === 'checkbox') return el.checked;
+            if (el.tagName === 'SELECT') return el.value.trim() !== '';
+            return String(el.value).trim() !== '';
+        });
+    }
+
+    function updateSectionState(section) {
+        const panel = section.querySelector('.hb-relpanel');
+        if (!panel) return;
+        const hasValue = panelHasValue(panel);
+        section.querySelector('.hb-relsection-dot')?.classList.toggle('d-none', !hasValue);
+        section.classList.toggle('is-active-criteria', hasValue);
+    }
+
+    filterRowsRoot.querySelectorAll('.hb-relsection-head').forEach(function (head) {
+        head.addEventListener('click', function () {
+            const section = head.closest('.hb-relsection');
+            const card = section.closest('.hb-relcard');
+            const willOpen = !section.classList.contains('is-open');
+
+            card.querySelectorAll('.hb-relsection').forEach(function (s) {
+                s.classList.remove('is-open');
+                s.querySelector('.hb-relsection-head')?.setAttribute('aria-expanded', 'false');
+            });
+
+            if (willOpen) {
+                section.classList.add('is-open');
+                head.setAttribute('aria-expanded', 'true');
+            }
+            schedulePackFilterRows();
         });
     });
-}
 
-// Initialize value filters autocomplete functionality
-function initializeValueFiltersAutocomplete() {
-    console.log('initializeValueFiltersAutocomplete: Starting initialization');
-    
-    // Wait for jQuery to be available
-    function setupValueAutocomplete() {
-        if (typeof jQuery === 'undefined' && typeof $ === 'undefined') {
-            console.warn('Value autocomplete: jQuery not loaded, retrying...');
-            setTimeout(setupValueAutocomplete, 100);
-            return;
-        }
-        
-        const $ = typeof jQuery !== 'undefined' ? jQuery : window.$;
-        console.log('Value autocomplete: jQuery available, setting up listeners, jQuery version:', $.fn.jquery);
-        
-        // Test if elements exist
-        setTimeout(function() {
-            const testInputs = document.querySelectorAll('.autocomplete-input:not(.relation-autocomplete-input)');
-            console.log('Value autocomplete: Found', testInputs.length, 'value filter inputs');
-            testInputs.forEach(function(input, idx) {
-                console.log('Value autocomplete input', idx, ':', {
-                    id: input.id,
-                    column: input.dataset.column,
-                    table: input.dataset.table,
-                    url: input.dataset.autocompleteUrl
-                });
-            });
-        }, 500);
-        
-        // Use event delegation
-        $(document).on("input keyup", ".autocomplete-input:not(.relation-autocomplete-input)", function (e) {
-            try {
-                console.log('Value autocomplete: input/keyup event triggered on', this.id || this.className);
-                const input = $(this);
-                const columnName = input.data("column");
-                const tableName = input.data("table");
-                const query = (input.val() || '').trim();
-                const suggestionBox = $("#autocomplete-" + columnName);
+    filterRowsRoot.querySelectorAll('.hb-relsection').forEach(updateSectionState);
 
-                console.log('Value autocomplete: input data', { columnName, tableName, query, queryLength: query.length });
+    filterRowsRoot.addEventListener('input', function (e) {
+        const section = e.target.closest('.hb-relsection');
+        if (section) updateSectionState(section);
+    });
+    filterRowsRoot.addEventListener('change', function (e) {
+        const section = e.target.closest('.hb-relsection');
+        if (section) updateSectionState(section);
+    });
 
-                // Check if suggestion box exists
-                if (suggestionBox.length === 0) {
-                    console.warn('Value autocomplete: container not found for column:', columnName, 'Looking for: #autocomplete-' + columnName);
-                    return;
-                }
-
-                if (!query || query.length < 4) {
-                    console.log('Value autocomplete: query too short or empty, length:', query.length);
-                    suggestionBox.hide();
-                    return;
-                }
-
-            // Get autocomplete URL from data attribute or construct it
-            let autocompleteUrl = input.data("autocomplete-url");
-            console.log('Value autocomplete: URL from data attribute:', autocompleteUrl);
-            
-            if (!autocompleteUrl) {
-                // Fallback: construct URL from current path
-                const pathParts = window.location.pathname.split('/').filter(p => p);
-                const adminIndex = pathParts.indexOf('admin');
-                if (adminIndex !== -1) {
-                    autocompleteUrl = '/' + pathParts.slice(0, adminIndex + 1).join('/') + '/autocomplete-values';
-                } else {
-                    autocompleteUrl = '/admin/autocomplete-values';
-                }
-                console.log('Value autocomplete: Constructed URL:', autocompleteUrl);
-            }
-            
-            console.log('Value autocomplete: making request to', autocompleteUrl, 'with params:', { term: query, column: columnName, table: tableName });
-            
-            $.ajax({
-                url: autocompleteUrl,
-                data: { term: query, column: columnName, table: tableName },
-                dataType: "json",
-                success: function (data) {
-                    console.log('Value autocomplete: received', data ? data.length : 0, 'results');
-                    if (data && data.length > 0) {
-                        let suggestions = "";
-                        data.forEach(function (value) {
-                            const escapedValue = String(value).replace(/"/g, '&quot;').replace(/'/g, '&#39;');
-                            suggestions += "<div class='autocomplete-value-item' style='padding: 8px 12px !important; cursor: pointer !important; border-bottom: 1px solid #f0f0f0 !important; color: #000 !important; background-color: #fff !important; display: block !important; visibility: visible !important; opacity: 1 !important;'>" + escapedValue + "</div>";
-                        });
-                        suggestionBox.html(suggestions);
-                        
-                        // Force container to be visible with inline styles
-                        suggestionBox.css({
-                            'display': 'block',
-                            'visibility': 'visible',
-                            'opacity': '1',
-                            'z-index': '9999',
-                            'position': 'absolute',
-                            'top': '100%',
-                            'left': '0',
-                            'width': '100%',
-                            'max-height': '200px',
-                            'overflow-y': 'auto',
-                            'overflow-x': 'hidden',
-                            'background-color': '#fff',
-                            'border': '1px solid #ddd',
-                            'border-radius': '0.25rem',
-                            'box-shadow': '0 4px 10px rgba(0, 0, 0, 0.1)',
-                            'margin-top': '2px',
-                            'pointer-events': 'auto'
-                        });
-                        
-                        // Ensure parent has position relative
-                        const parent = suggestionBox.parent();
-                        if (parent.length && parent.css('position') === 'static') {
-                            parent.css('position', 'relative');
-                        }
-                        
-                        console.log('Value autocomplete: showing suggestions box, items:', suggestionBox.find('div').length);
-                        
-                        // Verify container is visible
-                        const rect = suggestionBox[0].getBoundingClientRect();
-                        const computedStyle = window.getComputedStyle(suggestionBox[0]);
-                        console.log('Value autocomplete: container visibility check:', {
-                            display: computedStyle.display,
-                            visibility: computedStyle.visibility,
-                            opacity: computedStyle.opacity,
-                            zIndex: computedStyle.zIndex,
-                            position: computedStyle.position,
-                            rect: rect,
-                            isVisible: rect.width > 0 && rect.height > 0
-                        });
-                        
-                        // Check parent (reuse existing parent variable)
-                        if (parent.length) {
-                            const parentStyle = window.getComputedStyle(parent[0]);
-                            console.log('Value autocomplete: parent styles:', {
-                                position: parentStyle.position,
-                                overflow: parentStyle.overflow,
-                                display: parentStyle.display
-                            });
-                            
-                            // Fix parent if needed
-                            if (parentStyle.overflow === 'hidden') {
-                                parent.css('overflow', 'visible');
-                                console.log('Value autocomplete: fixed parent overflow');
-                            }
-                        }
-                        
-                        // Force visibility one more time using cssText to override everything
-                        const containerElement = suggestionBox[0];
-                        containerElement.style.cssText = 'display: block !important; visibility: visible !important; opacity: 1 !important; z-index: 99999 !important; position: absolute !important; top: 100% !important; left: 0 !important; width: 100% !important; max-height: 200px !important; overflow-y: auto !important; overflow-x: hidden !important; background-color: #fff !important; border: 1px solid #ddd !important; border-radius: 0.25rem !important; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1) !important; margin-top: 2px !important; pointer-events: auto !important;';
-                        
-                        // Check all ancestors for overflow hidden
-                        let ancestor = containerElement.parentElement;
-                        while (ancestor && ancestor !== document.body) {
-                            const ancestorOverflow = window.getComputedStyle(ancestor).overflow;
-                            if (ancestorOverflow === 'hidden') {
-                                console.warn('Value autocomplete: ancestor has overflow hidden:', ancestor);
-                                ancestor.style.overflow = 'visible';
-                            }
-                            ancestor = ancestor.parentElement;
-                        }
-                        
-                        // Final check
-                        const finalRect = containerElement.getBoundingClientRect();
-                        const finalStyle = window.getComputedStyle(containerElement);
-                        console.log('Value autocomplete: FINAL check after forcing styles:', {
-                            display: finalStyle.display,
-                            visibility: finalStyle.visibility,
-                            opacity: finalStyle.opacity,
-                            zIndex: finalStyle.zIndex,
-                            rect: finalRect,
-                            isVisible: finalRect.width > 0 && finalRect.height > 0,
-                            innerHTML: containerElement.innerHTML.substring(0, 100)
-                        });
-
-                        // Click event for selecting a suggestion
-                        suggestionBox.find("div").on("click", function () {
-                            input.val($(this).text());
-                            suggestionBox.hide();
-                        });
-                        
-                        // Hover effect
-                        suggestionBox.find("div").on("mouseenter", function() {
-                            $(this).css({
-                                'background-color': 'rgba(0, 123, 255, 0.1)',
-                                'color': '#007bff'
-                            });
-                        }).on("mouseleave", function() {
-                            $(this).css({
-                                'background-color': '#fff',
-                                'color': '#000'
-                            });
-                        });
-                    } else {
-                        suggestionBox.hide();
-                    }
-                },
-                error: function(xhr, status, error) {
-                    console.error('Value autocomplete error:', error, 'URL:', autocompleteUrl, 'Status:', status, 'Response:', xhr.responseText);
-                    suggestionBox.hide();
-                }
-            });
-            } catch (err) {
-                console.error('Value autocomplete: Error in event handler:', err);
-            }
-        });
+    /* ----------------------------------------------------------------------
+     * 4b. Presence vs value mutual exclusion (BelongsTo + text columns)
+     * -------------------------------------------------------------------- */
+    function clearRowValueInputs(body) {
+        body.querySelectorAll('input[type=text], input[type=number], input[type=email], input[type=url], input[type=date], input[type=hidden]')
+            .forEach(function (i) { i.value = ''; });
+        body.querySelectorAll('select').forEach(function (s) { s.selectedIndex = 0; });
+        const display = body.querySelector('.hb-autocomplete-display');
+        if (display) display.value = '';
     }
-    
-    setupValueAutocomplete();
-}
 
-// Initialize relation autocomplete functionality
-function initializeRelationAutocomplete() {
-    const relationInputs = document.querySelectorAll('.relation-autocomplete-input');
-    
-    relationInputs.forEach(input => {
-        let searchTimeout = null;
-        const inputId = input.id;
-        const hiddenInputId = inputId.replace('_display', '');
-        const hiddenInput = document.getElementById(hiddenInputId);
-        const suggestionsContainer = document.getElementById('autocomplete-' + inputId);
-        
-        if (!suggestionsContainer) {
-            console.warn('Autocomplete container not found for input:', inputId, 'Expected ID: autocomplete-' + inputId);
-            return;
-        }
-        
-        if (!hiddenInput) {
-            console.warn('Hidden input not found for input:', inputId, 'Expected ID: ' + hiddenInputId);
-            return;
-        }
-        
-        input.addEventListener('input', function() {
-            console.log('Autocomplete relation: input event on', input.id, 'value:', this.value);
-            clearTimeout(searchTimeout);
-            const term = this.value.trim();
-            
-            // Clear hidden input when user starts typing (searching for new value)
-            if (hiddenInput && term.length > 0) {
-                hiddenInput.value = '';
-            }
-            
-            // Clear suggestions if input is empty
-            if (term.length === 0) {
-                suggestionsContainer.innerHTML = '';
-                suggestionsContainer.style.display = 'none';
-                // Also clear hidden input when input is cleared
-                if (hiddenInput) {
-                    hiddenInput.value = '';
-                }
-                return;
-            }
-            
-            // Debounce search
-            console.log('Autocomplete relation: scheduling search for term:', term);
-            searchTimeout = setTimeout(() => {
-                console.log('Autocomplete relation: executing search for term:', term);
-                fetchRelationSuggestions(input, term, suggestionsContainer);
-            }, 300);
+    function syncPresenceValueRow(row) {
+        const emptyRadio = row.querySelector('input[name$="_empty_filter"]:checked');
+        const body = row.querySelector('.hb-frow-body');
+        const hint = row.querySelector('.hb-presence-hint');
+        if (!emptyRadio || !body) return;
+
+        const isPresence = emptyRadio.value === 'not_empty' || emptyRadio.value === 'empty';
+        body.classList.toggle('is-disabled', isPresence);
+        body.querySelectorAll('input, select').forEach(function (el) {
+            el.disabled = isPresence;
         });
-        
-        // Hide suggestions when clicking outside
-        document.addEventListener('click', function(e) {
-            if (!input.contains(e.target) && !suggestionsContainer.contains(e.target)) {
-                suggestionsContainer.style.display = 'none';
-            }
+        if (isPresence) clearRowValueInputs(body);
+        if (hint) hint.classList.toggle('d-none', !isPresence);
+    }
+
+    filterRowsRoot.querySelectorAll('.hb-frow').forEach(function (row) {
+        if (!row.querySelector('input[name$="_empty_filter"]')) return;
+
+        row.querySelectorAll('input[name$="_empty_filter"]').forEach(function (radio) {
+            radio.addEventListener('change', function () { syncPresenceValueRow(row); });
         });
-        
-        // Handle keyboard navigation
-        input.addEventListener('keydown', function(e) {
-            const suggestions = suggestionsContainer.querySelectorAll('div');
-            const active = suggestionsContainer.querySelector('div.active');
-            
-            if (e.key === 'ArrowDown') {
-                e.preventDefault();
-                if (active) {
-                    active.classList.remove('active');
-                    const next = active.nextElementSibling;
-                    if (next) {
-                        next.classList.add('active');
-                    } else {
-                        suggestions[0]?.classList.add('active');
-                    }
-                } else {
-                    suggestions[0]?.classList.add('active');
+
+        row.querySelectorAll('.hb-frow-body select, .hb-frow-body input:not([type=radio])').forEach(function (el) {
+            el.addEventListener('change', function () {
+                const hasValue = (el.tagName === 'SELECT' && el.value !== '')
+                    || (el.type === 'hidden' && el.value !== '')
+                    || (el.type !== 'hidden' && String(el.value).trim() !== '');
+                if (!hasValue) return;
+                const allRadio = row.querySelector('input[name$="_empty_filter"][value=""]');
+                if (allRadio) {
+                    allRadio.checked = true;
+                    syncPresenceValueRow(row);
                 }
-            } else if (e.key === 'ArrowUp') {
-                e.preventDefault();
-                if (active) {
-                    active.classList.remove('active');
-                    const prev = active.previousElementSibling;
-                    if (prev) {
-                        prev.classList.add('active');
-                    } else {
-                        suggestions[suggestions.length - 1]?.classList.add('active');
-                    }
-                } else {
-                    suggestions[suggestions.length - 1]?.classList.add('active');
-                }
-            } else if (e.key === 'Enter') {
-                e.preventDefault();
-                if (active) {
-                    const value = active.dataset.value;
-                    const label = active.dataset.label || active.textContent;
-                    const inputId = input.id;
-                    const hiddenInputId = inputId.replace('_display', '');
-                    const hiddenInput = document.getElementById(hiddenInputId);
-                    if (hiddenInput) {
-                        hiddenInput.value = value;
-                    }
-                    input.value = label;
-                    suggestionsContainer.style.display = 'none';
-                }
-            } else if (e.key === 'Escape') {
-                suggestionsContainer.style.display = 'none';
-            }
+            });
+        });
+
+        syncPresenceValueRow(row);
+    });
+
+    /* ----------------------------------------------------------------------
+     * 5. Date exact/range toggle
+     * -------------------------------------------------------------------- */
+    filterRowsRoot.querySelectorAll('.hb-date-type').forEach(function (radio) {
+        radio.addEventListener('change', function () {
+            const field = this.name.replace('_type', '');
+            const exact = document.getElementById(field + '_exact_section');
+            const range = document.getElementById(field + '_range_section');
+            if (!exact || !range) return;
+            exact.style.display = this.value === 'exact' ? '' : 'none';
+            range.style.display = this.value === 'range' ? '' : 'none';
         });
     });
-    
-    function fetchRelationSuggestions(input, term, container) {
-        console.log('fetchRelationSuggestions called with:', { inputId: input.id, term, containerExists: !!container });
-        
-        if (!container) {
-            console.error('Autocomplete container not found for input:', input.id);
-            return;
+
+    /* ----------------------------------------------------------------------
+     * 6. Form submission — same GET parameter contract as legacy panel
+     * -------------------------------------------------------------------- */
+    form.addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        // Reset DataTables pagination state
+        try {
+            const dtKey = 'DataTables_crudTable_' + window.location.pathname;
+            const state = JSON.parse(localStorage.getItem(dtKey) || 'null');
+            if (state) { state.start = 0; localStorage.setItem(dtKey, JSON.stringify(state)); }
+        } catch (err) { /* non-blocking */ }
+
+        const fd = new FormData(form);
+        const params = new URLSearchParams();
+        params.append('persistent-table', '1');
+
+        // a) empty_filter radio groups → field_not_empty / field_empty
+        const emptyHandled = new Set();
+        form.querySelectorAll('input[name$="_empty_filter"]:checked').forEach(function (radio) {
+            const field = radio.name.replace('_empty_filter', '');
+            emptyHandled.add(field);
+            if (radio.value === 'not_empty') params.set(field + '_not_empty', '1');
+            else if (radio.value === 'empty') params.set(field + '_empty', '1');
+        });
+
+        // b) all other fields
+        for (const [key, raw] of fd.entries()) {
+            let value = String(raw).trim();
+            const numberInput = form.querySelector('[name="' + CSS.escape(key) + '"].hb-filter-number');
+            if (numberInput) {
+                value = value.replace(',', '.');
+            }
+            if (!value) continue;
+            if (key === 'persistent-table' || key === 'last_filter_section') continue;
+            if (key.endsWith('_empty_filter') || key.endsWith('_type') || key.endsWith('_filter_mode')) continue;
+            // skip the visible half of autocompletes (hidden input carries the value)
+            if (form.querySelector('[name="' + CSS.escape(key) + '"]')?.classList.contains('hb-autocomplete-display')) continue;
+            // skip count operator without a count value
+            if (key.endsWith('_count_op')) {
+                const countVal = fd.get(key.replace('_count_op', '_count'));
+                if (!countVal || !String(countVal).trim()) continue;
+            }
+            // skip raw value when an empty/not_empty filter is active on the field
+            const base = key.replace(/_(from|to)$/, '');
+            if (emptyHandled.has(key) && (params.has(key + '_not_empty') || params.has(key + '_empty'))) continue;
+            if (params.has(base + '_not_empty') || params.has(base + '_empty')) continue;
+            params.append(key, value);
         }
-        
-        const isHasMany = input.classList.contains('hasmany-autocomplete-input');
+
+        window.location.href = window.location.pathname + '?' + params.toString();
+    });
+
+    /* ----------------------------------------------------------------------
+     * 7. Autocomplete (vanilla, unified for value + relation inputs)
+     * -------------------------------------------------------------------- */
+    function debounce(fn, ms) {
+        let t; return function () { clearTimeout(t); const a = arguments, c = this; t = setTimeout(() => fn.apply(c, a), ms); };
+    }
+
+    function showSuggestions(container, items, onPick) {
+        container.innerHTML = '';
+        if (!items.length) { container.style.display = 'none'; return; }
+        items.forEach(function (it) {
+            const div = document.createElement('div');
+            div.className = 'hb-suggestion';
+            div.textContent = it.label;
+            div.addEventListener('mousedown', function (e) { e.preventDefault(); onPick(it); container.style.display = 'none'; });
+            container.appendChild(div);
+        });
+        container.style.display = 'block';
+    }
+
+    // 7a. Plain value autocomplete
+    filterRowsRoot.querySelectorAll('.hb-autocomplete-value').forEach(function (input) {
+        const box = document.getElementById('autocomplete-' + (input.id || input.dataset.column));
+        if (!box) return;
+        const run = debounce(function () {
+            const term = input.value.trim();
+            if (term.length < 4) { box.style.display = 'none'; return; }
+            fetch(input.dataset.autocompleteUrl + '?' + new URLSearchParams({ term: term, column: input.dataset.column, table: input.dataset.table }))
+                .then(r => r.ok ? r.json() : [])
+                .then(function (data) {
+                    showSuggestions(box, (data || []).map(v => ({ label: String(v), value: String(v) })), function (it) { input.value = it.value; });
+                })
+                .catch(() => { box.style.display = 'none'; });
+        }, 300);
+        input.addEventListener('input', run);
+        input.addEventListener('blur', () => setTimeout(() => { box.style.display = 'none'; }, 150));
+    });
+
+    // 7b. Relation autocomplete (belongsTo + hasMany search)
+    filterRowsRoot.querySelectorAll('.hb-autocomplete-display').forEach(function (input) {
+        const hidden = document.getElementById(input.id.replace('_display', ''));
+        const box = document.getElementById('autocomplete-' + input.id);
+        if (!hidden || !box) return;
         const baseUrl = '{{ backpack_url("autocomplete-relation-values") }}';
-        console.log('Autocomplete relation: baseUrl:', baseUrl, 'isHasMany:', isHasMany);
-        
-        const params = new URLSearchParams({
-            term: term
-        });
-        
-        if (isHasMany) {
-            params.append('is_hasmany', '1');
-            params.append('relation', input.dataset.relation);
-            params.append('model', input.dataset.model);
-            params.append('searchable_keys', input.dataset.searchableKeys);
-        } else {
-            params.append('relation_column', input.dataset.relationColumn);
-            params.append('table', input.dataset.table);
+
+        function clearCommittedPick() {
+            delete input.dataset.autocompleteValue;
+            delete input.dataset.autocompleteLabel;
         }
-        
-        fetch(baseUrl + '?' + params.toString())
-            .then(response => {
-                if (!response.ok) {
-                    return response.text().then(text => {
-                        throw new Error('HTTP error! status: ' + response.status + ', body: ' + text);
-                    });
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (!container) return; // Container might have been removed
-                
-                container.innerHTML = '';
-                
-                // Handle error response
-                if (data && data.error) {
-                    console.error('Autocomplete error:', data.error);
-                    container.style.display = 'none';
-                    return;
-                }
-                
-                if (!data || !Array.isArray(data) || data.length === 0) {
-                    container.style.display = 'none';
-                    return;
-                }
-                
-                console.log('Autocomplete: received', data.length, 'items for', input.id, 'data:', data);
-                
-                // Build HTML string directly - simpler and more reliable
-                let html = '';
-                data.forEach((item, index) => {
-                    const displayText = (item.label || item.value || String(item.value)).replace(/"/g, '&quot;').replace(/'/g, '&#39;');
-                    const itemValue = String(item.value).replace(/"/g, '&quot;').replace(/'/g, '&#39;');
-                    html += `<div class="autocomplete-item" data-value="${itemValue}" data-label="${displayText}" style="padding: 8px 12px; cursor: pointer; border-bottom: 1px solid #f0f0f0; color: #000; background-color: #fff; display: block; position: relative; z-index: 10000;">${displayText}</div>`;
-                });
-                
-                container.innerHTML = html;
-                
-                // Attach click handlers to all items
-                container.querySelectorAll('.autocomplete-item').forEach(suggestion => {
-                    suggestion.addEventListener('mouseenter', function() {
-                        this.style.backgroundColor = 'rgba(0, 123, 255, 0.1)';
-                        this.style.color = '#007bff';
-                    });
-                    suggestion.addEventListener('mouseleave', function() {
-                        this.style.backgroundColor = '#fff';
-                        this.style.color = '#000';
-                    });
-                    
-                    suggestion.addEventListener('click', function(e) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        const itemValue = this.dataset.value;
-                        const itemLabel = this.dataset.label;
-                        
-                        // Store the ID in hidden input, display the label in visible input
-                        const inputId = input.id;
-                        const hiddenInputId = inputId.replace('_display', '');
-                        const hiddenInput = document.getElementById(hiddenInputId);
-                        if (hiddenInput) {
-                            hiddenInput.value = itemValue;
-                        }
-                        input.value = itemLabel;
-                        container.style.display = 'none';
-                    });
-                });
-                
-                console.log('Autocomplete: HTML set, items:', container.children.length);
-                
-                // Ensure container is visible and positioned correctly - FORCE EVERYTHING
-                container.setAttribute('style', '');
-                container.style.cssText = 'display: block !important; visibility: visible !important; opacity: 1 !important; z-index: 99999 !important; position: absolute !important; top: 100% !important; left: 0 !important; width: 100% !important; max-height: 200px !important; overflow-y: auto !important; overflow-x: hidden !important; background-color: #fff !important; border: 1px solid #ddd !important; border-radius: 0.25rem !important; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1) !important; margin-top: 2px !important; pointer-events: auto !important; user-select: none !important;';
-                
-                // Ensure parent has position relative for absolute positioning
-                const parent = container.parentElement;
-                if (parent) {
-                    const parentPosition = window.getComputedStyle(parent).position;
-                    if (parentPosition === 'static') {
-                        parent.style.position = 'relative';
-                    }
-                    // Ensure parent is not hidden and has no overflow hidden
-                    const parentDisplay = window.getComputedStyle(parent).display;
-                    if (parentDisplay === 'none') {
-                        parent.style.display = 'block';
-                    }
-                    const parentOverflow = window.getComputedStyle(parent).overflow;
-                    if (parentOverflow === 'hidden') {
-                        parent.style.overflow = 'visible';
-                    }
-                }
-                
-                // Check all ancestors for overflow hidden
-                let ancestor = container.parentElement;
-                while (ancestor && ancestor !== document.body) {
-                    const overflow = window.getComputedStyle(ancestor).overflow;
-                    if (overflow === 'hidden') {
-                        console.warn('Autocomplete: ancestor has overflow hidden:', ancestor);
-                        ancestor.style.overflow = 'visible';
-                    }
-                    ancestor = ancestor.parentElement;
-                }
-                
-                // Verify items are in DOM and visible
-                const items = container.querySelectorAll('.autocomplete-item');
-                const rect = container.getBoundingClientRect();
-                const isVisible = rect.width > 0 && rect.height > 0 && 
-                                 window.getComputedStyle(container).display !== 'none' &&
-                                 window.getComputedStyle(container).visibility !== 'hidden';
-                
-                console.log('Autocomplete FINAL CHECK:', {
-                    containerChildren: container.children.length,
-                    itemsFound: items.length,
-                    containerVisible: isVisible,
-                    containerRect: rect,
-                    containerStyles: {
-                        display: window.getComputedStyle(container).display,
-                        visibility: window.getComputedStyle(container).visibility,
-                        opacity: window.getComputedStyle(container).opacity,
-                        zIndex: window.getComputedStyle(container).zIndex,
-                        position: window.getComputedStyle(container).position,
-                        overflow: window.getComputedStyle(container).overflow
-                    },
-                    containerHTML: container.innerHTML.substring(0, 200)
-                });
-                
-                if (items.length > 0) {
-                    const firstItem = items[0];
-                    const firstItemRect = firstItem.getBoundingClientRect();
-                    console.log('Autocomplete FIRST ITEM:', {
-                        text: firstItem.textContent,
-                        rect: firstItemRect,
-                        styles: {
-                            display: window.getComputedStyle(firstItem).display,
-                            visibility: window.getComputedStyle(firstItem).visibility,
-                            opacity: window.getComputedStyle(firstItem).opacity,
-                            color: window.getComputedStyle(firstItem).color,
-                            backgroundColor: window.getComputedStyle(firstItem).backgroundColor
-                        }
-                    });
-                }
-            })
-            .catch(error => {
-                console.error('Error fetching relation suggestions:', error);
-                if (container) {
-                    container.style.display = 'none';
-                }
-            });
-    }
-}
 
-// Helper function to clear localStorage for persistent table
-function clearPersistentTableStorage() {
-    if (typeof(Storage) !== "undefined") {
-        // Clear all persistent table data for this path
-        const keysToRemove = [];
-        for (let i = 0; i < localStorage.length; i++) {
-            const key = localStorage.key(i);
-            if (key && key.startsWith('persistent-table-' + window.location.pathname)) {
-                keysToRemove.push(key);
-            }
+        function commitPick(it) {
+            hidden.value = it.value;
+            input.value = it.label;
+            input.dataset.autocompleteValue = it.value;
+            input.dataset.autocompleteLabel = it.label;
+            hidden.dispatchEvent(new Event('change', { bubbles: true }));
+            box.style.display = 'none';
         }
-        keysToRemove.forEach(key => localStorage.removeItem(key));
-        
-        // Also clear any filter-related data
-        localStorage.removeItem('persistent-table-' + window.location.pathname);
-        localStorage.removeItem('filters-' + window.location.pathname);
-        
-        console.log('localStorage cleared for persistent table');
-    }
-}
 
-// Function to check if there are any real active filters (excluding last_filter_section)
-function hasRealActiveFilters(params) {
-    return Array.from(params.keys()).some(key => 
-        key !== 'last_filter_section' && key !== 'page' && key !== 'persistent-table' && 
-        params.get(key) !== null && params.get(key) !== ''
-    );
-}
-
-// Function to check if there are any active filters in the form (not just URL params)
-function hasActiveFiltersInForm(excludeField = null) {
-    const form = document.querySelector('form[method="GET"]');
-    if (!form) return false;
-    
-    const formData = new FormData(form);
-    return Array.from(formData.keys()).some(key => 
-        key !== 'last_filter_section' && key !== 'page' && key !== 'persistent-table' && 
-        key !== excludeField && key !== excludeField + '_not_empty' && key !== excludeField + '_empty' &&
-        formData.get(key) !== null && formData.get(key) !== ''
-    );
-}
-
-// Initialize empty filter radio buttons
-function initializeEmptyFilterRadios() {
-    // Find all empty filter radio button groups
-    const emptyFilterGroups = document.querySelectorAll('input[name$="_empty_filter"]');
-    
-    emptyFilterGroups.forEach(radio => {
-        radio.addEventListener('change', function() {
-            const fieldName = this.name.replace('_empty_filter', '');
-            const value = this.value;
-            
-            // Update the form's hidden inputs or radio state to reflect the change
-            // This ensures the form state matches the selection
-            const form = this.closest('form');
-            if (form) {
-                // Update the form's radio button state
-                const allRadios = form.querySelectorAll(`input[name="${this.name}"]`);
-                allRadios.forEach(radio => {
-                    radio.checked = (radio === this);
-                });
-                
-                // Force update of visual state for all radio buttons in this group
-                // This ensures Bootstrap's btn-check styling is applied correctly
-                allRadios.forEach(r => {
-                    const label = document.querySelector(`label[for="${r.id}"]`);
-                    if (label) {
-                        // Remove and re-add classes to force CSS update
-                        if (r.checked) {
-                            label.classList.add('active');
-                        } else {
-                            label.classList.remove('active');
-                        }
-                    }
-                });
-                
-                // Remove existing hidden inputs for this field's filters
-                const notEmptyInput = form.querySelector(`input[name="${fieldName}_not_empty"]`);
-                const emptyInput = form.querySelector(`input[name="${fieldName}_empty"]`);
-                if (notEmptyInput && notEmptyInput.type === 'hidden') {
-                    notEmptyInput.remove();
-                }
-                if (emptyInput && emptyInput.type === 'hidden') {
-                    emptyInput.remove();
-                }
-            }
-            
-            // Remove existing empty filter parameters from URL
-            const url = new URL(window.location);
-            const params = new URLSearchParams(url.search);
-            params.delete(fieldName + '_not_empty');
-            params.delete(fieldName + '_empty');
-            
-            // Add new parameter based on selection
-            if (value === 'not_empty') {
-                params.set(fieldName + '_not_empty', '1');
-                // Clear the input value when selecting "not_empty"
-                params.delete(fieldName);
-            } else if (value === 'empty') {
-                params.set(fieldName + '_empty', '1');
-                // Clear the input value when selecting "empty"
-                params.delete(fieldName);
-            }
-            // If value is empty (Tutti), both parameters are already deleted above
-            
-            // Special case: if selecting "Tutti" (empty value), always clear localStorage
-            if (value === '') {
-                console.log('DEBUG: Selecting "Tutti" for field:', fieldName, '- ALWAYS clearing localStorage');
-                
-                // Direct localStorage clearing
-                if (typeof(Storage) !== "undefined") {
-                    console.log('DEBUG: localStorage available, clearing...');
-                    localStorage.clear();
-                    console.log('DEBUG: localStorage cleared completely');
-                } else {
-                    console.log('DEBUG: localStorage not available');
-                }
-                
-                // Also call the specific function
-                clearPersistentTableStorage();
-            }
-            
-            // Only add last_filter_section if not selecting "Tutti" (already handled above)
-            if (value !== '') {
-                // Check if there are any real active filters (excluding last_filter_section)
-                const hasRealFilters = hasRealActiveFilters(params);
-                
-                // Always remove last_filter_section first, then add it back if needed
-                params.delete('last_filter_section');
-                
-                // Always remove last_filter_section - accordions should not open automatically
-                params.delete('last_filter_section');
-                
-                // Clear localStorage for persistent table BEFORE reload if no real filters
-                if (!hasRealFilters) {
-                    clearPersistentTableStorage();
-                }
-            } else {
-                // For "Tutti" selection, just remove last_filter_section
-                params.delete('last_filter_section');
-            }
-            
-            // Do not reload automatically - user must click "Cerca" button
-            // Removed automatic search: window.location.href = newUrl;
-        });
-    });
-}
-
-// Initialize boolean filter radio buttons with auto-submit
-function initializeBooleanFilterRadios() {
-    // Find all boolean filter radio button groups (not empty filter groups)
-    const booleanFilterGroups = document.querySelectorAll('input[name]:not([name$="_empty_filter"]):not([name$="_type"])');
-    
-    booleanFilterGroups.forEach(radio => {
-        // Only process radio buttons that are part of boolean filters
-        if (radio.type === 'radio' && radio.name && !radio.name.includes('_empty_filter') && !radio.name.includes('_type')) {
-            radio.addEventListener('change', function() {
-                const fieldName = this.name;
-                const value = this.value;
-                
-                // Build URL with new parameter
-                const url = new URL(window.location);
-                const params = new URLSearchParams(url.search);
-                
-                // Set the parameter (empty value means remove the parameter)
-                if (value === '') {
-                    params.delete(fieldName);
-                } else {
-                    params.set(fieldName, value);
-                }
-                
-                // Special case: if selecting empty value, always clear localStorage
-                if (value === '') {
-                    console.log('DEBUG: Selecting empty value for boolean field:', fieldName, '- ALWAYS clearing localStorage');
-                    
-                    // Direct localStorage clearing
-                    if (typeof(Storage) !== "undefined") {
-                        console.log('DEBUG: localStorage available for boolean, clearing...');
-                        localStorage.clear();
-                        console.log('DEBUG: localStorage cleared completely for boolean');
-                    } else {
-                        console.log('DEBUG: localStorage not available for boolean');
-                    }
-                    
-                    // Also call the specific function
-                    clearPersistentTableStorage();
-                }
-                
-                // Only add last_filter_section if not selecting empty value (already handled above)
-                if (value !== '') {
-                    // Check if there are any real active filters (excluding last_filter_section)
-                    const hasRealFilters = hasRealActiveFilters(params);
-                    
-                    // Always remove last_filter_section - accordions should not open automatically
-                    params.delete('last_filter_section');
-                    
-                    // Clear localStorage for persistent table BEFORE reload if no real filters
-                    if (!hasRealFilters) {
-                        clearPersistentTableStorage();
-                    }
-                } else {
-                    // For empty value selection, just remove last_filter_section
-                    params.delete('last_filter_section');
-                }
-                
-                // Do not reload automatically - user must click "Cerca" button
-                // Removed automatic search: window.location.href = newUrl;
-            });
+        // Restore commit state after page reload (hidden carries GET param, display shows label)
+        if (hidden.value && input.value.trim()) {
+            input.dataset.autocompleteValue = hidden.value;
+            input.dataset.autocompleteLabel = input.value.trim();
         }
-    });
-}
 
-// Function to determine filter section and add to URL
-function addLastFilterSection(params, fieldName) {
-    // Removed - accordions should not open automatically
-    // Always remove last_filter_section to prevent automatic opening
-    params.delete('last_filter_section');
-}
-
-// Add global event listener for all filter changes
-document.addEventListener('DOMContentLoaded', function() {
-    // Add change listeners to all filter inputs
-    const filterInputs = document.querySelectorAll('input[name], select[name]');
-    
-    filterInputs.forEach(input => {
-        input.addEventListener('change', function() {
-            const fieldName = this.name;
-            
-            // Skip if this is already handled by specific functions
-            if (fieldName.includes('_empty_filter') || fieldName.includes('_type')) {
+        const run = debounce(function () {
+            const term = input.value.trim();
+            if (!term) {
+                hidden.value = '';
+                clearCommittedPick();
+                box.style.display = 'none';
                 return;
             }
-            
-            // Add last filter section parameter to form
-            const form = this.closest('form');
-            if (form) {
-                // Check if there are any real active filters (excluding last_filter_section)
-                const formData = new FormData(form);
-                const hasRealFilters = Array.from(formData.keys()).some(key => 
-                    key !== 'last_filter_section' && key !== 'page' && key !== 'persistent-table' && 
-                    formData.get(key) !== null && formData.get(key) !== ''
-                );
-                
-                // Always remove existing last_filter_section first
-                const existingInput = form.querySelector('input[name="last_filter_section"]');
-                if (existingInput) {
-                    existingInput.remove();
-                }
-                
-                if (hasRealFilters) {
-                    // Add new hidden input with the correct section only if there are real filters
-                    const section = getFilterSection(fieldName);
-                    console.log('Filter section determined:', fieldName, '->', section);
-                    
-                    const hiddenInput = document.createElement('input');
-                    hiddenInput.type = 'hidden';
-                    hiddenInput.name = 'last_filter_section';
-                    hiddenInput.value = section;
-                    form.appendChild(hiddenInput);
-                } else {
-                    // Clear localStorage for persistent table BEFORE form submit
-                    clearPersistentTableStorage();
-                }
+
+            // Keep hidden ID when display still shows a committed pick (do not clear on debounced re-run)
+            if (input.dataset.autocompleteLabel === term && input.dataset.autocompleteValue) {
+                hidden.value = input.dataset.autocompleteValue;
+                return;
             }
+
+            clearCommittedPick();
+            hidden.value = '';
+
+            const qs = new URLSearchParams({ term: term });
+            if (input.classList.contains('hb-autocomplete-hasmany')) {
+                qs.append('is_hasmany', '1');
+                qs.append('relation', input.dataset.relation);
+                qs.append('model', input.dataset.model);
+                qs.append('searchable_keys', input.dataset.searchableKeys);
+            } else {
+                qs.append('relation_column', input.dataset.relationColumn);
+                qs.append('table', input.dataset.table);
+            }
+            fetch(baseUrl + '?' + qs.toString())
+                .then(r => r.ok ? r.json() : [])
+                .then(function (data) {
+                    if (!Array.isArray(data)) { box.style.display = 'none'; return; }
+                    showSuggestions(box, data.map(it => ({ label: it.label || String(it.value), value: String(it.value) })), commitPick);
+                })
+                .catch(() => { box.style.display = 'none'; });
+        }, 300);
+
+        input.addEventListener('input', function () {
+            if (input.dataset.autocompleteLabel && input.value.trim() !== input.dataset.autocompleteLabel) {
+                clearCommittedPick();
+                hidden.value = '';
+            }
+            run();
         });
+        input.addEventListener('blur', () => setTimeout(() => { box.style.display = 'none'; }, 150));
     });
-});
 
-// Function to determine filter section based on field name and context
-function getFilterSection(fieldName) {
-    console.log('DEBUG: getFilterSection called for field:', fieldName);
-    
-    // First, try to find the actual container to determine the section
-    const input = document.querySelector(`[name="${fieldName}"]`);
-    if (input) {
-        console.log('DEBUG: Input found, checking container...');
-        const fieldContainer = input.closest('.filter-field-container');
-        if (fieldContainer) {
-            console.log('DEBUG: Field container found, checking accordion...');
-            const accordionItem = fieldContainer.closest('.accordion-item');
-            if (accordionItem) {
-                console.log('DEBUG: Accordion item found, checking button...');
-                const button = accordionItem.querySelector('.accordion-button');
-                if (button) {
-                    const text = button.textContent.toLowerCase();
-                    console.log('DEBUG: Button text:', text);
-                    // Check "advanced" FIRST before "date" to handle advanced date filters correctly
-                    if (text.includes('avanzati') || text.includes('advanced')) {
-                        console.log('DEBUG: Detected as advanced from button text');
-                        return 'advanced';
-                    } else if (text.includes('relazioni') || text.includes('relations')) {
-                        console.log('DEBUG: Detected as relation from button text');
-                        return 'relation';
-                    } else if (text.includes('data') || text.includes('date')) {
-                        console.log('DEBUG: Detected as date from button text');
-                        return 'date';
-                    } else if (text.includes('stato') || text.includes('boolean')) {
-                        console.log('DEBUG: Detected as boolean from button text');
-                        return 'boolean';
-                    } else if (text.includes('select') || text.includes('selezione')) {
-                        console.log('DEBUG: Detected as select from button text');
-                        return 'select';
-                    } else if (text.includes('valore') || text.includes('text') || text.includes('filtri')) {
-                        console.log('DEBUG: Detected as text from button text');
-                        return 'text';
-                    }
-                }
-            }
+    /* ----------------------------------------------------------------------
+     * 8. Filter panel toggle sync
+     * -------------------------------------------------------------------- */
+    const filterPanel = document.getElementById('filterPanel');
+    const filterToggle = document.getElementById('hbFilterToggleBtn');
+
+    function syncFilterToggle(open) {
+        if (!filterToggle) return;
+        filterToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+        filterToggle.classList.toggle('is-open', open);
+        const chevron = filterToggle.querySelector('.hb-filter-toggle-chevron');
+        if (chevron) {
+            chevron.classList.toggle('la-angle-up', open);
+            chevron.classList.toggle('la-angle-down', !open);
         }
-    } else {
-        console.log('DEBUG: Input not found, using fallback logic...');
     }
-    
-    // Check if it's an advanced field FIRST (before other checks)
-    const advancedFields = ['token_expire', 'email_verified_at', 'role_id', 'created_at', 'updated_at', 'backpack_role_id'];
-    if (advancedFields.some(field => fieldName.includes(field))) {
-        console.log('DEBUG: Field detected as advanced:', fieldName);
-        return 'advanced';
-    }
-    
-    // Fallback: Check if it's a relation field (ends with _id)
-    if (fieldName.endsWith('_id')) {
-        return 'relation';
-    }
-    
-    // Check if it's a date field (look for date-related field names, excluding advanced dates)
-    const dateFields = ['date', 'time', 'timestamp'];
-    if (dateFields.some(field => fieldName.includes(field))) {
-        return 'date';
-    }
-    
-    // Check if it's a boolean field (look for boolean-related field names)
-    const booleanFields = ['active', 'enabled', 'visible', 'status', 'is_'];
-    if (booleanFields.some(field => fieldName.includes(field))) {
-        return 'boolean';
-    }
-    
-    // Check if it's a select field (look for enum-related field names)
-    const selectFields = ['type', 'category', 'status', 'role', 'level'];
-    if (selectFields.some(field => fieldName.includes(field))) {
-        return 'select';
-    }
-    
-    // Default to text
-    return 'text';
-}
 
-// Removed: HasMany Relation Modal - replaced with autocomplete
+    if (filterPanel) {
+        filterPanel.addEventListener('shown.bs.collapse', function () {
+            syncFilterToggle(true);
+            schedulePackFilterRows();
+        });
+        filterPanel.addEventListener('hidden.bs.collapse', function () { syncFilterToggle(false); });
+    }
 
-// CSS animations removed for cleaner UX
-</script> 
+    if (typeof ResizeObserver !== 'undefined' && layoutWrap) {
+        new ResizeObserver(schedulePackFilterRows).observe(layoutWrap);
+    }
+    window.addEventListener('resize', schedulePackFilterRows);
+    schedulePackFilterRows();
+})();
+</script>

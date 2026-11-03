@@ -31,16 +31,17 @@ $hasActiveFilters = $activeFilters->isNotEmpty();
 @endphp
 
 <div class="csv-actions-container">
-    <button type="button" id="csvActionsButton" class="btn btn-primary" onclick="toggleCsvPopup()">
-        <i class="la la-file-csv"></i> CSV
-    </button>
-
-    <!-- Custom popup instead of modal -->
-    <div id="csvActionsPopup" class="csv-popup">
+    <div class="csv-actions-group">
+        {{-- CSV Button + Popup --}}
+        <div class="csv-actions-btn-wrapper">
+            <button type="button" class="btn btn-primary csv-actions-btn" onclick="togglePopup('csvActionsPopup', 'csvActionsButton')">
+                <i class="la la-file-csv"></i> CSV
+            </button>
+            <div id="csvActionsPopup" class="csv-popup">
         <div class="csv-popup-content">
             <div class="csv-popup-header">
-                <h5>{{ trans('backpack::crud.csv_actions') }}</h5>
-                <button type="button" class="csv-popup-close" onclick="toggleCsvPopup()">
+                <h5><i class="la la-file-csv me-1"></i> CSV</h5>
+                <button type="button" class="csv-popup-close" onclick="togglePopup('csvActionsPopup', 'csvActionsButton')">
                     <span>&times;</span>
                 </button>
             </div>
@@ -53,8 +54,8 @@ $hasActiveFilters = $activeFilters->isNotEmpty();
                         data-placement="top"
                         data-bs-placement="top"
                         title="{{ trans('backpack::crud.warning_export_with_filters') }}">
-                        <a href="{{ url($crud->route.'/export-csv' . $queryString) }}" 
-                           class="btn btn-primary csv-export-btn"
+                        <a href="{{ url($crud->route.'/export-csv' . $queryString) }}"
+                           class="btn btn-outline-success csv-export-btn"
                            data-loading-text="{{ trans('backpack::crud.csv_export_in_progress') }}"
                            data-timeout-text="{{ trans('backpack::crud.csv_export_timeout') }}"
                            onclick="showExportLoading(event, this)">
@@ -63,8 +64,8 @@ $hasActiveFilters = $activeFilters->isNotEmpty();
                         </a>
                     </span>
                     @else
-                    <a href="{{ url($crud->route.'/export-csv' . $queryString) }}" 
-                       class="btn btn-primary csv-export-btn"
+                    <a href="{{ url($crud->route.'/export-csv' . $queryString) }}"
+                       class="btn btn-outline-success csv-export-btn"
                        data-loading-text="{{ trans('backpack::crud.csv_export_in_progress') }}"
                        data-timeout-text="{{ trans('backpack::crud.csv_export_timeout') }}"
                        onclick="showExportLoading(event, this)">
@@ -80,14 +81,14 @@ $hasActiveFilters = $activeFilters->isNotEmpty();
                         data-placement="top"
                         data-bs-placement="top"
                         title="{{ trans('backpack::crud.csv_import_disabled', ['section' => ucfirst($currentRoute)]) }}">
-                        <button class="btn btn-primary disabled-import-btn"
+                        <button class="btn btn-outline-success disabled-import-btn"
                             disabled
                             title="{{ trans('backpack::crud.csv_import_disabled', ['section' => ucfirst($currentRoute)]) }}">
                             <i class="la la-file-upload me-1"></i> {{ trans('backpack::crud.csv_import') }}
                         </button>
                     </span>
                     @else
-                    <a href="{{ url($crud->route.'/import-csv') }}" class="btn btn-primary">
+                    <a href="{{ url($crud->route.'/import-csv') }}" class="btn btn-outline-success">
                         <i class="la la-file-upload me-1"></i> {{ trans('backpack::crud.csv_import') }}
                     </a>
                     @endif
@@ -95,135 +96,177 @@ $hasActiveFilters = $activeFilters->isNotEmpty();
             </div>
         </div>
     </div>
+        </div>
+
+        {{-- Excel Button + Popup --}}
+        <div class="csv-actions-btn-wrapper">
+            <button type="button" class="btn btn-primary xlsx-actions-btn" onclick="togglePopup('xlsxActionsPopup', 'xlsxActionsButton')">
+                <i class="la la-file-excel"></i> Excel
+            </button>
+            <div id="xlsxActionsPopup" class="csv-popup">
+        <div class="csv-popup-content">
+            <div class="csv-popup-header">
+                <h5><i class="la la-file-excel me-1"></i> Excel</h5>
+                <button type="button" class="csv-popup-close" onclick="togglePopup('xlsxActionsPopup', 'xlsxActionsButton')">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <div class="csv-popup-body">
+                <div class="csv-buttons">
+                    @if($hasActiveFilters)
+                    <span
+                        data-toggle="tooltip"
+                        data-bs-toggle="tooltip"
+                        data-placement="top"
+                        data-bs-placement="top"
+                        title="{{ trans('backpack::crud.warning_export_with_filters') }}">
+                        <a href="{{ url($crud->route.'/export-xlsx' . $queryString) }}"
+                           class="btn btn-outline-success xlsx-export-btn"
+                           data-loading-text="{{ trans('backpack::crud.csv_export_in_progress') }}"
+                           data-timeout-text="{{ trans('backpack::crud.csv_export_timeout') }}"
+                           onclick="showExportLoading(event, this)">
+                            <i class="la la-file-export me-1 xlsx-export-icon"></i>
+                            <span class="xlsx-export-text">{{ trans('backpack::crud.xlsx_export') }}</span>
+                        </a>
+                    </span>
+                    @else
+                    <a href="{{ url($crud->route.'/export-xlsx' . $queryString) }}"
+                       class="btn btn-outline-success xlsx-export-btn"
+                       data-loading-text="{{ trans('backpack::crud.csv_export_in_progress') }}"
+                       data-timeout-text="{{ trans('backpack::crud.csv_export_timeout') }}"
+                       onclick="showExportLoading(event, this)">
+                        <i class="la la-file-export me-1 xlsx-export-icon"></i>
+                        <span class="xlsx-export-text">{{ trans('backpack::crud.xlsx_export') }}</span>
+                    </a>
+                    @endif
+
+                    @if($importDisabled)
+                    <span
+                        data-toggle="tooltip"
+                        data-bs-toggle="tooltip"
+                        data-placement="top"
+                        data-bs-placement="top"
+                        title="{{ trans('backpack::crud.csv_import_disabled', ['section' => ucfirst($currentRoute)]) }}">
+                        <button class="btn btn-outline-success disabled-import-btn"
+                            disabled
+                            title="{{ trans('backpack::crud.csv_import_disabled', ['section' => ucfirst($currentRoute)]) }}">
+                            <i class="la la-file-upload me-1"></i> {{ trans('backpack::crud.xlsx_import') }}
+                        </button>
+                    </span>
+                    @else
+                    <a href="{{ url($crud->route.'/import-xlsx') }}" class="btn btn-outline-success">
+                        <i class="la la-file-upload me-1"></i> {{ trans('backpack::crud.xlsx_import') }}
+                    </a>
+                    @endif
+                </div>
+            </div>
+        </div>
+    </div>
+        </div>
+    </div>
 </div>
 
 <script>
     function showExportLoading(event, button) {
-        // Disable button to prevent double clicks
         button.classList.add('csv-export-loading');
         button.style.pointerEvents = 'none';
-        
-        // Change icon to spinner
-        var icon = button.querySelector('.csv-export-icon');
+
+        var icon = button.querySelector('[class*="export-icon"]');
         var originalIconClass = icon.className;
-        icon.className = 'la la-spinner la-spin me-1 csv-export-icon';
-        
-        // Change text
-        var textElement = button.querySelector('.csv-export-text');
+        var iconClass = originalIconClass.split(' ').find(function(c) { return c.includes('export-icon'); }) || 'csv-export-icon';
+        icon.className = 'la la-spinner la-spin me-1 ' + iconClass;
+
+        var textElement = button.querySelector('[class*="export-text"]');
         var originalText = textElement.textContent;
         var loadingText = button.getAttribute('data-loading-text') || 'Esportazione in corso...';
         textElement.textContent = loadingText;
 
-        // Generate a unique token for this download
         var downloadToken = 'download_' + new Date().getTime();
-        
-        // Add token to URL
         var url = button.href;
         var separator = url.includes('?') ? '&' : '?';
         button.href = url + separator + 'downloadToken=' + downloadToken;
 
-        // Start checking for download completion via cookie
         var attempts = 0;
-        var maxAttempts = 600; // 600 attempts * 500ms = 5 minutes max
-        
+        var maxAttempts = 600;
+
         var checkInterval = setInterval(function() {
             attempts++;
-            
-            // Check if download cookie exists
             if (document.cookie.indexOf('downloadToken=' + downloadToken) !== -1) {
-                // Download has started, restore button
                 button.classList.remove('csv-export-loading');
                 button.style.pointerEvents = '';
                 icon.className = originalIconClass;
                 textElement.textContent = originalText;
                 clearInterval(checkInterval);
-                
-                // Clean up the cookie
                 document.cookie = 'downloadToken=' + downloadToken + '; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
             } else if (attempts >= maxAttempts) {
-                // Timeout after 5 minutes
                 button.classList.remove('csv-export-loading');
                 button.style.pointerEvents = '';
                 icon.className = originalIconClass;
                 textElement.textContent = originalText;
                 clearInterval(checkInterval);
-                
-                var timeoutMessage = button.getAttribute('data-timeout-text') || 'L\'export sta richiedendo più tempo del previsto. Controlla i download o riprova più tardi.';
-                alert(timeoutMessage);
+                alert(button.getAttribute('data-timeout-text') || 'Export timeout');
             }
         }, 500);
     }
 
-    function toggleCsvPopup() {
-        var popup = document.getElementById('csvActionsPopup');
+    function togglePopup(popupId, buttonId) {
+        var popup = document.getElementById(popupId);
+
+        // Close any other open popup
+        document.querySelectorAll('.csv-popup.visible').forEach(function(p) {
+            if (p.id !== popupId) {
+                p.classList.add('animate-out');
+                p.classList.remove('animate-in');
+                setTimeout(function() {
+                    p.classList.remove('visible');
+                    p.classList.remove('animate-out');
+                }, 200);
+            }
+        });
 
         if (popup.classList.contains('visible')) {
-            // Start closing animation
             popup.classList.add('animate-out');
             popup.classList.remove('animate-in');
-
-            // Remove 'visible' class after animation completes
             setTimeout(function() {
                 popup.classList.remove('visible');
                 popup.classList.remove('animate-out');
                 document.removeEventListener('click', closePopupOnClickOutside);
-            }, 200); // Slightly shorter time to avoid lag
+            }, 200);
         } else {
-            // Show popup and start opening animation
             popup.classList.add('visible');
             popup.classList.add('animate-in');
             popup.classList.remove('animate-out');
-
-            // Add event listener to close when clicking outside
             document.addEventListener('click', closePopupOnClickOutside);
         }
     }
 
     function closePopupOnClickOutside(event) {
-        var popup = document.getElementById('csvActionsPopup');
-        var button = document.getElementById('csvActionsButton');
-
-        // If click is not on popup or button, close the popup
-        if (!popup.contains(event.target) && !button.contains(event.target)) {
-            // Start closing animation
-            popup.classList.add('animate-out');
-            popup.classList.remove('animate-in');
-
-            // Remove 'visible' class after animation completes
-            setTimeout(function() {
-                popup.classList.remove('visible');
-                popup.classList.remove('animate-out');
-                document.removeEventListener('click', closePopupOnClickOutside);
-            }, 200); // Slightly shorter time to avoid lag
+        document.querySelectorAll('.csv-popup.visible').forEach(function(popup) {
+            var button = popup.previousElementSibling;
+            if (!popup.contains(event.target) && (!button || !button.contains(event.target))) {
+                popup.classList.add('animate-out');
+                popup.classList.remove('animate-in');
+                setTimeout(function() {
+                    popup.classList.remove('visible');
+                    popup.classList.remove('animate-out');
+                }, 200);
+            }
+        });
+        // Remove listener if no popups are visible
+        if (document.querySelectorAll('.csv-popup.visible').length === 0) {
+            document.removeEventListener('click', closePopupOnClickOutside);
         }
     }
 
-    // Initialize tooltips for Bootstrap 4 and 5
     document.addEventListener('DOMContentLoaded', function() {
-        // Initialize for Bootstrap 4
         if (typeof $ !== 'undefined' && typeof $.fn !== 'undefined' && typeof $.fn.tooltip === 'function') {
             $('[data-toggle="tooltip"]').tooltip();
         }
-
-        // Initialize for Bootstrap 5
         if (typeof bootstrap !== 'undefined' && typeof bootstrap.Tooltip !== 'undefined') {
             var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-            var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
+            tooltipTriggerList.map(function(tooltipTriggerEl) {
                 return new bootstrap.Tooltip(tooltipTriggerEl);
             });
         }
-    });
-
-    // Fallback for tooltips with native title attribute
-    document.addEventListener('DOMContentLoaded', function() {
-        var disabledButtons = document.querySelectorAll('.disabled-import-btn');
-        disabledButtons.forEach(function(button) {
-            button.addEventListener('mouseenter', function() {
-                if (!button.getAttribute('data-tooltip-initialized')) {
-                    // If Bootstrap tooltips are not initialized, use the native title
-                    button.style.position = 'relative';
-                }
-            });
-        });
     });
 </script>

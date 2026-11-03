@@ -2,87 +2,271 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Support\Backpack\SchemaCache;
+use App\Support\Backpack\BackpackHelper;
+use App\Http\Concerns\ChecksBackpackPermissions;
+use App\Models\Banca;
+use App\Models\Page;
 use App\Models\Translate;
-use Illuminate\Support\Facades\File;
-use App\Http\Requests\TranslateRequest;
-use App\Http\Controllers\Admin\Helper\HelperBackend;
+use App\Services\Translate\TranslateVariableService;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
+use Backpack\CRUD\app\Http\Controllers\Operations\ListOperation;
+use Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
+use Backpack\CRUD\app\Library\CrudPanel\CrudPanel;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
-use App\Http\Traits\ChecksBackpackPermissions;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
+
 /**
  * Class TranslateCrudController
- * @package App\Http\Controllers\Admin
- * @property-read \Backpack\CRUD\app\Library\CrudPanel\CrudPanel $crud
+ *
+ * @property-read CrudPanel $crud
  */
 class TranslateCrudController extends CrudController
 {
-	use \Backpack\CRUD\app\Http\Controllers\Operations\ListOperation;
-	use \Backpack\CRUD\app\Http\Controllers\Operations\CreateOperation;
-	use \Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
-	use \Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation;
-	use \Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
-	use ChecksBackpackPermissions;
+    use ChecksBackpackPermissions;
+    use ListOperation;
+    use ShowOperation;
 
-	/**
-	 * Configure the CrudPanel object. Apply settings to all operations.
-	 *
-	 * @return void
-	 */
-	public function setup()
-	{
-		CRUD::setModel(\App\Models\Translate::class);
-		CRUD::setRoute(config("backpack.base.route_prefix") . "/translate");
-		CRUD::setEntityNameStrings("translate", "translates");
+    /**
+     * Configure the CrudPanel object. Apply settings to all operations.
+     *
+     * @return void
+     */
+    public function setup()
+    {
+        CRUD::setModel(Translate::class);
+        CRUD::setRoute(config('backpack.base.route_prefix').'/translate');
+        CRUD::setEntityNameStrings('translate', 'translates');
 
-		$this->setupPermissionChecks();
-	}
+        $this->setupPermissionChecks();
+        $this->crud->denyAccess(['create', 'update', 'delete']);
+    }
 
-	/**
-	 * Define what happens when the List operation is loaded.
-	 *
-	 * @see  https://backpackforlaravel.com/docs/crud-operation-list-entries
-	 * @return void
-	 */
-	protected function setupListOperation()
-	{
-		HelperBackend::setFieldsView(new \App\Models\Translate());
+    /**
+     * Define what happens when the List operation is loaded.
+     *
+     * @see  https://backpackforlaravel.com/docs/crud-operation-list-entries
+     *
+     * @return void
+     */
+    protected function setupListOperation()
+    {
+        $this->crud->setListView('admin.translates.archive');
+        $this->crud->setListContentClass('col-md-12');
+        CRUD::setOperationSetting('archiveData', $this->buildArchiveData());
+    }
 
-		/**
-		 * Columns can be defined using the fluent syntax:
-		 * - CRUD::column('price')->type('number');
-		 */
-	}
+    /**
+     * Build archive data for custom list view.
+     *
+     * @return array<string, mixed>
+     */
+    private function buildArchiveData(): array
+    {
+        $query = Translate::query()->with(['page:id,name', 'banca:banca_abi,nome']);
 
-	/**
-	 * Define what happens when the Create operation is loaded.
-	 *
-	 * @see https://backpackforlaravel.com/docs/crud-operation-create
-	 * @return void
-	 */
-	protected function setupCreateOperation()
-	{
-		CRUD::setValidation(TranslateRequest::class);
-		HelperBackend::setFields(new \App\Models\Translate());
+        $code = trim((string) request()->query('code', ''));
+        if ($code !== '') {
+            $query->where('code', 'like', "%{$code}%");
+        }
 
-		/**
-		 * Fields can be defined using the fluent syntax:
-		 * - CRUD::field('price')->type('number');
-		 */
-	}
+        $bancaAbi = trim((string) request()->query('banca_abi', ''));
+        if ($bancaAbi !== '') {
+            if ($bancaAbi === 'default') {
+                $query->whereNull('banca_abi');
+            } else {
+                $query->where('banca_abi', 'like', "%{$bancaAbi}%");
+            }
+        }
 
-	/**
-	 * Define what happens when the Update operation is loaded.
-	 *
-	 * @see https://backpackforlaravel.com/docs/crud-operation-update
-	 * @return void
-	 */
-	protected function setupUpdateOperation()
-	{
-		$this->setupCreateOperation();
-	}
+        $pageId = request()->query('page_id');
+        if (is_numeric($pageId)) {
+            $query->where('page_id', (int) $pageId);
+        }
 
-	protected function setupShowOperation()
-	{
-		HelperBackend::setFieldsShow(new \App\Models\Translate());
-	}
+        /** @var LengthAwarePaginator $translations */
+        $translations = $query
+            ->orderByRaw('CASE WHEN banca_abi IS NULL THEN 0 ELSE 1 END')
+            ->orderBy('code')
+            ->paginate(30)
+            ->withQueryString();
+
+        $pageOptions = Page::query()->orderBy('name')->pluck('name', 'id')->toArray();
+        $tenantAbis = Translate::query()
+            ->select('banca_abi')
+            ->whereNotNull('banca_abi')
+            ->distinct()
+            ->orderBy('banca_abi')
+            ->pluck('banca_abi')
+            ->map(static fn ($value): string => (string) $value)
+            ->values()
+            ->all();
+        $tenantNamesByAbi = Banca::query()
+            ->whereIn('banca_abi', $tenantAbis)
+            ->pluck('nome', 'banca_abi')
+            ->map(static fn ($value): string => (string) $value)
+            ->all();
+
+        $tenantOptions = collect($tenantAbis)->map(function (string $abi) use ($tenantNamesByAbi): array {
+            $name = $tenantNamesByAbi[$abi] ?? '';
+
+            return [
+                'abi' => $abi,
+                'label' => $name !== '' ? "{$abi} - {$name}" : $abi,
+                'name' => $name,
+            ];
+        })->values()->all();
+
+        $tenantTabs = array_merge(
+            [[
+                'abi' => '',
+                'label' => 'tutti',
+            ]],
+            [[
+                'abi' => 'default',
+                'label' => 'default',
+            ]],
+            collect($tenantOptions)->map(static fn (array $item): array => [
+                'abi' => $item['abi'],
+                'label' => $item['label'],
+            ])->all()
+        );
+
+        return [
+            'translations' => $translations,
+            'filters' => [
+                'code' => $code,
+                'banca_abi' => $bancaAbi,
+                'page_id' => is_numeric($pageId) ? (int) $pageId : '',
+            ],
+            'pageOptions' => $pageOptions,
+            'tenantOptions' => $tenantOptions,
+            'tenantTabs' => $tenantTabs,
+            'activeTenant' => $bancaAbi,
+            'placeholderSamples' => $this->buildPlaceholderSamples($bancaAbi),
+            'totals' => [
+                'records' => $translations->total(),
+            ],
+        ];
+    }
+
+    /**
+     * Build readable sample values for dynamic placeholders.
+     *
+     * @return array<string, string>
+     */
+    private function buildPlaceholderSamples(?string $activeTenantAbi = null): array
+    {
+        $samples = [];
+        $modelCache = [];
+
+        foreach (TranslateVariableService::getRegistry() as $key => $definition) {
+            $samples[(string) $key] = $this->sampleValueForPlaceholder(
+                (string) $key,
+                $definition,
+                $activeTenantAbi,
+                $modelCache
+            );
+        }
+
+        return $samples;
+    }
+
+    /**
+     * Resolve a sample value for a placeholder.
+     *
+     * @param  array<string, mixed>  $definition
+     * @param  array<string, Model|null>  $modelCache
+     */
+    private function sampleValueForPlaceholder(
+        string $key,
+        array $definition,
+        ?string $activeTenantAbi,
+        array &$modelCache
+    ): string {
+        $modelKey = (string) ($definition['model'] ?? '');
+        $field = (string) ($definition['field'] ?? '');
+        $modelClass = config("translate_vars.models.{$modelKey}");
+
+        if (
+            $modelKey !== '' &&
+            $field !== '' &&
+            is_string($modelClass) &&
+            class_exists($modelClass) &&
+            is_subclass_of($modelClass, Model::class)
+        ) {
+            $cacheKey = $modelClass.'|'.($activeTenantAbi ?? '');
+            if (! array_key_exists($cacheKey, $modelCache)) {
+                $modelCache[$cacheKey] = $this->resolveModelSampleRecord($modelClass, $activeTenantAbi);
+            }
+
+            $record = $modelCache[$cacheKey];
+            if ($record && isset($record->{$field}) && $record->{$field} !== null && (string) $record->{$field} !== '') {
+                return (string) $record->{$field};
+            }
+        }
+
+        $fixedSamples = [
+            'prodotto.max_mesi_tiraggio' => '18',
+            'prodotto.min_mesi_tiraggio' => '3',
+            'delibera.max_atp_consigliato' => '25.000,00',
+            'tiraggio.importo_richiesto' => '10.000,00',
+            'tiraggio.percentuale' => '15',
+            'tiraggio.trattenuta_totale' => '4.250,00',
+            'frontend.tiraggio_settimane_rimanenti' => '24',
+            'frontend.tiraggio_settimane_label' => 'settimane',
+            'user.ragione_sociale' => 'ACME S.r.l.',
+            'banca.nome' => 'Banca Demo',
+        ];
+
+        if (isset($fixedSamples[$key])) {
+            return $fixedSamples[$key];
+        }
+
+        if (Str::contains($key, ['mesi', 'month'])) {
+            return '12';
+        }
+        if (Str::contains($key, ['importo', 'totale', 'max_', 'min_', 'prezzo', 'amount'])) {
+            return '1.000,00';
+        }
+        if (Str::contains($key, ['percentuale', 'perc', 'ratio'])) {
+            return '15';
+        }
+        if (Str::contains($key, ['nome', 'name'])) {
+            return 'Mario Rossi';
+        }
+        if (Str::contains($key, ['data', 'date'])) {
+            return now()->format('d/m/Y');
+        }
+
+        return '{$'.$key.'}';
+    }
+
+    /**
+     * Resolve one representative record for a model, tenant-aware if possible.
+     */
+    private function resolveModelSampleRecord(string $modelClass, ?string $activeTenantAbi): ?Model
+    {
+        /** @var Model $model */
+        $model = new $modelClass;
+        $query = $model->newQuery();
+        $table = $model->getTable();
+
+        if (SchemaCache::hasColumn($table, 'banca_abi')) {
+            if ($activeTenantAbi === 'default') {
+                $query->whereNull('banca_abi');
+            } elseif ($activeTenantAbi !== null && $activeTenantAbi !== '') {
+                $query->where('banca_abi', $activeTenantAbi);
+            }
+        }
+
+        return $query->first();
+    }
+
+    protected function setupShowOperation()
+    {
+        BackpackHelper::setFieldsShow(new Translate);
+    }
 }

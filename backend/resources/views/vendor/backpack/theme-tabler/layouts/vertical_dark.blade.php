@@ -15,9 +15,9 @@
     @include(backpack_view('layouts._vertical_dark.menu_container'))
 
     <div class="page-wrapper">
-        <div class="row w-100 align-items-center" style="background-color:{!! backpack_theme_config('project_color') !!};">
+        <div class="hb-brand-header row w-100 align-items-center">
             <div class="col-7 d-flex align-items-center">
-                <h1 class="navbar-brand d-none d-lg-block align-self-center m-5" style="color:{!! backpack_theme_config('project_logo_color') !!};">
+                <h1 class="navbar-brand d-none d-lg-block align-self-center" style="color:{!! backpack_theme_config('project_logo_color') !!};">
                     <a class="h2 text-decoration-none mb-0" href="{{ url(backpack_theme_config('home_link')) }}" title="{{ backpack_theme_config('project_name') }}">
                         {!! backpack_theme_config('project_logo') !!}
                     </a>
@@ -50,6 +50,9 @@
         @include(backpack_view('inc.footer'))
     </div>
 </div>
+
+@includeWhen(backpack_auth()->check(), backpack_view('inc.useful_links'))
+@includeWhen(backpack_auth()->check(), backpack_view('inc.support_widget'))
 
 @yield('before_scripts')
 @stack('before_scripts')

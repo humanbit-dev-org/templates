@@ -43,9 +43,19 @@ $breadcrumbs = $breadcrumbs ?? $defaultBreadcrumbs;
         </div>
       </div>
       @endif
+@php $presetActive = \App\Support\Backpack\PresetFilterHandler::getActivePreset(); @endphp
       <div class="col-sm-3">
-        <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#filterPanel" aria-expanded="false" aria-controls="filterPanel">
-          <i class="la la-sliders"></i> {{ trans('backpack::crud.filters') }}
+        <button type="button" class="hb-filter-toggle {{ $presetActive ? 'hb-filter-toggle--disabled' : '' }}" id="hbFilterToggleBtn"
+                data-bs-toggle="collapse" data-bs-target="#filterPanel"
+                aria-expanded="false" aria-controls="filterPanel"
+                {{ $presetActive ? 'disabled' : '' }}>
+          <i class="la la-sliders hb-filter-toggle-icon"></i>
+          <span class="hb-filter-toggle-label">{{ trans('backpack::crud.filters') }}</span>
+          @if($presetActive)
+          <span class="hb-filter-toggle-hint">(rapido attivo)</span>
+          @else
+          <i class="la la-angle-down hb-filter-toggle-chevron"></i>
+          @endif
         </button>
       </div>
       <div class="col-sm-9 text-end">
@@ -58,153 +68,7 @@ $breadcrumbs = $breadcrumbs ?? $defaultBreadcrumbs;
       </div>
     </div>
 
-    {{-- Active Filters Badges - Full Width Row --}}
-    @php
-    use App\Http\Controllers\Admin\Helper\FilterHelper;
-    use Illuminate\Support\Collection;
-    // Ensure columns is a Collection
-    $columns = $crud->columns();
-    $columns = is_array($columns) ? collect($columns) : $columns;
-    $activeFilters = FilterHelper::getActiveFilters($columns);
-    // Get filter configuration to access hasManyRelations
-    $filterConfig = FilterHelper::getFilterConfiguration($crud);
-    $hasManyRelations = $filterConfig['hasManyRelations'] ?? [];
-    @endphp
-    @if($activeFilters->count() > 0)
-    <div class="row mb-2">
-      <div class="col-12">
-        <div class="filter-badges-container">
-          @foreach($activeFilters as $key => $value)
-            @php
-            // Check if this is a hasMany filter
-            $isHasManyFilter = false;
-            $hasManyLabel = null;
-            $relatedModelClass = null;
-            if (!empty($hasManyRelations)) {
-                foreach ($hasManyRelations as $relation) {
-                    if (isset($relation['searchable_keys'])) {
-                        foreach ($relation['searchable_keys'] as $keyInfo) {
-                            $filterKey = $relation['name'] . '_' . $keyInfo['field'];
-                            if ($key === $filterKey) {
-                                $isHasManyFilter = true;
-                                $relatedModelClass = $relation['model'] ?? null;
-                                $relationLabel = ucfirst(str_replace('_', ' ', $relation['name']));
-                                $searchField = $keyInfo['field']; // The actual field used for search (id, numero_pratica, etc.)
-                                
-                                // Get the actual field name used for display (the search field, not unique field)
-                                $displayInfo = \App\Http\Controllers\Admin\Helper\FilterHelper::getHasManyFilterDisplayValueAndField($relatedModelClass, $value, $searchField);
-                                $fieldName = $displayInfo['field'] ?? $searchField;
-                                
-                                // Use the search field name for the label (not the unique field)
-                                $fieldLabel = ucfirst(str_replace('_', ' ', $fieldName));
-                                $hasManyLabel = $relationLabel . ' - ' . $fieldLabel;
-                                break 2;
-                            }
-                        }
-                    }
-                }
-            }
-            
-            // Handle not_empty and empty filters
-            if (str_ends_with($key, '_not_empty') || str_ends_with($key, '_empty')) {
-                $originalKey = str_replace(['_not_empty', '_empty'], '', $key);
-                $column = $columns->firstWhere('name', $originalKey);
-                
-                // Check if it's a foreign key (relation) even if not in columns list
-                $isForeignKey = false;
-                if (!$column && !$isHasManyFilter) {
-                    $tableName = is_string($crud->model) ? (new $crud->model())->getTable() : $crud->model->getTable();
-                    $isForeignKey = \App\Http\Controllers\Admin\Helper\FilterHelper::isForeignKeyColumn($originalKey, $tableName);
-                    if (!$isForeignKey) {
-                        continue;
-                    }
-                }
-                
-                if ($column) {
-                    $label = isset($column['label']) ? $column['label'] : $originalKey;
-                } elseif ($isForeignKey) {
-                    // For foreign keys, generate a label from the column name
-                    $label = ucwords(str_replace('_', ' ', str_replace('_id', '', $originalKey)));
-                } else {
-                    $label = $originalKey;
-                }
-            } elseif ($isHasManyFilter) {
-                $label = $hasManyLabel;
-            } else {
-                $columnName = $key === 'page_filter' ? 'page' : $key;
-                $column = $columns->firstWhere('name', $columnName);
-                if (!$column) continue;
-                $label = isset($column['label']) ? $column['label'] : $columnName;
-            }
-            
-            // Get display value - for hasMany filters, use helper to get the value for the search field
-            if ($isHasManyFilter) {
-                if ($relatedModelClass) {
-                    // Extract search field from filter key (e.g., "delibera_id" -> "id")
-                    $searchField = null;
-                    if (!empty($hasManyRelations)) {
-                        foreach ($hasManyRelations as $relation) {
-                            if (isset($relation['searchable_keys'])) {
-                                foreach ($relation['searchable_keys'] as $keyInfo) {
-                                    $filterKey = $relation['name'] . '_' . $keyInfo['field'];
-                                    if ($key === $filterKey) {
-                                        $searchField = $keyInfo['field'];
-                                        break 2;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    $displayValue = \App\Http\Controllers\Admin\Helper\FilterHelper::getHasManyFilterDisplayValue($relatedModelClass, $value, $searchField);
-                } else {
-                    $displayValue = $value;
-                }
-            } else {
-                $displayValue = FilterHelper::getFilterDisplayValue($key, $value, $columns, $crud);
-            }
-            
-            // Handle different filter types for removal
-            $removeParams = request()->except(['page', $key]);
-            
-            // Handle date range filter removal
-            $fromValue = request()->get($key . '_from');
-            $toValue = request()->get($key . '_to');
-            if ($fromValue || $toValue) {
-                $removeParams = request()->except(['page', $key . '_from', $key . '_to']);
-            }
-            
-            // Handle not_empty and empty filter removal
-            if (str_ends_with($key, '_not_empty')) {
-                $originalKey = str_replace('_not_empty', '', $key);
-                // Remove both not_empty and empty to avoid conflicts
-                $removeParams = request()->except(['page', $originalKey . '_not_empty', $originalKey . '_empty']);
-            } elseif (str_ends_with($key, '_empty')) {
-                $originalKey = str_replace('_empty', '', $key);
-                // Remove both not_empty and empty to avoid conflicts
-                $removeParams = request()->except(['page', $originalKey . '_not_empty', $originalKey . '_empty']);
-            }
-            
-            // Check if there will be any real filters left after removing this one
-            $remainingFilters = collect($removeParams)->filter(function ($value, $paramKey) {
-                return $paramKey !== 'last_filter_section' && $paramKey !== 'persistent-table' && 
-                       $value !== null && $value !== '';
-            });
-            
-            // If no real filters will remain, also remove last_filter_section
-            if ($remainingFilters->isEmpty()) {
-                $removeParams = array_merge($removeParams, ['last_filter_section' => null]);
-            }
-            @endphp
-            <a href="{{ url()->current() }}?{{ http_build_query(array_merge($removeParams, ['persistent-table' => '1'])) }}"
-              class="active-filter-badge">
-              <span class="active-filter-label">{{ $label }}</span><span class="active-filter-value">: {{ $displayValue }}</span>
-              <span class="active-filter-remove">×</span>
-            </a>
-          @endforeach
-        </div>
-      </div>
-    </div>
-    @endif
+    @include('crud::inc.preset-pills')
 
     {{-- Backpack List Filters --}}
     @if ($crud->filtersEnabled())
@@ -221,7 +85,7 @@ $breadcrumbs = $breadcrumbs ?? $defaultBreadcrumbs;
         class="{{ backpack_theme_config('classes.table') ?? 'table table-striped table-hover nowrap rounded card-table table-vcenter card d-table shadow-xs border-xs' }}"
         data-responsive-table="{{ (int) $crud->getOperationSetting('responsiveTable') }}"
         data-has-details-row="{{ (int) $crud->getOperationSetting('detailsRow') }}"
-        data-has-bulk-actions="{{ (int) $crud->getOperationSetting('bulkActions') }}"
+        data-has-bulk-actions="0"
         data-has-line-buttons-as-dropdown="{{ (int) $crud->getOperationSetting('lineButtonsAsDropdown') }}"
         data-line-buttons-as-dropdown-minimum="{{ (int) $crud->getOperationSetting('lineButtonsAsDropdownMinimum') }}"
         data-line-buttons-as-dropdown-show-before-dropdown="{{ (int) $crud->getOperationSetting('lineButtonsAsDropdownShowBefore') }}"
@@ -256,10 +120,6 @@ $breadcrumbs = $breadcrumbs ?? $defaultBreadcrumbs;
               data-visible-in-modal="{{ var_export($visibleInModal) }}"
               data-visible-in-export="{{ $exportOnlyColumn ? 'true' : ($visibleInExport ? 'true' : 'false') }}"
               data-force-export="{{ var_export($forceExport) }}">
-              {{-- Bulk checkbox --}}
-              @if($loop->first && $crud->getOperationSetting('bulkActions'))
-              {!! View::make('crud::columns.inc.bulk_actions_checkbox')->render() !!}
-              @endif
               {!! $column['label'] !!}
             </th>
             @endforeach
@@ -279,10 +139,6 @@ $breadcrumbs = $breadcrumbs ?? $defaultBreadcrumbs;
             {{-- Table columns --}}
             @foreach ($crud->columns() as $column)
             <th>
-              {{-- Bulk checkbox --}}
-              @if($loop->first && $crud->getOperationSetting('bulkActions'))
-              {!! View::make('crud::columns.inc.bulk_actions_checkbox')->render() !!}
-              @endif
               {!! $column['label'] !!}
             </th>
             @endforeach
@@ -352,7 +208,7 @@ $breadcrumbs = $breadcrumbs ?? $defaultBreadcrumbs;
               });
             }
           });
-        } else {
+            } else {
           // Applica classe alle label trovate direttamente
           labels.forEach(label => {
             label.classList.add('filter-active');
@@ -361,28 +217,6 @@ $breadcrumbs = $breadcrumbs ?? $defaultBreadcrumbs;
       }
     }
 
-    // Assicurarsi che solo un collapse sia aperto alla volta
-    const accordionBtns = document.querySelectorAll('.accordion-button');
-    accordionBtns.forEach(btn => {
-      btn.addEventListener('click', function() {
-        // Quando un pulsante viene cliccato, chiudi tutti gli altri collapse
-        const target = this.getAttribute('data-bs-target');
-        document.querySelectorAll('.accordion-collapse.show').forEach(collapse => {
-          const collapseId = '#' + collapse.id;
-          if (collapseId !== target) {
-            // Trova il pulsante associato a questo collapse
-            const button = document.querySelector(`[data-bs-target="${collapseId}"]`);
-            if (button) {
-              button.classList.add('collapsed');
-              button.setAttribute('aria-expanded', 'false');
-            }
-            // Chiudi il collapse senza animazione per evitare conflitti
-            collapse.classList.remove('show');
-          }
-        });
-      });
-    });
-    
     // Verifica se ci sono filtri attivi e aggiungi classe al bottone Aggiungi
     const hasActiveFilters = Array.from(urlParams.entries()).some(([key, value]) => 
       key !== 'page' && key !== 'persistent-table' && value !== ''

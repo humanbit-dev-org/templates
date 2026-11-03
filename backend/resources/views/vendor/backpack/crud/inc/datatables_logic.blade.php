@@ -150,171 +150,24 @@ window.crud = {
         localStorage.setItem('{{ Str::slug($crud->getRoute()) }}_list_url', newUrl);
     @endif
   },
+  headerOffset: function () {
+    // FixedHeader needs an offset when the top navbar is sticky.
+    // IMPORTANT: do not use the vertical sidebar as offset (it can be ~100vh).
+    const el =
+      document.querySelector('nav.navbar') ||
+      document.querySelector('.navbar');
+    if (!el) return 0;
+    const h = el.getBoundingClientRect().height || 0;
+    // Clamp to a sane value so we never push the floating header off-screen.
+    return Math.max(0, Math.min(140, Math.round(h)));
+  },
   dataTableConfiguration: {
     bInfo: {{ var_export($crud->getOperationSetting('showEntryCount') ?? true) }},
-    @if ($crud->getResponsiveTable())
-    responsive: {
-        details: {
-            display: function ( row, update, render ) {
-                // Custom modal display similar to relation preview modal
-                if ( ! update ) {
-                    var tableContent = render();
-                    if (!tableContent) {
-                        return;
-                    }
-                    var api = crud.table;
-                    // Create modal structure
-                    var modal = $('<div class="custom-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1055; overflow: auto;">' +
-                        '<div class="custom-modal-backdrop" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 1054;"></div>' +
-                        '<div class="custom-modal-dialog" style="position: relative; z-index: 1055; margin: 1rem auto; max-width: 600px; width: calc(100% - 2rem); max-height: 90vh; display: flex; align-items: center; min-height: calc(100% - 2rem);">' +
-                        '<div class="custom-modal-content" style="background: white; border-radius: 8px; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2); width: 100%; max-height: 90vh; display: flex; flex-direction: column; overflow: hidden;">' +
-                        '<div class="custom-modal-header" style="padding: 0.75rem 1rem; border-bottom: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;">' +
-                        '<h5 class="custom-modal-title" style="font-size: 1rem; font-weight: 600; margin: 0;">Preview Record</h5>' +
-                        '<button type="button" class="custom-modal-close" aria-label="Close" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; padding: 0; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; color: #6b7280;">&times;</button>' +
-                        '</div>' +
-                        '<div class="custom-modal-body" style="padding: 1rem; min-height: 300px; max-height: calc(90vh - 200px); overflow-y: auto; flex: 1;"></div>' +
-                        '<div class="custom-modal-footer" style="padding: 0.75rem 1rem; border-top: 1px solid #e5e7eb; display: flex; justify-content: flex-end; gap: 0.5rem; flex-shrink: 0;"></div>' +
-                        '</div>' +
-                        '</div>' +
-                        '</div>');
-                    
-                    // Set content
-                    modal.find('.custom-modal-body').html(tableContent);
-                    
-                    // Add close button to footer
-                    modal.find('.custom-modal-footer').html(
-                        '<button type="button" class="btn btn-secondary btn-sm custom-modal-close-btn">Chiudi</button>'
-                    );
-                    
-                    // Add modal to body
-                    $('body').append(modal);
-                    
-                    // Set modal title with model name and ID
-                    // Try to get ID from row node data attribute
-                    var entryId = $(row.node()).data('entry-id') || $(row.node()).attr('data-entry-id') || '';
-                    
-                    // If not found, try to get from action buttons with data-route attribute
-                    if (!entryId) {
-                        var actionButton = $(row.node()).find('[data-route]');
-                        if (actionButton.length) {
-                            var route = actionButton.first().data('route') || actionButton.first().attr('data-route') || '';
-                            if (route && route !== 'javascript:void(0)' && !route.startsWith('javascript:')) {
-                                var routeParts = route.split('/').filter(function(part) { return part && part !== ''; });
-                                // ID is usually the last numeric part in routes like /admin/user/123 or /admin/user/123/edit
-                                for (var i = routeParts.length - 1; i >= 0; i--) {
-                                    if (/^\d+$/.test(routeParts[i])) {
-                                        entryId = routeParts[i];
-                                        break;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    
-                    // If still not found, try to get from href of action buttons (but skip javascript:void(0))
-                    if (!entryId) {
-                        var actionButton = $(row.node()).find('a[href*="/edit"], a[href*="/show"], a[href*="/delete"]');
-                        if (actionButton.length) {
-                            var href = actionButton.first().attr('href') || '';
-                            if (href && href !== 'javascript:void(0)' && !href.startsWith('javascript:')) {
-                                var routeParts = href.split('/').filter(function(part) { return part && part !== ''; });
-                                for (var i = routeParts.length - 1; i >= 0; i--) {
-                                    if (/^\d+$/.test(routeParts[i])) {
-                                        entryId = routeParts[i];
-                                        break;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    
-                    // If still not found, try to get from first column (usually ID column)
-                    if (!entryId) {
-                        var rowData = row.data();
-                        if (rowData && rowData.length > 0) {
-                            // First column might be ID - check if it's a number
-                            var firstCol = String(rowData[0] || '').trim();
-                            if (/^\d+$/.test(firstCol)) {
-                                entryId = firstCol;
-                            }
-                        }
-                    }
-                    
-                    var modalTitle = 'Preview ' + crudEntityName + (entryId ? ' #' + entryId : '');
-                    modal.find('.custom-modal-title').text(modalTitle);
-                    
-                    // Show modal
-                    modal.fadeIn(200);
-                    $('body').css('overflow', 'hidden');
-                    
-                    // Close handlers
-                    modal.find('.custom-modal-close, .custom-modal-close-btn, .custom-modal-backdrop').on('click', function() {
-                        modal.fadeOut(200, function() {
-                            modal.remove();
-                            $('body').css('overflow', '');
-                        });
-                    });
-                    
-                    // Close on ESC
-                    $(document).on('keydown.listPreviewModal', function(e) {
-                        if (e.key === 'Escape' && modal.is(':visible')) {
-                            modal.fadeOut(200, function() {
-                                modal.remove();
-                                $('body').css('overflow', '');
-                                $(document).off('keydown.listPreviewModal');
-                            });
-                        }
-                    });
-                }
-            },
-            type: 'none',
-            target: '.dtr-control',
-            renderer: function ( api, rowIdx, columns ) {
-                var actionsHtml = '';
-                var lastColumn = columns[columns.length - 1];
-                if (lastColumn && lastColumn.data) {
-                    actionsHtml = lastColumn.data;
-                }
-
-                var tableContent = '<table class="table table-striped mb-0" style="margin: 0;"><tbody>';
-
-                if (actionsHtml) {
-                    tableContent += '<tr><td colspan="2" style="padding: 0.75rem; border-bottom: 2px solid #e5e7eb; background: #f9fafb;">' +
-                        '<div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">' + actionsHtml + '</div>' +
-                        '</td></tr>';
-                }
-
-                $.each(columns, function(i, col) {
-                    if (i === columns.length - 1) return;
-
-                    var columnHeading = api.columns(col.columnIndex).header();
-                    if ($(columnHeading).attr('data-visible-in-modal') == 'false') {
-                        return;
-                    }
-
-                    tableContent += '<tr>' +
-                        '<td style="vertical-align:top; border:none; padding: 0.5rem 0.75rem; width: 30%;"><strong>' + col.title.trim() + ':</strong></td>' +
-                        '<td style="padding: 0.5rem 0.75rem; border:none;">' + (col.data || '-') + '</td>' +
-                        '</tr>';
-                });
-
-                if (actionsHtml) {
-                    tableContent += '<tr><td colspan="2" style="padding: 0.75rem; border-top: 2px solid #e5e7eb; background: #f9fafb;">' +
-                        '<div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">' + actionsHtml + '</div>' +
-                        '</td></tr>';
-                }
-
-                tableContent += '</tbody></table>';
-
-                return tableContent;
-            },
-        }
-    },
-    fixedHeader: true,
-    @else
     responsive: false,
     scrollX: true,
-    @endif
+    // FixedHeader uses a viewport-level fixed clone which shows "at the top of the page".
+    // We prefer a table-scoped sticky header (CSS) so the header stays with the table.
+    fixedHeader: false,
 
     @if ($crud->getPersistentTable())
     stateSave: true,
@@ -422,6 +275,16 @@ jQuery(document).ready(function($) {
 
   window.crud.table = $("#crudTable").DataTable(window.crud.dataTableConfiguration);
 
+  // Keep FixedHeader offset in sync (navbar height can change).
+  function refreshFixedHeaderOffset() {
+    const offset = window.crud && typeof window.crud.headerOffset === 'function' ? window.crud.headerOffset() : 0;
+    document.documentElement.style.setProperty('--crud-sticky-top', offset + 'px');
+  }
+  refreshFixedHeaderOffset();
+  // Sticky headers are handled via CSS inside the `.table-content` scroll container.
+
+  // Horizontal scrollbar: use DataTables' native scrollX bar.
+
   window.crud.updateUrl(location.href);
 
   // move search bar
@@ -510,61 +373,53 @@ jQuery(document).ready(function($) {
      if ($('#crudTable').data('has-line-buttons-as-dropdown')) {
       formatActionColumnAsDropdown();
      }
-
-    if (! crud.table.responsive.hasHidden()) {
-        crud.table.columns().header()[0].style.paddingLeft = '0.6rem';
-    }
-
-     if (crud.table.responsive.hasHidden()) {
-        $('.dtr-control').removeClass('d-none'); 
-        $('.dtr-control').addClass('d-inline');
-        $('.dtr-control').html('<i class="las la-eye" style="font-size: 1rem; margin-right: 0.5rem;"></i>');
-        $("#crudTable").removeClass('has-hidden-columns').addClass('has-hidden-columns');
-     }
-
+     syncStickyActionColumn();
   }).dataTable();
 
-  // when datatables-colvis (column visibility) is toggled
-  // rebuild the datatable using the datatable-responsive plugin
+  // keep columns aligned after column visibility changes
   $('#crudTable').on( 'column-visibility.dt',   function (event) {
-    console.log('column-visibility.dt');
-     crud.table.responsive.rebuild();
+     crud.table.columns.adjust();
+     syncStickyActionColumn();
   } ).dataTable();
 
-  @if ($crud->getResponsiveTable())
-    // when columns are hidden by reponsive plugin,
-    // the table should have the has-hidden-columns class
-    crud.table.on( 'responsive-resize', function ( e, datatable, columns ) {
-        if (crud.table.responsive.hasHidden()) {
-            $('.dtr-control').removeClass('d-none'); 
-            $('.dtr-control').addClass('d-inline');
-            $('.dtr-control').html('<i class="las la-eye" style="font-size: 1rem; margin-right: 0.5rem;"></i>');
-            $("#crudTable").removeClass('has-hidden-columns').addClass('has-hidden-columns');
-         } else {
-          $('.dtr-control').removeClass('d-none').removeClass('d-inline').addClass('d-none');  
-          $("#crudTable").removeClass('has-hidden-columns');
-         }
-    } );
-  @else
-    // make sure the column headings have the same width as the actual columns
-    // after the user manually resizes the window
-    var resizeTimer;
-    function resizeCrudTableColumnWidths() {
-      clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(function() {
-        // Run code here, resizing has "stopped"
-        crud.table.columns.adjust();
-      }, 250);
-    }
-    $(window).on('resize', function(e) {
-      resizeCrudTableColumnWidths();
-    });
-    $('.sidebar-toggler').click(function() {
-      resizeCrudTableColumnWidths();
-    });
-  @endif
+  // make sure the column headings have the same width as the actual columns
+  // after the user manually resizes the window
+  var resizeTimer;
+  function resizeCrudTableColumnWidths() {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(function() {
+      crud.table.columns.adjust();
+    }, 250);
+  }
+  $(window).on('resize', function(e) {
+    resizeCrudTableColumnWidths();
+    refreshFixedHeaderOffset();
+  });
+  $('.sidebar-toggler').click(function() {
+    resizeCrudTableColumnWidths();
+    syncStickyActionColumn();
+    refreshFixedHeaderOffset();
+  });
+
+  syncStickyActionColumn();
 
 });
+
+function syncStickyActionColumn() {
+    const actionColumnIndex = $('#crudTable').find('th[data-action-column=true]').first().index();
+    if (actionColumnIndex === -1) {
+        $('#crudTable_wrapper table').find('.hb-action-column').removeClass('hb-action-column');
+        return;
+    }
+
+    $('#crudTable_wrapper table').each(function() {
+        const $table = $(this);
+        $table.find('.hb-action-column').removeClass('hb-action-column');
+        $table.find('tr').each(function() {
+            $(this).children().eq(actionColumnIndex).addClass('hb-action-column');
+        });
+    });
+}
 
 function formatActionColumnAsDropdown() {
     // Get action column

@@ -1,0 +1,304 @@
+# .github/workflows/rebuild-frontend.yml
+#
+# Rebuilds the frontend image for a specific environment using the
+# .env.frontend currently stored on S3, without requiring a new git tag.
+#
+# Use this when .env.frontend changes on S3 and the bundle needs to be
+# rebuilt to bake in the updated NEXT_PUBLIC_* variables.
+#
+# One image per tenant that runs in the environment (running EC2 instances
+# tagged Environment + Tenant, limited to DEPLOY_TENANTS — as in deploy.yml),
+# tagged TAG-ENVIRONMENT-TENANT exactly like deploy.yml, because
+# docker-compose-prod.yml pulls frontend:${TAG_NAME}-${ENVIRONMENT}-${TENANT_NAME}.
+#
+# Discovery istanze via tag EC2 (come deploy.yml):
+#   Filtra per tag Tenant (da DEPLOY_TENANTS) + Environment + running.
+#   Nessun SSH - tutto via SSM.
+#
+# Su ogni istanza, come deploy.yml: sync di rays-infra, aggiornamento di
+# fetch-secrets.sh da S3, refetch di secrets ed env file (placeholder dei
+# secret opzionali inclusi), poi make pull-frontend.
+#
+# Inputs:
+#   environment  - which environment to rebuild (integration/staging/production)
+#   tag          - which version tag to use (e.g. v2.7.6-release)
+#                  leave blank to auto-detect from ECR the latest tag with a
+#                  frontend image for this environment and one of the tenants
+#                  The same tag is written as TAG_NAME on the instances, which
+#                  also selects the backend image: use the deployed version.
+
+name: Rebuild Frontend
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Environment to rebuild (integration / staging / production)"
+        required: true
+        type: choice
+        options:
+          - integration
+          - staging
+          - production
+      tag:
+        description: "Tag to use (e.g. v2.7.6-release) -- leave blank to auto-detect latest"
+        required: false
+        type: string
+
+env:
+  AWS_REGION: eu-west-1
+  ECR_FRONTEND_REPO: rays-nexi/frontend
+  DOCKER_BASE_DIR: /data/docker
+
+jobs:
+
+  # ============================================================
+  # JOB 1: Rebuild the frontend images (one per tenant) for the selected environment
+  # ============================================================
+  rebuild:
+    name: Rebuild frontend (${{ github.event.inputs.environment }})
+    runs-on: [self-hosted, rays-ci]
+
+    outputs:
+      tag: ${{ steps.resolve.outputs.tag }}
+
+    steps:
+      - name: Resolve tag
+        id: resolve
+        env:
+          INPUT_TAG: ${{ github.event.inputs.tag }}
+          INPUT_ENV: ${{ github.event.inputs.environment }}
+          AWS_REGION_VAL: ${{ env.AWS_REGION }}
+          ECR_FRONTEND_REPO_VAL: ${{ env.ECR_FRONTEND_REPO }}
+          DEPLOY_TENANTS: ${{ secrets.DEPLOY_TENANTS }}
+        run: |
+          [ -n "$DEPLOY_TENANTS" ] || { echo "ERROR: DEPLOY_TENANTS secret is empty or not set"; exit 1; }
+
+          if [ -n "$INPUT_TAG" ]; then
+            TAG="$INPUT_TAG"
+            echo "Using provided tag: $TAG"
+          else
+            echo "Auto-detecting latest tag for environment: $INPUT_ENV (tenants: $DEPLOY_TENANTS)"
+            # Every tag of every image, oldest push first: an image built with
+            # identical content for two tenants carries both tenant tags.
+            aws ecr describe-images \
+              --region "$AWS_REGION_VAL" \
+              --repository-name "$ECR_FRONTEND_REPO_VAL" \
+              --query "sort_by(imageDetails[?imageTags!=\`null\`], &imagePushedAt)[*].imageTags" \
+              --output json > /tmp/ecr_tags.json
+
+            echo "aW1wb3J0IGpzb24sIG9zLCByZQoKIyBMYXRlc3QgdmVyc2lvbiB0YWcgdGhhdCBoYXMgYSBmcm9udGVuZCBpbWFnZSBmb3IgSU5QVVRfRU5WIGFuZCBhdCBsZWFzdCBvbmUKIyB0ZW5hbnQgaW4gREVQTE9ZX1RFTkFOVFMuIEZyb250ZW5kIGltYWdlcyBhcmUgdGFnZ2VkIFRBRy1FTlZJUk9OTUVOVC1URU5BTlQKIyAoZGVwbG95LnltbCk7IC90bXAvZWNyX3RhZ3MuanNvbiBob2xkcyBlYWNoIGltYWdlJ3MgdGFnIGxpc3QsIG9sZGVzdCBwdXNoIGZpcnN0LgplbnYgPSBvcy5lbnZpcm9uWyJJTlBVVF9FTlYiXQp0ZW5hbnRzID0gW3Quc3RyaXAoKSBmb3IgdCBpbiBvcy5lbnZpcm9uWyJERVBMT1lfVEVOQU5UUyJdLnNwbGl0KCIsIikgaWYgdC5zdHJpcCgpXQpiYXNlX3JlID0gcmUuY29tcGlsZShyIl52WzAtOV0rXC5bMC05XStcLlswLTldKygtcmN8LXJlbGVhc2UpPyQiKQoKbGF0ZXN0ID0gIiIKZm9yIGltYWdlX3RhZ3MgaW4ganNvbi5sb2FkKG9wZW4oIi90bXAvZWNyX3RhZ3MuanNvbiIpKToKICAgIGZvciB0YWcgaW4gaW1hZ2VfdGFncyBvciBbXToKICAgICAgICBmb3IgdGVuYW50IGluIHRlbmFudHM6CiAgICAgICAgICAgIHN1ZmZpeCA9IGYiLXtlbnZ9LXt0ZW5hbnR9IgogICAgICAgICAgICBpZiB0YWcuZW5kc3dpdGgoc3VmZml4KSBhbmQgYmFzZV9yZS5tYXRjaCh0YWdbOi1sZW4oc3VmZml4KV0pOgogICAgICAgICAgICAgICAgbGF0ZXN0ID0gdGFnWzotbGVuKHN1ZmZpeCldCnByaW50KGxhdGVzdCkK" | base64 -d > /tmp/resolve_tag.py
+            TAG=$(INPUT_ENV="$INPUT_ENV" DEPLOY_TENANTS="$DEPLOY_TENANTS" python3 /tmp/resolve_tag.py)
+            [ -n "$TAG" ] || { echo "ERROR: could not auto-detect tag for environment $INPUT_ENV"; exit 1; }
+            echo "Auto-detected tag: $TAG"
+          fi
+
+          echo "tag=${TAG}" >> "$GITHUB_OUTPUT"
+
+      - name: Checkout rays-infra
+        uses: actions/checkout@v4
+        with:
+          repository: humanbit-dev-org/rays-infra
+          ref: main
+          token: ${{ secrets.RAYS_ACCESS_TOKEN }}
+          path: infra
+          clean: true
+
+      - name: Checkout rays at resolved tag
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.resolve.outputs.tag }}
+          path: infra/codebase
+
+      - name: Download Font Awesome from S3
+        run: |
+          mkdir -p infra/codebase/frontend/public/fonts
+          aws s3 cp \
+            s3://s3-rays-config/assets/fontawesome-pro-6.5.1-web.zip \
+            infra/codebase/frontend/public/fonts/fontawesome-pro-6.5.1-web.zip \
+            --region ${{ env.AWS_REGION }}
+          unzip -oq infra/codebase/frontend/public/fonts/fontawesome-pro-6.5.1-web.zip \
+            -d infra/codebase/frontend/public/fonts/
+          rm -f infra/codebase/frontend/public/fonts/fontawesome-pro-6.5.1-web.zip
+
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          driver: docker-container
+
+      # One image per tenant that runs in this environment, same naming as
+      # deploy.yml and docker-compose-prod.yml: TAG-ENVIRONMENT-TENANT.
+      # Tenants: running EC2 instances tagged Environment + Tenant, limited to
+      # DEPLOY_TENANTS (the deploy job's discovery). A tenant that runs here
+      # but has no .env.frontend on S3 is an error: its instances would pull
+      # a missing image.
+      - name: Rebuild and push frontend images
+        working-directory: infra
+        env:
+          TAG: ${{ steps.resolve.outputs.tag }}
+          INPUT_ENV: ${{ github.event.inputs.environment }}
+          ECR_REGISTRY: ${{ secrets.ECR_REGISTRY }}
+          ECR_FRONTEND_REPO_VAL: ${{ env.ECR_FRONTEND_REPO }}
+          DEPLOY_TENANTS: ${{ secrets.DEPLOY_TENANTS }}
+          AWS_REGION_VAL: ${{ env.AWS_REGION }}
+        run: |
+          TENANT_FILTER="$(echo "$DEPLOY_TENANTS" | tr -d '[:space:]')"
+          [ -n "$TENANT_FILTER" ] || { echo "ERROR: DEPLOY_TENANTS secret is empty or not set"; exit 1; }
+          ENV_TENANTS=$(aws ec2 describe-instances --region "$AWS_REGION_VAL" \
+            --filters "Name=tag:Environment,Values=${INPUT_ENV}" "Name=tag:Tenant,Values=${TENANT_FILTER}" \
+              "Name=instance-state-name,Values=running" \
+            --query "Reservations[].Instances[].[Tags[?Key=='Tenant'] | [0].Value]" \
+            --output text | sort -u)
+          [ -n "$ENV_TENANTS" ] || { echo "ERROR: no running ${INPUT_ENV} instances for tenants ${TENANT_FILTER} — nothing to rebuild"; exit 1; }
+          echo "Rebuilding frontend for tenants with running ${INPUT_ENV} instances: $(echo $ENV_TENANTS) (tag: $TAG)"
+
+          BUILT=0
+          for TENANT in $ENV_TENANTS; do
+            echo "--- Rebuilding frontend for tenant=$TENANT environment=$INPUT_ENV ---"
+
+            if ! aws s3 cp \
+                "s3://s3-rays-config/${TENANT}/${INPUT_ENV}/.env.frontend" \
+                .env.frontend --region "$AWS_REGION_VAL" 2>/dev/null; then
+              echo "ERROR: ${TENANT} runs in ${INPUT_ENV} but s3://s3-rays-config/${TENANT}/${INPUT_ENV}/.env.frontend is missing"
+              exit 1
+            fi
+
+            IMAGE="${ECR_REGISTRY}/${ECR_FRONTEND_REPO_VAL}:${TAG}-${INPUT_ENV}-${TENANT}"
+            CACHE_IMAGE="${ECR_REGISTRY}/${ECR_FRONTEND_REPO_VAL}:cache-${INPUT_ENV}-${TENANT}"
+
+            get_arg() { grep "^$1=" .env.frontend 2>/dev/null | cut -d= -f2- | tr -d '"' || true; }
+            NEXT_PUBLIC_TENANT_ID="$(get_arg NEXT_PUBLIC_TENANT_ID)"
+
+            docker buildx build \
+              --target front-prod \
+              --build-arg PHP_APACHE_IMAGE="php:8.4-apache" \
+              --build-arg APP_NAME="RAYS Nexi" \
+              --build-arg CODEBASE="/var/www/html/codebase" \
+              --build-arg CODEUSER="codeuser" \
+              --build-arg HOST_UID="1002" \
+              --build-arg HOST_GID="1002" \
+              $([ -n "$NEXT_PUBLIC_TENANT_ID" ] && echo "--build-arg NEXT_PUBLIC_TENANT_ID=$NEXT_PUBLIC_TENANT_ID") \
+              --cache-from type=registry,ref="${CACHE_IMAGE}" \
+              --cache-to type=registry,ref="${CACHE_IMAGE}",mode=max \
+              --tag "$IMAGE" \
+              --push \
+              .
+
+            echo "OK: pushed ${IMAGE}"
+            BUILT=$((BUILT+1))
+          done
+
+          echo "OK: ${BUILT} frontend image(s) rebuilt for ${INPUT_ENV}"
+
+  # ============================================================
+  # JOB 2: Deploy the rebuilt image to the target environment
+  # Discovery via tag EC2 Environment + Tenant (come deploy.yml)
+  # ============================================================
+  deploy:
+    name: Deploy frontend (${{ github.event.inputs.environment }})
+    needs: rebuild
+    runs-on: [self-hosted, rays-ci]
+    environment: ${{ github.event.inputs.environment }}
+
+    steps:
+      - name: Deploy via SSM
+        env:
+          TAG: ${{ needs.rebuild.outputs.tag }}
+          ECR_REGISTRY: ${{ secrets.ECR_REGISTRY }}
+          AWS_REGION_VAL: ${{ env.AWS_REGION }}
+          DOCKER_BASE_DIR: ${{ env.DOCKER_BASE_DIR }}
+          RAYS_ACCESS_TOKEN: ${{ secrets.RAYS_ACCESS_TOKEN }}
+          DEPLOY_TENANTS: ${{ secrets.DEPLOY_TENANTS }}
+          ASG_NAME: ${{ secrets.PROD_ASG_NAME }}
+          INPUT_ENV: ${{ github.event.inputs.environment }}
+        run: |
+          REGION="${AWS_REGION_VAL}"
+
+          TENANT_VALUES="Values=${DEPLOY_TENANTS}"
+          echo "Deploying to tenants: $DEPLOY_TENANTS (environment: $INPUT_ENV)"
+
+          if [ "$INPUT_ENV" = "production" ]; then
+            INSTANCE_IDS=$(aws ec2 describe-instances \
+              --region "$REGION" \
+              --filters \
+                "Name=tag:aws:autoscaling:groupName,Values=${ASG_NAME}" \
+                "Name=tag:Environment,Values=production" \
+                "Name=tag:Tenant,${TENANT_VALUES}" \
+                "Name=instance-state-name,Values=running" \
+              --query "Reservations[].Instances[].InstanceId" \
+              --output text)
+          else
+            INSTANCE_IDS=$(aws ec2 describe-instances \
+              --region "$REGION" \
+              --filters \
+                "Name=tag:Environment,Values=${INPUT_ENV}" \
+                "Name=tag:Tenant,${TENANT_VALUES}" \
+                "Name=instance-state-name,Values=running" \
+              --query "Reservations[].Instances[].InstanceId" \
+              --output text)
+          fi
+
+          if [ -z "$INSTANCE_IDS" ]; then
+            echo "WARN: no running ${INPUT_ENV} instances found for tenants: $DEPLOY_TENANTS -- skipping"
+            exit 0
+          fi
+
+          INSTANCE_COUNT=$(echo "$INSTANCE_IDS" | wc -w | tr -d ' ')
+          echo "Instances found: $INSTANCE_COUNT -- $INSTANCE_IDS"
+
+          echo "aW1wb3J0IGpzb24sIG9zLCBzaGxleAoKIyBGcm9udGVuZCByZWRlcGxveSBvbiBvbmUgaW5zdGFuY2UsIGluIG9yZGVyIChzYW1lIHN0ZXBzIGFzIGRlcGxveS55bWwpOgojICAgMS4gc3luYyByYXlzLWluZnJhIHRvIGxhdGVzdCBtYWluIChhcyBjb2RldXNlcikKIyAgIDIuIGluc3RhbGwgdGhlIGxhdGVzdCBmZXRjaC1zZWNyZXRzLnNoIGZyb20gUzMgd2hlbiBpdCBjaGFuZ2VkCiMgICAzLiByZS1mZXRjaCBzZWNyZXRzIGFuZCBlbnYgZmlsZXMgKGNyZWF0ZXMgcGxhY2Vob2xkZXJzIGZvciBvcHRpb25hbCBzZWNyZXRzKQojICAgNC4gd3JpdGUgVEFHX05BTUUgLyBFQ1JfUkVHSVNUUlkgYW5kIHJ1biBtYWtlIHB1bGwtZnJvbnRlbmQgKHNlY3JldHMtY2hlY2sgZmlyc3QpCiMgU3RlcHMgMi0zOiB0aGUgb3B0aW9uYWwtc2VjcmV0IHBsYWNlaG9sZGVycyBjb21lIGZyb20gdGhlIGluc3RhbGxlZAojIGZldGNoLXNlY3JldHMuc2gsIHNvIGEgc3RhbGUgY29weSB3b3VsZCBsZWF2ZSBhIG5ldyBjb21wb3NlIHNlY3JldCB3aXRob3V0CiMgaXRzIGZpbGUgYW5kIG1ha2UgcHVsbC1mcm9udGVuZCB3b3VsZCBzdG9wIGF0IHNlY3JldHMtY2hlY2suCnN5bmNfc2NyaXB0ID0gJycnIyEvYmluL2Jhc2gKc2V0IC1ldQpjZCAiJEFQUF9ESVIiCmlmIFsgLWQgLmdpdCBdOyB0aGVuCiAgQVVUSF9IRUFERVI9JChwcmludGYgJ3gtYWNjZXNzLXRva2VuOiVzJyAiJEdIX1RPS0VOIiB8IGJhc2U2NCAtdzApCiAgZ2l0IC1jIHNhZmUuZGlyZWN0b3J5PSIkQVBQX0RJUiIgLWMgaHR0cC5leHRyYWhlYWRlcj0iQVVUSE9SSVpBVElPTjogYmFzaWMgJEFVVEhfSEVBREVSIiBmZXRjaCBvcmlnaW4gbWFpbiAtLXF1aWV0CiAgZ2l0IC1jIHNhZmUuZGlyZWN0b3J5PSIkQVBQX0RJUiIgcmVzZXQgLS1oYXJkIG9yaWdpbi9tYWluIC0tcXVpZXQKICBlY2hvICJPSzogcmF5cy1pbmZyYSBzeW5jZWQgdG8gbGF0ZXN0IG1haW4iCmVsc2UKICBlY2hvICJFUlJPUjogJEFQUF9ESVIgaXMgbm90IGEgZ2l0IGNoZWNrb3V0IgogIGV4aXQgMQpmaQonJycKCmRlcGxveV9zY3JpcHQgPSAnJycjIS9iaW4vYmFzaApzZXQgLWV1CmNkICIkQVBQX0RJUiIKZ3JlcCAtcSAnXlRBR19OQU1FPScgLmVudiAmJiBzZWQgLWkgInN8XlRBR19OQU1FPS4qfFRBR19OQU1FPSRUQUdfTkFNRXwiIC5lbnYgfHwgZWNobyAiVEFHX05BTUU9JFRBR19OQU1FIiA+PiAuZW52CmdyZXAgLXEgJ15FQ1JfUkVHSVNUUlk9JyAuZW52ICYmIHNlZCAtaSAic3xeRUNSX1JFR0lTVFJZPS4qfEVDUl9SRUdJU1RSWT0kRUNSX1JFR0lTVFJZfCIgLmVudiB8fCBlY2hvICJFQ1JfUkVHSVNUUlk9JEVDUl9SRUdJU1RSWSIgPj4gLmVudgptYWtlIHB1bGwtZnJvbnRlbmQKJycnCgpkZWYgd3JpdGVfc2NyaXB0X2NtZChwYXRoLCBib2R5KToKICByZXR1cm4gZiJjYXQgPiB7cGF0aH0gPDwgJ0NPREVVU0VSRU9GJ1xuIiArIGJvZHkgKyAiQ09ERVVTRVJFT0YiCgpjb21tYW5kcyA9IFsKICAic2V0IC1ldSIsCiAgZiJSRUdJT049e3NobGV4LnF1b3RlKG9zLmVudmlyb25bJ1JFR0lPTl9FTlYnXSl9IiwKICBmIlRBR19OQU1FPXtzaGxleC5xdW90ZShvcy5lbnZpcm9uWydUQUdfRU5WJ10pfSIsCiAgZiJFQ1JfUkVHSVNUUlk9e3NobGV4LnF1b3RlKG9zLmVudmlyb25bJ0VDUl9FTlYnXSl9IiwKICBmIkRPQ0tFUl9CQVNFX0RJUj17c2hsZXgucXVvdGUob3MuZW52aXJvblsnQkFTRV9ESVJfRU5WJ10pfSIsCiAgZiJHSF9UT0tFTj17c2hsZXgucXVvdGUob3MuZW52aXJvblsnVE9LRU5fRU5WJ10pfSIsCiAgIklNRFNfVE9LRU49JChjdXJsIC1zZiAtWCBQVVQgaHR0cDovLzE2OS4yNTQuMTY5LjI1NC9sYXRlc3QvYXBpL3Rva2VuIC1IICdYLWF3cy1lYzItbWV0YWRhdGEtdG9rZW4tdHRsLXNlY29uZHM6IDEwJyAtLW1heC10aW1lIDUpIiwKICAiSU5TVEFOQ0VfSUQ9JChjdXJsIC1zZiAtSCBcIlgtYXdzLWVjMi1tZXRhZGF0YS10b2tlbjogJElNRFNfVE9LRU5cIiAtLW1heC10aW1lIDUgaHR0cDovLzE2OS4yNTQuMTY5LjI1NC9sYXRlc3QvbWV0YS1kYXRhL2luc3RhbmNlLWlkKSIsCiAgIlRFTkFOVD0kKGF3cyBlYzIgZGVzY3JpYmUtdGFncyAtLXJlZ2lvbiBcIiRSRUdJT05cIiAtLWZpbHRlcnMgXCJOYW1lPXJlc291cmNlLWlkLFZhbHVlcz0ke0lOU1RBTkNFX0lEfVwiIFwiTmFtZT1rZXksVmFsdWVzPVRlbmFudFwiIC0tcXVlcnkgXCJUYWdzWzBdLlZhbHVlXCIgLS1vdXRwdXQgdGV4dCkiLAogICJbIC1uIFwiJFRFTkFOVFwiIF0gJiYgWyBcIiRURU5BTlRcIiAhPSBcIk5vbmVcIiBdIHx8IHsgZWNobyBcIkVSUk9SOiBUZW5hbnQgdGFnIG5vdCBmb3VuZCBmb3IgJElOU1RBTkNFX0lEXCI7IGV4aXQgMTsgfSIsCiAgIkFQUF9ESVI9XCIkRE9DS0VSX0JBU0VfRElSLyRURU5BTlRcIiIsCiAgImVjaG8gXCJUZW5hbnQ6ICRURU5BTlQgLSBBUFBfRElSOiAkQVBQX0RJUlwiIiwKICAiWyAtZCBcIiRBUFBfRElSXCIgXSB8fCB7IGVjaG8gXCJFUlJPUjogJEFQUF9ESVIgbm90IGZvdW5kXCI7IGV4aXQgMTsgfSIsCiAgIyAxLiBTeW5jIGluZnJhCiAgInN1ZG8gY2hvd24gLVIgY29kZXVzZXI6Y29kZXVzZXIgXCIkQVBQX0RJUlwiIiwKICB3cml0ZV9zY3JpcHRfY21kKCIvdG1wL2NvZGV1c2VyX3N5bmMuc2giLCBzeW5jX3NjcmlwdCksCiAgImNobW9kICt4IC90bXAvY29kZXVzZXJfc3luYy5zaCIsCiAgInN1ZG8gLXUgY29kZXVzZXIgLUggZW52IEFQUF9ESVI9XCIkQVBQX0RJUlwiIEdIX1RPS0VOPVwiJEdIX1RPS0VOXCIgL3RtcC9jb2RldXNlcl9zeW5jLnNoIiwKICAicm0gLWYgL3RtcC9jb2RldXNlcl9zeW5jLnNoIiwKICAjIDIuIFNlbGYtdXBkYXRlIGZldGNoLXNlY3JldHMuc2ggKHNhbWUgbG9naWMgYXMgdGhlIFJlZmV0Y2ggU2VjcmV0cyB3b3JrZmxvdyk6CiAgIyBzeW50YXgtY2hlY2tlZCBiZWZvcmUgaW5zdGFsbCwgYXRvbWljIHN3YXAsIHByZXZpb3VzIGtlcHQgYXMgLnByZXYuCiAgIkZFVENIX1NDUklQVD0vdXNyL2xvY2FsL2Jpbi9mZXRjaC1zZWNyZXRzLnNoIiwKICAiVE1QX1NDUklQVD0kKG1rdGVtcCkiLAogICJhd3MgczMgY3AgczM6Ly9zMy1yYXlzLWNvbmZpZy9zY3JpcHRzL2ZldGNoLXNlY3JldHMuc2ggXCIkVE1QX1NDUklQVFwiIC0tcmVnaW9uIFwiJFJFR0lPTlwiIC0tcXVpZXQgfHwgeyBybSAtZiBcIiRUTVBfU0NSSVBUXCI7IGVjaG8gXCJFUlJPUjogY291bGQgbm90IGRvd25sb2FkIGZldGNoLXNlY3JldHMuc2ggZnJvbSBTM1wiOyBleGl0IDE7IH0iLAogICJbIC1zIFwiJFRNUF9TQ1JJUFRcIiBdICYmIGJhc2ggLW4gXCIkVE1QX1NDUklQVFwiIHx8IHsgcm0gLWYgXCIkVE1QX1NDUklQVFwiOyBlY2hvIFwiRVJST1I6IGRvd25sb2FkZWQgZmV0Y2gtc2VjcmV0cy5zaCBpcyBlbXB0eSBvciBoYXMgc3ludGF4IGVycm9ycyAtIG5vdCBpbnN0YWxsZWRcIjsgZXhpdCAxOyB9IiwKICAiaWYgY21wIC1zIFwiJFRNUF9TQ1JJUFRcIiBcIiRGRVRDSF9TQ1JJUFRcIjsgdGhlbiBlY2hvIFwiSU5GTzogZmV0Y2gtc2VjcmV0cy5zaCB1bmNoYW5nZWRcIjsgZWxzZSBbIC1mIFwiJEZFVENIX1NDUklQVFwiIF0gJiYgc3VkbyBjcCAtcCBcIiRGRVRDSF9TQ1JJUFRcIiBcIiRGRVRDSF9TQ1JJUFQucHJldlwiOyBzdWRvIGluc3RhbGwgLW0gNzU1IC1vIHJvb3QgLWcgcm9vdCBcIiRUTVBfU0NSSVBUXCIgXCIkRkVUQ0hfU0NSSVBULm5ld1wiOyBzdWRvIG12IC1mIFwiJEZFVENIX1NDUklQVC5uZXdcIiBcIiRGRVRDSF9TQ1JJUFRcIjsgZWNobyBcIk9LOiBmZXRjaC1zZWNyZXRzLnNoIHVwZGF0ZWQgZnJvbSBTMyAocHJldmlvdXMga2VwdCBhcyBmZXRjaC1zZWNyZXRzLnNoLnByZXYpXCI7IGZpIiwKICAicm0gLWYgXCIkVE1QX1NDUklQVFwiIiwKICAic3lzdGVtY3RsIGNhdCBkb2NrZXItc2VjcmV0cy1mZXRjaC5zZXJ2aWNlIDI+L2Rldi9udWxsIHwgZ3JlcCAtcSBcIiRGRVRDSF9TQ1JJUFRcIiB8fCBlY2hvIFwiV0FSTjogZG9ja2VyLXNlY3JldHMtZmV0Y2guc2VydmljZSBkb2VzIG5vdCByZWZlcmVuY2UgJEZFVENIX1NDUklQVCAtIGNoZWNrIGl0cyBFeGVjU3RhcnRcIiIsCiAgIyAzLiBSZS1mZXRjaCBzZWNyZXRzIGFuZCBlbnYgZmlsZXMgKFRBR19OQU1FIGlzIHN0cmlwcGVkIGZyb20gLmVudiwgc3RlcCA0IHJld3JpdGVzIGl0KQogICJlY2hvIFwiSU5GTzogcmUtZmV0Y2hpbmcgc2VjcmV0cyBhbmQgZW52IGZpbGVzLi4uXCIiLAogICJzdWRvIHN5c3RlbWN0bCByZXN0YXJ0IGRvY2tlci1zZWNyZXRzLWZldGNoLnNlcnZpY2UiLAogICJlY2hvIFwiT0s6IHNlY3JldHMgcmUtZmV0Y2hlZFwiIiwKICAjIDQuIERlcGxveQogICJzdWRvIGNob3duIC1SIGNvZGV1c2VyOmNvZGV1c2VyIFwiJEFQUF9ESVJcIiIsCiAgd3JpdGVfc2NyaXB0X2NtZCgiL3RtcC9jb2RldXNlcl9kZXBsb3kuc2giLCBkZXBsb3lfc2NyaXB0KSwKICAiY2htb2QgK3ggL3RtcC9jb2RldXNlcl9kZXBsb3kuc2giLAogICJzdWRvIC11IGNvZGV1c2VyIC1IIGVudiBBUFBfRElSPVwiJEFQUF9ESVJcIiBUQUdfTkFNRT1cIiRUQUdfTkFNRVwiIEVDUl9SRUdJU1RSWT1cIiRFQ1JfUkVHSVNUUllcIiAvdG1wL2NvZGV1c2VyX2RlcGxveS5zaCIsCiAgInJtIC1mIC90bXAvY29kZXVzZXJfZGVwbG95LnNoIiwKICAiZWNobyBcIk9LOiBmcm9udGVuZCByZWRlcGxveWVkIGZvciB0ZW5hbnQgJFRFTkFOVFwiIiwKXQpwcmludChqc29uLmR1bXBzKHsiY29tbWFuZHMiOiBjb21tYW5kc30pKQo=" | base64 -d > /tmp/ssm_frontend.py
+
+          for INSTANCE_ID in $INSTANCE_IDS; do
+            echo "--- Deploying to $INSTANCE_ID ---"
+
+            SSM_PARAMS=$(mktemp)
+            REGION_ENV="$REGION" \
+            TAG_ENV="$TAG" \
+            ECR_ENV="$ECR_REGISTRY" \
+            BASE_DIR_ENV="$DOCKER_BASE_DIR" \
+            TOKEN_ENV="$RAYS_ACCESS_TOKEN" \
+            python3 /tmp/ssm_frontend.py > "$SSM_PARAMS"
+
+            COMMAND_ID=$(aws ssm send-command \
+              --region "$REGION" \
+              --instance-ids "$INSTANCE_ID" \
+              --document-name "AWS-RunShellScript" \
+              --parameters "file://$SSM_PARAMS" \
+              --query "Command.CommandId" \
+              --output text)
+
+            rm -f "$SSM_PARAMS"
+
+            echo "SSM Command ID: $COMMAND_ID -- waiting for completion..."
+
+            SSM_TIMEOUT=600
+            SSM_ELAPSED=0
+            STATUS=""
+            RESULT=""
+
+            while [ "$SSM_ELAPSED" -le "$SSM_TIMEOUT" ]; do
+              RESULT=$(aws ssm get-command-invocation \
+                --region "$REGION" \
+                --command-id "$COMMAND_ID" \
+                --instance-id "$INSTANCE_ID" \
+                --query '{Status:Status,Output:StandardOutputContent,Error:StandardErrorContent}' \
+                --output json)
+
+              STATUS=$(echo "$RESULT" | python3 -c "import sys,json; print(json.load(sys.stdin)['Status'])")
+
+              case "$STATUS" in
+                Success|Failed|Cancelled|TimedOut) break ;;
+                *) echo "SSM status on $INSTANCE_ID: $STATUS (${SSM_ELAPSED}s)"; sleep 15; SSM_ELAPSED=$((SSM_ELAPSED+15)) ;;
+              esac
+            done
+
+            echo "$RESULT"
+
+            if [ "$STATUS" != "Success" ]; then
+              echo "ERROR: SSM command failed on $INSTANCE_ID (Status: $STATUS) -- rolling stopped"
+              exit 1
+            fi
+            echo "OK: frontend redeployed on $INSTANCE_ID"
+          done
+
+          echo "OK: frontend rebuild deploy completed ($INSTANCE_COUNT instances)"

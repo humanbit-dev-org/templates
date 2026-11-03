@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
+use App\Models\Traits\HasDisplayAttributes;
 use Backpack\CRUD\app\Models\Traits\CrudTrait;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 
 class Notification extends Model
 {
-    use CrudTrait, Notifiable;
+    use CrudTrait, HasDisplayAttributes, Notifiable;
 
     protected $fillable = ['type', 'data', 'notifiable_type', 'notifiable_id', 'read_at'];
 
@@ -24,7 +25,8 @@ class Notification extends Model
         return $this->morphTo();
     }
 
-    public function getDisplayAttribute()
+    // see HasDisplayAttributes for full doc
+    public function getDisplayAttribute(): string
     {
         return $this->data['email'] ?? ($this->data['oggetto'] ?? $this->type);
     }

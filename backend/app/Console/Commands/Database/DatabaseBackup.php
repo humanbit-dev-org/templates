@@ -4,6 +4,7 @@ namespace App\Console\Commands\Database;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
 
@@ -198,6 +199,10 @@ class DatabaseBackup extends Command
 				$this->newLine();
 			}
 
+			// Off the host: a backup that lives on the machine you are about to
+			// migrate protects against the mistake, not against losing the host.
+			$this->uploadToS3(file_exists($backupPath . ".gz") ? $backupPath . ".gz" : $backupPath);
+
 			// Cleanup old backups (keep last 5)
 			$this->line($this->formatLine("Cleaning up old backup files", "RUNNING"));
 			$startTime = microtime(true);
@@ -219,153 +224,172 @@ class DatabaseBackup extends Command
 	}
 
 	/**
-	 * Perform a MySQL/MariaDB database backup using PHP
+	 * Dump the database with mysqldump.
+	 *
+	 * Was a hand-written dump in PHP, ~200 lines, while mysqldump sits in the
+	 * image. Three things it got wrong that this does not:
+	 *
+	 *   - it paged with LIMIT/OFFSET, so reaching offset 45.000 made MySQL walk
+	 *     45.000 rows again — quadratic on the way down the table;
+	 *   - it escaped with addslashes(), which knows nothing about the charset and
+	 *     nothing about binary columns, so a dump could come back unreadable;
+	 *   - it held each table's INSERTs in a string before writing.
+	 *
+	 * --single-transaction takes a consistent snapshot without locking writers,
+	 * --quick streams row by row, --hex-blob keeps binary data intact. The pulse
+	 * tables are skipped, exactly as `make db-dump` skips them.
+	 *
+	 * The password goes through MYSQL_PWD, never on the command line, where any
+	 * other process on the host could read it out of ps.
 	 */
 	protected function mysqlBackup($backupPath)
 	{
-		// Use PHP-based backup directly (no mysqldump dependency)
-		return $this->mysqlBackupWithPHP($backupPath);
+		$connection = config("database.default");
+		$database = config("database.connections.{$connection}.database");
+
+		$binary = $this->dumpBinary();
+
+		if ($binary === null) {
+			$this->components->error("Neither mysqldump nor mariadb-dump is available in this image.");
+
+			return false;
+		}
+
+		$arguments = [
+			$binary,
+			"--host=" . config("database.connections.{$connection}.host"),
+			"--port=" . config("database.connections.{$connection}.port"),
+			"--user=" . config("database.connections.{$connection}.username"),
+			"--single-transaction",
+			"--quick",
+			"--hex-blob",
+			"--no-tablespaces",
+			"--default-character-set=utf8mb4",
+		];
+
+		// Same exclusions as `make db-dump`: pulse is telemetry, it is regenerated
+		// and it dwarfs the rest of the dump.
+		foreach (["pulse_aggregates", "pulse_entries", "pulse_values"] as $skip) {
+			$arguments[] = "--ignore-table={$database}.{$skip}";
+		}
+
+		$arguments[] = $database;
+
+		$this->line($this->formatLine("Dumping with " . basename($binary), "RUNNING"));
+		$startTime = microtime(true);
+
+		$process = proc_open(
+			$arguments,
+			[1 => ["file", $backupPath, "w"], 2 => ["pipe", "w"]],
+			$pipes,
+			null,
+			["MYSQL_PWD" => (string) config("database.connections.{$connection}.password")] + $_ENV
+		);
+
+		if (!is_resource($process)) {
+			$this->components->error("Could not start {$binary}.");
+
+			return false;
+		}
+
+		$stderr = stream_get_contents($pipes[2]);
+		fclose($pipes[2]);
+		$exit = proc_close($process);
+
+		$duration = round(microtime(true) - $startTime, 2);
+
+		if ($exit !== 0) {
+			$this->line($this->formatLine("Dumping with " . basename($binary), "FAILED", "red", $duration));
+			$this->components->error(trim($stderr) ?: "mysqldump exited with {$exit}");
+			@unlink($backupPath);
+
+			return false;
+		}
+
+		$this->line($this->formatLine("Dumping with " . basename($binary), "DONE", "green", $duration));
+		$this->newLine();
+
+		return true;
 	}
 
 	/**
-	 * Create a MySQL backup using PHP
+	 * mariadb-dump is the same tool under its newer name.
 	 */
-	protected function mysqlBackupWithPHP($backupPath)
+	protected function dumpBinary(): ?string
 	{
-		$connection = config("database.default");
-		$host = config("database.connections.{$connection}.host");
-		$port = config("database.connections.{$connection}.port");
-		$database = config("database.connections.{$connection}.database");
-		$username = config("database.connections.{$connection}.username");
-		$password = config("database.connections.{$connection}.password");
+		foreach (["mysqldump", "mariadb-dump"] as $candidate) {
+			$path = trim((string) shell_exec("command -v " . escapeshellarg($candidate) . " 2>/dev/null"));
+
+			if ($path !== "") {
+				return $path;
+			}
+		}
+
+		return null;
+	}
+
+	/**
+	 * Ship the dump to the same place `make db-dump` puts it.
+	 *
+	 * The s3 disk is rooted at AWS_PREFIX, so writing to dump/<file> lands on
+	 * s3://$AWS_BUCKET/$AWS_PREFIX/dump/<file> — the one location, whether the
+	 * dump was taken by the Makefile or from here.
+	 */
+	protected function s3IsConfigured(): bool
+	{
+		foreach (["bucket", "key", "secret"] as $key) {
+			$value = trim((string) config("filesystems.disks.s3.{$key}"));
+
+			// The env file ships these as commented placeholders ("# Storage
+			// bucket name"), which arrive here as ordinary strings — so an
+			// emptiness check alone would call this configured.
+			if ($value === "" || str_starts_with($value, "#")) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	protected function uploadToS3(string $path): void
+	{
+		if (!$this->s3IsConfigured()) {
+			$this->line("<fg=gray>S3 not configured — backup kept locally only.</>");
+
+			return;
+		}
+
+		$name = basename($path);
+
+		$this->line($this->formatLine("Uploading to S3", "RUNNING"));
+		$startTime = microtime(true);
+
+		$stream = fopen($path, "r");
 
 		try {
-			// Connect to database
-			$this->line($this->formatLine("Connecting to database", "RUNNING"));
-			$startTime = microtime(true);
+			// Streamed, not read into memory: these files run to hundreds of MB.
+			Storage::disk("s3")->put("dump/{$name}", $stream);
 
-			$pdo = new \PDO("mysql:host={$host};port={$port};dbname={$database};charset=utf8mb4", $username, $password, [
-				\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
-			]);
-
-			$endTime = microtime(true);
-			$duration = round($endTime - $startTime, 2);
-			$this->line($this->formatLine("Connecting to database", "DONE", "green", $duration));
-			$this->newLine();
-
-			// Get all tables
-			$this->line($this->formatLine("Reading database structure", "RUNNING"));
-			$startTime = microtime(true);
-
-			$tables = [];
-			$result = $pdo->query("SHOW TABLES");
-			while ($row = $result->fetch(\PDO::FETCH_NUM)) {
-				$tables[] = $row[0];
+			// Confirmed, not assumed: a put() that quietly does nothing is worse
+			// than one that fails, because it reads as a backup you do not have.
+			if (!Storage::disk("s3")->exists("dump/{$name}")) {
+				throw new \RuntimeException("the object is not there after upload");
 			}
-			$tableCount = count($tables);
+		} catch (\Throwable $e) {
+			$this->line($this->formatLine("Uploading to S3", "FAILED", "red"));
+			$this->components->error("Upload failed: " . $e->getMessage());
 
-			$endTime = microtime(true);
-			$duration = round($endTime - $startTime, 2);
-			$this->line($this->formatLine("Reading database structure", "DONE", "green", $duration));
-			$this->newLine();
-
-			if (empty($tables)) {
-				$this->line("No tables found in database. Creating empty backup file.");
-				file_put_contents($backupPath, "-- No tables found in database {$database}\n");
-				return true;
+			return;
+		} finally {
+			if (is_resource($stream)) {
+				fclose($stream);
 			}
-
-			$this->line("Found {$tableCount} tables to backup");
-
-			// Write header
-			$output = "-- MySQL Database Backup\n";
-			$output .= "-- Database: {$database}\n";
-			$output .= "-- Generated: " . date("Y-m-d H:i:s") . "\n";
-			$output .= "-- Created by DatabaseBackup Command\n\n";
-			$output .= "SET FOREIGN_KEY_CHECKS = 0;\n";
-			$output .= "SET SQL_MODE = \"NO_AUTO_VALUE_ON_ZERO\";\n";
-			$output .= "SET AUTOCOMMIT = 0;\n";
-			$output .= "START TRANSACTION;\n\n";
-			file_put_contents($backupPath, $output);
-
-			$progress = $this->output->createProgressBar($tableCount);
-			$progress->start();
-
-			// Process each table
-			foreach ($tables as $table) {
-				$tableOutput = "";
-
-				// Get create statement
-				$stmt = $pdo->query("SHOW CREATE TABLE `{$table}`");
-				$createRow = $stmt->fetch(\PDO::FETCH_NUM);
-				$tableOutput .= "-- Table structure for table `{$table}`\n";
-				$tableOutput .= "DROP TABLE IF EXISTS `{$table}`;\n";
-				$tableOutput .= $createRow[1] . ";\n\n";
-
-				// Get data count
-				$countStmt = $pdo->query("SELECT COUNT(*) FROM `{$table}`");
-				$rowCount = $countStmt->fetchColumn();
-
-				if ($rowCount > 0) {
-					$tableOutput .= "-- Dumping data for table `{$table}`\n";
-					$tableOutput .= "LOCK TABLES `{$table}` WRITE;\n";
-
-					// Get data in chunks to avoid memory issues
-					$limit = 1000;
-					$offset = 0;
-
-					while ($offset < $rowCount) {
-						$result = $pdo->query("SELECT * FROM `{$table}` LIMIT {$limit} OFFSET {$offset}");
-						$rows = $result->fetchAll(\PDO::FETCH_NUM);
-
-						if (!empty($rows)) {
-							$tableOutput .= "INSERT INTO `{$table}` VALUES ";
-							$rowValues = [];
-
-							foreach ($rows as $row) {
-								$values = [];
-								foreach ($row as $value) {
-									if (is_null($value)) {
-										$values[] = "NULL";
-									} elseif (is_numeric($value)) {
-										$values[] = $value;
-									} else {
-										$values[] = "'" . addslashes($value) . "'";
-									}
-								}
-								$rowValues[] = "(" . implode(",", $values) . ")";
-							}
-
-							$tableOutput .= implode(",\n", $rowValues) . ";\n";
-						}
-
-						$offset += $limit;
-					}
-
-					$tableOutput .= "UNLOCK TABLES;\n";
-				}
-
-				$tableOutput .= "\n";
-
-				// Write to file in batches to avoid memory issues
-				file_put_contents($backupPath, $tableOutput, FILE_APPEND);
-
-				$progress->advance();
-			}
-
-			$progress->finish();
-			$this->newLine(2);
-
-			// Write footer
-			$footer = "COMMIT;\n";
-			$footer .= "SET FOREIGN_KEY_CHECKS = 1;\n";
-			$footer .= "-- Backup completed successfully\n";
-			file_put_contents($backupPath, $footer, FILE_APPEND);
-
-			return true;
-		} catch (\Exception $e) {
-			throw new \Exception("Database backup failed: " . $e->getMessage());
 		}
+
+		$duration = round(microtime(true) - $startTime, 2);
+		$this->line($this->formatLine("Uploading to S3", "DONE", "green", $duration));
+		$this->line("<fg=gray>Remote:</> dump/{$name}");
+		$this->newLine();
 	}
 
 	/**

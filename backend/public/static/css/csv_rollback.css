@@ -1,0 +1,134 @@
+/**
+ * CSV Rollback Page Styles
+ */
+
+.csv-rollback-table th {
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.csv-rollback-table code {
+    background: #f4f4f4;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 0.85em;
+}
+
+.csv-rollback-table .btn-sm {
+    padding: 0.25rem 0.75rem;
+}
+
+.csv-rollback-actions .btn {
+    white-space: nowrap;
+}
+
+.csv-rollback-preview-actions .btn {
+    white-space: nowrap;
+}
+
+.csv-rollback-danger-action {
+    border-left: 1px solid var(--tblr-border-color);
+}
+
+/* Table name with warning tooltip */
+.table-name-warning {
+    cursor: help;
+    border-bottom: 1px dashed #ffc107;
+}
+
+.table-name-warning:hover {
+    color: #856404;
+}
+
+/* Warning badge for users table */
+.users-warning-badge {
+    font-size: 0.7rem;
+    padding: 0.2rem 0.4rem;
+    vertical-align: middle;
+    cursor: help;
+}
+
+/* Pulse animation */
+.pulse-animation {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 193, 7, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 6px rgba(255, 193, 7, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 193, 7, 0);
+    }
+}
+
+/* SQL Preview Styles */
+.sql-content {
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', monospace;
+    font-size: 0.8rem;
+    line-height: 1.6;
+    padding: 1rem;
+    margin: 0;
+    background: #1e1e1e;
+    color: #d4d4d4;
+    overflow-x: auto;
+    white-space: pre-wrap;
+    word-break: break-word;
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+/* SQL Syntax Highlighting */
+.sql-keyword { color: #569cd6; font-weight: bold; }
+.sql-string { color: #ce9178; }
+.sql-number { color: #b5cea8; }
+.sql-comment { color: #6a9955; font-style: italic; }
+.sql-table { color: #4ec9b0; }
+.sql-column { color: #9cdcfe; }
+.sql-operator { color: #d4d4d4; }
+.sql-function { color: #dcdcaa; }
+
+/* Preview loading overlay */
+.page-loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(var(--tblr-body-bg-rgb, 255, 255, 255), 0.95);
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.3s ease-out;
+}
+
+.page-loading-overlay.fade-out {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.page-loading-spinner {
+    width: 48px;
+    height: 48px;
+    border: 4px solid var(--tblr-border-color, #e6e7e9);
+    border-top-color: var(--tblr-primary, #206bc4);
+    border-radius: 50%;
+    animation: csv-rollback-spin 0.8s linear infinite;
+}
+
+.page-loading-text {
+    margin-top: 1rem;
+    color: var(--tblr-muted, #626976);
+    font-size: 0.9rem;
+}
+
+@keyframes csv-rollback-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}

@@ -24,7 +24,6 @@ class DatabaseSeeder extends Seeder
 			UserSeeder::class,
 			ArticleSeeder::class,
 			InstitutionalSeeder::class,
-			TranslateSeeder::class,
 			MetadataSeeder::class,
 		]);
 	}
