@@ -1,21 +1,17 @@
-MIT License
+Proprietary Software License
 
-Copyright (c) 2024 humanbit-dev-org
+Copyright (c) 2026 Cashberry S.r.l. All rights reserved.
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+This software, including its source code, documentation, configuration, and related materials (the "Software"), is the exclusive proprietary and confidential property of Cashberry S.r.l.
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+The Software is intended solely for access, use, maintenance, and modification by Cashberry S.r.l.'s expressly authorized development personnel. No other person or entity may access, use, copy, modify, merge, publish, distribute, sublicense, sell, disclose, reverse engineer, decompile, or create derivative works from the Software without the prior written authorization of Cashberry S.r.l., except where such restrictions are prohibited by applicable law.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+Access to Cashberry S.r.l.'s services, including access provided to banks, customers, users, or other parties under contract, does not grant any ownership rights, source-code access, license rights, modification rights, or other intellectual property rights in the Software.
+
+Only Cashberry S.r.l., acting through its expressly authorized development personnel, may modify, license, sell, distribute, or otherwise exploit the Software. All rights not expressly granted in a written agreement signed by Cashberry S.r.l. are reserved.
+
+The Software may include third-party components governed by their respective licenses. Those licenses apply only to the relevant third-party components.
+
+Cashberry S.r.l.'s maintenance, support, defect-correction, service-level, warranty, and liability obligations are governed exclusively by the applicable written agreements. Nothing in this license limits any obligation expressly assumed by Cashberry S.r.l. under such agreements.
+
+If this license conflicts with an applicable written agreement signed by Cashberry S.r.l., the written agreement takes precedence.

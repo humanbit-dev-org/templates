@@ -1,14 +1,29 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
-# misc
-/.cursor/
-/.pnpm-store/
-/.vscode/
-/.DS_Store
-/**/.directory
+# AI agents
+/**/rules/personal-profile/
+/**/rules/personal-profile.*
+/.agents/
+/.claude/
+/.continue/
+/.devin/config.local.json
+/skills-lock.json
 
-# backend
+# Misc
+/**/.pnpm-store/
+# /*.code-workspace
+/**/.directory
+/vendor
+/.DS_Store
+/._.DS_Store
+/.prettierignore
+/.prettierrc
+/artisan
+
+# Backend
+/backend/storage/app/**
 /backend/storage/backups/
+/backend/storage/basset/
 /backend/vendor/
 /backend/.phpunit.cache
 /backend/.phpunit.result.cache
@@ -16,19 +31,27 @@
 /backend/config/custom_cors_domains.php
 /backend/public/storage
 
-# frontend
+# Frontend
 /frontend/*.tsbuildinfo
 /frontend/.next
 /frontend/next-env.d.ts
 /frontend/node_modules
 /frontend/out
 /frontend/public/fonts/*
+/frontend/src/assets/scss/controllers/_variables.generated.scss
+/frontend/src/config/api-routes.js
 # Comment the following entry if it's an internal project
-/frontend/lang/*
+# /frontend/lang/*
 
 # env/secrets
-/backend/.env*
-/frontend/.env*
+/**/.env*
 
-# overrides
+# Exception: no values, only comments. It exists so Laravel has an environment
+# file to load under APP_ENV=testing instead of probing for an absent .env —
+# without it every test carries a phpdotenv warning. Must be committed, or the
+# noise comes back for everyone else.
+!/**/.env.testing
+
+# Overrides
 !/**/.gitkeep
+!/frontend/public/fonts/fontawesome-pro-6.5.1-web/
