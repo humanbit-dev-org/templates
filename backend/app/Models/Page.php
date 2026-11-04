@@ -89,6 +89,7 @@ class Page extends Model
     // see HasDisplayAttributes for full doc
     public function getDisplayAttribute(): string
     {
-        return $this->title;
+        // pages.title is nullable: fall back to the (NOT NULL) folder name.
+        return $this->title ?: $this->name;
     }
 }

@@ -14,16 +14,13 @@ class UserResource extends JsonResource
 {
 	public function toArray(Request $request): array
 	{
-		$role =
-			$this->role_id == 1 ? "Public" : ($this->role_id == 2 ? "User" : ($this->role_id == 3 ? "Desio" : "Filiale"));
 		return [
-			"id" => $this->id,
-			"ndg" => $this->ndg,
-			"ragione_sociale" => $this->ragione_sociale,
+			"username" => $this->username,
+			"name" => $this->name,
+			"surname" => $this->surname,
 			"email" => $this->email,
-			"ruolo" => $role,
-			"sospeso" => $this->sospeso,
-			"filiale" => FilialeResource::make($this->filiale),
+			"ruolo" => $this->role?->name,
+			"email_verified" => $this->email_verified_at !== null,
 		];
 	}
 }

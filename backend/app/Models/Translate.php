@@ -10,16 +10,11 @@ class Translate extends Model
 {
     use CrudTrait, HasDisplayAttributes;
 
-    protected $fillable = ['it', 'en', 'text_it', 'text_en', 'code', 'page_id', 'banca_abi'];
+    protected $fillable = ['it', 'en', 'text_it', 'text_en', 'code', 'page_id'];
 
     public function page()
     {
         return $this->belongsTo(Page::class);
-    }
-
-    public function banca()
-    {
-        return $this->belongsTo(Banca::class, 'banca_abi', 'banca_abi');
     }
 
     // see HasDisplayAttributes for full doc

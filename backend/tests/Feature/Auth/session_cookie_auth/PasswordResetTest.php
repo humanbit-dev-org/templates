@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\Auth;
+namespace Tests\Feature\Auth\session_cookie_auth;
 
 use App\Models\BackpackRole;
 use App\Models\Role;
@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Route;
 use Tests\TestCase;
 
 class PasswordResetTest extends TestCase
@@ -17,6 +18,12 @@ class PasswordResetTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+
+        // These tests cover the optional Sanctum session-cookie auth routes,
+        // commented out in routes/auth.php: skip them while that mode is off.
+        if (! Route::has('password.email')) {
+            $this->markTestSkipped('Session-cookie auth routes are disabled (routes/auth.php).');
+        }
         // Create required roles if they don't exist
         Role::firstOrCreate(['name' => 'User'], ['description' => 'User']);
         BackpackRole::firstOrCreate(['name' => 'Guest'], ['description' => 'Guest']);
@@ -27,9 +34,11 @@ class PasswordResetTest extends TestCase
         Notification::fake();
 
         $user = User::create([
-            'ndg' => 'reset@example.com',
+            'username' => 'reset',
+            'name' => 'Test',
+            'surname' => 'User',
             'email' => 'reset@example.com',
-            'password' => bcrypt('password'),
+            'password' => 'password',
             'email_verified_at' => now(),
             'role_id' => Role::where('name', 'User')->first()->id,
             'backpack_role_id' => BackpackRole::where('name', 'Guest')->first()->id,
@@ -45,9 +54,11 @@ class PasswordResetTest extends TestCase
         Notification::fake();
 
         $user = User::create([
-            'ndg' => 'reset2@example.com',
+            'username' => 'reset2',
+            'name' => 'Test',
+            'surname' => 'User',
             'email' => 'reset2@example.com',
-            'password' => bcrypt('password'),
+            'password' => 'password',
             'email_verified_at' => now(),
             'role_id' => Role::where('name', 'User')->first()->id,
             'backpack_role_id' => BackpackRole::where('name', 'Guest')->first()->id,

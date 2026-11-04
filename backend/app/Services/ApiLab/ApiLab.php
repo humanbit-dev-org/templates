@@ -29,7 +29,7 @@ class ApiLab
 
     /**
      * Categories, each with its endpoints. A category that declares "groups"
-     * (e.g. one per bank) also gets them as a second level: the endpoints of
+     * (e.g. one per partner) also gets them as a second level: the endpoints of
      * every group, in the declared order, and the ones with no group apart.
      *
      * @return Collection<string, array{key: string, label: string, file: string, endpoints: Collection<int, array<string, mixed>>, groups: Collection<int, array{key: string, label: string, endpoints: Collection<int, array<string, mixed>>}>, ungrouped: Collection<int, array<string, mixed>>}>
@@ -99,9 +99,9 @@ class ApiLab
             return null;
         }
 
-        // Una categoria puo' coprire piu' file di route (es. le inbound stanno sia in
-        // integrations.php sia in sso.php): tutti devono essere allowed, e la route deve
-        // essere dichiarata in almeno uno di essi.
+        // A category may cover more than one route file (e.g. inbound calls live in
+        // both integrations.php and sso.php): every file must be allowed, and the
+        // route must be declared in at least one of them.
         $routeFiles = array_values(array_filter((array) ($category['file'] ?? []), 'is_string'));
         $allowed = config('api_lab.allowed_route_files', []);
         if ($routeFiles === [] || array_diff($routeFiles, $allowed) !== []) {
@@ -124,7 +124,6 @@ class ApiLab
         $usesGet = in_array('GET', $methods, true);
         $routeMiddleware = collect($route->gatherMiddleware())->filter(fn ($m) => is_string($m));
         $needsSanctum = $routeMiddleware->contains(fn (string $m) => str_contains($m, 'auth:sanctum'));
-        $needsTenantToken = $routeMiddleware->contains('tenant.token');
         $uses = $route->getAction('uses');
         $handlerKind = 'method';
         $controller = $route->getControllerClass();
@@ -157,7 +156,7 @@ class ApiLab
             'route_name' => $routeName,
             'display_name' => $this->displayRouteName($routeName),
             'catalog_title' => $this->catalogTitle($routeName, $spec['doc_summary'] ?? null),
-            'auth_hints' => $this->catalogAuthHints($needsSanctum, $needsTenantToken, $categoryKey),
+            'auth_hints' => $this->catalogAuthHints($needsSanctum, $categoryKey),
             'uri' => '/'.$route->uri(),
             'handler_kind' => $handlerKind,
             'controller_class' => $controller,
@@ -169,11 +168,13 @@ class ApiLab
             'default_method' => $defaultMethod,
             'parameter_names' => $route->parameterNames(),
             'path_param_defaults' => $this->pathParamDefaults($entry, $route),
-            'body_encoding' => $this->bodyEncoding($entry, $routeName),
+            'body_encoding' => $this->bodyEncoding($entry),
             'needs_sanctum' => $needsSanctum,
-            'needs_tenant_token' => $needsTenantToken,
-            // Forza il campo query se la entry pre-compila dei parametri (l'inspector non li rileva
-            // quando sono letti dinamicamente via $request->query(), es. nexi.sso.request/external_id).
+            // Catalog flag: fill client_id/client_secret from services.oauth_inbound
+            // when the body leaves them empty (inbound OAuth token endpoints).
+            'inject_oauth_credentials' => (bool) ($entry['inject_oauth_credentials'] ?? false),
+            // Show the query field when the catalog entry pre-fills parameters: the inspector
+            // cannot detect parameters read dynamically through $request->query().
             'show_query' => $spec['show_query'] || ! empty($entry['sample_query']),
             'show_body' => $spec['show_body'] || (! $usesGet && ! empty($entry['sample_body'])),
             'sample_query' => $entry['sample_query'] ?? [],
@@ -249,7 +250,9 @@ class ApiLab
         $decodedBody = $this->decodeBody($jsonBody, $method);
         $bodyEncoding = (string) ($endpoint['body_encoding'] ?? 'json');
         $payload = $method === 'GET' ? $query : ($decodedBody ?? []);
-        $payload = $this->applyInboundOAuthCredentialsIfNeeded($route, $payload);
+        if ($endpoint['inject_oauth_credentials'] ?? false) {
+            $payload = $this->applyInboundOAuthCredentials($payload);
+        }
         $content = null;
 
         if (in_array($method, ['POST', 'PUT', 'PATCH'], true) && $jsonBody !== null && $bodyEncoding === 'json') {
@@ -274,7 +277,6 @@ class ApiLab
             $sub->headers->set('X-CSRF-TOKEN', $parent->session()->token());
         }
 
-        $this->applyTenantBearerIfNeeded($route, $sub);
         $this->authenticate($route, $actingAsUserId, $sub);
 
         $inboundHeaders = $this->flatHeaders($sub->headers->all());
@@ -385,16 +387,12 @@ class ApiLab
     /**
      * @return list<string>
      */
-    protected function catalogAuthHints(bool $needsSanctum, bool $needsTenantToken, string $categoryKey): array
+    protected function catalogAuthHints(bool $needsSanctum, string $categoryKey): array
     {
         $hints = [];
 
         if ($needsSanctum) {
             $hints[] = 'Sanctum';
-        }
-
-        if ($needsTenantToken) {
-            $hints[] = 'B2B Bearer';
         }
 
         if ($categoryKey === 'restricted') {
@@ -412,6 +410,7 @@ class ApiLab
     {
         $defaults = [];
 
+        // Routes scoped by a {tenant} segment default to this deployment's tenant.
         if (in_array('tenant', $route->parameterNames(), true)) {
             $defaults['tenant'] = (string) config('app.tenant');
         }
@@ -428,16 +427,15 @@ class ApiLab
     /**
      * @param  array<string, mixed>  $entry
      */
-    protected function bodyEncoding(array $entry, string $routeName): string
+    protected function bodyEncoding(array $entry): string
     {
         $encoding = $entry['body_encoding'] ?? null;
         if (is_string($encoding) && in_array($encoding, ['json', 'form'], true)) {
             return $encoding;
         }
 
-        return in_array($routeName, ['b2b.nexi.oauth.token', 'b2b.nexi.oauth.tenant-token'], true)
-            ? 'form'
-            : 'json';
+        // OAuth token endpoints (client_credentials) expect a form body.
+        return ($entry['inject_oauth_credentials'] ?? false) ? 'form' : 'json';
     }
 
     /**
@@ -528,17 +526,13 @@ class ApiLab
     }
 
     /**
-     * b2b.nexi.oauth.token expects services.oauth_rays credentials.
+     * Inbound OAuth token endpoints expect services.oauth_inbound credentials.
      * API Lab fills them when the body omits values or still has catalog placeholders.
      */
-    protected function applyInboundOAuthCredentialsIfNeeded(Route $route, array $payload): array
+    protected function applyInboundOAuthCredentials(array $payload): array
     {
-        if ($route->getName() !== 'b2b.nexi.oauth.token') {
-            return $payload;
-        }
-
-        $clientId = config('services.oauth_rays.client_id');
-        $clientSecret = config('services.oauth_rays.client_secret');
+        $clientId = config('services.oauth_inbound.client_id');
+        $clientSecret = config('services.oauth_inbound.client_secret');
 
         if ($clientId === null || $clientSecret === null) {
             return $payload;
@@ -575,32 +569,6 @@ class ApiLab
         return false;
     }
 
-    /**
-     * Routes behind tenant.token expect a Rays-issued Bearer (from b2b.nexi.oauth.token).
-     * API Lab provisions one when the transmit request omits Authorization.
-     */
-    protected function applyTenantBearerIfNeeded(Route $route, Request $sub): void
-    {
-        $needsTenantToken = collect($route->gatherMiddleware())->contains(
-            fn ($m) => $m === 'tenant.token'
-        );
-
-        if (! $needsTenantToken || $sub->bearerToken()) {
-            return;
-        }
-
-        $tenantId = config('app.tenant');
-        $token = hash('sha256', random_bytes(40));
-
-        cache()->put(
-            key: "oauth_token:{$tenantId}:{$token}",
-            value: true,
-            ttl: now()->addHour(),
-        );
-
-        $sub->headers->set('Authorization', 'Bearer '.$token);
-    }
-
     protected function authenticate(Route $route, ?string $userId, Request $sub): void
     {
         $needsSanctum = collect($route->gatherMiddleware())->contains(
@@ -610,7 +578,7 @@ class ApiLab
             return;
         }
 
-        $user = $userId ? User::query()->where('user_id', $userId)->first() : backpack_auth()->user();
+        $user = $userId ? User::query()->find($userId) : backpack_auth()->user();
         if (! $user instanceof User) {
             return;
         }

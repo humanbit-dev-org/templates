@@ -35,7 +35,7 @@ return [
     | You can redefine labels/description/model for generated keys.
     | Example:
     | 'overrides' => [
-    |   'ragione_sociale' => ['label_it' => 'Ragione Sociale', 'label_en' => 'Company Name'],
+    |   'surname' => ['label_it' => 'Cognome', 'label_en' => 'Surname'],
     | ],
     */
     'overrides' => [],
@@ -49,10 +49,10 @@ return [
     | interpolateHtml() / interpolateNodes().
     |
     | Example:
-    |   'tiraggio_percentuale_trattenuta' => [
-    |       'label_it'    => 'Tiraggio Trattenuto (%)',
-    |       'label_en'    => 'Loan Repayment (%)',
-    |       'description' => 'Percentuale di avanzamento del tiraggio calcolato lato frontend',
+    |   'giorni_rimanenti' => [
+    |       'label_it'    => 'Giorni rimanenti',
+    |       'label_en'    => 'Days left',
+    |       'description' => 'Giorni alla scadenza, calcolati lato frontend',
     |   ],
     */
     'frontend_vars' => [

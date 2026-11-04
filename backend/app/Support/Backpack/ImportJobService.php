@@ -6,7 +6,6 @@ use App\Http\Controllers\Admin\Action\ImportCsvAction;
 use App\Support\Backpack\CsvBackupManager;
 use App\Support\Backpack\CsvHelper;
 use App\Support\Backpack\CsvTransformer;
-use App\Models\Tiraggio;
 use App\Services\Cache\CacheFlush;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -24,6 +23,26 @@ class ImportJobService
     private static array $schemaCache = [];
 
     /**
+     * Append-only models imported with a bulk INSERT IGNORE instead of the
+     * per-row upsert: much faster on large files, duplicates (per the table's
+     * UNIQUE constraints) are skipped. List model basenames, e.g. ['AuditLog'].
+     */
+    private const BULK_INSERT_MODELS = [];
+
+    /**
+     * Numeric columns that receive 0 when their CSV cell is empty, instead of
+     * being left out of the row (and falling back to the column default).
+     * Shared with ProcessImportChunk so both import paths map rows alike.
+     */
+    public const ZERO_WHEN_EMPTY_COLUMNS = [];
+
+    /**
+     * Columns whose name contains "_at" but that do not hold a date, so the
+     * date parsing of mapRowData() must leave them alone.
+     */
+    public const NON_DATE_AT_COLUMNS = [];
+
+    /**
      * Import CSV file for job
      *
      * @param  string  $fileName  File name
@@ -36,9 +55,7 @@ class ImportJobService
         string $fileName,
         string $subfolder,
         string $modelClass,
-        ?string $uniqueField = null,
-        ?string $bancaAbi = null,   // NEW — tenant for post-import flush
-        ?string $filialeId = null   // NEW — filiale scope if known
+        ?string $uniqueField = null
     ): array {
         Log::channel('import')->info('Import file in import/'.$subfolder.'/'.$fileName.' avviato alle '.now());
 
@@ -78,6 +95,9 @@ class ImportJobService
             DB::statement('SET FOREIGN_KEY_CHECKS=1');
 
             $result = self::performImport($csvPath, $modelClass, $uniqueField);
+
+            // Rows written in bulk bypass the Observers: drop the dependent cache once.
+            CacheFlush::afterImport($modelClass);
 
             // Hash passwords if importing User model
             if (str_contains($modelClass, 'User')) {
@@ -183,7 +203,7 @@ class ImportJobService
                     continue;
                 }
 
-                // Skip records marked for skip (e.g., missing user_id for Delibera)
+                // Skip records a transformation marked for skip (e.g. a missing foreign key)
                 if (! empty($rowData['__skip_record'])) {
                     $stats['skipped']++;
                     unset($rowData);
@@ -201,7 +221,7 @@ class ImportJobService
                     continue;
                 }
 
-                // Check if this is a multiple records case (for Proiezione)
+                // A transformation may expand one CSV row into several records
                 if (isset($rowData['__multiple_records__'])) {
                     foreach ($rowData['__multiple_records__'] as $record) {
                         $batch[] = $record;
@@ -273,37 +293,6 @@ class ImportJobService
 
             DB::commit();
 
-            if (! empty($bancaAbi)) {
-                CacheFlush::forBanca($bancaAbi, $filialeId ?? null);
-            }
-
-            // Handle Trattenuta-specific operations for job imports
-            // Note: Trattenuta import should only insert trattenute, not update tiraggi
-            // Tiraggio updates should be handled separately if needed
-            if (str_contains($modelClass, 'Trattenuta')) {
-                Log::channel('trattenuta')->info('Trattenuta import completed - no tiraggio updates performed');
-
-                // Write error summary at the end using generic counters (don't overwrite $stats!)
-                $csvCounters = CsvHelper::getCounters();
-
-                if (($csvCounters['custom']['missing_user_ids'] ?? 0) > 0) {
-                    Log::channel('trattenuta')->warning(
-                        "=== USER ID NOT FOUND SUMMARY (Total: {$csvCounters['custom']['missing_user_ids']}) ==="
-                    );
-                }
-
-                if (($csvCounters['custom']['missing_tiraggi'] ?? 0) > 0) {
-                    Log::channel('trattenuta')->warning(
-                        "=== TIRAGGIO NOT FOUND SUMMARY (Total: {$csvCounters['custom']['missing_tiraggi']}) ==="
-                    );
-                }
-
-                if (($csvCounters['custom']['zero_importo_deliberato'] ?? 0) > 0) {
-                    Log::channel('trattenuta')->warning(
-                        "=== IMPORTO DELIBERATO ZERO SUMMARY (Total: {$csvCounters['custom']['zero_importo_deliberato']}) ==="
-                    );
-                }
-            }
         } catch (\Exception $e) {
             DB::rollBack();
             throw $e;
@@ -330,14 +319,11 @@ class ImportJobService
                 $customCounters = CsvHelper::getCounters()['custom'] ?? [];
                 $summaryParts = ["Import completed with {$stats['skipped']} skipped rows"];
 
-                if (($customCounters['missing_user_ids'] ?? 0) > 0) {
-                    $summaryParts[] = "Missing user IDs: {$customCounters['missing_user_ids']}";
-                }
-                if (($customCounters['missing_tiraggi'] ?? 0) > 0) {
-                    $summaryParts[] = "Missing tiraggi: {$customCounters['missing_tiraggi']}";
-                }
-                if (($customCounters['zero_importo_deliberato'] ?? 0) > 0) {
-                    $summaryParts[] = "Zero importo deliberato: {$customCounters['zero_importo_deliberato']}";
+                // Custom counters set by the transformations (CsvHelper::incrementCustom()).
+                foreach ($customCounters as $counter => $count) {
+                    if ($count > 0) {
+                        $summaryParts[] = Str::headline($counter).": {$count}";
+                    }
                 }
 
                 Log::channel('import')->warning(implode(' | ', $summaryParts));
@@ -371,54 +357,13 @@ class ImportJobService
      */
     private static function preloadDataForModel(string $modelClass): array
     {
-        $className = class_basename($modelClass);
         $preloaded = [];
 
-        if ($className === 'Trattenuta') {
-            // Preload all user_ids for fast lookup
-            $preloaded['users'] = \App\Models\User::pluck('user_id', 'user_id')->toArray();
-
-            // Preload all tiraggi with accepted status, indexed by user_id and date range
-            $tiraggi = Tiraggio::whereIn('status', ['accepted'])
-                ->whereNotNull('data_delibera')
-                ->whereNotNull('data_fine')
-                ->get(['tiraggio_id', 'user_id', 'numero_pratica', 'data_delibera', 'data_fine', 'importo_deliberato', 'percentuale']);
-
-            // Index by user_id for fast lookup
-            $preloaded['tiraggi_by_user'] = [];
-            foreach ($tiraggi as $tiraggio) {
-                if (! isset($preloaded['tiraggi_by_user'][$tiraggio->user_id])) {
-                    $preloaded['tiraggi_by_user'][$tiraggio->user_id] = [];
-                }
-                $preloaded['tiraggi_by_user'][$tiraggio->user_id][] = [
-                    'tiraggio_id' => $tiraggio->tiraggio_id,
-                    'numero_pratica' => $tiraggio->numero_pratica,
-                    'data_delibera' => $tiraggio->data_delibera,
-                    'data_fine' => $tiraggio->data_fine,
-                    'importo_deliberato' => $tiraggio->importo_deliberato,
-                    'percentuale' => $tiraggio->percentuale,
-                ];
-            }
-
-            // Preload existing trattenute for duplicate detection
-            // Key format: "user_id|numero_pratica|data_contabile" (matches DB UNIQUE constraint).
-            // POS rows only, not the -1/-2 extinction sentinels: an extinction on
-            // the same day is not the withholding the CSV brings, and must not hide it.
-            $existingTrattenute = \App\Models\Trattenuta::select(['user_id', 'tiraggio_numero_pratica', 'data_contabile'])
-                ->whereRaw('coalesce(importo_transato, 0) not in (-1, -2)')
-                ->get();
-
-            $preloaded['existing_trattenute'] = [];
-            foreach ($existingTrattenute as $t) {
-                $key = $t->user_id.'|'.$t->tiraggio_numero_pratica.'|'.$t->data_contabile;
-                $preloaded['existing_trattenute'][$key] = true;
-            }
-
-            Log::channel('import')->info(
-                'Preloaded data for Trattenuta: '.count($preloaded['users']).' users, '.
-                    count($tiraggi).' tiraggi, '.count($preloaded['existing_trattenute']).' existing trattenute'
-            );
-        }
+        // Add per-model lookups here (e.g. existing ids keyed for fast
+        // duplicate detection) and read them in CsvTransformer::transform().
+        match (class_basename($modelClass)) {
+            default => null,
+        };
 
         return $preloaded;
     }
@@ -463,27 +408,7 @@ class ImportJobService
     {
         $rowData = [];
 
-        $nonDateColumns = ['max_atp_consigliato', 'max_atp_effettivo'];
-
-        // One CSV column can map to multiple DB columns (e.g. same column for importo_transato and importo_transato_previsto)
-        $dbColumnsList = [
-            'importo_richiesto',
-            'costo_totale',
-            'importo_transato',
-            'numero_transazioni',
-            'importo_transato_previsto',
-            'importo_deliberato',
-            'trattenuta_totale',
-            'importo_trattenuto',
-            'mesi',
-            'mese',
-            'anno',
-            'percentuale',
-            'quota_interessi',
-            'forecast',
-            'baseline',
-        ];
-
+        // One CSV column can map to multiple DB columns (an array in $columnMapping).
         foreach ($columnMapping as $csvIndex => $dbColumnOrColumns) {
             $dbColumns = is_array($dbColumnOrColumns) ? $dbColumnOrColumns : [$dbColumnOrColumns];
             if (! isset($row[$csvIndex])) {
@@ -507,7 +432,7 @@ class ImportJobService
                 // Handle special date formats
                 if (
                     str_contains($dbColumn, '_at') &&
-                    ! in_array($dbColumn, $nonDateColumns, true) &&
+                    ! in_array($dbColumn, self::NON_DATE_AT_COLUMNS, true) &&
                     $cellValue !== '' &&
                     $cellValue !== null
                 ) {
@@ -518,7 +443,7 @@ class ImportJobService
                 }
 
                 // Handle empty values for numeric fields - convert to 0 instead of skipping
-                if ($cellValue === '' && in_array($dbColumn, $dbColumnsList)) {
+                if ($cellValue === '' && in_array($dbColumn, self::ZERO_WHEN_EMPTY_COLUMNS, true)) {
                     $rowData[$dbColumn] = 0;
                 } elseif ($cellValue !== '') {
                     $rowData[$dbColumn] = $cellValue;
@@ -603,13 +528,12 @@ class ImportJobService
                 }
             }
 
-            // Special handling for Trattenuta: bulk insert for better performance
-            if ($className === 'Trattenuta' && ! empty($batch)) {
+            // Append-only models: bulk insert for better performance
+            if (in_array($className, self::BULK_INSERT_MODELS, true) && ! empty($batch)) {
                 // Clean batch: remove internal fields
                 $cleanBatch = [];
                 foreach ($batch as $rowData) {
                     // Remove internal fields that shouldn't be inserted
-                    unset($rowData['__tiraggio_update__']);
                     unset($rowData['__skip_record']);
                     unset($rowData['__skip_reason']);
                     unset($rowData['__existing_record_id']);
@@ -649,7 +573,7 @@ class ImportJobService
                     } catch (\Exception $e) {
                         // Fallback to individual inserts if bulk fails
                         Log::channel('import')->warning(
-                            'Bulk insert failed for Trattenuta, falling back to individual inserts: '.$e->getMessage()
+                            "Bulk insert failed for {$className}, falling back to individual inserts: ".$e->getMessage()
                         );
                         foreach ($cleanBatch as $rowData) {
                             try {
@@ -657,7 +581,7 @@ class ImportJobService
                                 $stats['created']++;
                             } catch (\Exception $e2) {
                                 $stats['errors']++;
-                                Log::channel('import')->warning('Failed to insert Trattenuta: '.$e2->getMessage());
+                                Log::channel('import')->warning("Failed to insert {$className}: ".$e2->getMessage());
                             }
                         }
                     }
@@ -669,9 +593,7 @@ class ImportJobService
             // Process each record individually with model-specific logic
             foreach ($batch as $rowData) {
                 try {
-                    $className = class_basename($modelClass);
-
-                    // Handle explicit existing record override (used by Delibera to match user/status)
+                    // Explicit existing record override: a transformation found the row to update
                     if (! empty($rowData['__existing_record_id'])) {
                         $existingId = $rowData['__existing_record_id'];
                         unset($rowData['__existing_record_id']);
@@ -681,76 +603,8 @@ class ImportJobService
                             $existingRecord->update($rowData);
                             $stats['updated']++;
 
-                            // Update open delibera cache if this is a Delibera update
-                            if ($className === 'Delibera' && isset($rowData['user_id'])) {
-                                CsvTransformer::updateOpenDeliberaCache(
-                                    $rowData['user_id']
-                                );
-                            }
-
                             continue;
                         }
-                    }
-
-                    // Special logic for Trattenuta: bulk insert for better performance
-                    if ($className === 'Trattenuta') {
-                        // Skip individual processing - will be handled in bulk below
-                        continue;
-                    }
-
-                    // Special logic for Storico/Previsionale: use user_id + year + month as unique field
-                    if (
-                        in_array($className, ['Storico', 'Previsionale'], true) &&
-                        isset($rowData['anno']) &&
-                        isset($rowData['mese']) &&
-                        isset($rowData['user_id']) &&
-                        ! empty($rowData['anno']) &&
-                        ! empty($rowData['mese']) &&
-                        ! empty($rowData['user_id'])
-                    ) {
-                        $existingRecord = $modelClass::where('user_id', $rowData['user_id'])->where('anno', $rowData['anno'])->where('mese', $rowData['mese'])->first();
-                        if ($existingRecord) {
-                            // Update existing record
-                            $existingRecord->update($rowData);
-                            $stats['updated']++;
-                        } else {
-                            // Insert new record
-                            $modelClass::create($rowData);
-                            $stats['created']++;
-                        }
-
-                        continue;
-                    }
-
-                    // Special logic for Tiraggio: skip upsert logic if __existing_record_id is not set
-                    // This allows simple tiraggio imports (open status) to create new records
-                    if ($className === 'Tiraggio' && empty($rowData['__existing_record_id'])) {
-                        // For Tiraggio without explicit existing record, just insert
-                        // The transform logic already handles finding/updating existing open tiraggi
-                        try {
-                            $newRecord = $modelClass::create($rowData);
-                            $stats['created']++;
-                            Log::channel('import')->info(
-                                "Tiraggio created: ID {$newRecord->tiraggio_id} for user_id ".
-                                    ($rowData['user_id'] ?? 'N/A').
-                                    " with status {$rowData['status']}"
-                            );
-                            Log::channel('tiraggio')->info(
-                                "Tiraggio created: ID {$newRecord->tiraggio_id} for user_id ".
-                                    ($rowData['user_id'] ?? 'N/A').
-                                    " with status {$rowData['status']}"
-                            );
-                        } catch (\Exception $e) {
-                            $stats['skipped']++;
-                            Log::channel('import')->error(
-                                'Failed to create Tiraggio: '.$e->getMessage().' | Data: '.json_encode($rowData)
-                            );
-                            Log::channel('tiraggio')->error(
-                                'Failed to create Tiraggio: '.$e->getMessage().' | Data: '.json_encode($rowData)
-                            );
-                        }
-
-                        continue;
                     }
 
                     // For other models: use upsert logic
@@ -758,15 +612,8 @@ class ImportJobService
 
                     if (! $uniqueFieldToUse || ! isset($rowData[$uniqueFieldToUse])) {
                         // No unique field or value, just insert
-                        $newRecord = $modelClass::create($rowData);
+                        $modelClass::create($rowData);
                         $stats['created']++;
-
-                        // Update open delibera cache if this is a Delibera creation
-                        if ($className === 'Delibera' && isset($rowData['user_id'])) {
-                            CsvTransformer::updateOpenDeliberaCache(
-                                $rowData['user_id']
-                            );
-                        }
 
                         continue;
                     }
@@ -778,24 +625,10 @@ class ImportJobService
                         // Update existing record
                         $existingRecord->update($rowData);
                         $stats['updated']++;
-
-                        // Update open delibera cache if this is a Delibera update
-                        if ($className === 'Delibera' && isset($rowData['user_id'])) {
-                            CsvTransformer::updateOpenDeliberaCache(
-                                $rowData['user_id']
-                            );
-                        }
                     } else {
                         // Insert new record
-                        $newRecord = $modelClass::create($rowData);
+                        $modelClass::create($rowData);
                         $stats['created']++;
-
-                        // Update open delibera cache if this is a Delibera creation
-                        if ($className === 'Delibera' && isset($rowData['user_id'])) {
-                            CsvTransformer::updateOpenDeliberaCache(
-                                $rowData['user_id']
-                            );
-                        }
                     }
                 } catch (\Exception $e) {
                     $stats['skipped']++;
@@ -863,7 +696,7 @@ class ImportJobService
                 [config('database.connections.mysql.database'), $tableName]
             );
 
-            // array_filter: a functional key part (trattenute's) has no COLUMN_NAME.
+            // array_filter: a functional key part (an expression index) has no COLUMN_NAME.
             self::$schemaCache[$tableName] = array_values(array_filter(array_column($uniqueIndexes, 'COLUMN_NAME')));
         } catch (\Exception $e) {
             Log::channel('import')->warning("Could not get unique fields for table {$tableName}: ".$e->getMessage());

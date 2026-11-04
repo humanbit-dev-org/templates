@@ -346,8 +346,8 @@ class BackpackHelper
                 self::configureColorColumnView($column);
             }
 
-            // font_family in interfacce: single dash for empty; render value with that font for preview
-            elseif ($column === 'font_family' && $table === 'interfacce') {
+            // font_family columns: single dash for empty; render value with that font for preview
+            elseif ($column === 'font_family') {
                 CRUD::column($column)
                     ->label('Font')
                     ->type('custom_html')
@@ -362,6 +362,11 @@ class BackpackHelper
                     });
             }
 
+            // Array-cast attributes (json payloads): rendered as JSON text, the
+            // textarea/select views cannot print an array
+            elseif (self::hasArrayCast($model, $column) && ! ($isListOperation && ! $firstListColumnLinked)) {
+                self::configureJsonColumnView($column);
+            }
             // Handle normal relations (automatically detected from database schema)
             elseif (self::isForeignKeyColumn($column, $table) && ! str_contains($column, 'transaction')) {
                 $relationName = self::getRelationNameFromColumn($column, $table);
@@ -514,7 +519,7 @@ class BackpackHelper
                 MediaHandler::configureMediaColumnView($column);
             } elseif (str_contains($column, 'color')) {
                 self::configureColorColumnView($column);
-            } elseif ($column === 'font_family' && $table === 'interfacce') {
+            } elseif ($column === 'font_family') {
                 CRUD::column($column)
                     ->label('Font')
                     ->type('custom_html')
@@ -527,6 +532,10 @@ class BackpackHelper
 
                         return '<span style="font-family: '.e($cssSafe).', sans-serif;">'.e($v).'</span>';
                     });
+            }
+            // Array-cast attributes (json payloads): rendered as JSON text
+            elseif (self::hasArrayCast($model, $column)) {
+                self::configureJsonColumnView($column);
             }
             // Handle normal relations (automatically detected from database schema)
             elseif (self::isForeignKeyColumn($column, $table) && ! str_contains($column, 'transaction')) {
@@ -717,6 +726,40 @@ class BackpackHelper
      *
      * @param  string  $column  Column name (must contain "color", e.g. background_color)
      */
+    /**
+     * Whether the model casts the attribute to an array-like value (array,
+     * json, object, collection, encrypted variants). The column type alone is
+     * not enough: a JSON payload may live in a TEXT column, and SQLite reports
+     * JSON columns as TEXT.
+     */
+    private static function hasArrayCast(Model $model, string $column): bool
+    {
+        return $model->hasCast($column, [
+            'array', 'json', 'object', 'collection',
+            'encrypted:array', 'encrypted:json', 'encrypted:object', 'encrypted:collection',
+        ]);
+    }
+
+    /**
+     * List/show column printing an array-cast attribute as escaped, pretty JSON.
+     */
+    private static function configureJsonColumnView(string $column): void
+    {
+        CRUD::column($column)
+            ->type('custom_html')
+            ->value(function ($entry) use ($column) {
+                $value = $entry->{$column};
+
+                if ($value === null || $value === []) {
+                    return '-';
+                }
+
+                $json = json_encode($value, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+
+                return '<pre class="mb-0" style="white-space: pre-wrap;">'.e((string) $json).'</pre>';
+            });
+    }
+
     private static function configureColorColumnView(string $column): void
     {
         $label = ucwords(str_replace('_', ' ', $column));
@@ -874,10 +917,10 @@ class BackpackHelper
             $modelClass = self::findModelForTable($referencedTable);
 
             if ($modelClass) {
-                // Get class basename (e.g., "App\Models\Filiale" -> "Filiale")
+                // Get class basename (e.g., "App\Models\Page" -> "Page")
                 $modelName = class_basename($modelClass);
 
-                // Convert to camelCase for relation name (e.g., "Filiale" -> "filiale", "BackpackRole" -> "backpackRole")
+                // Convert to camelCase for relation name (e.g., "Page" -> "page", "BackpackRole" -> "backpackRole")
                 return Str::camel($modelName);
             }
 

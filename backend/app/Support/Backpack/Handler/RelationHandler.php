@@ -2,8 +2,6 @@
 
 namespace App\Support\Backpack\Handler;
 
-use App\Models\Previsionale;
-use App\Models\Storico;
 use App\Models\User;
 use App\Support\Backpack\BackpackHelper;
 use App\Support\Backpack\FilterHelper;
@@ -60,9 +58,9 @@ class RelationHandler
                     break;
             }
         }
-        // translates: keep Page on Dati (optional convenience); Banca belongs on Relazioni with other FK-style relations
+        // translates: keep Page on Dati (optional convenience)
         if ($table == 'translates') {
-            $tabName = $methodName === 'banca' ? 'Relazioni' : 'Dati';
+            $tabName = 'Dati';
         }
         $finalTabName = $tabName ? $tabName : 'Relazioni';
         $modalTabName = $table === 'translates' ? 'Relazioni' : $finalTabName;
@@ -88,14 +86,14 @@ class RelationHandler
             $buttonsHtml = '';
             if (count($relatedEntries) > 0) {
                 foreach ($relatedEntries as $entry) {
-                    // Use getRouteKey() to respect custom route key names (e.g., numero_pratica, codice)
+                    // Use getRouteKey() to respect custom route key names (e.g., username, code)
                     $entryRouteKey = method_exists($entry, 'getRouteKeyName') ? $entry->getRouteKey() : $entry->getKey();
 
                     $entryId = $entryRouteKey;
 
                     $displayText = method_exists($entry, 'getDisplayAttribute')
                         ? $entry->getDisplayAttribute()
-                        : $entry->name ?? ($entry->title ?? ($entry->numero_pratica ?? "ID: $entryId"));
+                        : $entry->name ?? ($entry->title ?? ($entry->username ?? "ID: $entryId"));
 
                     $buttonsHtml .= self::generateRelationButtonHtml(
                         $methodName,
@@ -196,7 +194,7 @@ class RelationHandler
                 $routeKeysMap = []; // Map owner key value => route key value
 
                 foreach ($relatedModelClass::all() as $elem) {
-                    // Use owner key value (e.g., numero_pratica) as the option key, not getKey() (id)
+                    // Use owner key value (e.g., username) as the option key, not getKey() (id)
                     $optionKey = isset($elem->$ownerKeyName) ? $elem->$ownerKeyName : $elem->getKey();
 
                     // Get route key for this element
@@ -206,7 +204,7 @@ class RelationHandler
 
                     $displayText = method_exists($elem, 'getDisplayAttribute')
                         ? $elem->getDisplayAttribute()
-                        : $elem->name ?? ($elem->title ?? ($elem->numero_pratica ?? $optionKey));
+                        : $elem->name ?? ($elem->title ?? ($elem->username ?? $optionKey));
 
                     $options[$optionKey] = $displayText;
                 }
@@ -241,8 +239,7 @@ class RelationHandler
                         } else {
                             $currentLabel = $currentEntry->name
                                 ?? ($currentEntry->title
-                                ?? ($currentEntry->user_id
-                                ?? ($currentEntry->numero_pratica ?? (string) $defaultValue)));
+                                ?? ($currentEntry->username ?? (string) $defaultValue));
                         }
                     }
                 }
@@ -619,7 +616,7 @@ class RelationHandler
         // Get foreign key (already correct)
         $foreignKey = $result->getForeignKeyName();
 
-        // Get the owner key value (supports custom primary keys like numero_pratica)
+        // Get the owner key value (supports custom primary keys like username)
         $currentEntry = CRUD::getCurrentEntry();
         if (! $currentEntry) {
             return;
@@ -666,31 +663,13 @@ class RelationHandler
                     '</a>
                 </div>';
         } else {
-            // Load and display individual badges (use relation query so default ordering applies, e.g. storici by date)
-            $relatedEntries = $currentEntry->$methodName()->get();
-
-            // Sort items by date columns if available
-            if ($relatedEntries->isNotEmpty()) {
-                $firstItem = $relatedEntries->first();
-                $attrs = $firstItem->getAttributes();
-
-                if (array_key_exists('data_contabile', $attrs)) {
-                    $relatedEntries = $relatedEntries->sortBy('data_contabile')->values();
-                } elseif (array_key_exists('data_richiesta', $attrs)) {
-                    $relatedEntries = $relatedEntries->sortBy('data_richiesta')->values();
-                } elseif (array_key_exists('data_delibera', $attrs)) {
-                    $relatedEntries = $relatedEntries->sortBy('data_delibera')->values();
-                } elseif (array_key_exists('anno', $attrs) && array_key_exists('mese', $attrs)) {
-                    $relatedEntries = $relatedEntries->sortBy(function ($item) {
-                        return sprintf('%04d-%02d', $item->anno, $item->mese);
-                    })->values();
-                }
-            }
+            // Load and display individual badges (use relation query so default ordering applies)
+            $relatedEntries = self::sortRelatedEntries($currentEntry->$methodName()->get());
 
             $relationList .=
                 '<div class="relation-buttons-container" style="display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.5rem;">';
             foreach ($relatedEntries as $entry) {
-                // Use getRouteKey() to respect custom route key names (e.g., numero_pratica, codice)
+                // Use getRouteKey() to respect custom route key names (e.g., username, code)
                 $entryRouteKey = method_exists($entry, 'getRouteKeyName') ? $entry->getRouteKey() : $entry->getKey();
 
                 $entryId = $entryRouteKey;
@@ -698,7 +677,7 @@ class RelationHandler
                 // Check if model has custom relation display method
                 $entryLabel = method_exists($entry, 'getRelationDisplayAttribute')
                     ? $entry->getRelationDisplayAttribute()
-                    : $entry->name ?? ($entry->title ?? ($entry->numero_pratica ?? "ID: $entryId")); // Fallback to existing logic
+                    : $entry->name ?? ($entry->title ?? ($entry->username ?? "ID: $entryId")); // Fallback to existing logic
                 $entryLabel = BackpackHelper::renderDisplayValue(is_string($entryLabel) ? $entryLabel : (string) $entryLabel, true);
 
                 $relationList .= self::generateRelationButtonHtml(
@@ -820,7 +799,7 @@ class RelationHandler
             // Check if model has custom relation display method
             $entryLabel = method_exists($relatedEntry, 'getRelationDisplayAttribute')
                 ? $relatedEntry->getRelationDisplayAttribute()
-                : $relatedEntry->name ?? ($relatedEntry->title ?? ($relatedEntry->numero_pratica ?? "ID: $entryId"));
+                : $relatedEntry->name ?? ($relatedEntry->title ?? ($relatedEntry->username ?? "ID: $entryId"));
             $entryLabel = BackpackHelper::renderDisplayValue(is_string($entryLabel) ? $entryLabel : (string) $entryLabel, true);
 
             $relationContent .=
@@ -902,9 +881,32 @@ class RelationHandler
      */
     private const RELATION_MODELS_ALWAYS_LINK_ONLY = [
         User::class,
-        Storico::class,
-        Previsionale::class,
     ];
+
+    /**
+     * Order related records for the badge list: by the "order" column when the
+     * model is sortable, otherwise chronologically by creation date. Models
+     * without either keep the relation query order.
+     *
+     * @param  \Illuminate\Support\Collection<int, Model>  $items
+     * @return \Illuminate\Support\Collection<int, Model>
+     */
+    private static function sortRelatedEntries($items)
+    {
+        if ($items->isEmpty()) {
+            return $items;
+        }
+
+        $attrs = $items->first()->getAttributes();
+
+        foreach (['order', 'created_at'] as $column) {
+            if (array_key_exists($column, $attrs)) {
+                return $items->sortBy($column)->values();
+            }
+        }
+
+        return $items;
+    }
 
     /**
      * Whether a HasMany relation should always show a single filtered-list link (no badge grid).
@@ -1022,26 +1024,13 @@ class RelationHandler
 
                     // Sort items by date columns if available
                     if ($items instanceof Collection && $items->isNotEmpty()) {
-                        $firstItem = $items->first();
-                        $attrs = $firstItem->getAttributes();
-
-                        if (array_key_exists('data_contabile', $attrs)) {
-                            $items = $items->sortBy('data_contabile')->values();
-                        } elseif (array_key_exists('data_richiesta', $attrs)) {
-                            $items = $items->sortBy('data_richiesta')->values();
-                        } elseif (array_key_exists('data_delibera', $attrs)) {
-                            $items = $items->sortBy('data_delibera')->values();
-                        } elseif (array_key_exists('anno', $attrs) && array_key_exists('mese', $attrs)) {
-                            $items = $items->sortBy(function ($item) {
-                                return sprintf('%04d-%02d', $item->anno, $item->mese);
-                            })->values();
-                        }
+                        $items = self::sortRelatedEntries($items);
                     }
 
                     $links = [];
                     foreach ($items as $elem) {
                         if ($elem) {
-                            // Use getRouteKey() to respect custom route key names (e.g., numero_pratica, codice)
+                            // Use getRouteKey() to respect custom route key names (e.g., username, code)
                             $elemRouteKey = method_exists($elem, 'getRouteKeyName') ? $elem->getRouteKey() : $elem->getKey();
 
                             if (! $elemRouteKey) {
@@ -1051,7 +1040,7 @@ class RelationHandler
                             // For lists and show pages, use getDisplayAttribute (not getRelationDisplayAttribute)
                             $displayText = method_exists($elem, 'getDisplayAttribute')
                                 ? $elem->getDisplayAttribute()
-                                : $elem->name ?? ($elem->title ?? ($elem->user_id ?? ($elem->numero_pratica ?? $elemRouteKey)));
+                                : $elem->name ?? ($elem->title ?? ($elem->username ?? $elemRouteKey));
 
                             $links[] =
                                 '<a data-relation-link="true" class="crud-link-pill" style="position:relative;" href="'.
@@ -1102,7 +1091,7 @@ class RelationHandler
                         // For lists and show pages, use getDisplayAttribute (not getRelationDisplayAttribute)
                         $displayText = method_exists($elem, 'getDisplayAttribute')
                             ? $elem->getDisplayAttribute()
-                            : $elem->name ?? ($elem->title ?? ($elem->user_id ?? ($elem->numero_pratica ?? $elemRouteKey)));
+                            : $elem->name ?? ($elem->title ?? ($elem->username ?? $elemRouteKey));
 
                         $links[] =
                             '<a data-relation-link="true" class="crud-link-pill" style="position:relative;" href="'.
@@ -1172,7 +1161,7 @@ class RelationHandler
                             $referencedColumn = self::getReferencedColumnForForeignKey($entry->getTable(), $column);
 
                             if ($referencedColumn) {
-                                // Search by the referenced column (works for custom FKs like numero_pratica, codice, etc.)
+                                // Search by the referenced column (works for custom FKs like username, code, etc.)
                                 $relation = $relatedModelClass::where($referencedColumn, $foreignKeyValue)->first();
                             } else {
                                 // Fallback: try primary key
@@ -1187,14 +1176,14 @@ class RelationHandler
                 }
 
                 if ($relation) {
-                    // Use getRouteKey() to respect custom route key names (e.g., numero_pratica, codice)
+                    // Use getRouteKey() to respect custom route key names (e.g., username, code)
                     $routeKey = method_exists($relation, 'getRouteKeyName') ? $relation->getRouteKey() : $relation->getKey();
 
                     // For lists and show pages, use getDisplayAttribute (not getRelationDisplayAttribute)
                     $displayText = method_exists($relation, 'getDisplayAttribute')
                         ? $relation->getDisplayAttribute()
                         : $relation->name ??
-                            ($relation->title ?? ($relation->user_id ?? ($relation->numero_pratica ?? $routeKey)));
+                            ($relation->title ?? ($relation->username ?? $routeKey));
 
                     $modelName = strtolower(class_basename($relation));
 

@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Support\Url\StoredFileUrl;
 use Dedoc\Scramble\Attributes\SchemaName;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -12,9 +13,9 @@ class AttachmentResource extends JsonResource
     /**
      * Transform the resource into an array.
      *
-     * The URL points at the platform download route, which streams the file
-     * from the private disk after an ownership check. Stable across local
-     * and S3: the disk choice is the controller's, not the client's.
+     * The URL is resolved by StoredFileUrl from the stored path: CDN or disk
+     * URL for public files, an expiring signed URL for private ones. Null
+     * when the attachment has no file yet.
      *
      * @return array<string, mixed>
      */
@@ -24,8 +25,7 @@ class AttachmentResource extends JsonResource
             'id' => $this->id,
             'title' => $this->title,
             'description' => $this->description,
-            'order' => $this->order,
-            'url' => route('documenti.download', ['attachment' => $this->id]),
+            'url' => $this->file_path ? StoredFileUrl::resolve($this->file_path) : null,
         ];
     }
 }

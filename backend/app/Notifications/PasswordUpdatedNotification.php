@@ -2,14 +2,16 @@
 
 namespace App\Notifications;
 
-use App\Notifications\Concerns\UsesBankMailBranding;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
+/**
+ * Mail sent to a user after their password changed, in Italian or English.
+ */
 class PasswordUpdatedNotification extends Notification
 {
-    use Queueable, UsesBankMailBranding;
+    use Queueable;
 
     /**
      * Create a new notification instance.
@@ -31,30 +33,23 @@ class PasswordUpdatedNotification extends Notification
      */
     public function toMail(object $notifiable): MailMessage
     {
-        $bancaNome = $notifiable->banca?->nome ?? '';
-        $isEnglish = $this->lang === 'en';
+        $brand = (string) config('mail.brand_name');
 
-        if ($isEnglish) {
-            return $this->withBankMailBranding(
-                (new MailMessage)
-                    ->subject("{$bancaNome} - Password updated")
-                    ->greeting('Hello,')
-                    ->line('Your password has been updated successfully.')
-                    ->line('If you did not make this change, please contact support immediately.')
-                    ->salutation("Regards,\n{$bancaNome}"),
-                $notifiable->banca
-            );
+        if ($this->lang === 'en') {
+            return (new MailMessage)
+                ->subject("{$brand} - Password updated")
+                ->greeting('Hello,')
+                ->line('Your password has been updated successfully.')
+                ->line('If you did not make this change, please contact support immediately.')
+                ->salutation("Regards,\n{$brand}");
         }
 
-        return $this->withBankMailBranding(
-            (new MailMessage)
-                ->subject("{$bancaNome} - Password aggiornata")
-                ->greeting('Gentile utente,')
-                ->line('La tua password è stata aggiornata con successo.')
-                ->line('Se non hai effettuato questa modifica, contatta immediatamente l\'assistenza.')
-                ->salutation("Cordiali saluti,\n{$bancaNome}"),
-            $notifiable->banca
-        );
+        return (new MailMessage)
+            ->subject("{$brand} - Password aggiornata")
+            ->greeting('Gentile utente,')
+            ->line('La tua password è stata aggiornata con successo.')
+            ->line('Se non hai effettuato questa modifica, contatta immediatamente l\'assistenza.')
+            ->salutation("Cordiali saluti,\n{$brand}");
     }
 
     /**

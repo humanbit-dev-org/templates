@@ -43,7 +43,7 @@
         </div>
 
         <div class="row g-3">
-            @foreach ($commands as $commandId => $command)
+            @forelse ($commands as $commandId => $command)
                 <div class="col-md-6 col-xl-4">
                     <div class="card h-100">
                         <div class="card-body d-flex flex-column">
@@ -88,7 +88,13 @@
                         </div>
                     </div>
                 </div>
-            @endforeach
+            @empty
+                <div class="col-12">
+                    <div class="alert alert-secondary mb-0">
+                        Nessun comando di pulizia registrato: aggiungili in <code>App\Services\DataCleanup\DataCleanupService::getCommands()</code>.
+                    </div>
+                </div>
+            @endforelse
         </div>
     </div>
 </div>

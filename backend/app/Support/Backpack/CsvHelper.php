@@ -58,7 +58,7 @@ class CsvHelper
 
     /**
      * Increment a custom counter by name
-     * Use for operation-specific tracking (e.g., 'missing_user_ids', 'invalid_dates')
+     * Use for operation-specific tracking (e.g., 'missing_users', 'invalid_dates')
      *
      * @param  string  $name  Counter name
      * @param  int  $count  Amount to increment (default: 1)
@@ -289,7 +289,7 @@ class CsvHelper
 
     /**
      * Alias for findHeaderIndex - drop-in replacement for array_search with case-insensitive matching
-     * Usage: CsvHelper::headerIndex('USER_ID', $headers) instead of array_search('USER_ID', $headers)
+     * Usage: CsvHelper::headerIndex('EMAIL', $headers) instead of array_search('EMAIL', $headers)
      *
      * @param  string|array  $headerName  Header name or array of candidate names
      * @param  array  $headers  CSV headers array
@@ -320,41 +320,5 @@ class CsvHelper
         }
 
         return trim($row[$index]);
-    }
-
-    /**
-     * Resolve a bare NDG from an import CSV to a user_id.
-     *
-     * The files carry the NDG alone while users are stored as "{abi}-{ndg}".
-     * Tries the prefixed id first, then the raw value, so rows loaded before
-     * the prefix existed still match.
-     *
-     * @param  array<string, mixed>  $preloadedUsers  keyed by user_id; empty to hit the DB
-     */
-    public static function resolveUserIdFromNdg(?string $ndg, array $preloadedUsers = []): ?string
-    {
-        $ndg = trim((string) $ndg);
-
-        if ($ndg === '') {
-            return null;
-        }
-
-        $candidates = [config('import.abi_prefix').'-'.$ndg, $ndg];
-
-        foreach ($candidates as $candidate) {
-            if ($preloadedUsers !== []) {
-                if (isset($preloadedUsers[$candidate])) {
-                    return $candidate;
-                }
-
-                continue;
-            }
-
-            if (\App\Models\User::where('user_id', $candidate)->exists()) {
-                return $candidate;
-            }
-        }
-
-        return null;
     }
 }

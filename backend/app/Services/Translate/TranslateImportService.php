@@ -70,39 +70,24 @@ class TranslateImportService
                 $itNode = $italianTranslations[$code] ?? null;
                 $enNode = $englishTranslations[$code] ?? null;
 
-                // Backward compatibility:
-                // - Old shape: $node is an object with keys it/en/text_*
-                // - New shape: $node is a map of banca_abi => object, with "default" for global-per-code
+                // Leaf shape: $node is an object with keys it/en/text_*. Files written
+                // with per-variant nodes ({"default": {...}, ...}) keep working: only the
+                // "default" variant is imported, the template has no other dimension.
                 $looksLikeLeaf =
                     is_array($itNode) && (array_key_exists('it', $itNode) || array_key_exists('text_it', $itNode)) ||
                     is_array($enNode) && (array_key_exists('en', $enNode) || array_key_exists('text_en', $enNode));
 
-                if ($looksLikeLeaf) {
-                    self::upsertTranslation($pageId, $code, null, $itNode, $enNode);
-                    $seenKeys[] = self::canonicalKey($pageId, $code, null);
+                if (! $looksLikeLeaf) {
+                    $itNode = is_array($itNode) ? ($itNode['default'] ?? null) : null;
+                    $enNode = is_array($enNode) ? ($enNode['default'] ?? null) : null;
 
-                    continue;
+                    if ($itNode === null && $enNode === null) {
+                        continue;
+                    }
                 }
 
-                $abiKeys = array_unique(array_merge(
-                    is_array($itNode) ? array_keys($itNode) : [],
-                    is_array($enNode) ? array_keys($enNode) : []
-                ));
-                $abiKeys = array_values(array_filter($abiKeys, static function (string $abiKey): bool {
-                    return ! str_starts_with($abiKey, '__');
-                }));
-
-                foreach ($abiKeys as $abiKey) {
-                    $bancaAbi = $abiKey === 'default' ? null : (string) $abiKey;
-                    self::upsertTranslation(
-                        $pageId,
-                        $code,
-                        $bancaAbi,
-                        is_array($itNode) ? ($itNode[$abiKey] ?? null) : null,
-                        is_array($enNode) ? ($enNode[$abiKey] ?? null) : null
-                    );
-                    $seenKeys[] = self::canonicalKey($pageId, $code, $bancaAbi);
-                }
+                self::upsertTranslation($pageId, $code, $itNode, $enNode);
+                $seenKeys[] = self::canonicalKey($pageId, $code);
             }
         }
 
@@ -154,7 +139,7 @@ class TranslateImportService
     /**
      * Create or update translation record
      */
-    private static function upsertTranslation(?int $pageId, string $code, ?string $bancaAbi, mixed $italianData, mixed $englishData): void
+    private static function upsertTranslation(?int $pageId, string $code, mixed $italianData, mixed $englishData): void
     {
         $query = Translate::where('code', $code);
 
@@ -162,12 +147,6 @@ class TranslateImportService
             $query->whereNull('page_id');
         } else {
             $query->where('page_id', $pageId);
-        }
-
-        if ($bancaAbi === null) {
-            $query->whereNull('banca_abi');
-        } else {
-            $query->where('banca_abi', $bancaAbi);
         }
 
         $translation = $query->first();
@@ -180,7 +159,6 @@ class TranslateImportService
         $data = [
             'page_id' => $pageId,
             'code' => $code,
-            'banca_abi' => $bancaAbi,
             'it' => $leaf['it'],
             'text_it' => $leaf['text_it'],
             'en' => $leaf['en'],
@@ -240,12 +218,12 @@ class TranslateImportService
     {
         $seenLookup = array_fill_keys($seenKeys, true);
 
-        Translate::query()->select(['id', 'page_id', 'code', 'banca_abi'])
+        Translate::query()->select(['id', 'page_id', 'code'])
             ->chunkById(500, function ($rows) use ($seenLookup): void {
                 $idsToDelete = [];
 
                 foreach ($rows as $row) {
-                    $key = self::canonicalKey($row->page_id, (string) $row->code, $row->banca_abi ? (string) $row->banca_abi : null);
+                    $key = self::canonicalKey($row->page_id, (string) $row->code);
                     if (! isset($seenLookup[$key])) {
                         $idsToDelete[] = $row->id;
                     }
@@ -260,12 +238,11 @@ class TranslateImportService
     /**
      * Build a canonical key to compare imported and persisted rows.
      */
-    private static function canonicalKey(?int $pageId, string $code, ?string $bancaAbi): string
+    private static function canonicalKey(?int $pageId, string $code): string
     {
         return implode('|', [
             $pageId === null ? 'null' : (string) $pageId,
             $code,
-            $bancaAbi ?? 'null',
         ]);
     }
 }

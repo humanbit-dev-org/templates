@@ -1,4 +1,4 @@
-/* Nexi mail theme — palette mirrors frontend _variables.generated.scss */
+/* Default mail theme — palette mirrors the frontend colour variables */
 
 /* Base */
 
@@ -131,7 +131,7 @@ img {
     width: auto;
 }
 
-.logo-bank {
+.logo-cobrand {
     height: auto;
     max-height: 40px;
     max-width: 180px;

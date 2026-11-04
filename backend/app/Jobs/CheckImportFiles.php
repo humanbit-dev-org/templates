@@ -8,6 +8,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use App\Support\Backpack\Log\LogHelper;
 use Illuminate\Support\Facades\Log;
 
 /**
@@ -57,18 +58,9 @@ class CheckImportFiles implements ShouldBeUnique, ShouldQueue
             return;
         }
 
-        $PRIORITY_ORDER = [
-            'filiale' => 1,
-            'anagrafica' => 2,
-            'delibera' => 3,
-            'tiraggio' => 4,
-            'mensile' => 5,
-            'trattenuta' => 6,
-        ];
-
-        $MODEL_OVERRIDES = [
-            'anagrafica' => 'User',
-        ];
+        // Folder order and folder → model mapping: see config/import.php.
+        $PRIORITY_ORDER = config('import.priority', []);
+        $MODEL_OVERRIDES = config('import.model_overrides', []);
 
         $files = [];
         $dirIterator = new \RecursiveDirectoryIterator($folder, \RecursiveDirectoryIterator::SKIP_DOTS);
@@ -108,11 +100,11 @@ class CheckImportFiles implements ShouldBeUnique, ShouldQueue
 
                     $msg = "SECURITY: File {$subfolder}/{$filename} moved to suspended - duplicate filename detected";
                     Log::channel('import')->warning($msg);
-                    Log::channel($subfolder)->warning($msg);
+                    LogHelper::channel($subfolder)->warning($msg);
                 } else {
                     $msg = "ERROR: Cannot move duplicate file {$subfolder}/{$filename} to suspended";
                     Log::channel('import')->error($msg);
-                    Log::channel($subfolder)->error($msg);
+                    LogHelper::channel($subfolder)->error($msg);
                 }
             } else {
                 $files[] = [

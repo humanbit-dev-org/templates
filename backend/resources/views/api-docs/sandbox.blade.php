@@ -19,8 +19,7 @@
 <select id="api-sandbox-nav-mobile" class="api-sandbox-nav-mobile" aria-label="Vai all'endpoint">
     <option value="">Vai a…</option>
     @foreach ($endpoints as $endpoint)
-        <option value="{{ $endpoint['id'] }}"
-            @if (!empty($endpoint['operations']) && collect($endpoint['operations'])->every(fn ($op) => $op['conguaglio_only'] ?? false)) data-conguaglio-option @endif>
+        <option value="{{ $endpoint['id'] }}">
             {{ $endpoint['method'] }} — {{ $endpoint['title'] }}
         </option>
     @endforeach
@@ -30,8 +29,7 @@
 <nav class="api-sandbox-nav" aria-label="Endpoint">
     <p class="api-sandbox-nav-title">Endpoint</p>
     @foreach ($endpoints as $endpoint)
-        <a href="#{{ $endpoint['id'] }}" class="api-sandbox-nav-link" data-nav="{{ $endpoint['id'] }}"
-            @if (!empty($endpoint['operations']) && collect($endpoint['operations'])->every(fn ($op) => $op['conguaglio_only'] ?? false)) data-conguaglio-only @endif>
+        <a href="#{{ $endpoint['id'] }}" class="api-sandbox-nav-link" data-nav="{{ $endpoint['id'] }}">
             <span class="api-sandbox-method method-{{ strtolower($endpoint['method']) }}">{{ $endpoint['method'] }}</span>
             {{ $endpoint['title'] }}
         </a>
@@ -57,19 +55,16 @@
             è la scheda <a href="{{ url('/api-docs?tab=portal') }}">Portal</a>.
         </p>
 
-        <div class="api-sandbox-tabs" role="tablist" aria-label="Configurazione banca">
-            @foreach ($banks as $abi => $bank)
+        {{-- One tab per demo profile (config/sandbox.php 'profiles'). --}}
+        <div class="api-sandbox-tabs" role="tablist" aria-label="Profilo demo">
+            @foreach ($profiles as $key => $profile)
                 <button type="button" role="tab"
-                    class="api-sandbox-tab {{ (string) $abi === ($defaultBank ?? null) ? 'active' : '' }}"
-                    data-bank="{{ $abi }}" aria-selected="{{ (string) $abi === ($defaultBank ?? null) ? 'true' : 'false' }}">
-                    {{ $bank['label'] }}
-                    <small>ABI {{ $abi }}</small>
+                    class="api-sandbox-tab {{ (string) $key === ($defaultProfile ?? null) ? 'active' : '' }}"
+                    data-profile="{{ $key }}" aria-selected="{{ (string) $key === ($defaultProfile ?? null) ? 'true' : 'false' }}">
+                    {{ $profile['label'] }}
+                    <small>{{ $profile['user'] }}</small>
                 </button>
             @endforeach
-            <label class="api-sandbox-conguaglio" id="conguaglio-wrap" hidden>
-                <input type="checkbox" id="conguaglio-toggle" checked>
-                Conguaglio
-            </label>
         </div>
     @endif
 
@@ -81,27 +76,15 @@
         </p>
         <pre class="api-sandbox-code">Authorization: Bearer {token}</pre>
         <p>
-            Le API sono accessibili solo agli operatori con ruolo
-            <strong>Filiale</strong> o <strong>Product Owner</strong>, e ciascun
-            operatore può agire esclusivamente sui dati della propria banca: le
-            richieste su clienti o pratiche di altre banche rispondono con
-            <code>403</code>.
-        </p>
-        <p>
-            Ogni scheda del sandbox ha il proprio token: il token di una banca
-            demo non può leggere i dati dell'altra.
+            Ogni scheda del sandbox corrisponde a un profilo demo con il proprio
+            token: le chiamate girano con i permessi di quell'utente, e le
+            richieste fuori dal suo ambito rispondono con <code>403</code>.
         </p>
         <p>
             I parametri contrassegnati con <span class="api-sandbox-required">*</span>
             sono obbligatori. Le date sono in formato <code>YYYY-MM-DD</code>.
         </p>
     </section>
-
-    <p class="api-sandbox-lead">
-        Banche demo: i clienti seguono lo schema <code>ABI&lt;banca&gt;_PC…</code>
-        e <code>ABI&lt;banca&gt;_MT…</code>; gli ID <code>ABI&lt;banca&gt;_ERR…</code>
-        esistono per provare le risposte di errore.
-    </p>
 
     @foreach ($endpoints as $endpoint)
         @include('api-docs.partials.endpoint', ['endpoint' => $endpoint])
@@ -113,26 +96,22 @@
 <script>
     const TOKEN_URL = @json(route('sandbox.token'));
     const SAMPLE_URL = @json(route('sandbox.sample'));
-    const BANKS = @json($banks);
-    const DP_ABIS = Object.keys(BANKS).filter((abi) => BANKS[abi].durata_parametrica);
+    const PROFILES = @json($profiles);
 
-    // Selected bank persists per tab — like the tokens, it lives in
+    // Selected profile persists per tab — like the tokens, it lives in
     // sessionStorage so a refresh restores it but each tab stays independent.
-    let currentBank = sessionStorage.getItem('api_sandbox_bank');
-    if (!BANKS[currentBank]) {
-        currentBank = @json($defaultBank);
+    let currentProfile = sessionStorage.getItem('api_sandbox_profile');
+    if (!PROFILES[currentProfile]) {
+        currentProfile = @json($defaultProfile);
     }
-    // The conguaglio toggle persists too — stored per tab like the bank.
-    let conguaglioOn = sessionStorage.getItem('api_sandbox_conguaglio') !== '0';
-    document.getElementById('conguaglio-toggle').checked = conguaglioOn;
 
-    // One token slot per bank per tab — try-it calls and the banner share it.
+    // One token slot per profile per tab — try-it calls and the banner share it.
     let apiToken = null;
     let apiTokenExpiry = null;
 
     function loadToken() {
-        apiToken = sessionStorage.getItem(`api_sandbox_token_${currentBank}`) || null;
-        apiTokenExpiry = sessionStorage.getItem(`api_sandbox_token_expiry_${currentBank}`) || null;
+        apiToken = sessionStorage.getItem(`api_sandbox_token_${currentProfile}`) || null;
+        apiTokenExpiry = sessionStorage.getItem(`api_sandbox_token_expiry_${currentProfile}`) || null;
 
         if (!tokenValid()) {
             apiToken = null;
@@ -142,16 +121,6 @@
 
     function tokenValid() {
         return apiToken && apiTokenExpiry && new Date(apiTokenExpiry).getTime() > Date.now();
-    }
-
-    function conguaglioActive() {
-        return DP_ABIS.includes(currentBank) && conguaglioOn;
-    }
-
-    // ?sandbox_conguaglio=0 flips the DP product inside the rolled-back
-    // transaction — the only way the same bank demos both product states.
-    function toggleParam() {
-        return DP_ABIS.includes(currentBank) && !conguaglioOn ? '?sandbox_conguaglio=0' : '';
     }
 
     function showTokenSection() {
@@ -166,28 +135,16 @@
         document.getElementById('token-section').style.display = 'none';
     }
 
-    function applyBankVisibility() {
-        const dp = DP_ABIS.includes(currentBank);
-        document.getElementById('conguaglio-wrap').hidden = !dp;
-
-        document.querySelectorAll('[data-conguaglio-only]').forEach((el) => {
-            el.hidden = !conguaglioActive();
-        });
-
-        // <option> can't be hidden reliably (iOS Safari) — disable instead.
-        document.querySelectorAll('#api-sandbox-nav-mobile option[data-conguaglio-option]').forEach((opt) => {
-            opt.disabled = !conguaglioActive();
-        });
-
+    function applyProfile() {
         document.getElementById('token-label').textContent =
-            `Token sandbox — ${BANKS[currentBank].label} (valido 9 ore):`;
+            `Token sandbox — ${PROFILES[currentProfile].label} (valido 9 ore):`;
 
         loadToken();
         tokenValid() ? showTokenSection() : showTokenRequest();
     }
 
     // One shared issuer behind both the banner button and the first Try-it:
-    // reuses the bank's session token while it is still valid, mints a new
+    // reuses the profile's session token while it is still valid, mints a new
     // one otherwise (or when forced). Mints are independent — a new token
     // never revokes the previous ones.
     async function getSandboxToken(force = false) {
@@ -198,7 +155,7 @@
         const res = await fetch(TOKEN_URL, {
             method: 'POST',
             headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
-            body: JSON.stringify({ bank: currentBank }),
+            body: JSON.stringify({ profile: currentProfile }),
         });
 
         if (!res.ok) {
@@ -208,32 +165,26 @@
         const data = await res.json();
         apiToken = data.token;
         apiTokenExpiry = data.expires_at;
-        sessionStorage.setItem(`api_sandbox_token_${currentBank}`, apiToken);
-        sessionStorage.setItem(`api_sandbox_token_expiry_${currentBank}`, apiTokenExpiry);
+        sessionStorage.setItem(`api_sandbox_token_${currentProfile}`, apiToken);
+        sessionStorage.setItem(`api_sandbox_token_expiry_${currentProfile}`, apiTokenExpiry);
         showTokenSection();
 
         return apiToken;
     }
 
-    function selectBank(abi) {
-        currentBank = abi;
-        sessionStorage.setItem('api_sandbox_bank', abi);
-        document.querySelectorAll('.api-sandbox-tab[data-bank]').forEach((t) => {
-            const selected = t.dataset.bank === abi;
+    function selectProfile(key) {
+        currentProfile = key;
+        sessionStorage.setItem('api_sandbox_profile', key);
+        document.querySelectorAll('.api-sandbox-tab[data-profile]').forEach((t) => {
+            const selected = t.dataset.profile === key;
             t.classList.toggle('active', selected);
             t.setAttribute('aria-selected', String(selected));
         });
-        applyBankVisibility();
+        applyProfile();
     }
 
-    document.querySelectorAll('.api-sandbox-tab[data-bank]').forEach((tab) => {
-        tab.addEventListener('click', () => selectBank(tab.dataset.bank));
-    });
-
-    document.getElementById('conguaglio-toggle').addEventListener('change', (e) => {
-        conguaglioOn = e.target.checked;
-        sessionStorage.setItem('api_sandbox_conguaglio', conguaglioOn ? '1' : '0');
-        applyBankVisibility();
+    document.querySelectorAll('.api-sandbox-tab[data-profile]').forEach((tab) => {
+        tab.addEventListener('click', () => selectProfile(tab.dataset.profile));
     });
 
     document.getElementById('token-btn').addEventListener('click', async () => {
@@ -324,16 +275,16 @@
             try {
                 await getSandboxToken();
 
-                // The resolver picks a random valid row in the active bank
+                // The resolver picks a random valid row for the active profile
                 // and returns the real /sandbox/* request to fire.
-                const sample = await authedFetch(SAMPLE_URL + toggleParam(), {
+                const sample = await authedFetch(SAMPLE_URL, {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${apiToken}`,
                         'Accept': 'application/json',
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ operation: btn.dataset.sampleOp, bank: currentBank }),
+                    body: JSON.stringify({ operation: btn.dataset.sampleOp, profile: currentProfile }),
                 });
 
                 const call = await sample.json();
@@ -343,7 +294,7 @@
                     return;
                 }
 
-                const path = call.path + toggleParam();
+                const path = call.path;
                 const res = await authedFetch(path, {
                     method: call.method,
                     headers: {
@@ -388,7 +339,7 @@
 
     cards.forEach((card) => spy.observe(card));
 
-    selectBank(currentBank);
+    selectProfile(currentProfile);
 </script>
 @endif
 

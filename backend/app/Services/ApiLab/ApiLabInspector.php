@@ -287,7 +287,7 @@ class ApiLabInspector
         $body = [];
         foreach ($inputs as $input) {
             $name = $input['name'];
-            $body[$name] = $name === 'payload' ? ['…' => 'Nexi Cashberry payload object'] : '';
+            $body[$name] = '';
         }
 
         return $body;

@@ -11,9 +11,10 @@ use Illuminate\Support\Str;
  * saving the disk-relative path on the model.
  *
  * The upload is deferred to the saving event rather than done inside
- * setAttribute(): the destination folder includes banca_abi, which on a new
- * record is not guaranteed to be set yet when the file attribute is filled —
- * mass assignment applies attributes in payload order.
+ * setAttribute(): the destination folder may include an owner segment
+ * (mediaOwner()) read from another attribute, which on a new record is not
+ * guaranteed to be set yet when the file attribute is filled — mass
+ * assignment applies attributes in payload order.
  */
 trait StorableMedia
 {
@@ -54,7 +55,7 @@ trait StorableMedia
             $this->attributes[$key] = MediaStorage::storePublic(
                 $file,
                 $this->mediaFolderFor($key),
-                $this->mediaBancaAbi(),
+                $this->mediaOwner(),
             );
         }
 
@@ -74,11 +75,13 @@ trait StorableMedia
     }
 
     /**
-     * Bank the asset belongs to, used as the folder segment.
+     * Owner the asset belongs to, used as an optional folder segment
+     * (see MediaStorage). Null keeps every file of the type in one folder;
+     * override it in a model to group files, e.g. by tenant.
      */
-    protected function mediaBancaAbi(): ?string
+    protected function mediaOwner(): ?string
     {
-        return $this->banca_abi ?? null;
+        return null;
     }
 
     private function isFileAttribute($key, $value): bool

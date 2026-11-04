@@ -714,7 +714,7 @@ body.api-lab-page {
     display: none !important;
 }
 
-/* Second level inside a category, e.g. one sub-section per bank. */
+/* Second level inside a category, e.g. one sub-section per partner. */
 .api-lab-sector--nested {
     margin: 0 0 0.4rem;
     border-color: rgba(0, 255, 170, 0.09);

@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Contatto;
 use Illuminate\Foundation\Http\FormRequest;
 
 class ContattoRequest extends FormRequest
@@ -23,7 +24,7 @@ class ContattoRequest extends FormRequest
     {
         return [
             'email' => 'required|email|max:255',
-            'oggetto' => 'required|string|in:richiesta,conferma_richiesta,gestione_credito,altro',
+            'oggetto' => 'required|string|in:'.implode(',', array_keys(Contatto::OGGETTI)),
             'messaggio' => 'required|string|max:5000',
         ];
     }
@@ -43,7 +44,7 @@ class ContattoRequest extends FormRequest
             'email.required' => 'L\'email è obbligatoria.',
             'email.email' => 'Inserisci un indirizzo email valido.',
             'oggetto.required' => 'L\'oggetto è obbligatorio.',
-            'oggetto.in' => 'L\'oggetto deve essere uno tra: richiesta, conferma richiesta, gestione credito, altro.',
+            'oggetto.in' => 'L\'oggetto deve essere uno tra: '.implode(', ', Contatto::OGGETTI).'.',
             'messaggio.required' => 'Il messaggio è obbligatorio.',
             'messaggio.max' => 'Il messaggio non può superare :max caratteri.',
         ];

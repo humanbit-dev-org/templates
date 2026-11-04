@@ -4,20 +4,42 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | ABI prefix for NDG lookups
+    | Folder-based CSV import (database/import/{folder}/*.csv)
     |--------------------------------------------------------------------------
     |
-    | The automatic CSV imports (TransatoWLDaCC, RapportiFidiEstinti_E_ATPAperti)
-    | carry a bare NDG, while users are stored as "{abi}-{ndg}". Today only Banco
-    | di Desio feeds these files, so the prefix is its ABI — 03440.
+    | CheckImportFiles scans database/import/ and queues one ProcessImportFile
+    | job per CSV found. The folder name decides the target model:
+    | ucfirst($folder), unless 'model_overrides' maps it to another model
+    | (e.g. 'utenti' => 'User').
     |
-    | Set IMPORT_ABI_PREFIX per instance rather than editing this: the value is
-    | deployment data, not behaviour, and each tenant is already its own
-    | deployment. The lookup falls back to the bare NDG when the prefixed id
-    | does not exist, so a wrong value degrades instead of breaking.
+    | 'priority' orders the folders inside one scan, lower first: models that
+    | others reference through a foreign key must be imported before them
+    | (e.g. ['role' => 1, 'user' => 2]). Unlisted folders run last.
     |
     */
 
-    'abi_prefix' => env('IMPORT_ABI_PREFIX', '03440'),
+    'priority' => [],
+
+    'model_overrides' => [],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Upload CSV page (Backpack → Tools → Upload CSV)
+    |--------------------------------------------------------------------------
+    |
+    | File types an operator can upload. Each type drops its files into
+    | database/import/{directory}; 'patterns' are file-name prefixes used to
+    | detect the type automatically. Example:
+    |
+    |     'utenti' => [
+    |         'name' => 'Anagrafica utenti',
+    |         'directory' => 'user',
+    |         'description' => 'Crea o aggiorna gli utenti a partire dallo username.',
+    |         'patterns' => ['Utenti_'],
+    |     ],
+    |
+    */
+
+    'upload_types' => [],
 
 ];

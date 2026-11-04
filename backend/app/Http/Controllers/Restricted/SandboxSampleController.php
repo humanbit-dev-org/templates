@@ -9,8 +9,8 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 /**
- * Resolves a demo call for the /api-sandbox buttons: a random valid target
- * inside the requested bank plus a valid body, ready for the page to fire
+ * Resolves a demo call for the API docs buttons: a random valid target for
+ * the requested profile plus a valid body, ready for the page to fire
  * against the real /sandbox/* endpoint.
  */
 class SandboxSampleController extends Controller
@@ -19,10 +19,10 @@ class SandboxSampleController extends Controller
     {
         $validated = $request->validate([
             'operation' => ['required', 'string', Rule::in(SampleCallResolver::operations())],
-            'bank' => ['required', 'string', Rule::in(array_keys(config('sandbox.banks')))],
+            'profile' => ['required', 'string', Rule::in(array_keys(config('sandbox.profiles', [])))],
         ]);
 
-        $call = SampleCallResolver::resolve($validated['operation'], $validated['bank']);
+        $call = SampleCallResolver::resolve($validated['operation'], $validated['profile']);
 
         if ($call === null) {
             return response()->json([

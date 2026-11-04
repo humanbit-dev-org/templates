@@ -25,7 +25,7 @@ class BelongsToSearchOperation extends Controller
         } else {
             // Always include primary key in search
             $primaryKey = $model->getKeyName();
-            $candidates = [$primaryKey, 'user_id', 'ragione_sociale', 'name', 'email', 'title', 'codice', 'code'];
+            $candidates = [$primaryKey, 'username', 'name', 'surname', 'email', 'title', 'codice', 'code'];
 
             $query->where(function ($builder) use ($candidates, $q, $model, $primaryKey) {
                 foreach ($candidates as $field) {
@@ -34,8 +34,8 @@ class BelongsToSearchOperation extends Controller
                         continue;
                     }
 
-                    // Exact match when searching by primary key-like value (e.g. user_id with dash)
-                    if ($field === $primaryKey || $field === 'user_id') {
+                    // Exact match when searching by the primary key (e.g. a username)
+                    if ($field === $primaryKey) {
                         $builder->orWhere($field, '=', $q);
                     } else {
                         $builder->orWhere($field, 'like', "%{$q}%");
@@ -50,10 +50,8 @@ class BelongsToSearchOperation extends Controller
             } elseif (method_exists($item, 'getDisplayAttribute')) {
                 $text = $item->getDisplayAttribute();
             } else {
-                $text = $item->user_id
-                    ?? ($item->ragione_sociale
-                    ?? ($item->name
-                    ?? ($item->title ?? $item->getKey())));
+                $text = $item->name
+                    ?? ($item->title ?? $item->getKey());
             }
 
             return [

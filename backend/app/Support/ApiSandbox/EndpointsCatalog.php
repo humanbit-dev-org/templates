@@ -228,159 +228,36 @@ class EndpointsCatalog
      * description sources for the merge and as the full fallback when the spec
      * is unavailable.
      *
+     * The template ships with no documented endpoint: add one entry per route
+     * exposed through the sandbox (routes/sandbox.php) or the portal
+     * (routes/portal.php). Shape of an entry:
+     *
+     *     'POST /api/articles/{article}/publish' => [
+     *         'id' => 'article-publish',             // anchor and try-it key
+     *         'title' => 'Publish an article',
+     *         'description' => 'Marks the article as published.',
+     *         'path_params' => [
+     *             ['name' => 'article', 'type' => 'integer', 'required' => true, 'description' => 'Article id.'],
+     *         ],
+     *         'body_params' => [
+     *             ['name' => 'published_at', 'type' => 'date', 'required' => false, 'description' => 'Defaults to now.'],
+     *         ],
+     *         'operations' => [
+     *             ['key' => 'article-publish', 'label' => 'Publish'],
+     *         ],
+     *         'responses' => [
+     *             ['status' => 200, 'description' => 'Article published.'],
+     *             ['status' => 404, 'description' => 'Article not found.'],
+     *         ],
+     *     ],
+     *
+     * Each operation key must have a matching sample in SampleCallResolver so
+     * the sandbox try-it panel can pre-fill a working call.
+     *
      * @return array<string, array<string, mixed>>
      */
     private static function overrides(): array
     {
-        return [
-            'PATCH /api/business-console/eleggibili/{user}' => [
-                'id' => 'eleggibile-attiva-sospendi',
-                'title' => 'Attiva / sospendi cliente eleggibile',
-                'description' => 'Attiva o sospende un cliente eleggibile, e ne aggiorna i dati anagrafici. Con sospeso=false il cliente viene attivato: i parametri della delibera (max_atp_effettivo, tan, taeg) e la filiale diventano obbligatori, e viene creata o aggiornata una delibera in stato open. Con sospeso=true il cliente viene sospeso; l\'operazione è vietata se il cliente ha tiraggi in stato requested o accepted. Senza sospeso, i soli dati anagrafici vengono salvati. In fase di attivazione il cliente deve inoltre rispettare il target del prodotto configurato sulla banca.',
-                'path_params' => [
-                    ['name' => 'user', 'type' => 'string', 'required' => true, 'description' => 'Identificativo del cliente eleggibile.'],
-                ],
-                'body_params' => [
-                    ['name' => 'sospeso', 'type' => 'boolean', 'required' => false, 'description' => 'false per attivare il cliente, true per sospenderlo. Se omesso, vengono solo aggiornati i dati anagrafici.'],
-                    ['name' => 'max_atp_effettivo', 'type' => 'integer', 'required' => true, 'description' => 'Plafond massimo erogabile. Obbligatorio solo con sospeso=false.'],
-                    ['name' => 'tan', 'type' => 'number', 'required' => true, 'description' => 'TAN della delibera (2-3 decimali, 0-100). Obbligatorio solo con sospeso=false.'],
-                    ['name' => 'taeg', 'type' => 'number', 'required' => true, 'description' => 'TAEG della delibera (2-3 decimali, 0-100). Obbligatorio solo con sospeso=false.'],
-                    ['name' => 'filiale_id', 'type' => 'string', 'required' => true, 'description' => 'Filiale di riferimento del cliente. Obbligatorio solo con sospeso=false.'],
-                    ['name' => 'ateco', 'type' => 'string', 'required' => false, 'description' => 'Codice ATECO del cliente (max 20 caratteri, normalizzato dal server).'],
-                    ['name' => 'provincia', 'type' => 'string', 'required' => false, 'description' => 'Sigla della provincia (2 caratteri).'],
-                    ['name' => 'codice_postale', 'type' => 'string', 'required' => false, 'description' => 'CAP del cliente (5 caratteri).'],
-                ],
-                'operations' => [
-                    ['key' => 'eleggibili-attiva', 'label' => 'Attiva'],
-                    ['key' => 'eleggibili-sospendi', 'label' => 'Sospendi'],
-                    ['key' => 'eleggibili-anagrafica', 'label' => 'Solo anagrafica'],
-                ],
-                'responses' => [
-                    ['status' => 200, 'description' => 'Cliente aggiornato. Restituisce i dati completi del cliente.'],
-                    ['status' => 401, 'description' => 'Token di autenticazione mancante o non valido.'],
-                    ['status' => 403, 'description' => "Il cliente non appartiene alla banca dell'operatore."],
-                    ['status' => 404, 'description' => 'Cliente non trovato.'],
-                    ['status' => 422, 'description' => 'Dati non validi, cliente fuori target, prodotto non configurato sulla banca, oppure sospensione vietata perché il cliente ha tiraggi in corso.'],
-                ],
-            ],
-            'PATCH /api/business-console/tiraggi/users/{user_id}/perfeziona' => [
-                'id' => 'conferma-delibera',
-                'title' => 'Conferma delibera',
-                'description' => 'Conferma la delibera di un tiraggio in stato requested, perfezionando la richiesta di finanziamento. Il tiraggio passa a stato accepted e vengono generate le proiezioni di rimborso.',
-                'path_params' => [
-                    ['name' => 'user_id', 'type' => 'string', 'required' => true, 'description' => 'Identificativo del cliente titolare del tiraggio.'],
-                ],
-                'body_params' => [
-                    ['name' => 'numero_pratica', 'type' => 'string', 'required' => true, 'description' => 'Numero di pratica assegnato dalla banca. Deve essere univoco.'],
-                    ['name' => 'importo_deliberato', 'type' => 'integer', 'required' => true, 'description' => 'Importo deliberato del finanziamento.'],
-                    ['name' => 'data_delibera', 'type' => 'date', 'required' => true, 'description' => 'Data della delibera. Deve essere uguale o successiva alla data di richiesta.'],
-                    ['name' => 'percentuale', 'type' => 'integer', 'required' => false, 'description' => 'Percentuale di trattenuta sul transato. Limiti min/max configurati sulla banca. Non usata nei prodotti a durata parametrica.'],
-                    ['name' => 'mesi', 'type' => 'integer', 'required' => false, 'description' => 'Durata di rientro in mesi (1-18). Rilevante nei prodotti a durata parametrica.'],
-                    ['name' => 'tan', 'type' => 'number', 'required' => false, 'description' => 'TAN applicato (2-3 decimali). Se omesso, viene usato il valore della delibera.'],
-                    ['name' => 'taeg', 'type' => 'number', 'required' => false, 'description' => 'TAEG applicato (2-3 decimali). Se omesso, viene usato il valore della delibera.'],
-                ],
-                'operations' => [
-                    ['key' => 'perfeziona', 'label' => 'Conferma delibera'],
-                ],
-                'responses' => [
-                    ['status' => 200, 'description' => 'Delibera confermata.'],
-                    ['status' => 400, 'description' => 'user_id mancante.'],
-                    ['status' => 401, 'description' => 'Token di autenticazione mancante o non valido.'],
-                    ['status' => 404, 'description' => 'Utente, tiraggio o delibera non trovati.'],
-                    ['status' => 422, 'description' => 'Dati non validi, oppure impossibile calcolare le proiezioni per mancanza di previsionali.'],
-                ],
-            ],
-            'PATCH /api/business-console/tiraggi/users/{user_id}/rifiuta' => [
-                'id' => 'rifiuta-delibera',
-                'title' => 'Rifiuta delibera',
-                'description' => 'Rifiuta la delibera del tiraggio in stato requested del cliente. Il tiraggio passa a stato rejected.',
-                'path_params' => [
-                    ['name' => 'user_id', 'type' => 'string', 'required' => true, 'description' => 'Identificativo del cliente titolare del tiraggio.'],
-                ],
-                'operations' => [
-                    ['key' => 'rifiuta', 'label' => 'Rifiuta delibera'],
-                ],
-                'responses' => [
-                    ['status' => 204, 'description' => 'Tiraggio rifiutato. Nessun contenuto in risposta.'],
-                    ['status' => 400, 'description' => 'user_id mancante.'],
-                    ['status' => 401, 'description' => 'Token di autenticazione mancante o non valido.'],
-                    ['status' => 404, 'description' => 'Utente non trovato o nessun tiraggio in stato requested.'],
-                ],
-            ],
-            'PATCH /api/business-console/tiraggi/users/{user_id}/abbandona' => [
-                'id' => 'abbandona-richiesta',
-                'title' => 'Abbandona richiesta',
-                'description' => 'Abbandona la richiesta di finanziamento del cliente. Il tiraggio in stato requested passa a stato dropped.',
-                'path_params' => [
-                    ['name' => 'user_id', 'type' => 'string', 'required' => true, 'description' => 'Identificativo del cliente titolare del tiraggio.'],
-                ],
-                'operations' => [
-                    ['key' => 'abbandona', 'label' => 'Abbandona richiesta'],
-                ],
-                'responses' => [
-                    ['status' => 204, 'description' => 'Richiesta abbandonata. Nessun contenuto in risposta.'],
-                    ['status' => 400, 'description' => 'user_id mancante.'],
-                    ['status' => 401, 'description' => 'Token di autenticazione mancante o non valido.'],
-                    ['status' => 404, 'description' => 'Utente non trovato o nessun tiraggio in stato requested.'],
-                ],
-            ],
-            'PATCH /api/business-console/tiraggi/{tiraggio_pratica}/estinzione' => [
-                'id' => 'estinzione-totale',
-                'title' => 'Estinzione anticipata totale',
-                'description' => 'Estingue anticipatamente e integralmente un tiraggio in stato accepted. La trattenuta residua viene registrata e il tiraggio passa a stato paid. Se non esiste già, viene creato un nuovo tiraggio in stato open per il cliente.',
-                'path_params' => [
-                    ['name' => 'tiraggio_pratica', 'type' => 'string', 'required' => true, 'description' => 'Numero di pratica del tiraggio da estinguere.'],
-                ],
-                'operations' => [
-                    ['key' => 'estinzione', 'label' => 'Estinzione totale'],
-                ],
-                'responses' => [
-                    ['status' => 200, 'description' => 'Tiraggio estinto.'],
-                    ['status' => 400, 'description' => 'Numero di pratica mancante.'],
-                    ['status' => 401, 'description' => 'Token di autenticazione mancante o non valido.'],
-                    ['status' => 403, 'description' => "Il tiraggio non appartiene alla banca dell'operatore."],
-                    ['status' => 404, 'description' => 'Tiraggio non trovato o non in stato accepted.'],
-                ],
-            ],
-            'PATCH /api/business-console/tiraggi/{tiraggio_pratica}/estinzione-parziale' => [
-                'id' => 'estinzione-parziale',
-                'title' => 'Estinzione anticipata parziale',
-                'description' => "Registra un versamento parziale (conguaglio) su un tiraggio in stato accepted. Disponibile solo su prodotti a conguaglio periodico. L'importo non può superare il debito residuo né i conguagli ancora da versare.",
-                'path_params' => [
-                    ['name' => 'tiraggio_pratica', 'type' => 'string', 'required' => true, 'description' => 'Numero di pratica del tiraggio.'],
-                ],
-                'body_params' => [
-                    ['name' => 'importo_versato', 'type' => 'number', 'required' => true, 'description' => 'Importo del versamento. Deve essere maggiore di zero.'],
-                    ['name' => 'data_versamento', 'type' => 'date', 'required' => false, 'description' => 'Data in cui il cliente ha versato. Non può essere nel futuro. Default: oggi.'],
-                ],
-                'operations' => [
-                    ['key' => 'estinzione-parziale', 'label' => 'Estinzione parziale', 'conguaglio_only' => true],
-                ],
-                'responses' => [
-                    ['status' => 200, 'description' => 'Versamento registrato.'],
-                    ['status' => 401, 'description' => 'Token di autenticazione mancante o non valido.'],
-                    ['status' => 403, 'description' => "Il tiraggio non appartiene alla banca dell'operatore."],
-                    ['status' => 404, 'description' => 'Tiraggio non trovato o non in stato accepted.'],
-                    ['status' => 422, 'description' => 'Importo non valido, tiraggio già rimborsato, prodotto non a conguaglio, o movimento già presente nella stessa data contabile.'],
-                ],
-            ],
-            'GET /api/dashboard/users/{user_id}' => [
-                'id' => 'stato-cliente',
-                'title' => 'Stato cliente',
-                'description' => 'Restituisce lo stato completo del cliente: anagrafica, filiale, storico mensile degli ultimi 12 mesi, rating, elenco dei tiraggi e dettaglio dei finanziamenti attivi con forecast, baseline e trattenute mensili.',
-                'path_params' => [
-                    ['name' => 'user_id', 'type' => 'string', 'required' => true, 'description' => 'Identificativo del cliente.'],
-                ],
-                'operations' => [
-                    ['key' => 'stato-cliente', 'label' => 'Stato cliente'],
-                ],
-                'responses' => [
-                    ['status' => 200, 'description' => 'Dettaglio del cliente.'],
-                    ['status' => 401, 'description' => 'Token di autenticazione mancante o non valido.'],
-                    ['status' => 403, 'description' => "Il cliente non appartiene all'ambito dell'operatore."],
-                    ['status' => 404, 'description' => 'Cliente non trovato.'],
-                ],
-            ],
-        ];
+        return [];
     }
 }

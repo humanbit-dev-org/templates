@@ -2,7 +2,6 @@
 
 namespace App\Support\Backpack;
 
-use App\Models\Delibera;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 
@@ -20,18 +19,7 @@ class ImportPreviewService
      * Mirrors ImportCsvAction::AUTO_GENERATED_FIELDS.
      */
     private const AUTO_GENERATED_FIELDS = [
-        'User' => ['email', 'password', 'role_id', 'backpack_role_id'],
-        'Tiraggio' => ['tiraggio_id'],
-        'Delibera' => ['delibera_id'],
-        'Trattenuta' => ['trattenuta_id'],
-        'Proiezione' => ['proiezione_id'],
-        'Storico' => ['storico_id'],
-        'Previsionale' => ['previsionale_id'],
-        'Banca' => ['banca_abi'],
-        'Filiale' => ['filiale_id'],
-        'Interfaccia' => ['interfaccia_id'],
-        'Prodotto' => ['prodotto_id'],
-        'Esclusione' => ['esclusione_id'],
+        'User' => ['password', 'role_id', 'backpack_role_id'],
     ];
 
     /**
@@ -56,33 +44,22 @@ class ImportPreviewService
     private static array $requiredColumnsCache = [];
 
     /**
-     * Status enums that are valid per model. Derived from the DB schema.
+     * Status enums that are valid per model (class basename => allowed values),
+     * e.g. 'Order' => ['open', 'paid', 'cancelled'].
      */
-    private const VALID_STATUSES = [
-        'Tiraggio' => ['open', 'requested', 'accepted', 'rejected', 'paid', 'dropped'],
-        'Delibera' => ['open', 'close'],
-    ];
+    private const VALID_STATUSES = [];
 
     /**
-     * Columns that must be integers (not decimals) per model.
+     * Columns that must be integers (not decimals) per model (class basename).
      */
     private const INTEGER_COLUMNS = [
-        'Tiraggio' => ['importo_richiesto', 'importo_deliberato', 'percentuale', 'mesi', 'quota_interessi', 'costo_totale'],
-        'Delibera' => ['max_atp_consigliato', 'max_atp_effettivo'],
-        'User' => ['sospeso'],
-        'Storico' => ['numero_transazioni', 'importo_transato'],
-        'Previsionale' => ['importo_transato_previsto'],
-        'Proiezione' => ['forecast', 'baseline'],
-        'Trattenuta' => ['importo_trattenuto'],
+        'Page' => ['order'],
     ];
 
     /**
-     * Columns that accept decimals per model.
+     * Columns that accept decimals per model (class basename).
      */
-    private const DECIMAL_COLUMNS = [
-        'Tiraggio' => ['tan', 'taeg', 'trattenuta_totale'],
-        'Delibera' => ['tan', 'taeg'],
-    ];
+    private const DECIMAL_COLUMNS = [];
 
     /**
      * Analyze a CSV file and return a preview report.
@@ -646,200 +623,9 @@ class ImportPreviewService
 
         // Model-specific validations
         match ($className) {
-            'Tiraggio' => $warnings = array_merge($warnings, $this->validateTiraggioRow($rowData, $rowNumber, $modelClass, $action)),
             'User' => $warnings = array_merge($warnings, $this->validateUserRow($rowData, $rowNumber)),
-            'Delibera' => $warnings = array_merge($warnings, $this->validateDeliberaRow($rowData, $rowNumber, $action)),
-            'Trattenuta' => $warnings = array_merge($warnings, $this->validateTrattenutaRow($rowData, $rowNumber)),
             default => null,
         };
-
-        return $warnings;
-    }
-
-    /**
-     * Tiraggio-specific row validation.
-     */
-    private function validateTiraggioRow(array $rowData, int $rowNumber, string $modelClass, string $action = 'insert'): array
-    {
-        $warnings = [];
-
-        // Check for duplicate active tiraggi for the same user (only on insert)
-        if ($action === 'insert' && isset($rowData['user_id']) && isset($rowData['status'])) {
-            if (in_array($rowData['status'], ['accepted', 'requested'], true)) {
-                $existingCount = $modelClass::where('user_id', $rowData['user_id'])
-                    ->where('status', $rowData['status'])
-                    ->count();
-
-                if ($existingCount > 0) {
-                    $warnings[] = [
-                        'row' => $rowNumber,
-                        'type' => 'duplicate_active_tiraggio',
-                        'severity' => 'warning',
-                        'message' => "Riga {$rowNumber}: esiste già un tiraggio con status '{$rowData['status']}' per l'utente '{$rowData['user_id']}'. Verrà creato un duplicato.",
-                    ];
-                }
-            }
-        }
-
-        // Percentuale range check (1-100)
-        if (isset($rowData['percentuale']) && $rowData['percentuale'] !== '' && $rowData['percentuale'] !== null) {
-            $pct = (int) $rowData['percentuale'];
-            if ($pct < 1 || $pct > 100) {
-                $warnings[] = [
-                    'row' => $rowNumber,
-                    'type' => 'value_out_of_range',
-                    'severity' => 'warning',
-                    'message' => "Riga {$rowNumber}: percentuale {$pct} fuori dal range valido (1-100).",
-                ];
-            }
-        }
-
-        // Mesi range check (1-18)
-        if (isset($rowData['mesi']) && $rowData['mesi'] !== '' && $rowData['mesi'] !== null) {
-            $mesi = (int) $rowData['mesi'];
-            if ($mesi < 1 || $mesi > 18) {
-                $warnings[] = [
-                    'row' => $rowNumber,
-                    'type' => 'value_out_of_range',
-                    'severity' => 'warning',
-                    'message' => "Riga {$rowNumber}: mesi {$mesi} fuori dal range valido (1-18).",
-                ];
-            }
-        }
-
-        // Product constraint check: if user_id is known, check against product limits
-        if (isset($rowData['user_id']) && ! empty($rowData['user_id'])) {
-            $productLimits = $this->getProductLimitsForUser($rowData['user_id']);
-            if ($productLimits) {
-                // Percentuale vs product min/max
-                if (isset($rowData['percentuale']) && $rowData['percentuale'] !== '' && $rowData['percentuale'] !== null) {
-                    $pct = (int) $rowData['percentuale'];
-                    if ($productLimits['min_percentuale'] !== null && $pct < $productLimits['min_percentuale']) {
-                        $warnings[] = [
-                            'row' => $rowNumber,
-                            'type' => 'product_constraint',
-                            'severity' => 'warning',
-                            'message' => "Riga {$rowNumber}: percentuale {$pct} inferiore al minimo del prodotto ({$productLimits['min_percentuale']}).",
-                        ];
-                    }
-                    if ($productLimits['max_percentuale'] !== null && $pct > $productLimits['max_percentuale']) {
-                        $warnings[] = [
-                            'row' => $rowNumber,
-                            'type' => 'product_constraint',
-                            'severity' => 'warning',
-                            'message' => "Riga {$rowNumber}: percentuale {$pct} superiore al massimo del prodotto ({$productLimits['max_percentuale']}).",
-                        ];
-                    }
-                }
-
-                // Mesi vs product min/max
-                if (isset($rowData['mesi']) && $rowData['mesi'] !== '' && $rowData['mesi'] !== null) {
-                    $mesi = (int) $rowData['mesi'];
-                    if ($productLimits['min_mesi_tiraggio'] !== null && $mesi < $productLimits['min_mesi_tiraggio']) {
-                        $warnings[] = [
-                            'row' => $rowNumber,
-                            'type' => 'product_constraint',
-                            'severity' => 'warning',
-                            'message' => "Riga {$rowNumber}: mesi {$mesi} inferiori al minimo del prodotto ({$productLimits['min_mesi_tiraggio']}).",
-                        ];
-                    }
-                    if ($productLimits['max_mesi_tiraggio'] !== null && $mesi > $productLimits['max_mesi_tiraggio']) {
-                        $warnings[] = [
-                            'row' => $rowNumber,
-                            'type' => 'product_constraint',
-                            'severity' => 'warning',
-                            'message' => "Riga {$rowNumber}: mesi {$mesi} superiori al massimo del prodotto ({$productLimits['max_mesi_tiraggio']}).",
-                        ];
-                    }
-                }
-
-                // TAN vs product max_tan
-                if (isset($rowData['tan']) && $rowData['tan'] !== '' && $rowData['tan'] !== null) {
-                    $tan = (float) str_replace(',', '.', (string) $rowData['tan']);
-                    if ($productLimits['max_tan'] !== null && $tan > $productLimits['max_tan']) {
-                        $warnings[] = [
-                            'row' => $rowNumber,
-                            'type' => 'product_constraint',
-                            'severity' => 'warning',
-                            'message' => "Riga {$rowNumber}: TAN {$tan} superiore al massimo del prodotto ({$productLimits['max_tan']}).",
-                        ];
-                    }
-                }
-
-                // TAEG vs product max_taeg
-                if (isset($rowData['taeg']) && $rowData['taeg'] !== '' && $rowData['taeg'] !== null) {
-                    $taeg = (float) str_replace(',', '.', (string) $rowData['taeg']);
-                    if ($productLimits['max_taeg'] !== null && $taeg > $productLimits['max_taeg']) {
-                        $warnings[] = [
-                            'row' => $rowNumber,
-                            'type' => 'product_constraint',
-                            'severity' => 'warning',
-                            'message' => "Riga {$rowNumber}: TAEG {$taeg} superiore al massimo del prodotto ({$productLimits['max_taeg']}).",
-                        ];
-                    }
-                }
-
-                // Importo richiesto vs product max_atp
-                if (isset($rowData['importo_richiesto']) && $rowData['importo_richiesto'] !== '' && $rowData['importo_richiesto'] !== null) {
-                    $importo = (int) $rowData['importo_richiesto'];
-                    if ($productLimits['max_atp'] !== null && $importo > $productLimits['max_atp']) {
-                        $warnings[] = [
-                            'row' => $rowNumber,
-                            'type' => 'product_constraint',
-                            'severity' => 'warning',
-                            'message' => "Riga {$rowNumber}: importo richiesto {$importo} superiore al massimo ATP del prodotto ({$productLimits['max_atp']}).",
-                        ];
-                    }
-                    if ($productLimits['min_atp'] !== null && $importo < $productLimits['min_atp']) {
-                        $warnings[] = [
-                            'row' => $rowNumber,
-                            'type' => 'product_constraint',
-                            'severity' => 'warning',
-                            'message' => "Riga {$rowNumber}: importo richiesto {$importo} inferiore al minimo ATP del prodotto ({$productLimits['min_atp']}).",
-                        ];
-                    }
-                }
-
-                // Percentuale vs product max_atp_percentuale
-                if (isset($rowData['percentuale']) && $rowData['percentuale'] !== '' && $rowData['percentuale'] !== null) {
-                    $pct = (int) $rowData['percentuale'];
-                    if ($productLimits['max_atp_percentuale'] !== null && $pct > $productLimits['max_atp_percentuale']) {
-                        $warnings[] = [
-                            'row' => $rowNumber,
-                            'type' => 'product_constraint',
-                            'severity' => 'warning',
-                            'message' => "Riga {$rowNumber}: percentuale {$pct} superiore al massimo percentuale ATP del prodotto ({$productLimits['max_atp_percentuale']}).",
-                        ];
-                    }
-                }
-            }
-        }
-
-        // FK validation: user_id must exist in users table
-        if (isset($rowData['user_id']) && ! empty($rowData['user_id'])) {
-            $userExists = User::where('user_id', $rowData['user_id'])->exists();
-            if (! $userExists) {
-                $warnings[] = [
-                    'row' => $rowNumber,
-                    'type' => 'foreign_key_violation',
-                    'severity' => 'error',
-                    'message' => "Riga {$rowNumber}: l'utente '{$rowData['user_id']}' non esiste nel database.",
-                ];
-            }
-        }
-
-        // FK validation: delibera_id must exist if provided
-        if (isset($rowData['delibera_id']) && ! empty($rowData['delibera_id'])) {
-            $deliberaExists = Delibera::where('delibera_id', $rowData['delibera_id'])->exists();
-            if (! $deliberaExists) {
-                $warnings[] = [
-                    'row' => $rowNumber,
-                    'type' => 'foreign_key_violation',
-                    'severity' => 'error',
-                    'message' => "Riga {$rowNumber}: la delibera '{$rowData['delibera_id']}' non esiste nel database.",
-                ];
-            }
-        }
 
         return $warnings;
     }
@@ -863,173 +649,17 @@ class ImportPreviewService
             }
         }
 
-        // Sospeso must be 0 or 1
-        if (isset($rowData['sospeso']) && $rowData['sospeso'] !== '' && $rowData['sospeso'] !== null) {
-            $val = $rowData['sospeso'];
-            if (! in_array((string) $val, ['0', '1'], true)) {
-                $warnings[] = [
-                    'row' => $rowNumber,
-                    'type' => 'type_mismatch',
-                    'severity' => 'error',
-                    'message' => "Riga {$rowNumber}: il campo 'sospeso' deve essere 0 o 1, ma contiene '{$val}'.",
-                ];
-            }
-        }
-
-        // FK validation: banca_abi must exist in banche table
-        if (isset($rowData['banca_abi']) && ! empty($rowData['banca_abi'])) {
-            $bancaExists = DB::table('banche')->where('banca_abi', $rowData['banca_abi'])->exists();
-            if (! $bancaExists) {
-                $warnings[] = [
-                    'row' => $rowNumber,
-                    'type' => 'foreign_key_violation',
-                    'severity' => 'error',
-                    'message' => "Riga {$rowNumber}: la banca '{$rowData['banca_abi']}' non esiste nel database.",
-                ];
-            }
-        }
-
-        // FK validation: filiale_id must exist if provided
-        if (isset($rowData['filiale_id']) && ! empty($rowData['filiale_id'])) {
-            $filialeExists = DB::table('filiali')->where('filiale_id', $rowData['filiale_id'])->exists();
-            if (! $filialeExists) {
-                $warnings[] = [
-                    'row' => $rowNumber,
-                    'type' => 'foreign_key_violation',
-                    'severity' => 'error',
-                    'message' => "Riga {$rowNumber}: la filiale '{$rowData['filiale_id']}' non esiste nel database.",
-                ];
-            }
-        }
-
-        return $warnings;
-    }
-
-    /**
-     * Trattenuta-specific row validation.
-     */
-    private function validateTrattenutaRow(array $rowData, int $rowNumber): array
-    {
-        $warnings = [];
-
-        // FK validation: user_id must exist
-        if (isset($rowData['user_id']) && ! empty($rowData['user_id'])) {
-            $userExists = User::where('user_id', $rowData['user_id'])->exists();
-            if (! $userExists) {
-                $warnings[] = [
-                    'row' => $rowNumber,
-                    'type' => 'foreign_key_violation',
-                    'severity' => 'error',
-                    'message' => "Riga {$rowNumber}: l'utente '{$rowData['user_id']}' non esiste nel database.",
-                ];
-            }
-        }
-
-        // FK validation: tiraggio_numero_pratica must exist in tiraggi table
-        if (isset($rowData['tiraggio_numero_pratica']) && ! empty($rowData['tiraggio_numero_pratica'])) {
-            $tiraggioExists = DB::table('tiraggi')->where('numero_pratica', $rowData['tiraggio_numero_pratica'])->exists();
-            if (! $tiraggioExists) {
-                $warnings[] = [
-                    'row' => $rowNumber,
-                    'type' => 'foreign_key_violation',
-                    'severity' => 'error',
-                    'message' => "Riga {$rowNumber}: il tiraggio con numero pratica '{$rowData['tiraggio_numero_pratica']}' non esiste nel database.",
-                ];
-            }
-        }
-
-        return $warnings;
-    }
-
-    /**
-     * Delibera-specific row validation.
-     */
-    private function validateDeliberaRow(array $rowData, int $rowNumber, string $action = 'insert'): array
-    {
-        $warnings = [];
-
-        // Check for existing open delibera for the same user (only on insert)
-        if ($action === 'insert' && isset($rowData['user_id']) && isset($rowData['status']) && $rowData['status'] === 'open') {
-            $existingOpen = Delibera::where('user_id', $rowData['user_id'])
-                ->where('status', 'open')
-                ->exists();
-
-            if ($existingOpen) {
-                $warnings[] = [
-                    'row' => $rowNumber,
-                    'type' => 'duplicate_open_delibera',
-                    'severity' => 'warning',
-                    'message' => "Riga {$rowNumber}: esiste già una delibera 'open' per l'utente '{$rowData['user_id']}'. L'import creerà un duplicato.",
-                ];
-            }
-        }
-
-        // Product constraint check: if user_id is known, check against product limits
-        if (isset($rowData['user_id']) && ! empty($rowData['user_id'])) {
-            $productLimits = $this->getProductLimitsForUser($rowData['user_id']);
-            if ($productLimits) {
-                // TAN vs product max_tan
-                if (isset($rowData['tan']) && $rowData['tan'] !== '' && $rowData['tan'] !== null) {
-                    $tan = (float) str_replace(',', '.', (string) $rowData['tan']);
-                    if ($productLimits['max_tan'] !== null && $tan > $productLimits['max_tan']) {
-                        $warnings[] = [
-                            'row' => $rowNumber,
-                            'type' => 'product_constraint',
-                            'severity' => 'warning',
-                            'message' => "Riga {$rowNumber}: TAN {$tan} superiore al massimo del prodotto ({$productLimits['max_tan']}).",
-                        ];
-                    }
+        // FK validation: the frontend and Backpack roles must exist
+        foreach (['role_id' => 'roles', 'backpack_role_id' => 'backpack_roles'] as $column => $table) {
+            if (isset($rowData[$column]) && ! empty($rowData[$column])) {
+                if (! DB::table($table)->where('id', $rowData[$column])->exists()) {
+                    $warnings[] = [
+                        'row' => $rowNumber,
+                        'type' => 'foreign_key_violation',
+                        'severity' => 'error',
+                        'message' => "Riga {$rowNumber}: il valore '{$rowData[$column]}' di '{$column}' non esiste in {$table}.",
+                    ];
                 }
-
-                // TAEG vs product max_taeg
-                if (isset($rowData['taeg']) && $rowData['taeg'] !== '' && $rowData['taeg'] !== null) {
-                    $taeg = (float) str_replace(',', '.', (string) $rowData['taeg']);
-                    if ($productLimits['max_taeg'] !== null && $taeg > $productLimits['max_taeg']) {
-                        $warnings[] = [
-                            'row' => $rowNumber,
-                            'type' => 'product_constraint',
-                            'severity' => 'warning',
-                            'message' => "Riga {$rowNumber}: TAEG {$taeg} superiore al massimo del prodotto ({$productLimits['max_taeg']}).",
-                        ];
-                    }
-                }
-
-                // max_atp_consigliato vs product max_atp
-                if (isset($rowData['max_atp_consigliato']) && $rowData['max_atp_consigliato'] !== '' && $rowData['max_atp_consigliato'] !== null) {
-                    $atp = (int) $rowData['max_atp_consigliato'];
-                    if ($productLimits['max_atp'] !== null && $atp > $productLimits['max_atp']) {
-                        $warnings[] = [
-                            'row' => $rowNumber,
-                            'type' => 'product_constraint',
-                            'severity' => 'warning',
-                            'message' => "Riga {$rowNumber}: max ATP consigliato {$atp} superiore al massimo ATP del prodotto ({$productLimits['max_atp']}).",
-                        ];
-                    }
-                }
-
-                // max_atp_effettivo vs product max_atp
-                if (isset($rowData['max_atp_effettivo']) && $rowData['max_atp_effettivo'] !== '' && $rowData['max_atp_effettivo'] !== null) {
-                    $atp = (int) $rowData['max_atp_effettivo'];
-                    if ($productLimits['max_atp'] !== null && $atp > $productLimits['max_atp']) {
-                        $warnings[] = [
-                            'row' => $rowNumber,
-                            'type' => 'product_constraint',
-                            'severity' => 'warning',
-                            'message' => "Riga {$rowNumber}: max ATP effettivo {$atp} superiore al massimo ATP del prodotto ({$productLimits['max_atp']}).",
-                        ];
-                    }
-                }
-            }
-
-            // FK validation: user_id must exist
-            $userExists = User::where('user_id', $rowData['user_id'])->exists();
-            if (! $userExists) {
-                $warnings[] = [
-                    'row' => $rowNumber,
-                    'type' => 'foreign_key_violation',
-                    'severity' => 'error',
-                    'message' => "Riga {$rowNumber}: l'utente '{$rowData['user_id']}' non esiste nel database.",
-                ];
             }
         }
 
@@ -1055,38 +685,6 @@ class ImportPreviewService
         }
 
         return $warnings;
-    }
-
-    /**
-     * Get product limits for a user via their bank.
-     */
-    private function getProductLimitsForUser(string $userId): ?array
-    {
-        $user = User::where('user_id', $userId)->first();
-        if (! $user) {
-            return null;
-        }
-
-        $prodotto = $user->banca?->prodotto;
-        if (! $prodotto) {
-            return null;
-        }
-
-        return [
-            'min_percentuale' => $prodotto->min_percentuale !== null ? (int) $prodotto->min_percentuale : null,
-            'max_percentuale' => $prodotto->max_percentuale !== null ? (int) $prodotto->max_percentuale : null,
-            'min_mesi_tiraggio' => $prodotto->min_mesi_tiraggio !== null ? (int) $prodotto->min_mesi_tiraggio : null,
-            'max_mesi_tiraggio' => $prodotto->max_mesi_tiraggio !== null ? (int) $prodotto->max_mesi_tiraggio : null,
-            'max_tan' => $prodotto->max_tan !== null ? (float) $prodotto->max_tan : null,
-            'max_taeg' => $prodotto->max_taeg !== null ? (float) $prodotto->max_taeg : null,
-            'max_atp' => $prodotto->max_atp !== null ? (int) $prodotto->max_atp : null,
-            'max_atp_percentuale' => $prodotto->max_atp_percentuale !== null ? (int) $prodotto->max_atp_percentuale : null,
-            'min_atp' => $prodotto->min_atp !== null ? (int) $prodotto->min_atp : null,
-            'durata_max_delibera' => $prodotto->durata_max_delibera !== null ? (int) $prodotto->durata_max_delibera : null,
-            'min_mesi_storico' => $prodotto->min_mesi_storico !== null ? (int) $prodotto->min_mesi_storico : null,
-            'min_importo_storico' => $prodotto->min_importo_storico !== null ? (int) $prodotto->min_importo_storico : null,
-            'min_transazioni_storico' => $prodotto->min_transazioni_storico !== null ? (int) $prodotto->min_transazioni_storico : null,
-        ];
     }
 
     /**

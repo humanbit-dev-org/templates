@@ -175,7 +175,7 @@ $groupAdvanced = trans('backpack::filters.advanced_filters');
 @endphp
 
 {{-- Active filters: hidden when a preset is active (redundant with preset pills) --}}
-{{-- @if(count($pills) && !\App\Support\Backpack\PresetFilterHandler::getActivePreset())
+@if(count($pills) && !\App\Support\Backpack\PresetFilterHandler::getActivePreset())
 <div class="hb-active-strip" aria-label="{{ trans('backpack::filters.active_filters') }}">
   <span class="hb-active-strip-title">{{ trans('backpack::filters.active_filters') }}</span>
   <div class="hb-active-pills">
@@ -216,7 +216,7 @@ $groupAdvanced = trans('backpack::filters.advanced_filters');
     @endforeach
   </div>
 </div>
-@endif --}}
+@endif
 
 <!-- ============================================================ -->
 <!-- Filter Panel — composable rule-builder redesign              -->

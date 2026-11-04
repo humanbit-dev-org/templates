@@ -8,7 +8,7 @@
     color: color-mix(in srgb, var(--tblr-link-color) 50%, white);
 }
 
-/* Banking UI — shared motion for interactive elements */
+/* Admin UI — shared motion for interactive elements */
 .btn,
 .nav-link,
 .dropdown-item,

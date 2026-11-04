@@ -26,7 +26,8 @@ class RoleRequest extends FormRequest
 	{
 		return [
 			"name" => "required|string|max:255|unique:roles,name," . $this->id,
-			"description" => "nullable|string",
+			// roles.description is NOT NULL
+			"description" => "required|string|max:255",
 		];
 	}
 

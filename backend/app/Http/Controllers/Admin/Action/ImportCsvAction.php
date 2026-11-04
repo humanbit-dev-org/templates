@@ -17,6 +17,7 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
@@ -112,8 +113,16 @@ class ImportCsvAction extends Controller
             echo "Starting password hashing for imported users...\n";
         }
 
-        // Get all users with plain text passwords using raw query for speed
-        $users = DB::table('users')->where('password', 'not like', '$2y$%')->select('user_id', 'password')->get();
+        // Users whose password is still plain text. password_get_info() recognises
+        // every hash format (bcrypt, argon2id, ...), so a row already hashed by the
+        // application is never hashed a second time.
+        $users = DB::table('users')
+            ->whereNotNull('password')
+            ->where('password', '!=', '')
+            ->select('username', 'password')
+            ->get()
+            ->filter(fn ($user) => password_get_info($user->password)['algo'] === null)
+            ->values();
 
         if ($users->isEmpty()) {
             if (! $silent) {
@@ -135,31 +144,32 @@ class ImportCsvAction extends Controller
         // Process in large batches with bulk SQL operations
         $users->chunk($batchSize)->each(function ($userBatch) use (&$processed, $total, $startTime, $silent) {
             $updates = [];
-            $user_ids = [];
+            $usernames = [];
 
-            // Pre-hash all passwords in the batch
+            // Pre-hash all passwords in the batch through the application hasher,
+            // so the configured driver (and its pepper derivation) is applied.
             foreach ($userBatch as $user) {
-                $hashedPassword = password_hash($user->password, PASSWORD_BCRYPT);
-                $updates[] = $hashedPassword;
-                $user_ids[] = $user->user_id;
+                $updates[] = Hash::make($user->password);
+                $usernames[] = $user->username;
             }
 
-            // Build optimized bulk UPDATE query
+            // Build one bulk UPDATE with bound parameters (CASE username WHEN ? THEN ?).
             $caseStatements = [];
+            $bindings = [];
             foreach ($updates as $index => $hashedPassword) {
-                $user_id = addslashes($user_ids[$index]);
-                $caseStatements[] = "WHEN '{$user_id}' THEN '".addslashes($hashedPassword)."'";
+                $caseStatements[] = 'WHEN ? THEN ?';
+                $bindings[] = $usernames[$index];
+                $bindings[] = $hashedPassword;
             }
 
-            // Execute single bulk UPDATE
             $sql =
-                'UPDATE users SET password = CASE user_id '.
+                'UPDATE users SET password = CASE username '.
                 implode(' ', $caseStatements).
-                " END WHERE user_id IN ('".
-                implode("','", array_map('addslashes', $user_ids)).
-                "')";
+                ' END WHERE username IN ('.
+                implode(',', array_fill(0, count($usernames), '?')).
+                ')';
 
-            DB::statement($sql);
+            DB::update($sql, [...$bindings, ...$usernames]);
             $processed += count($updates);
 
             // Show progress with speed calculation
@@ -300,44 +310,11 @@ class ImportCsvAction extends Controller
      * These appear in the "Developer Section" with confirmation required.
      */
     private const AUTO_GENERATED_FIELDS = [
+        // Add one entry per model, e.g. 'App\Models\Article' => ['slug' => 'auto_generated_hint_pk'].
         'App\Models\User' => [
-            'email' => 'auto_generated_hint_email',
             'password' => 'auto_generated_hint_password',
             'role_id' => 'auto_generated_hint_role_id',
             'backpack_role_id' => 'auto_generated_hint_backpack_role_id',
-        ],
-        'App\Models\Tiraggio' => [
-            'tiraggio_id' => 'auto_generated_hint_pk',
-        ],
-        'App\Models\Delibera' => [
-            'delibera_id' => 'auto_generated_hint_pk',
-        ],
-        'App\Models\Trattenuta' => [
-            'trattenuta_id' => 'auto_generated_hint_pk',
-        ],
-        'App\Models\Proiezione' => [
-            'proiezione_id' => 'auto_generated_hint_pk',
-        ],
-        'App\Models\Storico' => [
-            'storico_id' => 'auto_generated_hint_pk',
-        ],
-        'App\Models\Previsionale' => [
-            'previsionale_id' => 'auto_generated_hint_pk',
-        ],
-        'App\Models\Banca' => [
-            'banca_abi' => 'auto_generated_hint_pk_manual',
-        ],
-        'App\Models\Filiale' => [
-            'filiale_id' => 'auto_generated_hint_pk_manual',
-        ],
-        'App\Models\Interfaccia' => [
-            'interfaccia_id' => 'auto_generated_hint_pk',
-        ],
-        'App\Models\Prodotto' => [
-            'prodotto_id' => 'auto_generated_hint_pk',
-        ],
-        'App\Models\Esclusione' => [
-            'esclusione_id' => 'auto_generated_hint_pk',
         ],
     ];
 
@@ -493,7 +470,7 @@ class ImportCsvAction extends Controller
     }
 
     /**
-     * Analizza il file CSV caricato e mostra l'interfaccia di mappatura
+     * Analizza il file CSV caricato e mostra la schermata di mappatura
      *
      * @param  string  $crud
      * @return View
@@ -1134,9 +1111,8 @@ class ImportCsvAction extends Controller
                 $this->dispatchMissingPasswords();
             }
 
-            if (! empty($bancaAbi)) {
-                CacheFlush::forBanca($bancaAbi, $filialeId ?? null);
-            }
+            // Rows written with Observers suppressed: drop the dependent cache once.
+            CacheFlush::afterImport($modelClass);
 
             // Save physical log files
             $this->saveImportLogs($logPath, $tableName, $newRecordsLog, $updatedRecordsLog, $skippedRecordsLog, [

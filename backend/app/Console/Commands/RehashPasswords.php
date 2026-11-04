@@ -58,8 +58,8 @@ class RehashPasswords extends Command
         // - Always exclude Backpack admins (manually set passwords, not HKDF-derived).
         // - Optionally restrict to users with no password set.
         $query = User::whereNull('backpack_role_id')
-            ->orderBy('user_id')
-            ->select('user_id');
+            ->orderBy('username')
+            ->select('username');
 
         if ($onlyEmpty) {
             $query->where(function ($q) {
@@ -90,7 +90,7 @@ class RehashPasswords extends Command
             $query->chunk($chunkSize, function ($users) use ($bar, $derivation) {
                 foreach ($users as $user) {
                     // Derive only — no Hash::make(), no DB write.
-                    $derivation->derive($user->user_id);
+                    $derivation->derive($user->username);
                     $bar->advance();
                 }
             });
@@ -117,8 +117,8 @@ class RehashPasswords extends Command
 
             $jobs = [];
             $query->chunk($chunkSize, function ($users) use (&$jobs, $cacheKey) {
-                // Extract plain user_id strings; no full model needed in the job payload.
-                $ids = $users->pluck('user_id')->all();
+                // Extract plain username strings; no full model needed in the job payload.
+                $ids = $users->pluck('username')->all();
                 $jobs[] = new RehashPasswordsChunkJob($ids, $cacheKey);
             });
 

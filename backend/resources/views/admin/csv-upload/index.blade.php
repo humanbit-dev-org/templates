@@ -140,13 +140,19 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach($types as $key => $type)
+                            @forelse($types as $key => $type)
                                 <tr data-type-key="{{ $key }}" class="type-row">
                                     <td><strong>{{ $type['name'] }}</strong></td>
                                     <td>{{ $type['description'] }}</td>
                                     <td><code>database/import/{{ $type['directory'] }}/</code></td>
                                 </tr>
-                            @endforeach
+                            @empty
+                                <tr>
+                                    <td colspan="3" class="text-muted">
+                                        Nessuna tipologia configurata: aggiungile in <code>config/import.php</code> ('upload_types').
+                                    </td>
+                                </tr>
+                            @endforelse
                         </tbody>
                     </table>
                 </div>
@@ -173,12 +179,12 @@
         // Mapping delle tipologie per il rilevamento automatico
         const typeMapping = @json($types);
         
-        // Pattern di rilevamento
-        const detectionPatterns = {
-            'CashBerry_DelibereNegative_': 'delibere-negative',
-            'CashBerry_RapportiFidiEstinti_E_ATPAperti_': 'tiraggio',
-            'CashBerry_TransatoWLDaCC_': 'trattenuta',
-        };
+        // Pattern di rilevamento (prefisso nome file => tipologia), derivati da
+        // config/import.php 'upload_types', gli stessi usati lato server.
+        const detectionPatterns = {};
+        Object.entries(typeMapping).forEach(([key, type]) => {
+            (type.patterns || []).forEach((pattern) => { detectionPatterns[pattern] = key; });
+        });
 
         // Initially hide the selected file container
         selectedFile.style.display = 'none';

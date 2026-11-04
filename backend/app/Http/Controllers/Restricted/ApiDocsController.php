@@ -53,12 +53,6 @@ class ApiDocsController extends Controller
         $user = backpack_auth()->user();
         $isStaff = $user?->backpackRole?->name === 'Developer';
 
-        // Deliberately no bank-modality filtering of the endpoint catalog:
-        // a conguaglio_only gating existed and was removed — the only
-        // modality-gated endpoint today is estinzione-parziale, and the
-        // endpoint itself already enforces the flag at request time. If a
-        // bank-viewer backpack role is ever added and needs scoped docs,
-        // rebuild the filter then — do not pre-build it.
         $data = $tab === 'sandbox' ? $this->sandboxData() : $this->portalData($user, $isStaff);
 
         // The remembered tab is stored as a server-set cookie — JS cookies
@@ -68,26 +62,24 @@ class ApiDocsController extends Controller
             ->withCookie(cookie('api-docs-tab', $tab, 60 * 24 * 365, '/api-docs'));
     }
 
-    /** Same data the old ApiSandboxController served. */
+    /** Data of the Sandbox pane: endpoint reference plus the demo profiles. */
     private function sandboxData(): array
     {
         return [
             'endpoints' => EndpointsCatalog::all(),
             'sandboxEnabled' => (bool) config('sandbox.enabled'),
-            'banks' => config('sandbox.banks', []),
-            'defaultBank' => (string) config('sandbox.default_bank'),
+            'profiles' => config('sandbox.profiles', []),
+            'defaultProfile' => (string) config('sandbox.default_profile'),
         ];
     }
 
-    /** Same data the old ApiPortalController served, plus the live access tokens. */
+    /** Data of the Portal pane: endpoint reference plus the live credentials. */
     private function portalData(?User $user, bool $isStaff): array
     {
-        // Credential visibility by viewer: developers see everything
-        // (the per-bank log card and the refresh-token table), any other
-        // logged-in user sees only their own bank's latest token in the top
-        // bar, and an IP-only guest sees none of it.
-        $viewerAbi = $user?->banca_abi;
-
+        // Credential visibility by viewer: developers see everything (the
+        // token log and the refresh-token table), any other logged-in user
+        // sees only their own latest token in the top bar, and an IP-only
+        // guest sees none of it.
         $refreshTokens = collect();
         $apiTokens = collect();
 
@@ -97,12 +89,12 @@ class ApiDocsController extends Controller
             $refreshTokens = PersonalAccessToken::query()
                 ->where('name', 'like', $prefix.'%')
                 ->whereMorphedTo('tokenable', User::class)
-                ->with('tokenable.banca')
+                ->with('tokenable')
                 ->orderBy('name')
                 ->get()
                 ->map(fn (PersonalAccessToken $token) => [
-                    'banca' => $token->tokenable->banca?->nome ?? $token->tokenable->banca_abi,
-                    'user_id' => $token->tokenable->user_id,
+                    'username' => $token->tokenable?->getKey(),
+                    'owner' => $token->tokenable?->relation_display,
                     // The name carries the secret's first chars: the semi-masked
                     // hint the page is allowed to show. Never the full secret.
                     'hint' => Str::after($token->name, ':').'••••••••',
@@ -112,19 +104,18 @@ class ApiDocsController extends Controller
         }
 
         if ($user) {
-            // Each trade revokes the previous token, so the newest access
-            // token per PO is also the only live one.
+            // Each exchange revokes the previous token, so the newest access
+            // token per user is also the only live one.
             $apiTokens = PersonalAccessToken::query()
                 ->where('name', config('portal.api_token_name', 'portal-access'))
                 ->whereMorphedTo('tokenable', User::class)
-                ->with('tokenable.banca')
+                ->with('tokenable')
                 ->orderByDesc('created_at')
                 ->get()
                 ->unique('tokenable_id')
                 ->map(fn (PersonalAccessToken $token) => [
-                    'banca' => $token->tokenable->banca?->nome ?? $token->tokenable->banca_abi,
-                    'banca_abi' => $token->tokenable->banca_abi,
-                    'user_id' => $token->tokenable->user_id,
+                    'username' => $token->tokenable?->getKey(),
+                    'owner' => $token->tokenable?->relation_display,
                     // Last chars of the stored sha256 — a fingerprint to tell
                     // tokens apart. The secret itself is never recoverable.
                     'hint' => '•••'.substr($token->token, -4),
@@ -135,12 +126,12 @@ class ApiDocsController extends Controller
                 ->values();
         }
 
-        // Top bar: staff gets the freshest token overall; a bank user gets
-        // their own bank's; guests get nothing.
+        // Top bar: staff gets the freshest token overall; any other user gets
+        // their own; guests get nothing.
         $lastToken = match (true) {
             ! $user => null,
             $isStaff => $apiTokens->first(),
-            default => $apiTokens->firstWhere('banca_abi', $viewerAbi),
+            default => $apiTokens->firstWhere('username', $user->getKey()),
         };
 
         return [

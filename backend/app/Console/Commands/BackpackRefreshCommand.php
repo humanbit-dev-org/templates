@@ -30,12 +30,11 @@ class BackpackRefreshCommand extends Command
         'public/static/css/humanbit_color_adjustments.css' => 'storage/app/public/basset/public/static/css/',
         'public/static/css/humanbit_datatables.css' => 'storage/app/public/basset/public/static/css/',
         'public/static/css/humanbit_csv.css' => 'storage/app/public/basset/public/static/css/',
-        'public/static/css/dashboard_custom.css' => 'storage/app/public/basset/public/static/css/',
         'public/static/css/humanbit_custom.css' => 'storage/app/public/basset/public/static/css/',
         'public/static/css/logs_index.css' => 'storage/app/public/basset/public/static/css/',
         'public/static/css/logs_show.css' => 'storage/app/public/basset/public/static/css/',
         'public/static/css/csv_rollback.css' => 'storage/app/public/basset/public/static/css/',
-        'public/static/css/humanbit_banking_ui.css' => 'storage/app/public/basset/public/static/css/',
+        'public/static/css/humanbit_admin_ui.css' => 'storage/app/public/basset/public/static/css/',
         // JS files
         'public/static/js/humanbit_custom.js' => 'storage/app/public/basset/public/static/js/',
     ];

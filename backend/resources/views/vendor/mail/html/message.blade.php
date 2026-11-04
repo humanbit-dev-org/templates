@@ -1,9 +1,9 @@
-@props(['bankLogoUrl' => null, 'bankName' => null])
+@props(['coBrandLogoUrl' => null, 'coBrandName' => null])
 <x-mail::layout>
 {{-- Header --}}
 <x-slot:header>
 {{-- The logo links to the frontend users know, not to the backend (app.url). --}}
-<x-mail::header :url="config('app.frontend_url')" :bank-logo-url="$bankLogoUrl" :bank-name="$bankName">
+<x-mail::header :url="config('app.frontend_url')" :co-brand-logo-url="$coBrandLogoUrl" :co-brand-name="$coBrandName">
 {{ config('mail.brand_name') }}
 </x-mail::header>
 </x-slot:header>

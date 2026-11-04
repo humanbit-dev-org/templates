@@ -2,10 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Support\Backpack\SchemaCache;
 use App\Support\Backpack\BackpackHelper;
 use App\Http\Concerns\ChecksBackpackPermissions;
-use App\Models\Banca;
 use App\Models\Page;
 use App\Models\Translate;
 use App\Services\Translate\TranslateVariableService;
@@ -65,20 +63,11 @@ class TranslateCrudController extends CrudController
      */
     private function buildArchiveData(): array
     {
-        $query = Translate::query()->with(['page:id,name', 'banca:banca_abi,nome']);
+        $query = Translate::query()->with(['page:id,name']);
 
         $code = trim((string) request()->query('code', ''));
         if ($code !== '') {
             $query->where('code', 'like', "%{$code}%");
-        }
-
-        $bancaAbi = trim((string) request()->query('banca_abi', ''));
-        if ($bancaAbi !== '') {
-            if ($bancaAbi === 'default') {
-                $query->whereNull('banca_abi');
-            } else {
-                $query->where('banca_abi', 'like', "%{$bancaAbi}%");
-            }
         }
 
         $pageId = request()->query('page_id');
@@ -88,64 +77,18 @@ class TranslateCrudController extends CrudController
 
         /** @var LengthAwarePaginator $translations */
         $translations = $query
-            ->orderByRaw('CASE WHEN banca_abi IS NULL THEN 0 ELSE 1 END')
             ->orderBy('code')
             ->paginate(30)
             ->withQueryString();
-
-        $pageOptions = Page::query()->orderBy('name')->pluck('name', 'id')->toArray();
-        $tenantAbis = Translate::query()
-            ->select('banca_abi')
-            ->whereNotNull('banca_abi')
-            ->distinct()
-            ->orderBy('banca_abi')
-            ->pluck('banca_abi')
-            ->map(static fn ($value): string => (string) $value)
-            ->values()
-            ->all();
-        $tenantNamesByAbi = Banca::query()
-            ->whereIn('banca_abi', $tenantAbis)
-            ->pluck('nome', 'banca_abi')
-            ->map(static fn ($value): string => (string) $value)
-            ->all();
-
-        $tenantOptions = collect($tenantAbis)->map(function (string $abi) use ($tenantNamesByAbi): array {
-            $name = $tenantNamesByAbi[$abi] ?? '';
-
-            return [
-                'abi' => $abi,
-                'label' => $name !== '' ? "{$abi} - {$name}" : $abi,
-                'name' => $name,
-            ];
-        })->values()->all();
-
-        $tenantTabs = array_merge(
-            [[
-                'abi' => '',
-                'label' => 'tutti',
-            ]],
-            [[
-                'abi' => 'default',
-                'label' => 'default',
-            ]],
-            collect($tenantOptions)->map(static fn (array $item): array => [
-                'abi' => $item['abi'],
-                'label' => $item['label'],
-            ])->all()
-        );
 
         return [
             'translations' => $translations,
             'filters' => [
                 'code' => $code,
-                'banca_abi' => $bancaAbi,
                 'page_id' => is_numeric($pageId) ? (int) $pageId : '',
             ],
-            'pageOptions' => $pageOptions,
-            'tenantOptions' => $tenantOptions,
-            'tenantTabs' => $tenantTabs,
-            'activeTenant' => $bancaAbi,
-            'placeholderSamples' => $this->buildPlaceholderSamples($bancaAbi),
+            'pageOptions' => Page::query()->orderBy('name')->pluck('name', 'id')->toArray(),
+            'placeholderSamples' => $this->buildPlaceholderSamples(),
             'totals' => [
                 'records' => $translations->total(),
             ],
@@ -157,35 +100,28 @@ class TranslateCrudController extends CrudController
      *
      * @return array<string, string>
      */
-    private function buildPlaceholderSamples(?string $activeTenantAbi = null): array
+    private function buildPlaceholderSamples(): array
     {
         $samples = [];
         $modelCache = [];
 
         foreach (TranslateVariableService::getRegistry() as $key => $definition) {
-            $samples[(string) $key] = $this->sampleValueForPlaceholder(
-                (string) $key,
-                $definition,
-                $activeTenantAbi,
-                $modelCache
-            );
+            $samples[(string) $key] = $this->sampleValueForPlaceholder((string) $key, $definition, $modelCache);
         }
 
         return $samples;
     }
 
     /**
-     * Resolve a sample value for a placeholder.
+     * Resolve a sample value for a placeholder: the value of the first record
+     * of the placeholder's model when available, otherwise a plausible value
+     * guessed from the key.
      *
      * @param  array<string, mixed>  $definition
      * @param  array<string, Model|null>  $modelCache
      */
-    private function sampleValueForPlaceholder(
-        string $key,
-        array $definition,
-        ?string $activeTenantAbi,
-        array &$modelCache
-    ): string {
+    private function sampleValueForPlaceholder(string $key, array $definition, array &$modelCache): string
+    {
         $modelKey = (string) ($definition['model'] ?? '');
         $field = (string) ($definition['field'] ?? '');
         $modelClass = config("translate_vars.models.{$modelKey}");
@@ -197,32 +133,14 @@ class TranslateCrudController extends CrudController
             class_exists($modelClass) &&
             is_subclass_of($modelClass, Model::class)
         ) {
-            $cacheKey = $modelClass.'|'.($activeTenantAbi ?? '');
-            if (! array_key_exists($cacheKey, $modelCache)) {
-                $modelCache[$cacheKey] = $this->resolveModelSampleRecord($modelClass, $activeTenantAbi);
+            if (! array_key_exists($modelClass, $modelCache)) {
+                $modelCache[$modelClass] = (new $modelClass)->newQuery()->first();
             }
 
-            $record = $modelCache[$cacheKey];
+            $record = $modelCache[$modelClass];
             if ($record && isset($record->{$field}) && $record->{$field} !== null && (string) $record->{$field} !== '') {
                 return (string) $record->{$field};
             }
-        }
-
-        $fixedSamples = [
-            'prodotto.max_mesi_tiraggio' => '18',
-            'prodotto.min_mesi_tiraggio' => '3',
-            'delibera.max_atp_consigliato' => '25.000,00',
-            'tiraggio.importo_richiesto' => '10.000,00',
-            'tiraggio.percentuale' => '15',
-            'tiraggio.trattenuta_totale' => '4.250,00',
-            'frontend.tiraggio_settimane_rimanenti' => '24',
-            'frontend.tiraggio_settimane_label' => 'settimane',
-            'user.ragione_sociale' => 'ACME S.r.l.',
-            'banca.nome' => 'Banca Demo',
-        ];
-
-        if (isset($fixedSamples[$key])) {
-            return $fixedSamples[$key];
         }
 
         if (Str::contains($key, ['mesi', 'month'])) {
@@ -242,27 +160,6 @@ class TranslateCrudController extends CrudController
         }
 
         return '{$'.$key.'}';
-    }
-
-    /**
-     * Resolve one representative record for a model, tenant-aware if possible.
-     */
-    private function resolveModelSampleRecord(string $modelClass, ?string $activeTenantAbi): ?Model
-    {
-        /** @var Model $model */
-        $model = new $modelClass;
-        $query = $model->newQuery();
-        $table = $model->getTable();
-
-        if (SchemaCache::hasColumn($table, 'banca_abi')) {
-            if ($activeTenantAbi === 'default') {
-                $query->whereNull('banca_abi');
-            } elseif ($activeTenantAbi !== null && $activeTenantAbi !== '') {
-                $query->where('banca_abi', $activeTenantAbi);
-            }
-        }
-
-        return $query->first();
     }
 
     protected function setupShowOperation()

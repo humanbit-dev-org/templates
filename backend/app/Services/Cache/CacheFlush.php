@@ -2,7 +2,6 @@
 
 namespace App\Services\Cache;
 
-use App\Services\Cache\BusinessConsoleListCache;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
@@ -12,8 +11,6 @@ use Illuminate\Support\Facades\Log;
  * Called once at the end of every import operation — whether from:
  * - ImportJobService::import() (job-based)
  * - ImportCsvAction::importCsv() (Backpack UI)
- * - Business Console import endpoints
- * - InsertProiezioni job
  *
  * This is the safety net for all write paths that bypass Eloquent Observers
  * (DB::statement, query builder updates) and for Eloquent paths where the
@@ -23,5 +20,24 @@ use Illuminate\Support\Facades\Log;
  */
 final class CacheFlush
 {
-    
+    /**
+     * Forget every cache key that depends on the imported model.
+     *
+     * @param  class-string  $modelClass
+     */
+    public static function afterImport(string $modelClass): void
+    {
+        $keys = CacheKeyService::forModel($modelClass);
+
+        foreach ($keys as $key) {
+            Cache::forget($key);
+        }
+
+        if ($keys !== []) {
+            Log::debug('CacheFlush: post-import invalidation', [
+                'model' => class_basename($modelClass),
+                'keys' => count($keys),
+            ]);
+        }
+    }
 }

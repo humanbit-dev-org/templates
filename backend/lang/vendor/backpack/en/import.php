@@ -40,7 +40,7 @@ return [
 
     // User import: password generation
     'generate_passwords_label' => 'Password generation for users',
-    'generate_passwords_hint' => 'Generate login passwords for imported users (HKDF+Argon2id from NDG and ABI). If disabled, users will not be able to log in until you run: php artisan auth:rehash-passwords',
+    'generate_passwords_hint' => 'Generate login passwords for imported users (HKDF+Argon2id from the username). If disabled, users will not be able to log in until you run: php artisan auth:rehash-passwords',
     'generate_passwords_warning' => 'If you disable password generation, imported users will not be able to log in. You can generate passwords later by running the command: php artisan auth:rehash-passwords',
     'password_empty_badge' => 'Empty',
     'update_and_insert_description' => 'Update existing records and insert new ones',
@@ -117,8 +117,6 @@ return [
     // Auto-generated field hints
     'auto_generated_hint_pk' => 'Auto-increment primary key generated automatically by the database.',
     'auto_generated_hint_pk_manual' => 'Primary key: must be provided manually when inserting a new record.',
-    'auto_generated_hint_user_id' => 'User ID is auto-generated in the format {banca_abi}-{ndg}.',
-    'auto_generated_hint_email' => 'Email is auto-generated in the format {banca_abi}.{ndg}@cashberry.it',
     'auto_generated_hint_password' => 'Password is automatically created when saving new users.',
     'auto_generated_hint_role_id' => 'User role defaults to User, the role with permissions to operate in the platform.',
     'auto_generated_hint_backpack_role_id' => 'This field is not set by default.',

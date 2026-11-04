@@ -43,7 +43,7 @@ $breadcrumbs = $breadcrumbs ?? $defaultBreadcrumbs;
         </div>
       </div>
       @endif
-{{-- @php $presetActive = \App\Support\Backpack\PresetFilterHandler::getActivePreset(); @endphp
+@php $presetActive = \App\Support\Backpack\PresetFilterHandler::getActivePreset(); @endphp
       <div class="col-sm-3">
         <button type="button" class="hb-filter-toggle {{ $presetActive ? 'hb-filter-toggle--disabled' : '' }}" id="hbFilterToggleBtn"
                 data-bs-toggle="collapse" data-bs-target="#filterPanel"
@@ -57,7 +57,7 @@ $breadcrumbs = $breadcrumbs ?? $defaultBreadcrumbs;
           <i class="la la-angle-down hb-filter-toggle-chevron"></i>
           @endif
         </button>
-      </div> --}}
+      </div>
       <div class="col-sm-9 text-end">
         @if ( $crud->buttons()->where('stack', 'top')->count() || $crud->exportButtons())
         <div class="d-print-none {{ $crud->hasAccess('create')?'with-border':'' }}">

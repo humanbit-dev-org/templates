@@ -454,7 +454,7 @@ html {
 }
 
 /* The shared .api-sandbox-tabs class below re-adds margin-bottom for the
-   in-page bank tabs; the env toggle must stay flush with the top bar. */
+   in-page profile tabs; the env toggle must stay flush with the top bar. */
 .api-sandbox-tabs.api-docs-tabs {
     margin-bottom: 0;
 }
@@ -469,7 +469,7 @@ html {
     overflow-y: auto;
 }
 
-/* ---- Bank tabs ---- */
+/* ---- Profile tabs ---- */
 
 .api-sandbox-tabs {
     display: flex;
@@ -515,18 +515,6 @@ html {
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-.api-sandbox-conguaglio {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    margin-left: auto;
-    padding: 0.6rem 1rem;
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: #495057;
-    cursor: pointer;
-}
-
 @media (max-width: 900px) {
     .api-sandbox-nav {
         display: none;
@@ -563,7 +551,7 @@ html {
     }
 
     /* Segmented control: the tabs split the row evenly instead of
-       wrapping into a stacked list; the conguaglio toggle drops below.
+       wrapping into a stacked list.
        border-box so padding doesn't push past the 100%/flexed width. */
     .api-sandbox-tab {
         flex: 1 1 0;
@@ -572,13 +560,6 @@ html {
         align-items: center;
         text-align: center;
         padding: 0.5rem 0.6rem;
-    }
-
-    .api-sandbox-conguaglio {
-        flex: 0 0 100%;
-        box-sizing: border-box;
-        margin-left: 0;
-        justify-content: center;
     }
 
     /* The picker is a body child, so sticky pins it for the rest of the

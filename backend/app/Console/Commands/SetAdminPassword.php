@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Hash;
  * Set an Argon2id password on Backpack admin accounts.
  *
  * auth:rehash-passwords skips admins on purpose: their passwords are set by
- * hand, not HKDF-derived from user_id. After a legacy migration the migrated
+ * hand, not HKDF-derived from the username. After a legacy migration the migrated
  * admins therefore land with an empty password and need one from here.
  *
  * The plain password is never a command default: pass --password only for
@@ -41,7 +41,7 @@ class SetAdminPassword extends Command
             });
         }
 
-        $users = $query->orderBy('user_id')->get(['user_id', 'email']);
+        $users = $query->orderBy('username')->get(['username', 'email']);
 
         if ($users->isEmpty()) {
             $this->info('No matching admin accounts.');
@@ -50,8 +50,8 @@ class SetAdminPassword extends Command
         }
 
         $this->table(
-            ['user_id', 'email'],
-            $users->map(fn (User $u) => [$u->user_id, $u->email])->all()
+            ['username', 'email'],
+            $users->map(fn (User $u) => [$u->username, $u->email])->all()
         );
 
         if ($this->option('dry-run')) {
@@ -78,7 +78,7 @@ class SetAdminPassword extends Command
         // written here must already be hashed.
         foreach ($users as $user) {
             User::query()
-                ->where('user_id', $user->user_id)
+                ->where('username', $user->username)
                 ->update(['password' => Hash::make($plain)]);
             $bar->advance();
         }

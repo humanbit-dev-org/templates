@@ -25,7 +25,6 @@ class Institutional extends Model
         'body_english',
         'meta_body_italian',
         'meta_body_english',
-        'author',
         'published',
         'strillo',
     ];
@@ -33,6 +32,14 @@ class Institutional extends Model
     public function media()
     {
         return $this->hasMany(Media::class);
+    }
+
+    /**
+     * Downloadable attachments of the page (attachments.institutional_id).
+     */
+    public function attachments()
+    {
+        return $this->hasMany(Attachment::class);
     }
 
     // see HasDisplayAttributes for full doc

@@ -112,7 +112,7 @@ $redisConfig = [
     // affected: Horizon::use() clones this config for its own "horizon" connection
     // and overwrites options.prefix with the hash-tagged horizon.prefix.
     // NOTE: isolation relies on REDIS_NAMESPACE being unique per stack sharing
-    // the cluster — set it explicitly (e.g. "nexi-integration") in each .env.
+    // the cluster — set it explicitly (e.g. "templates-integration") in each .env.
     //
     // "pulse" is NOT registered here: Laravel Pulse's RedisAdapter::client() only
     // accepts Redis|Predis\Client|Relay — a PhpRedisClusterConnection (RedisCluster
@@ -244,14 +244,14 @@ return [
         ],
 
         // Sandbox connections: same MySQL server as 'mysql' but a separate schema
-        // (sandbox_rays). No 'url' key on purpose: with DB_URL set it would point
+        // (sandbox_templates). No 'url' key on purpose: with DB_URL set it would point
         // at the real database. The 'sanduser' app user has no DDL privileges so
         // a TRUNCATE/ALTER inside a request can't break the rollback guarantee.
         'sandbox' => [
             'driver' => 'mysql',
             'host' => env('SANDBOX_DB_HOST', env('DB_HOST', '127.0.0.1')),
             'port' => env('SANDBOX_DB_PORT', env('DB_PORT', '3306')),
-            'database' => env('SANDBOX_DB_DATABASE', 'sandbox_rays'),
+            'database' => env('SANDBOX_DB_DATABASE', 'sandbox_templates'),
             'username' => env('SANDBOX_DB_USERNAME', 'sanduser'),
             'password' => $secret(env('SANDBOX_DB_PASSWORD_FILE', env('SANDBOX_DB_PASSWORD', ''))),
             'unix_socket' => env('DB_SOCKET', ''),
@@ -271,7 +271,7 @@ return [
             'driver' => 'mysql',
             'host' => env('SANDBOX_DB_HOST', env('DB_HOST', '127.0.0.1')),
             'port' => env('SANDBOX_DB_PORT', env('DB_PORT', '3306')),
-            'database' => env('SANDBOX_DB_DATABASE', 'sandbox_rays'),
+            'database' => env('SANDBOX_DB_DATABASE', 'sandbox_templates'),
             'username' => env('SANDBOX_DB_ADMIN_USERNAME', 'sandadmin'),
             'password' => $secret(env('SANDBOX_DB_ADMIN_PASSWORD_FILE', env('SANDBOX_DB_ADMIN_PASSWORD', ''))),
             'unix_socket' => env('DB_SOCKET', ''),

@@ -1,13 +1,25 @@
 <?php
 
-namespace Tests\Feature\Auth;
+namespace Tests\Feature\Auth\session_cookie_auth;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Route;
 use Tests\TestCase;
 
 class RegistrationTest extends TestCase
 {
     use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        // These tests cover the optional Sanctum session-cookie auth routes,
+        // commented out in routes/auth.php: skip them while that mode is off.
+        if (! Route::has('register')) {
+            $this->markTestSkipped('Session-cookie auth routes are disabled (routes/auth.php).');
+        }
+    }
 
     public function test_new_users_can_register(): void
     {

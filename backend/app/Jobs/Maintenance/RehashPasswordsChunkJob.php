@@ -31,7 +31,7 @@ class RehashPasswordsChunkJob implements ShouldQueue
     public int $timeout = 300;
 
     /**
-     * @param  array<int, string>  $userIds  List of user_id values to process in this chunk.
+     * @param  array<int, string>  $userIds  List of usernames (users primary key) to process in this chunk.
      * @param  string  $cacheKey  Redis key used to track global progress.
      * @param  bool  $dryRun  When true, derive+hash but do not persist.
      */
@@ -44,7 +44,7 @@ class RehashPasswordsChunkJob implements ShouldQueue
     public function handle(): void
     {
         Log::channel('import')->info('RehashChunk: handle() called', [
-            'user_ids_count' => count($this->userIds),
+            'usernames_count' => count($this->userIds),
             'cache_key' => $this->cacheKey,
             'batch_id' => $this->batch()?->id,
             'batch_cancelled' => $this->batch()?->cancelled(),
@@ -74,7 +74,7 @@ class RehashPasswordsChunkJob implements ShouldQueue
 
                 try {
                     // The derivation-aware argon2id driver (DerivingArgon2IdHasher)
-                    // applies the HKDF pepper inside Hash::make; the raw user_id is
+                    // applies the HKDF pepper inside Hash::make; the raw username is
                     // the password seed, deriving here would double-derive.
                     $hashed = Hash::make($userId);
 
@@ -84,7 +84,7 @@ class RehashPasswordsChunkJob implements ShouldQueue
                 } catch (\Throwable $e) {
                     // Log and skip this user; do not abort the whole chunk.
                     Log::channel('import')->error('RehashChunk: hashing failed', [
-                        'user_id' => $userId,
+                        'username' => $userId,
                         'error' => $e->getMessage(),
                     ]);
                     $skipped++;
@@ -101,10 +101,10 @@ class RehashPasswordsChunkJob implements ShouldQueue
                     ));
 
                     $sql = 'UPDATE users'
-                         .' SET password = CASE user_id '
+                         .' SET password = CASE username '
                          .implode(' ', $updates)
                          .' END'
-                         .' WHERE user_id IN ('.$idsQuoted.')';
+                         .' WHERE username IN ('.$idsQuoted.')';
 
                     DB::statement($sql);
                 });
@@ -130,12 +130,12 @@ class RehashPasswordsChunkJob implements ShouldQueue
 
     /**
      * Handle a permanent job failure (after all retries exhausted).
-     * Log the failed user_ids so they can be replayed manually.
+     * Log the failed usernames so they can be replayed manually.
      */
     public function failed(\Throwable $e): void
     {
         Log::channel('import')->critical('RehashChunk: job failed permanently', [
-            'user_ids' => $this->userIds,
+            'usernames' => $this->userIds,
             'error' => $e->getMessage(),
         ]);
     }

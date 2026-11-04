@@ -192,13 +192,11 @@ class FieldTypeHandler
     private static function isCurrencyColumn(string $column): bool
     {
         return str_contains($column, 'importo')
-            || str_contains($column, 'importo_transato')
-            || str_contains($column, 'trattenuta')
+            || str_contains($column, 'prezzo')
+            || str_contains($column, 'price')
+            || str_contains($column, 'amount')
             || str_contains($column, 'interessi')
-            || str_contains($column, 'costo')
-            || str_contains($column, '_atp')
-            || str_contains($column, 'forecast')
-            || str_contains($column, 'baseline');
+            || str_contains($column, 'costo');
     }
 
     /**

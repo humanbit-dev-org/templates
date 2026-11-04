@@ -75,10 +75,6 @@ class ApiLabQuality
         $hasSanctum = $middleware->contains(fn (string $m) => str_contains($m, 'auth:sanctum') || $m === 'auth:sanctum');
         $hasSessionAuth = $middleware->contains(fn (string $m) => $m === 'auth' || str_starts_with($m, 'auth:'));
 
-        if ($middleware->contains('tenant.token')) {
-            $items[] = ['level' => 'ok', 'text' => 'B2B tenant Bearer required (API Lab auto-provisions when Authorization is omitted).'];
-        }
-
         if ($hasSanctum) {
             $items[] = ['level' => 'ok', 'text' => 'Sanctum bearer authentication required on this route.'];
         } elseif ($hasSessionAuth) {

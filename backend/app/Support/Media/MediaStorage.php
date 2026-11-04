@@ -6,13 +6,15 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Str;
 
 /**
- * Single entry point for tenant media (bank logos and fonts).
+ * Single entry point for stored media (images, logos, fonts, attachments).
  *
  * Two channels, same layout:
  *
- *   uploads/{tipo}/{banca_abi}/{file}   public  — what we upload for a bank
- *   requests/{tipo}/{banca_abi}/{file}  private — what a bank submits from the
- *                                                 business console for approval
+ *   uploads/{tipo}/{owner}/{file}   public  — what we publish ourselves
+ *   requests/{tipo}/{owner}/{file}  private — what users submit, pending approval
+ *
+ * {owner} is an optional folder segment grouping the files of one owner
+ * (e.g. a tenant or a user); it is left out when null.
  *
  * The path stored in the database is always relative to the disk root and
  * carries its own prefix, so it is byte-identical on local and S3 and tells you
@@ -36,7 +38,6 @@ final class MediaStorage
      * @var array<string, string> prefix => channel
      */
     private const LEGACY_PREFIXES = [
-        'interfaccia-richieste/' => 'private',
         'logos/' => 'public',
         'fonts/' => 'public',
         'media/' => 'public',
@@ -65,21 +66,24 @@ final class MediaStorage
     }
 
     /**
-     * Store a bank-facing asset we publish ourselves.
+     * Store a public asset we publish ourselves.
      *
-     * @param  string  $tipo  logos, fonts, …
+     * @param  string  $tipo  logos, fonts, media, …
+     * @param  string|null  $owner  Optional owner folder segment
      */
-    public static function storePublic(UploadedFile $file, string $tipo, ?string $bancaAbi): string
+    public static function storePublic(UploadedFile $file, string $tipo, ?string $owner = null): string
     {
-        return self::store($file, self::PUBLIC_PREFIX, $tipo, $bancaAbi, self::publicDisk(), 'public');
+        return self::store($file, self::PUBLIC_PREFIX, $tipo, $owner, self::publicDisk(), 'public');
     }
 
     /**
-     * Store an asset submitted by a bank, pending our approval.
+     * Store an asset submitted by a user, pending our approval.
+     *
+     * @param  string|null  $owner  Optional owner folder segment
      */
-    public static function storePrivate(UploadedFile $file, string $tipo, ?string $bancaAbi): string
+    public static function storePrivate(UploadedFile $file, string $tipo, ?string $owner = null): string
     {
-        return self::store($file, self::PRIVATE_PREFIX, $tipo, $bancaAbi, self::privateDisk(), 'private');
+        return self::store($file, self::PRIVATE_PREFIX, $tipo, $owner, self::privateDisk(), 'private');
     }
 
     public static function isPrivatePath(string $path): bool
@@ -136,11 +140,11 @@ final class MediaStorage
         UploadedFile $file,
         string $prefix,
         string $tipo,
-        ?string $bancaAbi,
+        ?string $owner,
         string $disk,
         string $visibility,
     ): string {
-        $directory = trim($prefix.'/'.$tipo.'/'.self::segment($bancaAbi), '/');
+        $directory = trim($prefix.'/'.$tipo.'/'.self::segment($owner), '/');
 
         $options = [
             'disk' => $disk,
@@ -164,9 +168,9 @@ final class MediaStorage
     }
 
     /**
-     * Prefix the sanitised original name with a uuid: two banks uploading
+     * Prefix the sanitised original name with a uuid: two owners uploading
      * "logo.png" must not overwrite each other, and neither must two successive
-     * uploads from the same bank while one is pending review.
+     * uploads from the same owner while one is pending review.
      */
     private static function filename(UploadedFile $file): string
     {

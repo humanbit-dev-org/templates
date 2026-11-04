@@ -13,7 +13,7 @@ use Symfony\Component\HttpFoundation\Response;
  *  - 'portal-access' tokens may call /api/v1/* only;
  *  - 'portal-refresh:*' tokens may call /api/v1/token only.
  *
- * A leaked bank credential can therefore never leave the portal surface and
+ * A leaked client credential can therefore never leave the portal surface and
  * wander onto other token-authenticated routes. Internal tokens (['*'],
  * console, SSO) and sandbox tokens are untouched: their names never match
  * the portal prefixes.

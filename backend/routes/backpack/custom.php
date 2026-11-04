@@ -17,9 +17,7 @@ use App\Http\Controllers\Admin\Support\BelongsToSearchOperation;
 use App\Http\Controllers\Admin\Support\BulkOperation;
 use App\Http\Controllers\Admin\Support\DuplicateOperation;
 use App\Http\Controllers\Admin\Support\RelationSearchOperation;
-use App\Http\Controllers\Admin\Support\TiraggioManagementOperation;
 use App\Http\Controllers\Admin\SupportController;
-use App\Http\Controllers\Api\TiraggioController;
 use App\Support\Backpack\BackpackHelper;
 use Illuminate\Support\Facades\Route;
 
@@ -74,8 +72,8 @@ Route::group(
     }
 );
 
-// SAML Simulation Routes moved to routes/web.php under /saml-dev
-// to avoid Backpack admin middleware interference
+// The Auth Simulation (SAML) page lives in routes/restricted.php under
+// /auth-simulation, outside the Backpack admin middleware.
 
 Route::group(
     [
@@ -182,13 +180,12 @@ Route::group(
         Route::crud('page', 'PageCrudController');
         Route::crud('contatto', 'ContattoCrudController');
         Route::crud('article', 'ArticleCrudController');
-		Route::crud('institutional', 'InstitutionalCrudController');
+        Route::crud('institutional', 'InstitutionalCrudController');
         Route::crud('metadata', 'MetadataCrudController');
         Route::crud('media', 'MediaCrudController');
         Route::crud('attachment', 'AttachmentCrudController');
         Route::crud('notification', 'NotificationCrudController');
         Route::crud('backpack-role', 'BackpackRoleCrudController');
-        Route::crud('role', 'RoleCrudController');
         Route::crud('model-permission', 'ModelPermissionCrudController');
     }
 ); // this should be the absolute last line of this file

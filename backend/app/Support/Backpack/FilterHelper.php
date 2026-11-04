@@ -822,9 +822,6 @@ class FilterHelper
      */
     public static function cleanFieldName(string $fieldName, bool $isPrimaryKey = false): string
     {
-        // Remove custom foreign key suffixes
-        $fieldName = str_replace(['_numero_pratica'], '', $fieldName);
-
         // Remove _id suffix only for FK fields, not for primary keys
         if (! $isPrimaryKey) {
             $fieldName = str_replace('_id', '', $fieldName);
@@ -848,14 +845,9 @@ class FilterHelper
     public static function buildBelongsToSearchPlaceholder(string $relatedModelClass, ?string $relationLabel = null): string
     {
         $searchTerms = [
-            'User' => 'user ID, ragione sociale o email',
-            'Banca' => 'ABI o nome banca',
-            'Filiale' => 'filiale ID o descrizione',
+            'User' => 'username, nome o email',
             'Role' => 'nome ruolo',
             'BackpackRole' => 'nome ruolo backend',
-            'Tiraggio' => 'numero pratica',
-            'Delibera' => 'delibera ID',
-            'Prodotto' => 'codice prodotto o nome',
             'Page' => 'titolo o slug',
             'Translate' => 'codice o testo',
         ];
@@ -879,13 +871,9 @@ class FilterHelper
     {
         $modelName = class_basename($relatedModel);
         $searchTerms = [
-            'User' => 'user ID o ragione sociale',
-            'Banca' => 'ABI o nome banca',
-            'Filiale' => 'filiale ID o descrizione',
+            'User' => 'username o nome',
             'Role' => 'nome ruolo',
             'BackpackRole' => 'nome ruolo backend',
-            'Tiraggio' => 'numero pratica',
-            'Delibera' => 'delibera ID',
         ];
 
         $hint = $searchTerms[$modelName] ?? strtolower(str_replace('_', ' ', $relatedModel->getKeyName()));
@@ -1058,9 +1046,9 @@ class FilterHelper
      * Options for a relation filter rendered as a plain select, or null when
      * the related table holds more than $max rows and the filter falls back to
      * the autocomplete. Building the options loads every related record (every
-     * user, for a user_id column) and counts the current table per key: done
+     * user, for a username column) and counts the current table per key: done
      * on every list page only to count them, it ran out of memory in
-     * production on storici, previsionali, delibere and tiraggi.
+     * production on large tables.
      *
      * @return array<string, string>|null
      */
@@ -1194,7 +1182,7 @@ class FilterHelper
                     $referencedColumn,
                     $relatedModel
                 ) {
-                    // Use the referenced column value as key (e.g., numero_pratica)
+                    // Use the referenced column value as key (e.g., username)
                     // This matches the key used in $counts which is grouped by foreignKeyColumn
                     if ($referencedColumn && isset($item->$referencedColumn)) {
                         $itemKey = $item->$referencedColumn;
@@ -1634,7 +1622,7 @@ class FilterHelper
      *
      * @param  string  $relatedModelClass  Related model class name
      * @param  mixed  $value  Filter value (usually primary key)
-     * @param  string|null  $searchField  The field name used for the search (e.g., "id", "numero_pratica")
+     * @param  string|null  $searchField  The field name used for the search (e.g., "id", "username")
      * @return array ['value' => string, 'field' => string|null] Display value and field name used (null if primary key)
      */
     public static function getHasManyFilterDisplayValueAndField(
@@ -1718,7 +1706,7 @@ class FilterHelper
      *
      * @param  string  $relatedModelClass  Related model class name
      * @param  mixed  $value  Filter value (usually primary key)
-     * @param  string|null  $searchField  The field name used for the search (e.g., "id", "numero_pratica")
+     * @param  string|null  $searchField  The field name used for the search (e.g., "id", "username")
      * @return string Display value
      */
     public static function getHasManyFilterDisplayValue(
@@ -1965,7 +1953,7 @@ class FilterHelper
                     $foreignKey = $return->getForeignKeyName();
                     $localKey = $return->getLocalKeyName();
 
-                    // Get searchable keys for the related model (id, numero_pratica, etc.)
+                    // Get searchable keys for the related model (id, username, etc.)
                     $searchableKeys = RelationSearchOperation::getSearchableKeys(
                         $relatedModel
                     );
@@ -1997,7 +1985,7 @@ class FilterHelper
     }
 
     /**
-     * Parse a HasMany relation field filter request key (e.g. tiraggi_rel_status).
+     * Parse a HasMany relation field filter request key (e.g. articles_rel_published).
      *
      * @return array{relation: array, relation_name: string, field: string, field_info: array, param_base: string}|null
      */
@@ -2198,7 +2186,7 @@ class FilterHelper
     /**
      * Group HasMany relations by name (instead of by searchable key)
      * This consolidates relations with multiple searchable keys into single entries
-     * Example: delibere_id and delibere_numero_pratica become one "delibere" entry with multiple keys
+     * Example: users_username and users_email become one "users" entry with multiple keys
      */
     private static function groupHasManyRelationsByName(array $hasManyRelations): array
     {
@@ -2220,7 +2208,7 @@ class FilterHelper
 
     /**
      * Get filter count for HasMany relations
-     * Now counts filters for each searchable key (id, numero_pratica, etc.)
+     * Now counts filters for each searchable key (id, username, etc.)
      * Also counts _empty and _not_empty filters at relation level
      */
     private static function getHasManyRelationsFilterCount(array $hasManyRelations): int
@@ -2274,7 +2262,7 @@ class FilterHelper
                 $hasRelationFilter = true;
             }
 
-            // Also check relation_field_not_empty / relation_field_empty (form sends e.g. storici_id_not_empty)
+            // Also check relation_field_not_empty / relation_field_empty (form sends e.g. media_id_not_empty)
             if (! $hasRelationFilter && isset($relation['searchable_keys'])) {
                 foreach ($relation['searchable_keys'] as $keyInfo) {
                     $filterKey = $relationName.'_'.$keyInfo['field'];

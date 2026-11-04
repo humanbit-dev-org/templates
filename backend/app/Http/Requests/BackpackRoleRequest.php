@@ -26,7 +26,8 @@ class BackpackRoleRequest extends FormRequest
 	{
 		return [
 			"name" => "required|string|max:255|unique:backpack_roles,name," . $this->id,
-			"description" => "nullable|string",
+			// backpack_roles.description is NOT NULL
+			"description" => "required|string|max:255",
 		];
 	}
 

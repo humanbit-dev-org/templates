@@ -8,7 +8,7 @@ return [
     'subject_placeholder' => 'Select a topic',
     'categories' => [
         'admin_panel' => 'Using the admin panel',
-        'platform' => 'RAYS platform assistance',
+        'platform' => 'Platform assistance',
         'bug' => 'Bug or malfunction report',
         'other' => 'Other',
     ],
@@ -29,12 +29,12 @@ return [
     'error' => 'Unable to send the request. Please try again in a few minutes.',
     'duplicate' => 'This request has already been sent. Please wait a moment before sending it again.',
     'throttle' => 'You have sent too many support requests. Please try again in :minutes minutes.',
-    'mail_title' => 'Support request — RAYS Admin',
+    'mail_title' => 'Support request — Admin panel',
     'mail_from' => 'From',
     'mail_attachments' => 'Attached screenshots (:count)',
     'mail_details' => 'Details',
     'mail_role' => 'Role',
-    'mail_bank' => 'Bank',
+    'mail_username' => 'Username',
     'mail_page' => 'Page',
     'mail_reply_hint' => 'Reply to this email to write directly to the user.',
     // Shared with mail/admin-message.blade.php.

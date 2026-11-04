@@ -5011,13 +5011,6 @@ aside .navbar-collapse .dropdown-toggle:hover::after,
     text-decoration: none;
 }
 
-.hb-preset-banca-select {
-    width: auto;
-    min-width: 160px;
-    font-size: 0.8rem;
-    margin-left: 0.25rem;
-}
-
 /* ── Disabled filter toggle (when preset is active) ────────── */
 .hb-filter-toggle--disabled {
     opacity: 0.5;

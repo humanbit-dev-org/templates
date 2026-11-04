@@ -49,11 +49,10 @@ class AdminSupportRequestNotification extends Notification
         $categoryLabel = $this->categoryLabel();
 
         $mail = (new MailMessage)
-            ->subject('[RAYS Admin] '.$categoryLabel.' — '.$this->user->email)
+            ->subject('['.config('app.name').' Admin] '.$categoryLabel.' — '.$this->user->email)
             ->view('mail.admin-support', [
                 'user' => $this->user,
                 'roleName' => $this->user->backpackRole?->name ?? '—',
-                'bancaLabel' => $this->resolveBancaLabel(),
                 'categoryKey' => $this->category,
                 'categoryLabel' => $categoryLabel,
                 'messageBody' => $this->message,
@@ -73,21 +72,6 @@ class AdminSupportRequestNotification extends Notification
         }
 
         return $mail;
-    }
-
-    /**
-     * Bank the admin user belongs to, as "Name (ABI)", or null when the user
-     * has no bank.
-     */
-    protected function resolveBancaLabel(): ?string
-    {
-        $banca = $this->user->banca;
-
-        if (! $banca) {
-            return $this->user->banca_abi ?: null;
-        }
-
-        return filled($banca->nome) ? $banca->nome.' ('.$banca->banca_abi.')' : (string) $banca->banca_abi;
     }
 
     /**

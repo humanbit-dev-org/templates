@@ -31,7 +31,9 @@ return [
 
     'name' => env('APP_NAME', 'Laravel'),
 
-    'tenant' => env('TENANT_ID') ?: 'nexi-multi',
+    // Identifier of the tenant this deployment serves (multi-tenant setups,
+    // B2B integrations). Empty for a single-tenant deployment.
+    'tenant' => env('TENANT_ID', ''),
 
     /*
     |--------------------------------------------------------------------------

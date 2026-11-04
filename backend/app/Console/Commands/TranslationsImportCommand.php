@@ -3,14 +3,17 @@
 namespace App\Console\Commands;
 
 use App\Services\Translate\TranslateImportService;
-use App\Services\Translate\TranslateRuntimeTenantMetaService;
 use Illuminate\Console\Command;
 
+/**
+ * Imports the frontend translations (frontend/lang/*.json) into the
+ * translates table, overwriting the database with the files' content.
+ */
 class TranslationsImportCommand extends Command
 {
     protected $signature = 'translations:import';
 
-    protected $description = 'Import translations from frontend/lang/*.json into DB, then update tenant metadata structure';
+    protected $description = 'Import translations from frontend/lang/*.json into DB';
 
     public function handle(): int
     {
@@ -18,20 +21,10 @@ class TranslationsImportCommand extends Command
 
         if ($this->output->isVerbose()) {
             $this->components->info($ok
-                ? 'Import completed (JSON -> DB overwrite). Running tenant structure sync...'
+                ? 'Import completed (JSON -> DB overwrite).'
                 : 'Import failed (see laravel.log).');
         }
 
-        if (! $ok) {
-            return self::FAILURE;
-        }
-
-        $sync = TranslateRuntimeTenantMetaService::syncRuntimeFiles();
-
-        if ($this->output->isVerbose()) {
-            $this->components->info("Tenant metadata sync completed ({$sync['annotations']} annotations on {$sync['files']} files).");
-        }
-
-        return self::SUCCESS;
+        return $ok ? self::SUCCESS : self::FAILURE;
     }
 }

@@ -4,7 +4,6 @@ namespace App\Services\Auth;
 
 use App\Models\User;
 use App\Models\UserTwoFactor;
-use App\Support\Url\TenantAssetUrl;
 use App\Support\TwoFactorDevice;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Mail;
@@ -20,7 +19,7 @@ class TwoFactorAuthService
     {
         return UserTwoFactor::firstOrCreate(
             [
-                'user_id' => $user->getKey(),
+                'username' => $user->getKey(),
                 'device_id' => $deviceId,
             ],
             [
@@ -51,7 +50,7 @@ class TwoFactorAuthService
     public function needsNewToken(User $user, string $deviceId): bool
     {
         $device = UserTwoFactor::query()
-            ->where('user_id', $user->getKey())
+            ->where('username', $user->getKey())
             ->where('device_id', $deviceId)
             ->first();
 
@@ -71,7 +70,7 @@ class TwoFactorAuthService
     public function validateToken(User $user, string $deviceId, string $token): bool
     {
         $device = UserTwoFactor::query()
-            ->where('user_id', $user->getKey())
+            ->where('username', $user->getKey())
             ->where('device_id', $deviceId)
             ->first();
 
@@ -103,16 +102,12 @@ class TwoFactorAuthService
 
         $token = $this->generateToken($user, $deviceId);
 
-        $user->loadMissing('banca.interfaccia');
-
         Mail::send(
             'emails.two-factor-token',
             [
                 'token' => $token,
                 'user' => $user,
                 'trustDays' => TwoFactorDevice::trustDays(),
-                'bankLogoUrl' => TenantAssetUrl::bankLogoFromBanca($user->banca),
-                'bankName' => $user->banca?->nome,
             ],
             function ($message) use ($user) {
                 $message->to($user->email)->subject('Codice di accesso - Autenticazione a due fattori');

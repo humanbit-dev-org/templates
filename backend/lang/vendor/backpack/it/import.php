@@ -39,7 +39,7 @@ return [
 
     // User import: password generation
     'generate_passwords_label' => 'Generazione password per gli utenti',
-    'generate_passwords_hint' => 'Genera le password di accesso per gli utenti importati (HKDF+Argon2id da NDG e ABI). Se disattivato, gli utenti non potranno accedere fino all\'esecuzione di: php artisan auth:rehash-passwords',
+    'generate_passwords_hint' => 'Genera le password di accesso per gli utenti importati (HKDF+Argon2id dallo username). Se disattivato, gli utenti non potranno accedere fino all\'esecuzione di: php artisan auth:rehash-passwords',
     'generate_passwords_warning' => 'Se disattivi la generazione delle password, gli utenti importati non potranno accedere. Potrai generare le password in un secondo momento con il comando: php artisan auth:rehash-passwords',
     'password_empty_badge' => 'Vuota',
     'update_and_insert_description' => 'Aggiorna i record esistenti e inserisci quelli nuovi',
@@ -116,8 +116,6 @@ return [
     // Auto-generated field hints
     'auto_generated_hint_pk' => 'Chiave primaria auto-incrementale generata automaticamente dal database.',
     'auto_generated_hint_pk_manual' => 'Chiave primaria: deve essere fornita manualmente se si inserisce un nuovo record.',
-    'auto_generated_hint_user_id' => "L'ID utente viene generato automaticamente nel formato {banca_abi}-{ndg}.",
-    'auto_generated_hint_email' => "L'email viene generata automaticamente nel formato {banca_abi}.{ndg}@cashberry.it",
     'auto_generated_hint_password' => 'La password viene creata automaticamente in fase di salvataggio per i nuovi utenti.',
     'auto_generated_hint_role_id' => "Il ruolo dell'utente è di base User, l'utente con permessi per operare nella piattaforma.",
     'auto_generated_hint_backpack_role_id' => 'Questo campo di default non è impostato.',

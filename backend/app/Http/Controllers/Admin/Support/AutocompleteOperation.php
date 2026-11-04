@@ -131,7 +131,7 @@ class AutocompleteOperation extends Controller
      */
     public function getRelationValues(Request $request)
     {
-        $relationColumn = $request->input('relation_column'); // Foreign key column name (e.g., user_id)
+        $relationColumn = $request->input('relation_column'); // Foreign key column name (e.g., page_id)
         $table = $request->input('table'); // Current table name
         $term = $request->input('term'); // Search term
         $isHasMany = $request->input('is_hasmany', false); // Is this a hasMany relation?
@@ -161,22 +161,22 @@ class AutocompleteOperation extends Controller
                 $relatedModel = $relationQuery->getRelated();
                 $relatedClass = get_class($relatedModel);
                 $relatedTable = $relatedModel->getTable();
-                $foreignKey = $relationQuery->getForeignKeyName(); // This is the FK in the related table (e.g., user_id in tiraggi)
+                $foreignKey = $relationQuery->getForeignKeyName(); // This is the FK in the related table (e.g., page_id in media)
 
                 // Decode searchable keys
                 $keys = json_decode(base64_decode($searchableKeys), true) ?? [];
 
                 // For hasMany, we need to find records in the related table that have relations with the current table
-                // The foreign key is in the related table (e.g., user_id in tiraggi table), pointing to the current table (users)
+                // The foreign key is in the related table (e.g., page_id in media table), pointing to the current table (pages)
                 // So we query the related table directly and filter by foreign key values that exist in current table
                 $query = $relatedClass::query();
 
-                // Get parent key name (e.g., "user_id" for User model)
+                // Get parent key name (e.g., "id" for Page model)
                 $parentKey = $parentModel->getKeyName();
                 $parentTable = $parentModel->getTable();
 
                 // Get all parent IDs that have at least one related record
-                // The foreign key in the related table (e.g., user_id) points to parent key (e.g., user_id)
+                // The foreign key in the related table (e.g., page_id) points to parent key (e.g., id)
                 if (! SchemaCache::hasColumn($relatedTable, $foreignKey)) {
                     return response()->json([]);
                 }

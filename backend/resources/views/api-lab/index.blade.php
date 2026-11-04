@@ -118,7 +118,7 @@
                         @foreach($group['ungrouped'] as $endpoint)
                             @include('api-lab._link')
                         @endforeach
-                        {{-- Second level, e.g. one sub-section per bank. --}}
+                        {{-- Second level, e.g. one sub-section per partner. --}}
                         @foreach($group['groups'] as $sub)
                             <section class="api-lab-sector api-lab-sector--nested" data-sector="{{ $sub['key'] }}">
                                 <button
@@ -265,9 +265,9 @@
 
                     @if($active['needs_sanctum'])
                         <label>
-                            <span class="lbl">sanctum user_id</span>
+                            <span class="lbl">sanctum username</span>
                             <input type="text" id="lab-acting-as"
-                                   value="{{ backpack_auth()->user()?->user_id }}">
+                                   value="{{ backpack_auth()->user()?->getKey() }}">
                         </label>
                     @endif
 
@@ -275,12 +275,8 @@
                         <p class="api-lab-sandbox__note">Body is sent as <code>application/x-www-form-urlencoded</code> (edit JSON fields below; API Lab encodes them as form fields).</p>
                     @endif
 
-                    @if(($active['route_name'] ?? '') === 'b2b.nexi.oauth.token')
-                        <p class="api-lab-sandbox__note">Leave <code>client_id</code> / <code>client_secret</code> empty to use server <code>OAUTH_RAYS_*</code> credentials.</p>
-                    @endif
-
-                    @if($active['needs_tenant_token'] ?? false)
-                        <p class="api-lab-sandbox__note">B2B tenant Bearer: call <code>b2b.nexi.oauth.token</code> under <strong>Simulate inbound</strong> first (or leave Authorization empty for auto-inject).</p>
+                    @if($active['inject_oauth_credentials'] ?? false)
+                        <p class="api-lab-sandbox__note">Leave <code>client_id</code> / <code>client_secret</code> empty to use server <code>OAUTH_INBOUND_*</code> credentials.</p>
                     @endif
                 </form>
 

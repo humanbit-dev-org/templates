@@ -25,18 +25,18 @@ class SwaggerController extends Controller
     public function impersonate(Request $request): JsonResponse
     {
         $request->validate([
-            'user_id' => 'required|string',
+            'username' => 'required|string',
         ]);
 
-        $userId = $request->input('user_id');
+        $username = $request->input('username');
 
-        // Find the user to impersonate
-        $targetUser = User::where('user_id', $userId)->first();
+        // Find the user to impersonate (users primary key)
+        $targetUser = User::query()->find($username);
 
         if (! $targetUser) {
             return response()->json([
                 'success' => false,
-                'message' => "User with user_id '{$userId}' not found",
+                'message' => "User with username '{$username}' not found",
             ], 404);
         }
 
@@ -49,13 +49,13 @@ class SwaggerController extends Controller
         // Store in session
         session([
             'swagger_api_token' => $token,
-            'swagger_token_user_id' => $targetUser->user_id,
+            'swagger_token_user_id' => $targetUser->getKey(),
             'swagger_impersonating' => true,
         ]);
 
         Log::info('Swagger impersonation started', [
             'operator' => backpack_auth()->user()?->email,
-            'target_user_id' => $targetUser->user_id,
+            'target_username' => $targetUser->getKey(),
             'target_email' => $targetUser->email,
         ]);
 
@@ -63,9 +63,9 @@ class SwaggerController extends Controller
             'success' => true,
             'token' => $token,
             'user' => [
-                'user_id' => $targetUser->user_id,
+                'username' => $targetUser->getKey(),
                 'email' => $targetUser->email,
-                'ragione_sociale' => $targetUser->ragione_sociale,
+                'name' => trim($targetUser->name.' '.$targetUser->surname),
             ],
         ]);
     }
@@ -103,7 +103,7 @@ class SwaggerController extends Controller
         }
 
         // Find user and revoke their swagger tokens
-        $user = User::where('user_id', $tokenUserId)->first();
+        $user = User::query()->find($tokenUserId);
 
         if ($user) {
             $user->tokens()->where('name', self::TOKEN_NAME)->delete();

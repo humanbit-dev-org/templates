@@ -262,7 +262,7 @@ class FilterHandler
             return;
         }
 
-        // Check if this is a HasMany relation filter (e.g., tiraggi_id, tiraggi_numero_pratica)
+        // Check if this is a HasMany relation filter (e.g., media_id, media_title)
         $hasManyRelations = self::getHasManyRelations($model);
         foreach ($hasManyRelations as $relation) {
             $relationName = $relation['name'];
@@ -405,7 +405,7 @@ class FilterHandler
             return;
         }
 
-        // Check if this is a HasMany relation filter (e.g., tiraggi_id, tiraggi_numero_pratica)
+        // Check if this is a HasMany relation filter (e.g., media_id, media_title)
         $hasManyRelations = self::getHasManyRelations($model);
         foreach ($hasManyRelations as $relation) {
             $relationName = $relation['name'];
@@ -1162,7 +1162,7 @@ class FilterHandler
     }
 
     /**
-     * Apply a scalar filter on related model columns (e.g. Tiraggio -> user.banca_abi).
+     * Apply a scalar filter on related model columns (e.g. User -> role.name).
      */
     private static function applyRelationColumnFilterToQuery($query, Model $model, string $key, $value): bool
     {
@@ -1259,7 +1259,7 @@ class FilterHandler
         }
 
         // Extract relation name from fieldName
-        // Could be "tiraggi_id" (relation_field) or "tiraggi" (just relation)
+        // Could be "media_id" (relation_field) or "media" (just relation)
         $hasManyRelations = self::getHasManyRelations($model);
         foreach ($hasManyRelations as $relation) {
             $relationName = $relation['name'];
@@ -1297,7 +1297,7 @@ class FilterHandler
         }
 
         // Extract relation name from fieldName
-        // Could be "tiraggi_id" (relation_field) or "tiraggi" (just relation)
+        // Could be "media_id" (relation_field) or "media" (just relation)
         $hasManyRelations = self::getHasManyRelations($model);
         foreach ($hasManyRelations as $relation) {
             $relationName = $relation['name'];

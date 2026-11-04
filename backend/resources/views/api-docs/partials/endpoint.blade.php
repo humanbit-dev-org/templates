@@ -1,5 +1,4 @@
-<article class="api-sandbox-card api-sandbox-endpoint" id="{{ $endpoint['id'] }}"
-    @if (!empty($endpoint['operations']) && collect($endpoint['operations'])->every(fn ($op) => $op['conguaglio_only'] ?? false)) data-conguaglio-only @endif>
+<article class="api-sandbox-card api-sandbox-endpoint" id="{{ $endpoint['id'] }}">
     <h3 class="api-sandbox-endpoint-title">{{ $endpoint['title'] }}</h3>
     <p class="api-sandbox-path">
         <span class="api-sandbox-method method-{{ strtolower($endpoint['method']) }}">{{ $endpoint['method'] }}</span>

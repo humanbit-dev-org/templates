@@ -76,8 +76,8 @@
 
 <div class="api-token-banner" id="token-banner">
     <div class="impersonate-section">
-        <label for="impersonate-user-id">User ID:</label>
-        <input type="text" id="impersonate-user-id" placeholder="es. 12345-2651205" />
+        <label for="impersonate-user-id">Username:</label>
+        <input type="text" id="impersonate-user-id" placeholder="es. mrossi" />
         <button class="impersonate-btn" onclick="impersonateUser()" id="impersonate-btn">Genera token</button>
     </div>
     <div class="token-section" id="token-section" style="display: none;">
@@ -111,7 +111,7 @@
     async function impersonateUser() {
         const userId = document.getElementById('impersonate-user-id').value.trim();
         if (!userId) {
-            alert('Inserisci User ID');
+            alert('Inserisci lo username');
             return;
         }
 
@@ -127,7 +127,7 @@
                     'X-CSRF-TOKEN': CSRF_TOKEN,
                     'Accept': 'application/json',
                 },
-                body: JSON.stringify({ user_id: userId }),
+                body: JSON.stringify({ username: userId }),
             });
 
             const data = await response.json();
@@ -135,8 +135,8 @@
             if (data.success) {
                 sessionStorage.setItem('swagger_api_token', data.token);
                 sessionStorage.setItem('swagger_user_email', data.user.email);
-                sessionStorage.setItem('swagger_user_id', data.user.user_id);
-                showTokenSection(data.token, data.user.email, data.user.user_id);
+                sessionStorage.setItem('swagger_user_id', data.user.username);
+                showTokenSection(data.token, data.user.email, data.user.username);
             } else {
                 alert(data.message || 'Errore durante impersonation');
             }

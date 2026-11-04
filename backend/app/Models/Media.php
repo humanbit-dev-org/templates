@@ -19,6 +19,7 @@ class Media extends Model
         'ogv_path',
         'webm_path',
         'mp3_path',
+        'article_id',
         'institutional_id',
         'page_id',
         'caption',
@@ -27,6 +28,14 @@ class Media extends Model
     public function page()
     {
         return $this->belongsTo(Page::class);
+    }
+
+    /**
+     * Article the media belongs to (nullable FK).
+     */
+    public function article()
+    {
+        return $this->belongsTo(Article::class);
     }
 
     public function institutional()

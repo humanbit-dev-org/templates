@@ -43,12 +43,11 @@ return [
         base_path('public/static/css/humanbit_color_adjustments.css'),
         base_path('public/static/css/humanbit_datatables.css'),
         base_path('public/static/css/humanbit_csv.css'),
-        base_path('public/static/css/dashboard_custom.css'),
         base_path('public/static/css/humanbit_custom.css'),
         base_path('public/static/css/logs_index.css'),
         base_path('public/static/css/logs_show.css'),
         base_path('public/static/css/csv_rollback.css'),
-        base_path('public/static/css/humanbit_banking_ui.css'),
+        base_path('public/static/css/humanbit_admin_ui.css'),
     ],
 
     /**

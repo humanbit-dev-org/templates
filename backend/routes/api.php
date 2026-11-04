@@ -1,13 +1,12 @@
 <?php
 
+use App\Http\Controllers\Api\MetadataController;
+use App\Http\Controllers\Auth\NewPasswordController;
+use App\Http\Controllers\Auth\PasswordResetLinkController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-// use App\Http\Controllers\ArticleController;
-// use App\Http\Controllers\HeroController;
-// use App\Http\Controllers\InstitutionalController;
-use App\Http\Controllers\MetadataController;
-// use App\Http\Controllers\TranslateController;
 
+// SEO metadata of a frontend page, in the requested language.
 Route::get('/{lang}/{page}/seo', [MetadataController::class, 'index'])
     ->name('seo.index');
 
@@ -20,8 +19,9 @@ Route::post('/forgot-password', [PasswordResetLinkController::class, 'store'])
 Route::post('/reset-password', [NewPasswordController::class, 'store'])
     ->middleware('throttle:password.reset')
     ->name('password.reset');
-Route::middleware(["auth:sanctum"])->group(function () {
-	Route::middleware(["frontend.permission:User,read"])->get("/user", function (Request $request) {
-		return response()->json(["user" => $request->user()]);
-	});
+
+Route::middleware(['auth:sanctum'])->group(function () {
+    Route::middleware(['frontend.permission:User,read'])->get('/user', function (Request $request) {
+        return response()->json(['user' => $request->user()]);
+    });
 });

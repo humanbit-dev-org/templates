@@ -6,8 +6,8 @@
     @php
         // Define always-open menu sections (no dropdown)
         $alwaysOpenSections = [
-            'RAYS' => [
-                ['name' => 'User', 'title' => 'Anagrafiche', 'icon' => 'la la-user-circle', 'url' => 'user'],
+            'Users' => [
+                ['name' => 'User', 'title' => 'Users', 'icon' => 'la la-user-circle', 'url' => 'user'],
             ],
         ];
 
@@ -16,6 +16,7 @@
             'Contents' => [
                 'icon' => 'la la-folder',
                 'items' => [
+                    ['name' => 'Article', 'title' => 'Articles', 'icon' => 'la la-copy', 'url' => 'article'],
                     ['name' => 'Contatto', 'title' => 'Contatti', 'icon' => 'la la-envelope', 'url' => 'contatto'],
                     ['name' => 'Institutional', 'title' => 'Institutionals', 'icon' => 'la la-paste', 'url' => 'institutional'],
                 ]
@@ -73,7 +74,7 @@
         ];
     @endphp
 
-    {{-- Render always-open menu sections (RAYS, Banca) --}}
+    {{-- Render always-open menu sections (no dropdown) --}}
     @foreach ($alwaysOpenSections as $sectionTitle => $items)
         @if (\App\Http\Concerns\ChecksBackpackPermissions::userCanAccessAnyMenu($items))
             <x-backpack::menu-separator title="{{ $sectionTitle }}" />

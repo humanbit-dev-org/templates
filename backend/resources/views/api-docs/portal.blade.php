@@ -2,10 +2,10 @@
 <div class="api-sandbox-banner">
     @if ($lastToken)
         <div class="api-sandbox-banner-token">
-            <strong>Access token — {{ $lastToken['banca'] }}:</strong>
+            <strong>Access token — {{ $lastToken['owner'] }}:</strong>
             <code>{{ $lastToken['hint'] }}</code>
             <span class="api-sandbox-banner-user">
-                <code>{{ $lastToken['user_id'] }}</code>
+                <code>{{ $lastToken['username'] }}</code>
                 · emesso {{ $lastToken['created_at']?->format('d/m/Y H:i') }}
                 · scade {{ $lastToken['expires_at']?->format('d/m/Y H:i') ?? '—' }}
                 · ultimo uso {{ $lastToken['last_used_at']?->diffForHumans() ?? 'mai' }}
@@ -22,8 +22,7 @@
 <select id="api-sandbox-nav-mobile" class="api-sandbox-nav-mobile" aria-label="Vai all'endpoint">
     <option value="">Vai a…</option>
     @foreach ($endpoints as $endpoint)
-        <option value="{{ $endpoint['id'] }}"
-            @if (!empty($endpoint['operations']) && collect($endpoint['operations'])->every(fn ($op) => $op['conguaglio_only'] ?? false)) data-conguaglio-option @endif>
+        <option value="{{ $endpoint['id'] }}">
             {{ $endpoint['method'] }} — {{ $endpoint['title'] }}
         </option>
     @endforeach
@@ -33,8 +32,7 @@
 <nav class="api-sandbox-nav" aria-label="Endpoint">
     <p class="api-sandbox-nav-title">Endpoint</p>
     @foreach ($endpoints as $endpoint)
-        <a href="#{{ $endpoint['id'] }}" class="api-sandbox-nav-link" data-nav="{{ $endpoint['id'] }}"
-            @if (!empty($endpoint['operations']) && collect($endpoint['operations'])->every(fn ($op) => $op['conguaglio_only'] ?? false)) data-conguaglio-only @endif>
+        <a href="#{{ $endpoint['id'] }}" class="api-sandbox-nav-link" data-nav="{{ $endpoint['id'] }}">
             <span class="api-sandbox-method method-{{ strtolower($endpoint['method']) }}">{{ $endpoint['method'] }}</span>
             {{ $endpoint['title'] }}
         </a>
@@ -50,11 +48,11 @@
         @if ($refreshTokens->isEmpty())
             <p>
                 Nessuna Refresh token emessa finora. Le emette un operatore con
-                <code>php artisan portal:refresh-token {user_id}</code>.
+                <code>php artisan portal:refresh-token {username}</code>.
             </p>
         @else
             <p>
-                Una Refresh token per banca, collegata al Product Owner.
+                Una Refresh token per client API, collegata all'utente per cui agisce.
                 Il prefisso visibile identifica la credenziale; il segreto
                 completo viene mostrato una sola volta all'emissione.
             </p>
@@ -62,8 +60,8 @@
                 <table class="api-sandbox-table">
                     <thead>
                         <tr>
-                            <th>Banca</th>
-                            <th>Product Owner</th>
+                            <th>Utente</th>
+                            <th>Username</th>
                             <th>Refresh token</th>
                             <th>Emessa</th>
                             <th>Ultimo uso</th>
@@ -72,8 +70,8 @@
                     <tbody>
                         @foreach ($refreshTokens as $row)
                             <tr>
-                                <td>{{ $row['banca'] }}</td>
-                                <td><code>{{ $row['user_id'] }}</code></td>
+                                <td>{{ $row['owner'] }}</td>
+                                <td><code>{{ $row['username'] }}</code></td>
                                 <td><code>{{ $row['hint'] }}</code></td>
                                 <td>{{ $row['created_at']?->format('d/m/Y H:i') }}</td>
                                 <td>{{ $row['last_used_at']?->format('d/m/Y H:i') ?? 'mai' }}</td>
@@ -91,15 +89,15 @@
             <p>Nessun access token attivo al momento.</p>
         @else
             <p>
-                Token attivi per banca — solo l'impronta (ultimi caratteri
+                Token attivi per utente — solo l'impronta (ultimi caratteri
                 dell'hash) è visibile, il segreto non è mai recuperabile.
             </p>
             <div class="api-sandbox-table-wrap api-docs-token-log">
                 <table class="api-sandbox-table">
                     <thead>
                         <tr>
-                            <th>Banca</th>
-                            <th>Product Owner</th>
+                            <th>Utente</th>
+                            <th>Username</th>
                             <th>Access token</th>
                             <th>Emesso</th>
                             <th>Scade</th>
@@ -109,8 +107,8 @@
                     <tbody>
                         @foreach ($tokenLog as $row)
                             <tr>
-                                <td>{{ $row['banca'] }}</td>
-                                <td><code>{{ $row['user_id'] }}</code></td>
+                                <td>{{ $row['owner'] }}</td>
+                                <td><code>{{ $row['username'] }}</code></td>
                                 <td><code>{{ $row['hint'] }}</code></td>
                                 <td>{{ $row['created_at']?->format('d/m/Y H:i') }}</td>
                                 <td>{{ $row['expires_at']?->format('d/m/Y H:i') ?? '—' }}</td>
@@ -145,8 +143,8 @@
         </p>
         <ul>
             <li>
-                <strong>Refresh token</strong> — credenziale a lungo termine della
-                banca, emessa internamente e consegnata fuori banda. Serve
+                <strong>Refresh token</strong> — credenziale a lungo termine del
+                client API, emessa internamente e consegnata fuori banda. Serve
                 solo per scambiare un <em>access token</em>: non chiama le API
                 direttamente.
             </li>
@@ -162,12 +160,11 @@ Authorization: Bearer {refresh-token}</pre>
         <pre class="api-sandbox-code">Authorization: Bearer {access-token}</pre>
         <p>
             Ogni scambio revoca l'access token precedente: resta attivo un solo
-            token per banca, quindi i sistemi che condividono lo stesso refresh
+            token per utente, quindi i sistemi che condividono lo stesso refresh
             token devono condividere anche il token ottenuto.
         </p>
         <p>
-            Le API sono accessibili solo con l'access token della propria banca:
-            le richieste su clienti o pratiche di altre banche rispondono con
+            Le richieste su risorse fuori dall'ambito dell'utente rispondono con
             <code>403</code>. I parametri contrassegnati con
             <span class="api-sandbox-required">*</span> sono obbligatori.
             Le date sono in formato <code>YYYY-MM-DD</code>.

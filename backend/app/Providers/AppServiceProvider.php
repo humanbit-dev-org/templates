@@ -163,7 +163,7 @@ class AppServiceProvider extends ServiceProvider
                 return Limit::perMinute(PHP_INT_MAX)->by('local');
             }
 
-            $userId = $request->user()?->user_id ?? $request->ip();
+            $userId = $request->user()?->getKey() ?? $request->ip();
 
             return Limit::perMinutes(15, 3)->by('contatto:'.$userId)
                 ->response(function (Request $req, array $headers) {
@@ -211,7 +211,7 @@ class AppServiceProvider extends ServiceProvider
         });
 
         // Portal rate limits — per IP, same model as the sandbox ones: they
-        // throttle abuse, not bank traffic, so the caps stay generous.
+        // throttle abuse, not regular client traffic, so the caps stay generous.
         RateLimiter::for('portal-token', function (Request $request) {
             return Limit::perHour(config('portal.limits.tokens_per_hour', 20))->by($request->ip());
         });
@@ -225,12 +225,12 @@ class AppServiceProvider extends ServiceProvider
         // -----------------------------------------------------
         // These fire on single-row Eloquent operations:
         //   - Backpack admin create/update/delete (daily edits)
-        //   - Frontend controller writes (tiraggi, user, etc.)
+        //   - Frontend controller writes
         //   - ImportCsvAction Eloquent paths (Backpack UI import)
         //
         // Bulk import paths that use raw DB::statement or query
         // builder updates bypass Eloquent — those are covered by
-        // CacheFlush::forBanca() called post-import explicitly.
+        // CacheFlush::afterImport() called post-import explicitly.
         // =====================================================
 
         User::observe(UserObserver::class);

@@ -2,7 +2,6 @@
 
 namespace App\Services\ScheduledJobs;
 
-use App\Jobs\CheckNewProiezioni;
 use App\Models\ScheduledJobRun;
 use Carbon\CarbonInterface;
 use Illuminate\Console\Scheduling\CallbackEvent;
@@ -34,24 +33,6 @@ class ScheduledJobRegistry
     public function runnable(): array
     {
         return [
-            'sftp:processa' => [
-                'title' => 'SFTP - Elaborazione file banche',
-                'description' => 'Sposta i file delle banche da inbox/ a processing/ e accoda il job registrato per banca e operazione.',
-                'icon' => 'la la-folder-open',
-                'dry_run' => true,
-                'parameters' => [
-                    'percorso' => ['label' => 'File in inbox (vuoto = tutte le inbox)', 'type' => 'text', 'rule' => 'nullable|string|max:500'],
-                ],
-            ],
-            'export:selection-file' => [
-                'title' => 'Export - Selection file mensile',
-                'description' => 'Genera il CSV dei clienti IN TARGET, lo cifra e lo carica su S3 per il trasferimento SFTP.',
-                'icon' => 'la la-file-export',
-                'dry_run' => true,
-                'parameters' => [
-                    '--banca' => ['label' => 'ABI banca (vuoto = tutte)', 'type' => 'text', 'rule' => 'nullable|digits:5'],
-                ],
-            ],
             'auth:rehash-passwords' => [
                 'title' => 'Auth - Rehash password vuote',
                 'description' => 'Deriva e salva la password degli utenti che non ne hanno una, con un batch su Horizon.',
@@ -67,14 +48,6 @@ class ScheduledJobRegistry
                 'parameters' => [
                     '--hours' => ['label' => 'Età minima (ore)', 'type' => 'number', 'rule' => 'required|integer|min:1', 'default' => 24],
                 ],
-            ],
-            CheckNewProiezioni::class => [
-                'title' => 'Proiezioni - Controllo nuovi tiraggi',
-                'description' => 'Se ci sono tiraggi accettati senza proiezioni, accoda il loro inserimento.',
-                'icon' => 'la la-chart-line',
-                // No --dry-run on a job: its dryRun() method instead.
-                'dry_run' => true,
-                'job' => CheckNewProiezioni::class,
             ],
         ];
     }
@@ -206,7 +179,7 @@ class ScheduledJobRegistry
             return (string) $event->description;
         }
 
-        // '/usr/local/bin/php' 'artisan' sftp:processa --flag → sftp:processa
+        // '/usr/local/bin/php' 'artisan' auth:rehash-passwords --flag → auth:rehash-passwords
         if (preg_match("/'?artisan'?\s+([^\s]+)/", (string) $event->command, $match) === 1) {
             return $match[1];
         }

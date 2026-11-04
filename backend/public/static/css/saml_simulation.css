@@ -273,10 +273,6 @@ body.saml-sim-page {
     background-color: var(--saml-panel);
 }
 
-.saml-sim-bank-filter {
-    margin-bottom: 1rem;
-}
-
 .saml-sim-hint {
     margin: 0.65rem 0 1rem;
     color: var(--saml-muted);
@@ -442,11 +438,8 @@ body.saml-sim-page {
     overflow-wrap: anywhere;
 }
 
-.status-open { background: rgba(94, 207, 255, 0.18); color: #9ee7ff; }
-.status-requested { background: rgba(245, 159, 0, 0.2); color: #ffd27a; }
-.status-accepted { background: rgba(66, 186, 150, 0.2); color: #9ef0d4; }
-.status-paid { background: rgba(5, 18, 105, 0.65); color: #b8c7ff; border: 1px solid rgba(94, 207, 255, 0.25); }
-.status-dropped { background: rgba(184, 0, 12, 0.22); color: #ffb4b4; }
+.status-ok { background: rgba(66, 186, 150, 0.2); color: #9ef0d4; }
+.status-pending { background: rgba(245, 159, 0, 0.2); color: #ffd27a; }
 
 .saml-sim-scenario__copy strong {
     display: block;
@@ -578,70 +571,7 @@ body.saml-sim-page {
     to { transform: rotate(360deg); }
 }
 
-/* Protocol selection cards */
-.saml-sim-protocol-toggle {
-    display: flex;
-    gap: 0.75rem;
-}
-
-.saml-sim-protocol-card {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.35rem;
-    padding: 1rem 1.125rem;
-    background: var(--saml-panel-2);
-    border: 1px solid var(--saml-border);
-    border-radius: 8px;
-    cursor: pointer;
-    transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
-    text-align: left;
-    font-family: inherit;
-}
-
-.saml-sim-protocol-card:hover {
-    border-color: rgba(94, 207, 255, 0.35);
-    background: rgba(94, 207, 255, 0.05);
-}
-
-.saml-sim-protocol-card.is-active {
-    border-color: var(--saml-cyan);
-    background: rgba(94, 207, 255, 0.1);
-    box-shadow: 0 0 0 1px var(--saml-cyan), 0 0 12px rgba(94, 207, 255, 0.15);
-}
-
-.saml-sim-protocol-card__badge {
-    display: inline-block;
-    padding: 0.15rem 0.5rem;
-    font-size: 0.65rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--saml-cyan);
-    background: rgba(94, 207, 255, 0.12);
-    border: 1px solid rgba(94, 207, 255, 0.25);
-    border-radius: 4px;
-    line-height: 1.4;
-}
-
-.saml-sim-protocol-card.is-active .saml-sim-protocol-card__badge {
-    background: rgba(94, 207, 255, 0.2);
-    border-color: var(--saml-cyan);
-}
-
-.saml-sim-protocol-card__name {
-    font-size: 1rem;
-    font-weight: 700;
-    color: var(--saml-text);
-    letter-spacing: 0.02em;
-}
-
-.saml-sim-protocol-card__desc {
-    display: none;
-}
-
-/* Protocol info banner (when OIDC is not available) */
+/* Protocol info banner */
 .saml-sim-protocol-info {
     display: flex;
     align-items: center;
@@ -669,42 +599,3 @@ body.saml-sim-page {
     flex-shrink: 0;
 }
 
-/* Bank product info panel */
-.saml-sim-bank-info {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 0.5rem;
-    margin-top: 0.5rem;
-}
-
-.saml-sim-bank-info__item {
-    display: flex;
-    flex-direction: column;
-    gap: 0.2rem;
-    padding: 0.5rem 0.75rem;
-    background: var(--saml-panel-2);
-    border: 1px solid var(--saml-border);
-    border-left: 3px solid var(--saml-border);
-    border-radius: 6px;
-}
-
-.saml-sim-bank-info__item.is-on {
-    border-left-color: var(--saml-green);
-}
-
-.saml-sim-bank-info__label {
-    font-size: 0.65rem;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--saml-muted);
-}
-
-.saml-sim-bank-info__value {
-    font-size: 0.82rem;
-    color: var(--saml-muted);
-    font-weight: 600;
-}
-
-.saml-sim-bank-info__item.is-on .saml-sim-bank-info__value {
-    color: var(--saml-green);
-}

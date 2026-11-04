@@ -80,7 +80,7 @@ class ApiLabController extends Controller
                 $validated['query'] ?? [],
                 $validated['body'] ?? null,
                 $validated['headers'] ?? [],
-                $validated['acting_as_user_id'] ?? backpack_auth()->user()?->user_id,
+                $validated['acting_as_user_id'] ?? backpack_auth()->user()?->getKey(),
                 $request,
                 $trace,
             );

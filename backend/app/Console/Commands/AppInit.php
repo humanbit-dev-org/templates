@@ -17,8 +17,8 @@ use Throwable;
  * Rebuilds a complete, working local dataset.
  *
  * The point is repeatability: running it twice must leave the application in the
- * same usable state, with every screen populated — platform, business console
- * and Backpack — without hand-fixing anything afterwards.
+ * same usable state, with every screen populated — frontend and Backpack —
+ * without hand-fixing anything afterwards.
  *
  * It only ever touches domain data. Schema and reference tables (translates,
  * pages, metadata, …) come from the dump and are left alone.
@@ -26,7 +26,6 @@ use Throwable;
 class AppInit extends Command
 {
     protected $signature = 'app:init
-                            {--users=40    : Platform users generated per bank}
                             {--force       : Skip the confirmation prompt}
                             {--fresh-dump  : Reload the schema and reference data from the dump first}
                             {--keep-schema : Align the existing schema instead of rebuilding it from scratch}';
@@ -44,11 +43,13 @@ class AppInit extends Command
         // Deterministic output across runs.
         mt_srand(20260101);
 
+        // Outside development the users are real: nothing is rebuilt, only
+        // the sandbox dataset is kept in step with its feature flag.
         if (! $this->ricostruisce()) {
-            $result = $this->completaClienti();
+            $this->components->info('Outside local/development/testing the dataset is not rebuilt.');
             $this->syncSandbox();
 
-            return $result;
+            return self::SUCCESS;
         }
 
         if ($this->option('fresh-dump') && ! $this->reloadDump()) {
@@ -92,10 +93,10 @@ class AppInit extends Command
     protected function postSeed(): void {}
 
     /**
-     * Whether the anagrafiche are the command's to invent.
+     * Whether the dataset is the command's to invent.
      *
      * In development it builds the whole dataset. Anywhere else the users are
-     * real, so it only completes what they are missing — see completaClienti().
+     * real, so nothing is rebuilt.
      */
     protected function ricostruisce(): bool
     {
@@ -172,8 +173,8 @@ class AppInit extends Command
         $database = DB::connection()->getDatabaseName();
 
         $domanda = $this->ricostruisce()
-            ? "Every user, tiraggio, delibera, storico, previsionale, trattenuta and proiezione in [{$database}] will be deleted and rebuilt. Continue?"
-            : "Existing customers in [{$database}] will be given the storici, previsionali, proiezioni and trattenute they are missing. Nothing is deleted, and no anagrafica, bank or product is touched. Continue?";
+            ? "Every table in [{$database}] will be rebuilt from the migrations and seeded again. Continue?"
+            : "Nothing in [{$database}] will be rebuilt; only the sandbox dataset is synchronised. Continue?";
 
         if ($this->option('force')) {
             return true;
@@ -233,9 +234,9 @@ class AppInit extends Command
         }
 
         $this->components->task('Rebuilding schema (migrate:fresh)', function (): bool {
-            // Not --seed: DatabaseSeeder runs UserSeeder, which expects the
-            // banks to exist, and this command creates those later. The
-            // reference data it does need is seeded in seedRolesIfMissing().
+            // Not --seed: DatabaseSeeder also creates demo content (articles,
+            // institutionals) with fixed ids that this command does not own.
+            // The reference data it does need is seeded in seedRolesIfMissing().
             $this->callSilent('migrate:fresh', ['--force' => true]);
 
             return true;
@@ -246,7 +247,8 @@ class AppInit extends Command
 
     private function reloadDump(): bool
     {
-        $dump = base_path('../../dump/rays_new_v.sql');
+        // Same folder and naming as `make db-dump`: dump/<database>.sql.
+        $dump = base_path('../../dump/'.DB::connection()->getDatabaseName().'.sql');
 
         if (! File::isFile($dump)) {
             $this->error("Dump not found at {$dump}");
@@ -289,9 +291,8 @@ class AppInit extends Command
     private function seedRolesIfMissing(): void
     {
         $this->components->task('Roles and permissions', function (): void {
-            foreach ([
-                1 => 'Public', 2 => 'User', 3 => 'Desio', 4 => 'Filiale', 5 => 'Product Owner',
-            ] as $id => $name) {
+            // Same frontend roles as RoleSeeder.
+            foreach ([1 => 'Public', 2 => 'User'] as $id => $name) {
                 Role::query()->updateOrCreate(['id' => $id], ['name' => $name, 'description' => $name]);
             }
 
@@ -324,21 +325,20 @@ class AppInit extends Command
 
             $password = config('backpack.base.admin_panel_password') ?: self::SEED_PASSWORD;
 
-            // Keyed by email rather than by ndg: the domain is not always
-            // humanbit.com, and deriving it made anyone outside it a special case.
+            // Same accounts as UserSeeder: username => [email, name, surname, Backpack role].
             foreach ([
-                'borreca@humanbit.com' => 'Developer',
-                'silveri@humanbit.com' => 'Developer',
-                'busan@humanbit.com' => 'Developer',
-                'marcom@cashberry.it' => 'Developer',
-                'solia@humanbit.com' => 'Developer',
-            ] as $email => $backpackRole) {
-                $ndg = strstr($email, '@', true);
-
+                'aborreca' => ['borreca@humanbit.com', 'Andrea', 'Borreca', 'Developer'],
+                'gsilveri' => ['silveri@humanbit.com', 'Gabriel', 'Silveri', 'Developer'],
+                'mbusan' => ['busan@humanbit.com', 'Matteo', 'Busan', 'Developer'],
+                'mmolinari' => ['marcom@cashberry.it', 'Marco', 'Molinari', 'Developer'],
+                'csolia' => ['solia@humanbit.com', 'Christian', 'Solia', 'Developer'],
+            ] as $username => [$email, $name, $surname, $backpackRole]) {
                 User::query()->updateOrCreate(
-                    ['username' => $ndg],
+                    ['username' => $username],
                     [
                         'email' => $email,
+                        'name' => $name,
+                        'surname' => $surname,
                         'backpack_role_id' => $backpackRole === 'Developer' ? $developerRoleId : $adminRoleId,
                         'role_id' => $userRoleId,
                         'password' => $password,
@@ -347,5 +347,16 @@ class AppInit extends Command
                 );
             }
         });
+    }
+
+    /**
+     * Final report printed after a rebuild. Variants (sandbox:seed) override
+     * it with what is relevant to them.
+     */
+    protected function summary(): void
+    {
+        $this->components->twoColumnDetail('<fg=green>Users</>', (string) User::query()->count());
+        $this->components->twoColumnDetail('<fg=green>Roles</>', (string) Role::query()->count());
+        $this->components->twoColumnDetail('<fg=green>Backpack roles</>', (string) BackpackRole::query()->count());
     }
 }

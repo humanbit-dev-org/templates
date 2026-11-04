@@ -2,17 +2,17 @@
 
 namespace App\Models;
 
+use App\Models\Traits\HasDisplayAttributes;
 use Backpack\CRUD\app\Models\Traits\CrudTrait;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class UserTwoFactor extends Model
 {
-    use CrudTrait;
+    use CrudTrait, HasDisplayAttributes;
 
     protected $fillable = [
-        'id',
-        'user_id',
+        'username',
         'device_id',
         'token',
         'token_expire',
@@ -34,8 +34,17 @@ class UserTwoFactor extends Model
         ];
     }
 
+    /**
+     * Owner of the device record (user_two_factors.username → users.username).
+     */
     public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'user_id', 'user_id');
+        return $this->belongsTo(User::class, 'username', 'username');
+    }
+
+    // see HasDisplayAttributes for full doc
+    public function getDisplayAttribute(): string
+    {
+        return $this->username.' - '.$this->device_id;
     }
 }

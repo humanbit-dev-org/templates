@@ -6,12 +6,12 @@ namespace App\Services\Auth;
  * Password Derivation Service using HKDF
  *
  * Derives passwords using HKDF (HMAC-based Key Derivation Function, RFC 5869)
- * to transform structured input (user_id + user_abi + secret) into
+ * to transform structured input (user identifier + secret) into
  * cryptographically secure, uniformly distributed output.
  *
  * Security layers:
- * 1. Input composition: user_id + user_abi + user_rays_password
- * 2. HKDF derivation with master_rays_password as salt
+ * 1. Input composition: user identifier + inner pepper (auth.user_pepper_inner)
+ * 2. HKDF derivation with the outer pepper (auth.user_pepper_outer) as salt
  * 3. Argon2id hashing (handled by caller via Hash::make)
  */
 class PasswordDerivationService
@@ -34,7 +34,7 @@ class PasswordDerivationService
             }
 
             throw new \RuntimeException(
-                'MASTER_RAYS_PASSWORD or USER_RAYS_PASSWORD not configured in config/auth.php. '.
+                'auth.user_pepper_inner or auth.user_pepper_outer not configured in config/auth.php. '.
                 'Generate with: openssl rand -hex 32'
             );
         }
@@ -43,8 +43,7 @@ class PasswordDerivationService
     /**
      * Derive password using HKDF
      *
-     * @param  string  $userId  User identifier
-     * @param  string  $bancaAbi  Banca ABI code
+     * @param  string  $userId  User identifier (users primary key)
      * @return string Derived key (32 bytes, hex encoded for readability)
      */
     public function derive(string $userId): string
