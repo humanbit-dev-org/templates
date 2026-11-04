@@ -5,11 +5,12 @@ namespace App\Models;
 use App\Models\Traits\HasDisplayAttributes;
 use App\Models\Traits\StorableMedia;
 use Backpack\CRUD\app\Models\Traits\CrudTrait;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Institutional extends Model
 {
-    use CrudTrait, HasDisplayAttributes, StorableMedia;
+    use CrudTrait, HasDisplayAttributes, HasFactory, StorableMedia;
 
     protected $fillable = [
         'title_italian',

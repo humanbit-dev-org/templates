@@ -29,39 +29,39 @@ use Illuminate\Support\Str;
 
 Route::getRoutes()->refreshNameLookups();
 
-$routes = [
-    'business.console.tiraggi.perfeziona',
-    'business.console.tiraggi.rifiuta',
-    'business.console.tiraggi.abbandona',
-    'business.console.tiraggi.estinzione',
-    'business.console.tiraggi.estinzione_parziale',
-    'dashboard.users.detail',
-    'business.console.eleggibili.update',
-];
+// $routes = [
+//     'business.console.tiraggi.perfeziona',
+//     'business.console.tiraggi.rifiuta',
+//     'business.console.tiraggi.abbandona',
+//     'business.console.tiraggi.estinzione',
+//     'business.console.tiraggi.estinzione_parziale',
+//     'dashboard.users.detail',
+//     'business.console.eleggibili.update',
+// ];
 
-foreach ($routes as $name) {
-    $real = Route::getRoutes()->getByName($name)
-        ?? throw new RuntimeException("Portal: route [$name] not found");
+// foreach ($routes as $name) {
+//     $real = Route::getRoutes()->getByName($name)
+//         ?? throw new RuntimeException("Portal: route [$name] not found");
 
-    // api/business-console/... → api/v1/business-console/...
-    $route = Route::match($real->methods(), 'api/v1/'.Str::after($real->uri(), 'api/'), $real->getAction('uses'))
-        ->name('portal.'.$name)
-        ->middleware([
-            'api',
-            'auth:sanctum',
-            'role.scope:product owner',
-            'abilities:api:write',
-            StripAuthorizationHeader::class,
-            ThrottleRequestsWithRedis::using('portal-calls'),
-        ])
-        // The header-based docs rollback must stay off: a caller could
-        // otherwise opt its own production writes into rollback.
-        ->withoutMiddleware(RollbackDocs::class);
+//     // api/business-console/... → api/v1/business-console/...
+//     $route = Route::match($real->methods(), 'api/v1/'.Str::after($real->uri(), 'api/'), $real->getAction('uses'))
+//         ->name('portal.'.$name)
+//         ->middleware([
+//             'api',
+//             'auth:sanctum',
+//             'role.scope:product owner',
+//             'abilities:api:write',
+//             StripAuthorizationHeader::class,
+//             ThrottleRequestsWithRedis::using('portal-calls'),
+//         ])
+//         // The header-based docs rollback must stay off: a caller could
+//         // otherwise opt its own production writes into rollback.
+//         ->withoutMiddleware(RollbackDocs::class);
 
-    foreach ($real->defaults as $key => $value) {
-        $route->defaults($key, $value); // strict_prodotto=false on perfeziona
-    }
-}
+//     foreach ($real->defaults as $key => $value) {
+//         $route->defaults($key, $value); // strict_prodotto=false on perfeziona
+//     }
+// }
 
 // Token exchange: the bank presents its refresh token as a Bearer
 // credential; the controller verifies it is a 'portal-refresh:*' PAT on a

@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('user_two_factors', function (Blueprint $table) {
             $table->id();
-            $table->string('user_id', 30);
-            $table->foreign('user_id')->references('user_id')->on('users')->cascadeOnDelete();
+            $table->string('username', 30);
+            $table->foreign('username')->references('username')->on('users')->cascadeOnDelete();
             $table->uuid('device_id');
             // A hash, never the six digits that were mailed out.
             $table->string('token', 255)->nullable()->comment('Hash of the one-time code');
@@ -26,7 +26,7 @@ return new class extends Migration
             $table->boolean('token_verified')->default(false)->comment('Whether 2FA was completed on this device');
             $table->timestamps();
 
-            $table->unique(['user_id', 'device_id']);
+            $table->unique(['username', 'device_id']);
         });
     }
 

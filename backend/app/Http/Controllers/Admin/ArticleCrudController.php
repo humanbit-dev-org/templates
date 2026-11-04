@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Traits\ChecksBackpackPermissions;
+use App\Http\Concerns\ChecksBackpackPermissions;
 use App\Http\Requests\ArticleRequest;
 use App\Http\Controllers\Admin\Helper\HelperBackend;
 use Backpack\CRUD\app\Http\Controllers\CrudController;

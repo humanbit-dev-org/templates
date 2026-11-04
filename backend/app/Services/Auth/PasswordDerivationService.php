@@ -22,8 +22,8 @@ class PasswordDerivationService
 
     public function __construct()
     {
-        $this->masterSecret = config('auth.master_rays_password') ?? '';
-        $this->basePassword = config('auth.user_rays_password') ?? '';
+        $this->basePassword = config('auth.user_pepper_inner') ?? '';
+        $this->masterSecret = config('auth.user_pepper_outer') ?? '';
 
         if (empty($this->masterSecret) || empty($this->basePassword)) {
             if (app()->runningInConsole()) {

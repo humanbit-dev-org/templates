@@ -1,4 +1,4 @@
-@php
+{{-- @php
 use App\Support\Backpack\PresetFilterHandler;
 
 $modelInstance = is_string($crud->model) ? new $crud->model : $crud->model;
@@ -49,4 +49,4 @@ $currentUrl = request()->url();
     @endif
     </div>
 </div>
-@endif
+@endif --}}

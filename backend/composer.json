@@ -14,24 +14,29 @@
 		"backpack/theme-tabler": "^2.0",
 		"dedoc/scramble": "^0.13",
 		"laravel/breeze": "^2.1",
-		"laravel/framework": "^12.0",
+		"laravel/framework": "^13.0",
+		"laravel/horizon": "^5.45",
 		"laravel/prompts": "^0.3",
+		"laravel/pulse": "^1.6",
 		"laravel/sanctum": "^4.0",
-		"laravel/tinker": "^2.9",
+		"laravel/tinker": "^3.0",
 		"league/commonmark": "^2.5",
+		"league/flysystem-aws-s3-v3": "^3.32",
+		"phpoffice/phpspreadsheet": "^2.0",
 		"phpseclib/phpseclib": "^3.0",
-		"wotz/laravel-swagger-ui": "^1.2"
+		"robrichards/xmlseclibs": "^3.1",
+		"web-token/jwt-framework": "^4.1"
 	},
 	"require-dev": {
 		"backpack/generators": "^4.0",
 		"fakerphp/faker": "^1.23",
-		"laravel/boost": "^2.0",
-		"laravel/pint": "^1.13",
+		"laravel/boost": "^2.4",
+		"laravel/pint": "^1.27",
 		"laravel/sail": "^1.26",
 		"mockery/mockery": "^1.6",
 		"nunomaduro/collision": "^8.0",
-		"pestphp/pest": "^3.0",
-		"phpunit/phpunit": "^11.0"
+		"pestphp/pest": "^4.0",
+		"phpunit/phpunit": "^12.0"
 	},
 	"autoload": {
 		"psr-4": {
@@ -52,7 +57,8 @@
 		],
 		"post-update-cmd": [
 			"@php artisan vendor:publish --tag=laravel-assets --ansi --force",
-			"@php artisan basset:cache"
+			"@php artisan basset:cache",
+			"@php artisan deps:versions"
 		],
 		"post-root-package-install": [
 			"@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
@@ -63,7 +69,8 @@
 			"@php artisan migrate --graceful --ansi"
 		],
 		"post-install-cmd": [
-			"@php artisan basset:cache"
+			"@php artisan basset:cache",
+			"@php artisan deps:versions"
 		]
 	},
 	"extra": {
