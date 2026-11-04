@@ -11,17 +11,6 @@ use Psr\Log\LoggerInterface;
  */
 class LogHelper
 {
-<<<<<<< HEAD
-	/**
-	 * Ensure log directory exists for a specific import type
-	 * Creates directory if it doesn't exist
-	 *
-	 * @param  string  $subfolder  Subfolder name (tiraggio, trattenuta, user, delibera, etc.)
-	 */
-	public static function ensureLogDirectory(string $subfolder): void
-	{
-		$logDir = database_path("import/{$subfolder}");
-=======
     /**
      * Ensure log directory exists for a specific import type
      * Creates directory if it doesn't exist
@@ -31,26 +20,12 @@ class LogHelper
     public static function ensureLogDirectory(string $subfolder): void
     {
         $logDir = database_path("import/{$subfolder}");
->>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 
-		if (!file_exists($logDir)) {
-			mkdir($logDir, 0755, true);
-		}
-	}
+        if (! file_exists($logDir)) {
+            mkdir($logDir, 0755, true);
+        }
+    }
 
-<<<<<<< HEAD
-	/**
-	 * Rotate log files keeping only the last N files
-	 * Deletes older log files based on modification time
-	 *
-	 * @param  string  $subfolder  Subfolder name (tiraggio, trattenuta, user, delibera, etc.)
-	 * @param  int  $keepLast  Number of log files to keep (default: 3)
-	 * @return int Number of files deleted
-	 */
-	public static function rotateLogs(string $subfolder, int $keepLast = 3): int
-	{
-		$logDir = database_path("import/{$subfolder}");
-=======
     /**
      * Rotate log files keeping only the last N files
      * Deletes older log files based on modification time
@@ -62,51 +37,36 @@ class LogHelper
     public static function rotateLogs(string $subfolder, int $keepLast = 3): int
     {
         $logDir = database_path("import/{$subfolder}");
->>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 
-		if (!is_dir($logDir)) {
-			return 0;
-		}
+        if (! is_dir($logDir)) {
+            return 0;
+        }
 
-		// Get all .log files in the directory
-		$logFiles = glob("{$logDir}/import_*.log");
+        // Get all .log files in the directory
+        $logFiles = glob("{$logDir}/import_*.log");
 
-		if (empty($logFiles)) {
-			return 0;
-		}
+        if (empty($logFiles)) {
+            return 0;
+        }
 
-		// Sort by modification time (newest first)
-		usort($logFiles, function ($a, $b) {
-			return filemtime($b) - filemtime($a);
-		});
+        // Sort by modification time (newest first)
+        usort($logFiles, function ($a, $b) {
+            return filemtime($b) - filemtime($a);
+        });
 
-		// Keep only the last N files, delete the rest
-		$filesToDelete = array_slice($logFiles, $keepLast);
-		$deletedCount = 0;
+        // Keep only the last N files, delete the rest
+        $filesToDelete = array_slice($logFiles, $keepLast);
+        $deletedCount = 0;
 
-		foreach ($filesToDelete as $file) {
-			if (unlink($file)) {
-				$deletedCount++;
-			}
-		}
+        foreach ($filesToDelete as $file) {
+            if (unlink($file)) {
+                $deletedCount++;
+            }
+        }
 
-		return $deletedCount;
-	}
+        return $deletedCount;
+    }
 
-<<<<<<< HEAD
-	/**
-	 * Prepare log for import: ensure directory exists and rotate old logs
-	 * Combines ensureLogDirectory and rotateLogs
-	 *
-	 * @param  string  $subfolder  Subfolder name (tiraggio, trattenuta, user, delibera, etc.)
-	 * @param  int  $keepLast  Number of log files to keep (default: 3)
-	 */
-	public static function prepareImportLog(string $subfolder, int $keepLast = 3): void
-	{
-		self::ensureLogDirectory($subfolder);
-		self::rotateLogs($subfolder, $keepLast);
-	}
-=======
     /**
      * Prepare log for import: ensure directory exists and rotate old logs
      * Combines ensureLogDirectory and rotateLogs
@@ -133,5 +93,4 @@ class LogHelper
     {
         return Log::channel(config("logging.channels.{$subfolder}") !== null ? $subfolder : 'import');
     }
->>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 }

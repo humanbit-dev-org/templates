@@ -1,7 +1,8 @@
 <?php
 
 return [
-	/*
+
+    /*
     |--------------------------------------------------------------------------
     | Folder-based CSV import (database/import/{folder}/*.csv)
     |--------------------------------------------------------------------------
@@ -17,9 +18,6 @@ return [
     |
     */
 
-<<<<<<< HEAD
-	"abi_prefix" => env("IMPORT_ABI_PREFIX", "03440"),
-=======
     'priority' => [],
 
     'model_overrides' => [],
@@ -44,5 +42,4 @@ return [
 
     'upload_types' => [],
 
->>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 ];

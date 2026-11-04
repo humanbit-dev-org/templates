@@ -8,11 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Contatto extends Model
 {
-	use CrudTrait, HasDisplayAttributes;
+    use CrudTrait, HasDisplayAttributes;
 
-<<<<<<< HEAD
-	protected $fillable = ["email", "oggetto", "messaggio"];
-=======
     /**
      * Subjects a contact request can have: value => label stored in "oggetto".
      * Shared by ContattoRequest (validation) and ContattoController.
@@ -24,22 +21,13 @@ class Contatto extends Model
     ];
 
     protected $fillable = ['email', 'oggetto', 'messaggio'];
->>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 
-	protected $table = "contatti";
+    protected $table = 'contatti';
 
-<<<<<<< HEAD
-	// see HasDisplayAttributes for full doc
-	public function getDisplayAttribute(): string
-	{
-		return $this->email;
-	}
-=======
     // see HasDisplayAttributes for full doc
     public function getDisplayAttribute(): string
     {
         // contatti.email is nullable: fall back to the record id.
         return $this->email ?: '#'.$this->getKey();
     }
->>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 }

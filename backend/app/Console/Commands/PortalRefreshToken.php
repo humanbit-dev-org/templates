@@ -22,17 +22,6 @@ use Illuminate\Support\Str;
  */
 class PortalRefreshToken extends Command
 {
-<<<<<<< HEAD
-	protected $signature = 'portal:refresh-token
-                            {user : user_id of the bank\'s Product Owner}
-                            {--rotate : revoke the existing refresh token and mint a fresh one}';
-
-	protected $description = "Issue the portal refresh token for a bank (on its Product Owner user)";
-
-	public function handle(): int
-	{
-		$user = User::where("user_id", $this->argument("user"))->first();
-=======
     protected $signature = 'portal:refresh-token
                             {user : username of the user the API client acts as}
                             {--rotate : revoke the existing refresh token and mint a fresh one}';
@@ -42,59 +31,45 @@ class PortalRefreshToken extends Command
     public function handle(): int
     {
         $user = User::query()->find($this->argument('user'));
->>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 
-		if (!$user) {
-			$this->error("User [{$this->argument("user")}] not found.");
+        if (! $user) {
+            $this->error("User [{$this->argument('user')}] not found.");
 
-			return self::FAILURE;
-		}
+            return self::FAILURE;
+        }
 
-<<<<<<< HEAD
-		if (!$user->isProductOwner()) {
-			$this->error("User [{$user->user_id}] is not a Product Owner — portal credentials live on POs only.");
-=======
         if (! $user->canUsePortal()) {
             $this->error("User [{$user->getKey()}] has no role allowed on the portal (config/portal.php 'roles').");
->>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 
-			return self::FAILURE;
-		}
+            return self::FAILURE;
+        }
 
-		$prefix = config("portal.refresh_token_prefix");
-		$existing = $user->tokens()->where("name", "like", $prefix . ":%");
+        $prefix = config('portal.refresh_token_prefix');
+        $existing = $user->tokens()->where('name', 'like', $prefix.':%');
 
-		if ($existing->exists()) {
-			if (!$this->option("rotate")) {
-				$this->warn("A refresh token already exists for this user. Use --rotate to replace it.");
+        if ($existing->exists()) {
+            if (! $this->option('rotate')) {
+                $this->warn('A refresh token already exists for this user. Use --rotate to replace it.');
 
-				return self::FAILURE;
-			}
+                return self::FAILURE;
+            }
 
-			$existing->delete();
-		}
+            $existing->delete();
+        }
 
-		// The display prefix rides inside the token name, so mint first and
-		// then rename the row using the secret's own first characters.
-		$token = $user->createToken($prefix . ":pending", ["portal:auth"]);
-		$token->accessToken->update([
-			"name" => $prefix . ":" . Str::substr(Str::after($token->plainTextToken, "|"), 0, 8),
-		]);
+        // The display prefix rides inside the token name, so mint first and
+        // then rename the row using the secret's own first characters.
+        $token = $user->createToken($prefix.':pending', ['portal:auth']);
+        $token->accessToken->update([
+            'name' => $prefix.':'.Str::substr(Str::after($token->plainTextToken, '|'), 0, 8),
+        ]);
 
-<<<<<<< HEAD
-		$this->info("Portal refresh token for " . $user->user_id . " (bank " . $user->banca_abi . "):");
-		$this->newLine();
-		$this->line($token->plainTextToken);
-		$this->newLine();
-		$this->comment("Shown once — hand it to the bank over the agreed channel. It is not stored recoverable.");
-=======
         $this->info('Portal refresh token for '.$user->getKey().':');
         $this->newLine();
         $this->line($token->plainTextToken);
         $this->newLine();
         $this->comment('Shown once — hand it to the client over the agreed channel. It is not stored recoverable.');
->>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 
-		return self::SUCCESS;
-	}
+        return self::SUCCESS;
+    }
 }

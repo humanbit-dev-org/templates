@@ -1,7 +1,7 @@
 <?php
 
 return [
-	/*
+    /*
     |--------------------------------------------------------------------------
     | API Portal
     |--------------------------------------------------------------------------
@@ -15,19 +15,14 @@ return [
     | there the sandbox already covers the demo surface.
     |
     */
-	"enabled" => (bool) env("PORTAL_ENABLED", true) && in_array(env("APP_ENV"), ["local", "testing", "production"], true),
+    'enabled' => (bool) env('PORTAL_ENABLED', true)
+        && in_array(env('APP_ENV'), ['local', 'testing', 'production'], true),
 
-	// api_token lifetime: 9 hours, PayPal-style — short-lived working token,
-	// re-exchanged as needed. The refresh token (root credential) is
-	// unexpiring — rotation is manual via portal:refresh-token --rotate.
-	"api_token_minutes" => (int) env("PORTAL_API_TOKEN_MINUTES", 540),
+    // api_token lifetime: 9 hours, PayPal-style — short-lived working token,
+    // re-exchanged as needed. The refresh token (root credential) is
+    // unexpiring — rotation is manual via portal:refresh-token --rotate.
+    'api_token_minutes' => (int) env('PORTAL_API_TOKEN_MINUTES', 540),
 
-<<<<<<< HEAD
-	"limits" => [
-		"tokens_per_hour" => 20,
-		"calls_per_minute" => 60,
-	],
-=======
     /*
     | Names of the internal routes published under /api/v1/* (see
     | routes/portal.php). Every name must exist when the routes load, or the
@@ -46,12 +41,11 @@ return [
         'tokens_per_hour' => 20,
         'calls_per_minute' => 60,
     ],
->>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 
-	// Token-name conventions. The PortalTokenFence recognizes these names to
-	// contain portal credentials to their own surface; the token exchange
-	// recognizes 'portal-refresh:*' as the only valid grant.
-	"refresh_token_prefix" => "portal-refresh",
-	"api_token_name" => "portal-access",
-	"api_token_abilities" => ["api:write"],
+    // Token-name conventions. The PortalTokenFence recognizes these names to
+    // contain portal credentials to their own surface; the token exchange
+    // recognizes 'portal-refresh:*' as the only valid grant.
+    'refresh_token_prefix' => 'portal-refresh',
+    'api_token_name' => 'portal-access',
+    'api_token_abilities' => ['api:write'],
 ];

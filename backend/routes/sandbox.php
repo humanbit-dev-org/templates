@@ -26,42 +26,6 @@ use Illuminate\Support\Str;
 
 Route::getRoutes()->refreshNameLookups();
 
-<<<<<<< HEAD
-$routes = [
-	"business.console.tiraggi.perfeziona",
-	"business.console.tiraggi.rifiuta",
-	"business.console.tiraggi.abbandona",
-	"business.console.tiraggi.estinzione",
-	"business.console.tiraggi.estinzione_parziale",
-	"dashboard.users.detail",
-	"business.console.eleggibili.update",
-];
-
-foreach ($routes as $name) {
-	$real = Route::getRoutes()->getByName($name) ?? throw new RuntimeException("Sandbox: route [$name] not found");
-
-	// api/business-console/... → sandbox/business-console/...
-	$route = Route::match($real->methods(), "sandbox/" . Str::after($real->uri(), "api/"), $real->getAction("uses"))
-		->name("sandbox." . $name)
-		// EncryptCookies + StartSession: the api group is stateless, but
-		// EnterSandbox needs the Backpack session to apply its IP-or-login
-		// gate for try-it calls coming from the docs page.
-		->middleware([
-			"api",
-			EncryptCookies::class,
-			StartSession::class,
-			EnterSandbox::class,
-			"auth:sanctum",
-			"role.scope:product owner",
-			ThrottleRequestsWithRedis::using("sandbox-calls"),
-			RollbackSandbox::class,
-		])
-		->withoutMiddleware(RollbackDocs::class);
-
-	foreach ($real->defaults as $key => $value) {
-		$route->defaults($key, $value); // strict_prodotto=false on perfeziona
-	}
-=======
 // Optional role gate: RoleScope refuses everyone but Admin/Developer when it
 // gets no role at all, so it is only attached when roles are configured.
 $roleScope = config('sandbox.roles', []) === []
@@ -94,38 +58,22 @@ foreach (config('sandbox.routes', []) as $name) {
     foreach ($real->defaults as $key => $value) {
         $route->defaults($key, $value);
     }
->>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 }
 
 // No RollbackSandbox: the token must persist.
-Route::post("sandbox/token", SandboxTokenController::class)
-	->middleware([
-		"api",
-		EncryptCookies::class,
-		StartSession::class,
-		EnterSandbox::class,
-		ThrottleRequestsWithRedis::using("sandbox-token"),
-	])
-	->withoutMiddleware(RollbackDocs::class)
-	->name("sandbox.token");
+Route::post('sandbox/token', SandboxTokenController::class)
+    ->middleware([
+        'api',
+        EncryptCookies::class,
+        StartSession::class,
+        EnterSandbox::class,
+        ThrottleRequestsWithRedis::using('sandbox-token'),
+    ])
+    ->withoutMiddleware(RollbackDocs::class)
+    ->name('sandbox.token');
 
 // Demo-call resolver for the API docs buttons: read-only, but the
 // rollback middleware keeps the no-write guarantee uniform.
-<<<<<<< HEAD
-Route::post("sandbox/sample", SandboxSampleController::class)
-	->middleware([
-		"api",
-		EncryptCookies::class,
-		StartSession::class,
-		EnterSandbox::class,
-		"auth:sanctum",
-		"role.scope:product owner",
-		ThrottleRequestsWithRedis::using("sandbox-calls"),
-		RollbackSandbox::class,
-	])
-	->withoutMiddleware(RollbackDocs::class)
-	->name("sandbox.sample");
-=======
 Route::post('sandbox/sample', SandboxSampleController::class)
     ->middleware([
         'api',
@@ -139,4 +87,3 @@ Route::post('sandbox/sample', SandboxSampleController::class)
     ])
     ->withoutMiddleware(RollbackDocs::class)
     ->name('sandbox.sample');
->>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb

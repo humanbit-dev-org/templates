@@ -17,56 +17,48 @@ use ReflectionNamedType;
  */
 final class ModelRelations
 {
-	private const BUILDERS = "hasOne|hasMany|belongsTo|belongsToMany|hasOneThrough|hasManyThrough|morphTo|morphOne|morphMany|morphToMany|morphedByMany";
+    private const BUILDERS = 'hasOne|hasMany|belongsTo|belongsToMany|hasOneThrough|hasManyThrough|morphTo|morphOne|morphMany|morphToMany|morphedByMany';
 
-	/** @var array<string, bool> */
-	private static array $cache = [];
+    /** @var array<string, bool> */
+    private static array $cache = [];
 
-	public static function isRelationMethod(ReflectionMethod $method): bool
-	{
-		$key = $method->class . "::" . $method->getName();
+    public static function isRelationMethod(ReflectionMethod $method): bool
+    {
+        $key = $method->class.'::'.$method->getName();
 
-		return self::$cache[$key] ??= self::inspect($method);
-	}
+        return self::$cache[$key] ??= self::inspect($method);
+    }
 
-	private static function inspect(ReflectionMethod $method): bool
-	{
-		if ($method->getNumberOfParameters() > 0 || $method->isStatic()) {
-			return false;
-		}
+    private static function inspect(ReflectionMethod $method): bool
+    {
+        if ($method->getNumberOfParameters() > 0 || $method->isStatic()) {
+            return false;
+        }
 
-		$type = $method->getReturnType();
-		if ($type instanceof ReflectionNamedType && !$type->isBuiltin()) {
-			return is_a($type->getName(), Relation::class, true);
-		}
+        $type = $method->getReturnType();
+        if ($type instanceof ReflectionNamedType && ! $type->isBuiltin()) {
+            return is_a($type->getName(), Relation::class, true);
+        }
 
-		$file = $method->getFileName();
-		if ($file === false) {
-			return false;
-		}
+        $file = $method->getFileName();
+        if ($file === false) {
+            return false;
+        }
 
-		$body = implode(
-			"",
-			array_slice(file($file), $method->getStartLine() - 1, $method->getEndLine() - $method->getStartLine() + 1)
-		);
+        $body = implode('', array_slice(
+            file($file),
+            $method->getStartLine() - 1,
+            $method->getEndLine() - $method->getStartLine() + 1
+        ));
 
-		if (preg_match('/\$this->(' . self::BUILDERS . ")\s*\(/", $body) === 1) {
-			return true;
-		}
+        if (preg_match('/\$this->('.self::BUILDERS.')\s*\(/', $body) === 1) {
+            return true;
+        }
 
-<<<<<<< HEAD
-		// return $this->tiraggi()->where(...): a narrowed relation of the same model.
-		return preg_match('/return\s+\$this->(\w+)\(\)/', $body, $m) === 1 &&
-			$m[1] !== $method->getName() &&
-			$method->getDeclaringClass()->hasMethod($m[1]) &&
-			self::isRelationMethod($method->getDeclaringClass()->getMethod($m[1]));
-	}
-=======
         // return $this->media()->where(...): a narrowed relation of the same model.
         return preg_match('/return\s+\$this->(\w+)\(\)/', $body, $m) === 1
             && $m[1] !== $method->getName()
             && $method->getDeclaringClass()->hasMethod($m[1])
             && self::isRelationMethod($method->getDeclaringClass()->getMethod($m[1]));
     }
->>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 }

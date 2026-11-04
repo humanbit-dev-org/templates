@@ -1,7 +1,7 @@
 <?php
 
 return [
-	/*
+    /*
     |--------------------------------------------------------------------------
     | Default Mailer
     |--------------------------------------------------------------------------
@@ -13,9 +13,9 @@ return [
     |
     */
 
-	"default" => env("MAIL_MAILER", "smtp"),
+    'default' => env('MAIL_MAILER', 'smtp'),
 
-	/*
+    /*
     |--------------------------------------------------------------------------
     | Mailer Configurations
     |--------------------------------------------------------------------------
@@ -34,61 +34,61 @@ return [
     |
     */
 
-	"mailers" => [
-		"smtp" => [
-			"transport" => "smtp",
-			"url" => env("MAIL_URL"),
-			"host" => env("MAIL_HOST", "sandbox.smtp.mailtrap.io"),
-			"port" => env("MAIL_PORT", 2525),
-			"encryption" => env("MAIL_ENCRYPTION", "tls"),
-			"username" => env("MAIL_USERNAME"),
-			"password" => env("MAIL_PASSWORD"),
-			"timeout" => (int) env("MAIL_TIMEOUT", 15),
-			"local_domain" => env("MAIL_EHLO_DOMAIN", parse_url(env("APP_URL", "http://localhost"), PHP_URL_HOST)),
-		],
+    'mailers' => [
+        'smtp' => [
+            'transport' => 'smtp',
+            'url' => env('MAIL_URL'),
+            'host' => env('MAIL_HOST', 'sandbox.smtp.mailtrap.io'),
+            'port' => env('MAIL_PORT', 2525),
+            'encryption' => env('MAIL_ENCRYPTION', 'tls'),
+            'username' => env('MAIL_USERNAME'),
+            'password' => env('MAIL_PASSWORD'),
+            'timeout' => (int) env('MAIL_TIMEOUT', 15),
+            'local_domain' => env('MAIL_EHLO_DOMAIN', parse_url(env('APP_URL', 'http://localhost'), PHP_URL_HOST)),
+        ],
 
-		"ses" => [
-			"transport" => "ses",
-		],
+        'ses' => [
+            'transport' => 'ses',
+        ],
 
-		"postmark" => [
-			"transport" => "postmark",
-			// 'message_stream_id' => env('POSTMARK_MESSAGE_STREAM_ID'),
-			// 'client' => [
-			//     'timeout' => 5,
-			// ],
-		],
+        'postmark' => [
+            'transport' => 'postmark',
+            // 'message_stream_id' => env('POSTMARK_MESSAGE_STREAM_ID'),
+            // 'client' => [
+            //     'timeout' => 5,
+            // ],
+        ],
 
-		"resend" => [
-			"transport" => "resend",
-		],
+        'resend' => [
+            'transport' => 'resend',
+        ],
 
-		"sendmail" => [
-			"transport" => "sendmail",
-			"path" => env("MAIL_SENDMAIL_PATH", "/usr/sbin/sendmail -bs -i"),
-		],
+        'sendmail' => [
+            'transport' => 'sendmail',
+            'path' => env('MAIL_SENDMAIL_PATH', '/usr/sbin/sendmail -bs -i'),
+        ],
 
-		"log" => [
-			"transport" => "log",
-			"channel" => env("MAIL_LOG_CHANNEL"),
-		],
+        'log' => [
+            'transport' => 'log',
+            'channel' => env('MAIL_LOG_CHANNEL'),
+        ],
 
-		"array" => [
-			"transport" => "array",
-		],
+        'array' => [
+            'transport' => 'array',
+        ],
 
-		"failover" => [
-			"transport" => "failover",
-			"mailers" => ["smtp", "log"],
-		],
+        'failover' => [
+            'transport' => 'failover',
+            'mailers' => ['smtp', 'log'],
+        ],
 
-		"roundrobin" => [
-			"transport" => "roundrobin",
-			"mailers" => ["ses", "postmark"],
-		],
-	],
+        'roundrobin' => [
+            'transport' => 'roundrobin',
+            'mailers' => ['ses', 'postmark'],
+        ],
+    ],
 
-	/*
+    /*
     |--------------------------------------------------------------------------
     | Global "From" Address
     |--------------------------------------------------------------------------
@@ -99,12 +99,12 @@ return [
     |
     */
 
-	"from" => [
-		"address" => env("MAIL_FROM_ADDRESS", "info@templates.com"),
-		"name" => env("MAIL_FROM_NAME", "Templates"),
-	],
+    'from' => [
+        'address' => env('MAIL_FROM_ADDRESS', 'info@templates.com'),
+        'name' => env('MAIL_FROM_NAME', 'Templates'),
+    ],
 
-	/*
+    /*
     |--------------------------------------------------------------------------
     | Support Address (fallback)
     |--------------------------------------------------------------------------
@@ -114,13 +114,9 @@ return [
     |
     */
 
-<<<<<<< HEAD
-	"support_address" => env("MAIL_SUPPORT_ADDRESS", "assistenza@cashberry.it"),
-=======
     'support_address' => env('MAIL_SUPPORT_ADDRESS', env('MAIL_FROM_ADDRESS', 'info@templates.com')),
->>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 
-	/*
+    /*
     |--------------------------------------------------------------------------
     | Mail Brand Name
     |--------------------------------------------------------------------------
@@ -130,13 +126,9 @@ return [
     |
     */
 
-<<<<<<< HEAD
-	"brand_name" => env("MAIL_BRAND_NAME", "Nexi"),
-=======
     'brand_name' => env('MAIL_BRAND_NAME', env('APP_NAME', 'Templates')),
->>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 
-	/*
+    /*
     |--------------------------------------------------------------------------
     | Mail Brand Logo
     |--------------------------------------------------------------------------
@@ -146,18 +138,5 @@ return [
     |
     */
 
-<<<<<<< HEAD
-	"logo_url" => env("MAIL_LOGO_URL"),
-
-	"brand" => [
-		"navy" => "#00004a",
-		"purple" => "#29165b",
-		"primary" => "#0047ff",
-		"surface" => "#eef0f8",
-		"text" => "#1a1a2e",
-		"muted" => "#c8d0ef",
-	],
-=======
     'logo_url' => env('MAIL_LOGO_URL'),
->>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 ];

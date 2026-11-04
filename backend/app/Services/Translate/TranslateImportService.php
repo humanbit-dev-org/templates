@@ -11,103 +11,65 @@ use Illuminate\Support\Facades\Log;
 
 class TranslateImportService
 {
-	/**
-	 * Import translations from JSON files
-	 */
-	public static function importTranslations(): bool
-	{
-		if (!self::shouldRunImport()) {
-			Log::warning("Import skipped - translation files not available");
+    /**
+     * Import translations from JSON files
+     */
+    public static function importTranslations(): bool
+    {
+        if (! self::shouldRunImport()) {
+            Log::warning('Import skipped - translation files not available');
 
-			return false;
-		}
+            return false;
+        }
 
-		$itPath = FrontendLang::jsonPath("it");
-		$enPath = FrontendLang::jsonPath("en");
+        $itPath = FrontendLang::jsonPath('it');
+        $enPath = FrontendLang::jsonPath('en');
 
-		try {
-			$italianData = json_decode(File::get($itPath), true);
-			$englishData = json_decode(File::get($enPath), true);
+        try {
+            $italianData = json_decode(File::get($itPath), true);
+            $englishData = json_decode(File::get($enPath), true);
 
-			if (!is_array($italianData) || !is_array($englishData)) {
-				Log::error("Failed to decode translation JSON files");
+            if (! is_array($italianData) || ! is_array($englishData)) {
+                Log::error('Failed to decode translation JSON files');
 
-				return false;
-			}
+                return false;
+            }
 
-			DB::transaction(function () use ($italianData, $englishData): void {
-				Translate::withoutEvents(function () use ($italianData, $englishData): void {
-					self::processTranslations($italianData, $englishData);
-				});
-			});
+            DB::transaction(function () use ($italianData, $englishData): void {
+                Translate::withoutEvents(function () use ($italianData, $englishData): void {
+                    self::processTranslations($italianData, $englishData);
+                });
+            });
 
-			Log::info("Translations imported successfully from JSON files with full overwrite");
+            Log::info('Translations imported successfully from JSON files with full overwrite');
 
-			return true;
-		} catch (\Exception $e) {
-			Log::error("Error importing translations: " . $e->getMessage());
+            return true;
+        } catch (\Exception $e) {
+            Log::error('Error importing translations: '.$e->getMessage());
 
-			return false;
-		}
-	}
+            return false;
+        }
+    }
 
-	/**
-	 * Process and save translations to database
-	 */
-	private static function processTranslations(array $italianData, array $englishData): void
-	{
-		$allPageNames = array_unique(array_merge(array_keys($italianData), array_keys($englishData)));
-		$seenKeys = [];
+    /**
+     * Process and save translations to database
+     */
+    private static function processTranslations(array $italianData, array $englishData): void
+    {
+        $allPageNames = array_unique(array_merge(array_keys($italianData), array_keys($englishData)));
+        $seenKeys = [];
 
-		foreach ($allPageNames as $pageName) {
-			$pageId = self::getPageId($pageName);
-			$italianTranslations = $italianData[$pageName] ?? [];
-			$englishTranslations = $englishData[$pageName] ?? [];
+        foreach ($allPageNames as $pageName) {
+            $pageId = self::getPageId($pageName);
+            $italianTranslations = $italianData[$pageName] ?? [];
+            $englishTranslations = $englishData[$pageName] ?? [];
 
-			$allCodes = array_unique(array_merge(array_keys($italianTranslations), array_keys($englishTranslations)));
+            $allCodes = array_unique(array_merge(array_keys($italianTranslations), array_keys($englishTranslations)));
 
-			foreach ($allCodes as $code) {
-				$itNode = $italianTranslations[$code] ?? null;
-				$enNode = $englishTranslations[$code] ?? null;
+            foreach ($allCodes as $code) {
+                $itNode = $italianTranslations[$code] ?? null;
+                $enNode = $englishTranslations[$code] ?? null;
 
-<<<<<<< HEAD
-				// Backward compatibility:
-				// - Old shape: $node is an object with keys it/en/text_*
-				// - New shape: $node is a map of banca_abi => object, with "default" for global-per-code
-				$looksLikeLeaf =
-					(is_array($itNode) && (array_key_exists("it", $itNode) || array_key_exists("text_it", $itNode))) ||
-					(is_array($enNode) && (array_key_exists("en", $enNode) || array_key_exists("text_en", $enNode)));
-
-				if ($looksLikeLeaf) {
-					self::upsertTranslation($pageId, $code, null, $itNode, $enNode);
-					$seenKeys[] = self::canonicalKey($pageId, $code, null);
-
-					continue;
-				}
-
-				$abiKeys = array_unique(
-					array_merge(is_array($itNode) ? array_keys($itNode) : [], is_array($enNode) ? array_keys($enNode) : [])
-				);
-				$abiKeys = array_values(
-					array_filter($abiKeys, static function (string $abiKey): bool {
-						return !str_starts_with($abiKey, "__");
-					})
-				);
-
-				foreach ($abiKeys as $abiKey) {
-					$bancaAbi = $abiKey === "default" ? null : (string) $abiKey;
-					self::upsertTranslation(
-						$pageId,
-						$code,
-						$bancaAbi,
-						is_array($itNode) ? $itNode[$abiKey] ?? null : null,
-						is_array($enNode) ? $enNode[$abiKey] ?? null : null
-					);
-					$seenKeys[] = self::canonicalKey($pageId, $code, $bancaAbi);
-				}
-			}
-		}
-=======
                 // Leaf shape: $node is an object with keys it/en/text_*. Files written
                 // with per-variant nodes ({"default": {...}, ...}) keep working: only the
                 // "default" variant is imported, the template has no other dimension.
@@ -128,108 +90,72 @@ class TranslateImportService
                 $seenKeys[] = self::canonicalKey($pageId, $code);
             }
         }
->>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 
-		self::deleteTranslationsNotInImport($seenKeys);
-	}
+        self::deleteTranslationsNotInImport($seenKeys);
+    }
 
-	/**
-	 * Get page ID for a page name, handling special "all" case
-	 */
-	private static function getPageId(string $pageName): ?int
-	{
-		if ($pageName === "all") {
-			return null;
-		}
+    /**
+     * Get page ID for a page name, handling special "all" case
+     */
+    private static function getPageId(string $pageName): ?int
+    {
+        if ($pageName === 'all') {
+            return null;
+        }
 
-		$page = self::ensurePageExists($pageName);
+        $page = self::ensurePageExists($pageName);
 
-		if (!$page) {
-			Log::warning("Could not create/find page: {$pageName}");
+        if (! $page) {
+            Log::warning("Could not create/find page: {$pageName}");
 
-			return null;
-		}
+            return null;
+        }
 
-		return $page->id;
-	}
+        return $page->id;
+    }
 
-	/**
-	 * Ensure page exists in database, create if needed
-	 */
-	private static function ensurePageExists(string $pageName): ?Page
-	{
-		$page = Page::where("name", $pageName)->first();
+    /**
+     * Ensure page exists in database, create if needed
+     */
+    private static function ensurePageExists(string $pageName): ?Page
+    {
+        $page = Page::where('name', $pageName)->first();
 
-		if (!$page) {
-			$page = Page::create([
-				"name" => $pageName,
-				"title" => ucfirst(str_replace("-", " ", $pageName)),
-				"description" => "",
-				"order" => Page::max("order") + 1,
-				"visible" => true,
-			]);
+        if (! $page) {
+            $page = Page::create([
+                'name' => $pageName,
+                'title' => ucfirst(str_replace('-', ' ', $pageName)),
+                'description' => '',
+                'order' => Page::max('order') + 1,
+                'visible' => true,
+            ]);
 
-			Log::info("Created page: {$pageName}");
-		}
+            Log::info("Created page: {$pageName}");
+        }
 
-		return $page;
-	}
+        return $page;
+    }
 
-<<<<<<< HEAD
-	/**
-	 * Create or update translation record
-	 */
-	private static function upsertTranslation(
-		?int $pageId,
-		string $code,
-		?string $bancaAbi,
-		mixed $italianData,
-		mixed $englishData
-	): void {
-		$query = Translate::where("code", $code);
-=======
     /**
      * Create or update translation record
      */
     private static function upsertTranslation(?int $pageId, string $code, mixed $italianData, mixed $englishData): void
     {
         $query = Translate::where('code', $code);
->>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 
-		if ($pageId === null) {
-			$query->whereNull("page_id");
-		} else {
-			$query->where("page_id", $pageId);
-		}
+        if ($pageId === null) {
+            $query->whereNull('page_id');
+        } else {
+            $query->where('page_id', $pageId);
+        }
 
-<<<<<<< HEAD
-		if ($bancaAbi === null) {
-			$query->whereNull("banca_abi");
-		} else {
-			$query->where("banca_abi", $bancaAbi);
-		}
-
-		$translation = $query->first();
-=======
         $translation = $query->first();
->>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 
-		$leaf = self::normalizeLeafData(
-			is_array($italianData) ? $italianData : null,
-			is_array($englishData) ? $englishData : null
-		);
+        $leaf = self::normalizeLeafData(
+            is_array($italianData) ? $italianData : null,
+            is_array($englishData) ? $englishData : null
+        );
 
-<<<<<<< HEAD
-		$data = [
-			"page_id" => $pageId,
-			"code" => $code,
-			"banca_abi" => $bancaAbi,
-			"it" => $leaf["it"],
-			"text_it" => $leaf["text_it"],
-			"en" => $leaf["en"],
-			"text_en" => $leaf["text_en"],
-		];
-=======
         $data = [
             'page_id' => $pageId,
             'code' => $code,
@@ -238,78 +164,60 @@ class TranslateImportService
             'en' => $leaf['en'],
             'text_en' => $leaf['text_en'],
         ];
->>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 
-		if ($translation) {
-			$translation->update($data);
-			Log::debug("Updated translation: {$code} for page ID " . ($pageId ?? "global"));
-		} else {
-			Translate::create($data);
-			Log::debug("Created translation: {$code} for page ID " . ($pageId ?? "global"));
-		}
-	}
+        if ($translation) {
+            $translation->update($data);
+            Log::debug("Updated translation: {$code} for page ID ".($pageId ?? 'global'));
+        } else {
+            Translate::create($data);
+            Log::debug("Created translation: {$code} for page ID ".($pageId ?? 'global'));
+        }
+    }
 
-	/**
-	 * Map JSON leaf nodes to Translate columns (handles missing IT/EN side or non-array nodes).
-	 *
-	 * @param  array<string, mixed>|null  $italianLeaf
-	 * @param  array<string, mixed>|null  $englishLeaf
-	 * @return array{it: string, text_it: string, en: string, text_en: string}
-	 */
-	private static function normalizeLeafData(?array $italianLeaf, ?array $englishLeaf): array
-	{
-		$italianLeaf = $italianLeaf ?? [];
-		$englishLeaf = $englishLeaf ?? [];
+    /**
+     * Map JSON leaf nodes to Translate columns (handles missing IT/EN side or non-array nodes).
+     *
+     * @param  array<string, mixed>|null  $italianLeaf
+     * @param  array<string, mixed>|null  $englishLeaf
+     * @return array{it: string, text_it: string, en: string, text_en: string}
+     */
+    private static function normalizeLeafData(?array $italianLeaf, ?array $englishLeaf): array
+    {
+        $italianLeaf = $italianLeaf ?? [];
+        $englishLeaf = $englishLeaf ?? [];
 
-		return [
-			"it" => isset($italianLeaf["it"]) ? (string) $italianLeaf["it"] : "",
-			"text_it" => isset($italianLeaf["text_it"]) ? (string) $italianLeaf["text_it"] : "",
-			"en" => isset($englishLeaf["en"]) ? (string) $englishLeaf["en"] : "",
-			"text_en" => isset($englishLeaf["text_en"]) ? (string) $englishLeaf["text_en"] : "",
-		];
-	}
+        return [
+            'it' => isset($italianLeaf['it']) ? (string) $italianLeaf['it'] : '',
+            'text_it' => isset($italianLeaf['text_it']) ? (string) $italianLeaf['text_it'] : '',
+            'en' => isset($englishLeaf['en']) ? (string) $englishLeaf['en'] : '',
+            'text_en' => isset($englishLeaf['text_en']) ? (string) $englishLeaf['text_en'] : '',
+        ];
+    }
 
-	/**
-	 * Check if import can run.
-	 */
-	private static function shouldRunImport()
-	{
-		$itPath = FrontendLang::jsonPath("it");
-		$enPath = FrontendLang::jsonPath("en");
+    /**
+     * Check if import can run.
+     */
+    private static function shouldRunImport()
+    {
+        $itPath = FrontendLang::jsonPath('it');
+        $enPath = FrontendLang::jsonPath('en');
 
-		if (!File::exists($itPath) || !File::exists($enPath)) {
-			return false;
-		}
+        if (! File::exists($itPath) || ! File::exists($enPath)) {
+            return false;
+        }
 
-		return true;
-	}
+        return true;
+    }
 
-	/**
-	 * Delete records not present in the imported JSON snapshot.
-	 *
-	 * @param  array<int, string>  $seenKeys
-	 */
-	private static function deleteTranslationsNotInImport(array $seenKeys): void
-	{
-		$seenLookup = array_fill_keys($seenKeys, true);
+    /**
+     * Delete records not present in the imported JSON snapshot.
+     *
+     * @param  array<int, string>  $seenKeys
+     */
+    private static function deleteTranslationsNotInImport(array $seenKeys): void
+    {
+        $seenLookup = array_fill_keys($seenKeys, true);
 
-<<<<<<< HEAD
-		Translate::query()
-			->select(["id", "page_id", "code", "banca_abi"])
-			->chunkById(500, function ($rows) use ($seenLookup): void {
-				$idsToDelete = [];
-
-				foreach ($rows as $row) {
-					$key = self::canonicalKey(
-						$row->page_id,
-						(string) $row->code,
-						$row->banca_abi ? (string) $row->banca_abi : null
-					);
-					if (!isset($seenLookup[$key])) {
-						$idsToDelete[] = $row->id;
-					}
-				}
-=======
         Translate::query()->select(['id', 'page_id', 'code'])
             ->chunkById(500, function ($rows) use ($seenLookup): void {
                 $idsToDelete = [];
@@ -320,23 +228,13 @@ class TranslateImportService
                         $idsToDelete[] = $row->id;
                     }
                 }
->>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 
-				if ($idsToDelete !== []) {
-					Translate::whereIn("id", $idsToDelete)->delete();
-				}
-			});
-	}
+                if ($idsToDelete !== []) {
+                    Translate::whereIn('id', $idsToDelete)->delete();
+                }
+            });
+    }
 
-<<<<<<< HEAD
-	/**
-	 * Build a canonical key to compare imported and persisted rows.
-	 */
-	private static function canonicalKey(?int $pageId, string $code, ?string $bancaAbi): string
-	{
-		return implode("|", [$pageId === null ? "null" : (string) $pageId, $code, $bancaAbi ?? "null"]);
-	}
-=======
     /**
      * Build a canonical key to compare imported and persisted rows.
      */
@@ -347,5 +245,4 @@ class TranslateImportService
             $code,
         ]);
     }
->>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 }

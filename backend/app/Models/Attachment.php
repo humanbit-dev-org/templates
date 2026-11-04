@@ -9,16 +9,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class Attachment extends Model
 {
-<<<<<<< HEAD
-	use CrudTrait, StorableAttachments;
-
-	protected $fillable = ["title", "description", "file_path", "institutional_id"];
-
-	public function institutional()
-	{
-		return $this->belongsTo(Institutional::class);
-	}
-=======
     use CrudTrait, HasDisplayAttributes, StorableAttachments;
 
     protected $fillable = ['title', 'description', 'file_path', 'article_id', 'institutional_id'];
@@ -44,5 +34,4 @@ class Attachment extends Model
     {
         return $this->title;
     }
->>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 }

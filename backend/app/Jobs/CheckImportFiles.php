@@ -19,117 +19,85 @@ use Illuminate\Support\Facades\Log;
  */
 class CheckImportFiles implements ShouldBeUnique, ShouldQueue
 {
-	use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-	public $timeout = 60;
+    public $timeout = 60;
 
-	public $uniqueFor = 50;
+    public $uniqueFor = 50;
 
-	public $tries = 1;
+    public $tries = 1;
 
-	public function __construct()
-	{
-		// Hash tag required for Redis Cluster slot consistency.
-		// Must match the queue configured in supervisor-scan in config/horizon.php.
-		$this->onQueue("{scan}");
-	}
+    public function __construct()
+    {
+        // Hash tag required for Redis Cluster slot consistency.
+        // Must match the queue configured in supervisor-scan in config/horizon.php.
+        $this->onQueue('{scan}');
+    }
 
-	public function uniqueId(): string
-	{
-		return "import-scan";
-	}
+    public function uniqueId(): string
+    {
+        return 'import-scan';
+    }
 
-	public function uniqueVia()
-	{
-		// Uses the standalone 'cache' Redis connection — not the cluster 'queues'
-		// connection — so ShouldBeUnique lock keys never cause CROSSSLOT errors.
-		return cache()->store("redis");
-	}
+    public function uniqueVia()
+    {
+        // Uses the standalone 'cache' Redis connection — not the cluster 'queues'
+        // connection — so ShouldBeUnique lock keys never cause CROSSSLOT errors.
+        return cache()->store('redis');
+    }
 
-	public function handle(): void
-	{
-		$folder = database_path("import");
+    public function handle(): void
+    {
+        $folder = database_path('import');
 
-		if (!is_dir($folder)) {
-			return;
-		}
+        if (! is_dir($folder)) {
+            return;
+        }
 
-		if (!$this->hasValidCsvFiles($folder)) {
-			return;
-		}
+        if (! $this->hasValidCsvFiles($folder)) {
+            return;
+        }
 
-<<<<<<< HEAD
-		$PRIORITY_ORDER = [
-			"filiale" => 1,
-			"anagrafica" => 2,
-			"delibera" => 3,
-			"tiraggio" => 4,
-			"mensile" => 5,
-			"trattenuta" => 6,
-		];
-
-		$MODEL_OVERRIDES = [
-			"anagrafica" => "User",
-		];
-=======
         // Folder order and folder → model mapping: see config/import.php.
         $PRIORITY_ORDER = config('import.priority', []);
         $MODEL_OVERRIDES = config('import.model_overrides', []);
->>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 
-		$files = [];
-		$dirIterator = new \RecursiveDirectoryIterator($folder, \RecursiveDirectoryIterator::SKIP_DOTS);
-		$iterator = new \RecursiveIteratorIterator($dirIterator);
+        $files = [];
+        $dirIterator = new \RecursiveDirectoryIterator($folder, \RecursiveDirectoryIterator::SKIP_DOTS);
+        $iterator = new \RecursiveIteratorIterator($dirIterator);
 
-		foreach ($iterator as $file) {
-			if (!$file->isFile() || strtolower($file->getExtension()) !== "csv") {
-				continue;
-			}
+        foreach ($iterator as $file) {
+            if (! $file->isFile() || strtolower($file->getExtension()) !== 'csv') {
+                continue;
+            }
 
-			$path = $file->getPath();
-			$subfolder = basename($path);
-			$unixPath = str_replace("\\", "/", $path);
+            $path = $file->getPath();
+            $subfolder = basename($path);
+            $unixPath = str_replace('\\', '/', $path);
 
-			if (preg_match('~/(processed|pending|suspended)(/|$)~', $unixPath)) {
-				continue;
-			}
+            if (preg_match('~/(processed|pending|suspended)(/|$)~', $unixPath)) {
+                continue;
+            }
 
-			$processedFolder = "{$path}/processed";
-			$pendingFolder = "{$path}/pending";
-			$filename = $file->getFilename();
-			$isDuplicate = file_exists("{$processedFolder}/{$filename}") || file_exists("{$pendingFolder}/{$filename}");
+            $processedFolder = "{$path}/processed";
+            $pendingFolder = "{$path}/pending";
+            $filename = $file->getFilename();
+            $isDuplicate = file_exists("{$processedFolder}/{$filename}")
+                || file_exists("{$pendingFolder}/{$filename}");
 
-			if ($isDuplicate) {
-				$suspendedFolder = "{$path}/suspended";
-				$suspendedPath = "{$suspendedFolder}/{$filename}";
+            if ($isDuplicate) {
+                $suspendedFolder = "{$path}/suspended";
+                $suspendedPath = "{$suspendedFolder}/{$filename}";
 
-				if (!is_dir($suspendedFolder)) {
-					@mkdir($suspendedFolder, 0755, true);
-				}
+                if (! is_dir($suspendedFolder)) {
+                    @mkdir($suspendedFolder, 0755, true);
+                }
 
-				if (@rename($file->getRealPath(), $suspendedPath)) {
-					$reason = "Nome file duplicato (già presente in processed o in coda)";
-					$reasonFile = $suspendedFolder . "/" . pathinfo($filename, PATHINFO_FILENAME) . ".reason.txt";
-					@file_put_contents($reasonFile, $reason . "\n" . now()->toIso8601String());
+                if (@rename($file->getRealPath(), $suspendedPath)) {
+                    $reason = 'Nome file duplicato (già presente in processed o in coda)';
+                    $reasonFile = $suspendedFolder.'/'.pathinfo($filename, PATHINFO_FILENAME).'.reason.txt';
+                    @file_put_contents($reasonFile, $reason."\n".now()->toIso8601String());
 
-<<<<<<< HEAD
-					$msg = "SECURITY: File {$subfolder}/{$filename} moved to suspended - duplicate filename detected";
-					Log::channel("import")->warning($msg);
-					Log::channel($subfolder)->warning($msg);
-				} else {
-					$msg = "ERROR: Cannot move duplicate file {$subfolder}/{$filename} to suspended";
-					Log::channel("import")->error($msg);
-					Log::channel($subfolder)->error($msg);
-				}
-			} else {
-				$files[] = [
-					"path" => $file->getRealPath(),
-					"subfolder" => $subfolder,
-					"priority" => $PRIORITY_ORDER[$subfolder] ?? 999,
-				];
-			}
-		}
-=======
                     $msg = "SECURITY: File {$subfolder}/{$filename} moved to suspended - duplicate filename detected";
                     Log::channel('import')->warning($msg);
                     LogHelper::channel($subfolder)->warning($msg);
@@ -146,57 +114,56 @@ class CheckImportFiles implements ShouldBeUnique, ShouldQueue
                 ];
             }
         }
->>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 
-		if (empty($files)) {
-			return;
-		}
+        if (empty($files)) {
+            return;
+        }
 
-		usort($files, fn($a, $b) => $a["priority"] <=> $b["priority"]);
+        usort($files, fn ($a, $b) => $a['priority'] <=> $b['priority']);
 
-		foreach ($files as $file) {
-			$subfolder = $file["subfolder"];
-			$modelName = $MODEL_OVERRIDES[$subfolder] ?? ucfirst($subfolder);
-			$dir = dirname($file["path"]);
-			$filename = basename($file["path"]);
-			$pendingDir = "{$dir}/pending";
-			$pendingPath = "{$pendingDir}/{$filename}";
+        foreach ($files as $file) {
+            $subfolder = $file['subfolder'];
+            $modelName = $MODEL_OVERRIDES[$subfolder] ?? ucfirst($subfolder);
+            $dir = dirname($file['path']);
+            $filename = basename($file['path']);
+            $pendingDir = "{$dir}/pending";
+            $pendingPath = "{$pendingDir}/{$filename}";
 
-			if (!is_dir($pendingDir)) {
-				@mkdir($pendingDir, 0755, true);
-			}
+            if (! is_dir($pendingDir)) {
+                @mkdir($pendingDir, 0755, true);
+            }
 
-			if (@rename($file["path"], $pendingPath) === false) {
-				Log::channel("import")->error("Cannot move to pending: {$file["path"]} -> {$pendingPath}");
+            if (@rename($file['path'], $pendingPath) === false) {
+                Log::channel('import')->error("Cannot move to pending: {$file['path']} -> {$pendingPath}");
 
-				continue;
-			}
+                continue;
+            }
 
-			// Dispatch on the import queue — hash tag for cluster consistency.
-			ProcessImportFile::dispatch($filename, $subfolder, $modelName)->onQueue("{import}");
+            // Dispatch on the import queue — hash tag for cluster consistency.
+            ProcessImportFile::dispatch($filename, $subfolder, $modelName)->onQueue('{import}');
 
-			Log::channel("import")->info("Queued {$subfolder}/{$filename}");
-		}
-	}
+            Log::channel('import')->info("Queued {$subfolder}/{$filename}");
+        }
+    }
 
-	private function hasValidCsvFiles(string $root): bool
-	{
-		$subfolders = glob($root . "/*", GLOB_ONLYDIR);
+    private function hasValidCsvFiles(string $root): bool
+    {
+        $subfolders = glob($root.'/*', GLOB_ONLYDIR);
 
-		if (empty($subfolders)) {
-			return false;
-		}
+        if (empty($subfolders)) {
+            return false;
+        }
 
-		foreach ($subfolders as $subfolder) {
-			if (in_array(basename($subfolder), ["processed", "pending", "suspended"], true)) {
-				continue;
-			}
+        foreach ($subfolders as $subfolder) {
+            if (in_array(basename($subfolder), ['processed', 'pending', 'suspended'], true)) {
+                continue;
+            }
 
-			if (!empty(glob($subfolder . "/*.csv"))) {
-				return true;
-			}
-		}
+            if (! empty(glob($subfolder.'/*.csv'))) {
+                return true;
+            }
+        }
 
-		return false;
-	}
+        return false;
+    }
 }

@@ -15,32 +15,6 @@ use Illuminate\Database\Eloquent\Model;
  */
 class PresetFilterHandler
 {
-<<<<<<< HEAD
-	/**
-	 * Preset definitions per model class.
-	 *
-	 * Each preset is: label => callback(Model $model) that applies CRUD clauses.
-	 * The optional 'banca' flag tells the UI to show a bank selector.
-	 *
-	 * @return array<string, array{label: string, banche?: bool, apply: callable}>
-	 */
-	public static function presetsForModel(Model $model): array
-	{
-		return match (get_class($model)) {
-			User::class => self::userPresets(),
-			default => [],
-		};
-	}
-
-	/**
-	 * All of these describe customers, so all of them filter on the role: bank
-	 * staff shares the table, and without it they were listed as eligible too.
-	 */
-	public static function userPresets(): array
-	{
-		return [];
-	}
-=======
     /**
      * Preset definitions per model class.
      *
@@ -111,5 +85,4 @@ class PresetFilterHandler
 
         return $preset !== null && $preset !== '' ? $preset : null;
     }
->>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 }

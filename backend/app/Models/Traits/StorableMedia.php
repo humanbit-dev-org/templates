@@ -18,44 +18,34 @@ use Illuminate\Support\Str;
  */
 trait StorableMedia
 {
-	/**
-	 * Uploaded files waiting to be written, keyed by attribute.
-	 *
-	 * @var array<string, UploadedFile>
-	 */
-	protected array $pendingMedia = [];
+    /**
+     * Uploaded files waiting to be written, keyed by attribute.
+     *
+     * @var array<string, UploadedFile>
+     */
+    protected array $pendingMedia = [];
 
-	public static function bootStorableMedia(): void
-	{
-		static::saving(function (self $model): void {
-			$model->flushPendingMedia();
-		});
-	}
+    public static function bootStorableMedia(): void
+    {
+        static::saving(function (self $model): void {
+            $model->flushPendingMedia();
+        });
+    }
 
-	/**
-	 * Intercept file uploads assigned to *_path attributes.
-	 */
-	public function setAttribute($key, $value)
-	{
-		if ($this->isFileAttribute($key, $value)) {
-			$this->pendingMedia[$key] = $value;
+    /**
+     * Intercept file uploads assigned to *_path attributes.
+     */
+    public function setAttribute($key, $value)
+    {
+        if ($this->isFileAttribute($key, $value)) {
+            $this->pendingMedia[$key] = $value;
 
-			return $this;
-		}
+            return $this;
+        }
 
-		return parent::setAttribute($key, $value);
-	}
+        return parent::setAttribute($key, $value);
+    }
 
-<<<<<<< HEAD
-	/**
-	 * Write the pending uploads, now that every attribute is set.
-	 */
-	protected function flushPendingMedia(): void
-	{
-		foreach ($this->pendingMedia as $key => $file) {
-			$this->attributes[$key] = MediaStorage::storePublic($file, $this->mediaFolderFor($key), $this->mediaBancaAbi());
-		}
-=======
     /**
      * Write the pending uploads, now that every attribute is set.
      */
@@ -68,32 +58,22 @@ trait StorableMedia
                 $this->mediaOwner(),
             );
         }
->>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 
-		$this->pendingMedia = [];
-	}
+        $this->pendingMedia = [];
+    }
 
-	/**
-	 * Destination folder for an attribute (logos, fonts, media).
-	 */
-	protected function mediaFolderFor(string $key): string
-	{
-		return match ($key) {
-			"logo_path" => "logos",
-			"font_primary_path", "font_secondary_path", "font_tertiary_path" => "fonts",
-			default => "media",
-		};
-	}
+    /**
+     * Destination folder for an attribute (logos, fonts, media).
+     */
+    protected function mediaFolderFor(string $key): string
+    {
+        return match ($key) {
+            'logo_path' => 'logos',
+            'font_primary_path', 'font_secondary_path', 'font_tertiary_path' => 'fonts',
+            default => 'media',
+        };
+    }
 
-<<<<<<< HEAD
-	/**
-	 * Bank the asset belongs to, used as the folder segment.
-	 */
-	protected function mediaBancaAbi(): ?string
-	{
-		return $this->banca_abi ?? null;
-	}
-=======
     /**
      * Owner the asset belongs to, used as an optional folder segment
      * (see MediaStorage). Null keeps every file of the type in one folder;
@@ -103,10 +83,9 @@ trait StorableMedia
     {
         return null;
     }
->>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 
-	private function isFileAttribute($key, $value): bool
-	{
-		return Str::endsWith($key, "_path") && $value instanceof UploadedFile;
-	}
+    private function isFileAttribute($key, $value): bool
+    {
+        return Str::endsWith($key, '_path') && $value instanceof UploadedFile;
+    }
 }

@@ -8,18 +8,8 @@ use Tests\TestCase;
 
 class RegistrationTest extends TestCase
 {
-	use RefreshDatabase;
+    use RefreshDatabase;
 
-<<<<<<< HEAD
-	public function test_new_users_can_register(): void
-	{
-		$response = $this->post("/register", [
-			"name" => "Test User",
-			"email" => "test@example.com",
-			"password" => "password",
-			"password_confirmation" => "password",
-		]);
-=======
     protected function setUp(): void
     {
         parent::setUp();
@@ -39,9 +29,8 @@ class RegistrationTest extends TestCase
             'password' => 'password',
             'password_confirmation' => 'password',
         ]);
->>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 
-		$this->assertAuthenticated();
-		$response->assertNoContent();
-	}
+        $this->assertAuthenticated();
+        $response->assertNoContent();
+    }
 }

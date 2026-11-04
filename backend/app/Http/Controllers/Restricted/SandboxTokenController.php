@@ -18,30 +18,6 @@ use Illuminate\Validation\Rule;
  */
 class SandboxTokenController extends Controller
 {
-<<<<<<< HEAD
-	public function __invoke(Request $request): JsonResponse
-	{
-		$validated = $request->validate([
-			"bank" => ["sometimes", "string", Rule::in(array_keys(config("sandbox.banks")))],
-		]);
-
-		$abi = $validated["bank"] ?? config("sandbox.default_bank");
-		$po = config("sandbox.banks.{$abi}.po");
-
-		$token = User::where("user_id", $po)
-			->firstOrFail()
-			->createToken("sandbox", ["*"], now()->addMinutes(config("sandbox.token_minutes")));
-
-		return response()->json(
-			[
-				"token" => $token->plainTextToken,
-				"bank" => $abi,
-				"expires_at" => $token->accessToken->expires_at,
-			],
-			201
-		);
-	}
-=======
     public function __invoke(Request $request): JsonResponse
     {
         $validated = $request->validate([
@@ -62,5 +38,4 @@ class SandboxTokenController extends Controller
             'expires_at' => $token->accessToken->expires_at,
         ], 201);
     }
->>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 }

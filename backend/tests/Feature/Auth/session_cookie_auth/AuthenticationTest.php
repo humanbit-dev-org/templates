@@ -11,28 +11,8 @@ use Tests\TestCase;
 
 class AuthenticationTest extends TestCase
 {
-	use RefreshDatabase;
+    use RefreshDatabase;
 
-<<<<<<< HEAD
-	protected function setUp(): void
-	{
-		parent::setUp();
-		// Create required roles if they don't exist
-		Role::firstOrCreate(["name" => "User"], ["description" => "User"]);
-		BackpackRole::firstOrCreate(["name" => "Guest"], ["description" => "Guest"]);
-	}
-
-	public function test_users_can_authenticate_using_the_login_screen(): void
-	{
-		$user = User::create([
-			"ndg" => "test@example.com",
-			"email" => "test@example.com",
-			"password" => bcrypt("password"),
-			"email_verified_at" => now(),
-			"role_id" => Role::where("name", "User")->first()->id,
-			"backpack_role_id" => BackpackRole::where("name", "Guest")->first()->id,
-		]);
-=======
     protected function setUp(): void
     {
         parent::setUp();
@@ -59,29 +39,16 @@ class AuthenticationTest extends TestCase
             'role_id' => Role::where('name', 'User')->first()->id,
             'backpack_role_id' => BackpackRole::where('name', 'Guest')->first()->id,
         ]);
->>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 
-		$response = $this->post("/login", [
-			"email" => $user->email,
-			"password" => "password",
-		]);
+        $response = $this->post('/login', [
+            'email' => $user->email,
+            'password' => 'password',
+        ]);
 
-		$this->assertAuthenticated();
-		$response->assertNoContent();
-	}
+        $this->assertAuthenticated();
+        $response->assertNoContent();
+    }
 
-<<<<<<< HEAD
-	public function test_users_can_not_authenticate_with_invalid_password(): void
-	{
-		$user = User::create([
-			"ndg" => "test2@example.com",
-			"email" => "test2@example.com",
-			"password" => bcrypt("password"),
-			"email_verified_at" => now(),
-			"role_id" => Role::where("name", "User")->first()->id,
-			"backpack_role_id" => BackpackRole::where("name", "Guest")->first()->id,
-		]);
-=======
     public function test_users_can_not_authenticate_with_invalid_password(): void
     {
         $user = User::create([
@@ -94,28 +61,15 @@ class AuthenticationTest extends TestCase
             'role_id' => Role::where('name', 'User')->first()->id,
             'backpack_role_id' => BackpackRole::where('name', 'Guest')->first()->id,
         ]);
->>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 
-		$this->post("/login", [
-			"email" => $user->email,
-			"password" => "wrong-password",
-		]);
+        $this->post('/login', [
+            'email' => $user->email,
+            'password' => 'wrong-password',
+        ]);
 
-		$this->assertGuest();
-	}
+        $this->assertGuest();
+    }
 
-<<<<<<< HEAD
-	public function test_users_can_logout(): void
-	{
-		$user = User::create([
-			"ndg" => "test3@example.com",
-			"email" => "test3@example.com",
-			"password" => bcrypt("password"),
-			"email_verified_at" => now(),
-			"role_id" => Role::where("name", "User")->first()->id,
-			"backpack_role_id" => BackpackRole::where("name", "Guest")->first()->id,
-		]);
-=======
     public function test_users_can_logout(): void
     {
         $user = User::create([
@@ -128,11 +82,10 @@ class AuthenticationTest extends TestCase
             'role_id' => Role::where('name', 'User')->first()->id,
             'backpack_role_id' => BackpackRole::where('name', 'Guest')->first()->id,
         ]);
->>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 
-		$response = $this->actingAs($user)->post("/logout");
+        $response = $this->actingAs($user)->post('/logout');
 
-		$this->assertGuest();
-		$response->assertNoContent();
-	}
+        $this->assertGuest();
+        $response->assertNoContent();
+    }
 }
