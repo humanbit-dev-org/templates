@@ -9,11 +9,10 @@
 	"quoteProps": "consistent",
 	"semi": true,
 	"singleQuote": false,
-	"singleAttributePerLine": false,
+	"singleAttributePerLine": true,
 	"printWidth": 125,
 	"vueIndentScriptAndStyle": false,
 	"trailingComma": "es5",
 	"useTabs": true,
-	"tabWidth": 4,
-	"plugins": ["@prettier/plugin-php"]
+	"tabWidth": 4
 }

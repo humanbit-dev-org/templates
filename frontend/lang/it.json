@@ -1,1 +1,9 @@
-{}
+{
+  "all": {
+    "example_key": {
+      "default": {
+        "it": ""
+      }
+    }
+  }
+}

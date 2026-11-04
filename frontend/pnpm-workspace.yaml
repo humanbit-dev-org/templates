@@ -1,0 +1,11 @@
+storeDir: /home/codeuser/.pnpm-store
+
+# minimumReleaseAge: 0 # Disable pnpm 11's default 24-hour delay
+
+allowBuilds:
+  "@parcel/watcher": true
+  "sharp": true
+
+updateConfig:
+  ignoreDependencies:
+    - bootstrap

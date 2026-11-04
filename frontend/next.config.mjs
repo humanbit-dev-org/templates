@@ -1,15 +1,6 @@
-// Node.js path module to work with file and directory paths
-import path from "path";
-// Utility function to convert an ESM import URL (import.meta.url) into a file system path
-import { fileURLToPath } from "url";
+// Local module that injects additional Sass data into the build process
+import { generateStyleOverrides } from "./style-overrides-generator.mjs";
 
-// Gives you the absolute file path for the current ES module file
-const __filename = fileURLToPath(import.meta.url);
-// Extracts the directory name from the absolute path
-const __dirname = path.dirname(__filename);
-
-// Parses the environment variable into a URL object so you can access protocol, hostname, etc.
-// const url = new URL(process.env.NEXT_PUBLIC_BACKEND_URL_CLIENT);
 /**
  * Safely parse backend URL.
  * - During `next build` (Docker): env may be undefined → do nothing
@@ -32,13 +23,11 @@ try {
 	backendUrl = null;
 }
 
+generateStyleOverrides();
+
 /** @type {import('next').NextConfig} */
 // Webpack configuration (default engine)
 const nextConfig = {
-	sassOptions: {
-		includePaths: ["*"], // Resolve all directories for SCSS
-	},
-
 	// Keep pages in memory longer to speed up Fast Refresh
 	onDemandEntries: {
 		maxInactiveAge: 300_000, // 5 minutes
@@ -50,6 +39,11 @@ const nextConfig = {
 
 	// Disable Next.js Dev Tools overlay
 	devIndicators: false,
+
+	// Disable filesystem cache to prevent stale cache in Docker
+	experimental: {
+		turbopackFileSystemCacheForDev: false,
+	},
 
 	webpack: (config, options) => {
 		if (options.dev) {
