@@ -10,14 +10,14 @@ namespace App\Support\Export;
  */
 enum ExportColumnFormat: string
 {
-    case Text = 'text';
-    case Integer = 'integer';
-    case Decimal = 'decimal';
-    case Date = 'date';
-    case Email = 'email';
-    case Percentage = 'percentage';
-    case Pattern = 'pattern';
-    case Ateco = 'ateco';
-    case Provincia = 'provincia';
-    case Cap = 'cap';
+	case Text = "text";
+	case Integer = "integer";
+	case Decimal = "decimal";
+	case Date = "date";
+	case Email = "email";
+	case Percentage = "percentage";
+	case Pattern = "pattern";
+	case Ateco = "ateco";
+	case Provincia = "provincia";
+	case Cap = "cap";
 }

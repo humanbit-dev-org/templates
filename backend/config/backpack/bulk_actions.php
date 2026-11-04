@@ -1,7 +1,7 @@
 <?php
 
 return [
-    /*
+	/*
     |--------------------------------------------------------------------------
     | Bulk quick actions (labels & enum options)
     |--------------------------------------------------------------------------
@@ -31,22 +31,22 @@ return [
     |
     */
 
-    'models' => [
-        \App\Models\User::class => [
-            'boolean' => [
-                'sospeso' => [
-                    '1' => 'Sospendi utente',
-                    '0' => 'Riattiva utente',
-                    'icons' => [
-                        '1' => 'la la-times',
-                        '0' => 'la la-check',
-                    ],
-                    'colors' => [
-                        '1' => 'danger',
-                        '0' => 'success',
-                    ],
-                ],
-            ],
-        ],
-    ],
+	"models" => [
+		\App\Models\User::class => [
+			"boolean" => [
+				"sospeso" => [
+					"1" => "Sospendi utente",
+					"0" => "Riattiva utente",
+					"icons" => [
+						"1" => "la la-times",
+						"0" => "la la-check",
+					],
+					"colors" => [
+						"1" => "danger",
+						"0" => "success",
+					],
+				],
+			],
+		],
+	],
 ];

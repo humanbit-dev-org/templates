@@ -15,10 +15,8 @@ use Illuminate\Log\Logger;
  */
 class SetLogTimezone
 {
-    public function __invoke(Logger $logger): void
-    {
-        $logger->getLogger()->setTimezone(
-            new DateTimeZone((string) config('logging.timezone'))
-        );
-    }
+	public function __invoke(Logger $logger): void
+	{
+		$logger->getLogger()->setTimezone(new DateTimeZone((string) config("logging.timezone")));
+	}
 }

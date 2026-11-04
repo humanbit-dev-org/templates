@@ -18,10 +18,10 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class StripAuthorizationHeader
 {
-    public function handle(Request $request, Closure $next): Response
-    {
-        $request->headers->remove('Authorization');
+	public function handle(Request $request, Closure $next): Response
+	{
+		$request->headers->remove("Authorization");
 
-        return $next($request);
-    }
+		return $next($request);
+	}
 }

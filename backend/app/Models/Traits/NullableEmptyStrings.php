@@ -11,49 +11,49 @@ use Illuminate\Support\Facades\Schema;
  */
 trait NullableEmptyStrings
 {
-    /**
-     * Boot the trait - register saving event
-     */
-    public static function bootNullableEmptyStrings(): void
-    {
-        static::saving(function ($model) {
-            $model->convertEmptyStringsToNull();
-        });
-    }
+	/**
+	 * Boot the trait - register saving event
+	 */
+	public static function bootNullableEmptyStrings(): void
+	{
+		static::saving(function ($model) {
+			$model->convertEmptyStringsToNull();
+		});
+	}
 
-    /**
-     * Convert empty strings to null for all nullable columns
-     */
-    protected function convertEmptyStringsToNull(): void
-    {
-        $nullableColumns = $this->getNullableColumns();
+	/**
+	 * Convert empty strings to null for all nullable columns
+	 */
+	protected function convertEmptyStringsToNull(): void
+	{
+		$nullableColumns = $this->getNullableColumns();
 
-        foreach ($nullableColumns as $column) {
-            if ($this->getAttribute($column) === '') {
-                $this->setAttribute($column, null);
-            }
-        }
-    }
+		foreach ($nullableColumns as $column) {
+			if ($this->getAttribute($column) === "") {
+				$this->setAttribute($column, null);
+			}
+		}
+	}
 
-    /**
-     * Get nullable columns for this model's table (cached)
-     *
-     * @return array List of nullable column names
-     */
-    protected function getNullableColumns(): array
-    {
-        $table = $this->getTable();
-        $cacheKey = "nullable_columns_{$table}";
+	/**
+	 * Get nullable columns for this model's table (cached)
+	 *
+	 * @return array List of nullable column names
+	 */
+	protected function getNullableColumns(): array
+	{
+		$table = $this->getTable();
+		$cacheKey = "nullable_columns_{$table}";
 
-        return Cache::remember($cacheKey, 3600, function () use ($table) {
-            if (! Schema::hasTable($table)) {
-                return [];
-            }
+		return Cache::remember($cacheKey, 3600, function () use ($table) {
+			if (!Schema::hasTable($table)) {
+				return [];
+			}
 
-            return collect(Schema::getColumns($table))
-                ->filter(fn ($col) => $col['nullable'] === true)
-                ->pluck('name')
-                ->toArray();
-        });
-    }
+			return collect(Schema::getColumns($table))
+				->filter(fn($col) => $col["nullable"] === true)
+				->pluck("name")
+				->toArray();
+		});
+	}
 }

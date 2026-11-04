@@ -14,27 +14,25 @@ use Illuminate\View\View;
  */
 class DependencyAuditController extends Controller
 {
-    use ChecksBackpackPermissions;
+	use ChecksBackpackPermissions;
 
-    public function __construct(
-        private DependencyAudit $audit
-    ) {}
+	public function __construct(private DependencyAudit $audit) {}
 
-    public function index(): View
-    {
-        abort_unless(config('dependency_audit.enabled'), 404);
-        abort_unless(self::isDeveloper(), 403);
+	public function index(): View
+	{
+		abort_unless(config("dependency_audit.enabled"), 404);
+		abort_unless(self::isDeveloper(), 403);
 
-        $report = $this->audit->report();
+		$report = $this->audit->report();
 
-        return view('admin.dependency-audit.index', [
-            'report' => $report,
-            'counts' => $report ? $this->audit->severityCounts($report) : null,
-            'vulnerabilities' => $report ? $this->audit->vulnerabilities($report) : [],
-            'outdated' => $report ? $this->audit->outdated($report) : [],
-            // Not "errors": Blade reserves it for the validation error bag.
-            'reportErrors' => $report ? $this->audit->errors($report) : [],
-            'runtimes' => $this->audit->runtimes($report),
-        ]);
-    }
+		return view("admin.dependency-audit.index", [
+			"report" => $report,
+			"counts" => $report ? $this->audit->severityCounts($report) : null,
+			"vulnerabilities" => $report ? $this->audit->vulnerabilities($report) : [],
+			"outdated" => $report ? $this->audit->outdated($report) : [],
+			// Not "errors": Blade reserves it for the validation error bag.
+			"reportErrors" => $report ? $this->audit->errors($report) : [],
+			"runtimes" => $this->audit->runtimes($report),
+		]);
+	}
 }

@@ -21,33 +21,33 @@ use Illuminate\Support\Facades\App;
  */
 class DerivingArgon2IdHasher extends Argon2IdHasher
 {
-    /**
-     * Hash the given value after HKDF derivation.
-     *
-     * @param  string  $value
-     */
-    public function make(#[\SensitiveParameter] $value, array $options = []): string
-    {
-        return parent::make($this->derive($value), $options);
-    }
+	/**
+	 * Hash the given value after HKDF derivation.
+	 *
+	 * @param  string  $value
+	 */
+	public function make(#[\SensitiveParameter] $value, array $options = []): string
+	{
+		return parent::make($this->derive($value), $options);
+	}
 
-    /**
-     * Check the given plain value against a hash, deriving it first.
-     *
-     * @param  string  $value
-     * @param  string|null  $hashedValue
-     */
-    public function check(#[\SensitiveParameter] $value, $hashedValue, array $options = []): bool
-    {
-        if ($value === null) {
-            return false;
-        }
+	/**
+	 * Check the given plain value against a hash, deriving it first.
+	 *
+	 * @param  string  $value
+	 * @param  string|null  $hashedValue
+	 */
+	public function check(#[\SensitiveParameter] $value, $hashedValue, array $options = []): bool
+	{
+		if ($value === null) {
+			return false;
+		}
 
-        return parent::check($this->derive($value), $hashedValue, $options);
-    }
+		return parent::check($this->derive($value), $hashedValue, $options);
+	}
 
-    private function derive(string $value): string
-    {
-        return App::make(PasswordDerivationService::class)->derive($value);
-    }
+	private function derive(string $value): string
+	{
+		return App::make(PasswordDerivationService::class)->derive($value);
+	}
 }

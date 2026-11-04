@@ -1,3 +1,5 @@
+## Paths are relative to the root symlink
+
 # Build Output / Runtime Caches
 **/.next
 **/cache
@@ -14,6 +16,8 @@
 # Framework / Tool Files
 **/.env*
 **/.git*
+**/*.yaml
+**/*.yml
 **/artisan
 **/bootstrap
 **/lang
@@ -29,3 +33,6 @@
 # Source Maps / Minified
 **/*.map
 **/*.min.*
+
+# Problematic Files
+/frontend/src/assets/scss/controllers/_variables.scss

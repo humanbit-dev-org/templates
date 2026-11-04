@@ -1,8 +1,7 @@
 <?php
 
 return [
-
-    /*
+	/*
     |--------------------------------------------------------------------------
     | Admin panel support recipient
     |--------------------------------------------------------------------------
@@ -12,9 +11,11 @@ return [
     |
     */
 
-    'recipient' => array_filter(array_map('trim', explode(',', env('MAIL_ADMIN_SUPPORT_ADDRESS', 'borreca@humanbit.com,silveri@humanbit.com')))),
+	"recipient" => array_filter(
+		array_map("trim", explode(",", env("MAIL_ADMIN_SUPPORT_ADDRESS", "borreca@humanbit.com,silveri@humanbit.com")))
+	),
 
-    /*
+	/*
     |--------------------------------------------------------------------------
     | Rate limit (requests per hour per admin user)
     |--------------------------------------------------------------------------
@@ -24,9 +25,9 @@ return [
     |
     */
 
-    'throttle_per_hour' => (int) env('MAIL_ADMIN_SUPPORT_THROTTLE_PER_HOUR', 10),
+	"throttle_per_hour" => (int) env("MAIL_ADMIN_SUPPORT_THROTTLE_PER_HOUR", 10),
 
-    /*
+	/*
     |--------------------------------------------------------------------------
     | Duplicate submission window (seconds)
     |--------------------------------------------------------------------------
@@ -37,9 +38,9 @@ return [
     |
     */
 
-    'duplicate_window_seconds' => (int) env('MAIL_ADMIN_SUPPORT_DUPLICATE_WINDOW', 60),
+	"duplicate_window_seconds" => (int) env("MAIL_ADMIN_SUPPORT_DUPLICATE_WINDOW", 60),
 
-    /*
+	/*
     |--------------------------------------------------------------------------
     | Request categories
     |--------------------------------------------------------------------------
@@ -49,9 +50,9 @@ return [
     |
     */
 
-    'categories' => ['admin_panel', 'platform', 'bug', 'other'],
+	"categories" => ["admin_panel", "platform", "bug", "other"],
 
-    /*
+	/*
     |--------------------------------------------------------------------------
     | Screenshot attachments
     |--------------------------------------------------------------------------
@@ -62,8 +63,7 @@ return [
     |
     */
 
-    'max_screenshots' => 3,
+	"max_screenshots" => 3,
 
-    'screenshot_max_kb' => 5120,
-
+	"screenshot_max_kb" => 5120,
 ];

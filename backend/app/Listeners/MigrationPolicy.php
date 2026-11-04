@@ -36,122 +36,111 @@ use Symfony\Component\Console\Question\ConfirmationQuestion;
  */
 class MigrationPolicy
 {
-    /** Commands that change the schema and therefore fall under this policy. */
-    private const MIGRATION_COMMANDS = [
-        'migrate',
-        'migrate:fresh',
-        'migrate:refresh',
-        'migrate:reset',
-        'migrate:rollback',
-    ];
+	/** Commands that change the schema and therefore fall under this policy. */
+	private const MIGRATION_COMMANDS = ["migrate", "migrate:fresh", "migrate:refresh", "migrate:reset", "migrate:rollback"];
 
-    /** The destructive ones: they drop before they build. */
-    private const DESTRUCTIVE_COMMANDS = [
-        'migrate:fresh',
-        'migrate:refresh',
-        'migrate:reset',
-    ];
+	/** The destructive ones: they drop before they build. */
+	private const DESTRUCTIVE_COMMANDS = ["migrate:fresh", "migrate:refresh", "migrate:reset"];
 
-    private const DEVELOPMENT_ENVIRONMENTS = ['local', 'development', 'testing'];
+	private const DEVELOPMENT_ENVIRONMENTS = ["local", "development", "testing"];
 
-    /** Guards against re-entering while the backup command runs. */
-    private static bool $running = false;
+	/** Guards against re-entering while the backup command runs. */
+	private static bool $running = false;
 
-    public function handle(CommandStarting $event): void
-    {
-        $command = (string) $event->command;
+	public function handle(CommandStarting $event): void
+	{
+		$command = (string) $event->command;
 
-        if (self::$running || ! in_array($command, self::MIGRATION_COMMANDS, true)) {
-            return;
-        }
+		if (self::$running || !in_array($command, self::MIGRATION_COMMANDS, true)) {
+			return;
+		}
 
-        // --pretend prints SQL and touches nothing: no backup, no ceremony.
-        if ($event->input->hasParameterOption('--pretend')) {
-            return;
-        }
+		// --pretend prints SQL and touches nothing: no backup, no ceremony.
+		if ($event->input->hasParameterOption("--pretend")) {
+			return;
+		}
 
-        $environment = app()->environment();
-        $destructive = in_array($command, self::DESTRUCTIVE_COMMANDS, true);
-        $output = $event->output;
+		$environment = app()->environment();
+		$destructive = in_array($command, self::DESTRUCTIVE_COMMANDS, true);
+		$output = $event->output;
 
-        if (in_array($environment, self::DEVELOPMENT_ENVIRONMENTS, true)) {
-            $this->offerBackup($event, $command);
+		if (in_array($environment, self::DEVELOPMENT_ENVIRONMENTS, true)) {
+			$this->offerBackup($event, $command);
 
-            return;
-        }
+			return;
+		}
 
-        if ($destructive && $environment === 'production') {
-            throw new RuntimeException(
-                "[{$command}] è rifiutato in produzione: ricostruisce il database da zero. "
-                .'Se serve davvero, va fatto a mano da chi può risponderne.'
-            );
-        }
+		if ($destructive && $environment === "production") {
+			throw new RuntimeException(
+				"[{$command}] è rifiutato in produzione: ricostruisce il database da zero. " .
+					"Se serve davvero, va fatto a mano da chi può risponderne."
+			);
+		}
 
-        $output?->writeln(
-            $destructive
-                ? "  <fg=black;bg=yellow> ATTENZIONE </> [{$command}] ricostruisce il database da zero in ambiente [{$environment}]."
-                : "  <fg=black;bg=yellow> ATTENZIONE </> [{$command}] modifica lo schema in ambiente [{$environment}]."
-        );
+		$output?->writeln(
+			$destructive
+				? "  <fg=black;bg=yellow> ATTENZIONE </> [{$command}] ricostruisce il database da zero in ambiente [{$environment}]."
+				: "  <fg=black;bg=yellow> ATTENZIONE </> [{$command}] modifica lo schema in ambiente [{$environment}]."
+		);
 
-        $this->backup($output, obbligatorio: true);
-    }
+		$this->backup($output, obbligatorio: true);
+	}
 
-    /**
-     * Outside development the backup is not a question.
-     */
-    private function backup(?object $output, bool $obbligatorio): void
-    {
-        $output?->writeln('  Backup del database in corso...');
+	/**
+	 * Outside development the backup is not a question.
+	 */
+	private function backup(?object $output, bool $obbligatorio): void
+	{
+		$output?->writeln("  Backup del database in corso...");
 
-        self::$running = true;
+		self::$running = true;
 
-        try {
-            $exit = Artisan::call('db:backup');
-        } finally {
-            self::$running = false;
-        }
+		try {
+			$exit = Artisan::call("db:backup");
+		} finally {
+			self::$running = false;
+		}
 
-        if ($exit === 0) {
-            $output?->writeln('  <info>Backup completato.</info>');
+		if ($exit === 0) {
+			$output?->writeln("  <info>Backup completato.</info>");
 
-            return;
-        }
+			return;
+		}
 
-        if ($obbligatorio) {
-            throw new RuntimeException(
-                'Backup fallito: la migrazione si ferma qui. '
-                .'Fuori dallo sviluppo non si tocca lo schema senza una copia.'
-            );
-        }
+		if ($obbligatorio) {
+			throw new RuntimeException(
+				"Backup fallito: la migrazione si ferma qui. " .
+					"Fuori dallo sviluppo non si tocca lo schema senza una copia."
+			);
+		}
 
-        $output?->writeln('  <comment>Backup fallito — si prosegue comunque (ambiente di sviluppo).</comment>');
-    }
+		$output?->writeln("  <comment>Backup fallito — si prosegue comunque (ambiente di sviluppo).</comment>");
+	}
 
-    /**
-     * In development the backup is offered, and only when someone can answer:
-     * an unattended run must never hang waiting for a prompt.
-     */
-    private function offerBackup(CommandStarting $event, string $command): void
-    {
-        $output = $event->output;
+	/**
+	 * In development the backup is offered, and only when someone can answer:
+	 * an unattended run must never hang waiting for a prompt.
+	 */
+	private function offerBackup(CommandStarting $event, string $command): void
+	{
+		$output = $event->output;
 
-        if ($event->input->hasParameterOption(['--no-interaction', '-n'])
-            || $event->input->hasParameterOption('--force')
-            || ! $event->input->isInteractive()) {
-            return;
-        }
+		if (
+			$event->input->hasParameterOption(["--no-interaction", "-n"]) ||
+			$event->input->hasParameterOption("--force") ||
+			!$event->input->isInteractive()
+		) {
+			return;
+		}
 
-        $output?->writeln("  [{$command}] sta per modificare lo schema. Verrà chiesto se fare un backup.");
+		$output?->writeln("  [{$command}] sta per modificare lo schema. Verrà chiesto se fare un backup.");
 
-        $question = new ConfirmationQuestion(
-            '  Vuoi un backup del database prima di procedere? (s/N) ',
-            false
-        );
+		$question = new ConfirmationQuestion("  Vuoi un backup del database prima di procedere? (s/N) ", false);
 
-        $helper = new QuestionHelper;
+		$helper = new QuestionHelper();
 
-        if ($helper->ask($event->input, $output, $question)) {
-            $this->backup($output, obbligatorio: false);
-        }
-    }
+		if ($helper->ask($event->input, $output, $question)) {
+			$this->backup($output, obbligatorio: false);
+		}
+	}
 }

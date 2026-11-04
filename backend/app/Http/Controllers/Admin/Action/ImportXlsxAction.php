@@ -11,139 +11,147 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class ImportXlsxAction extends Controller
 {
-    public function showImportForm($crud)
-    {
-        $modelClass = 'App\\Models\\'.Str::studly($crud);
+	public function showImportForm($crud)
+	{
+		$modelClass = "App\\Models\\" . Str::studly($crud);
 
-        if (! class_exists($modelClass)) {
-            return back()->with('error', 'Modello non trovato');
-        }
+		if (!class_exists($modelClass)) {
+			return back()->with("error", "Modello non trovato");
+		}
 
-        return view('vendor.backpack.crud.import_xlsx', [
-            'crud' => $crud,
-            'modelClass' => $modelClass,
-            'crud_route' => config('backpack.base.route_prefix', 'admin').'/'.$crud,
-        ]);
-    }
+		return view("vendor.backpack.crud.import_xlsx", [
+			"crud" => $crud,
+			"modelClass" => $modelClass,
+			"crud_route" => config("backpack.base.route_prefix", "admin") . "/" . $crud,
+		]);
+	}
 
-    public function analyzeUploadedFile(Request $request, $crud)
-    {
-        set_time_limit(0);
-        ini_set('memory_limit', '512M');
+	public function analyzeUploadedFile(Request $request, $crud)
+	{
+		set_time_limit(0);
+		ini_set("memory_limit", "512M");
 
-        $request->validate([
-            'xlsx_file' => 'required|file|mimes:xlsx,xls',
-        ]);
+		$request->validate([
+			"xlsx_file" => "required|file|mimes:xlsx,xls",
+		]);
 
-        $modelClass = 'App\\Models\\'.Str::studly($crud);
+		$modelClass = "App\\Models\\" . Str::studly($crud);
 
-        if (! class_exists($modelClass)) {
-            return back()->with('error', 'Modello non trovato');
-        }
+		if (!class_exists($modelClass)) {
+			return back()->with("error", "Modello non trovato");
+		}
 
-        $file = $request->file('xlsx_file');
+		$file = $request->file("xlsx_file");
 
-        // Clean all files in csv-uploads directory before saving new file
-        $uploadDir = 'csv-uploads';
-        $uploadFiles = Storage::disk('backups')->files($uploadDir);
-        foreach ($uploadFiles as $uploadFile) {
-            Storage::disk('backups')->delete($uploadFile);
-        }
+		// Clean all files in csv-uploads directory before saving new file
+		$uploadDir = "csv-uploads";
+		$uploadFiles = Storage::disk("backups")->files($uploadDir);
+		foreach ($uploadFiles as $uploadFile) {
+			Storage::disk("backups")->delete($uploadFile);
+		}
 
-        $originalFileName = $file->getClientOriginalName();
-        $originalFileLastModified = $request->input('client_last_modified');
-        if (! $originalFileLastModified && $file->isValid() && $file->getRealPath()) {
-            $originalFileLastModified = date('c', filemtime($file->getRealPath()));
-        }
+		$originalFileName = $file->getClientOriginalName();
+		$originalFileLastModified = $request->input("client_last_modified");
+		if (!$originalFileLastModified && $file->isValid() && $file->getRealPath()) {
+			$originalFileLastModified = date("c", filemtime($file->getRealPath()));
+		}
 
-        if ($originalFileLastModified) {
-            try {
-                $dateTime = new \DateTime($originalFileLastModified);
-                $originalFileLastModified = $dateTime->format('Y-m-d H:i:s');
-            } catch (\Exception $e) {
-                // Keep original format if parsing fails
-            }
-        }
+		if ($originalFileLastModified) {
+			try {
+				$dateTime = new \DateTime($originalFileLastModified);
+				$originalFileLastModified = $dateTime->format("Y-m-d H:i:s");
+			} catch (\Exception $e) {
+				// Keep original format if parsing fails
+			}
+		}
 
-        // Read the spreadsheet and convert to CSV
-        $spreadsheet = IOFactory::load($file->getRealPath());
-        $worksheet = $spreadsheet->getActiveSheet();
-        $delimiter = ',';
+		// Read the spreadsheet and convert to CSV
+		$spreadsheet = IOFactory::load($file->getRealPath());
+		$worksheet = $spreadsheet->getActiveSheet();
+		$delimiter = ",";
 
-        $fileName = time().'_'.pathinfo($originalFileName, PATHINFO_FILENAME).'.csv';
-        $filePath = $file->storeAs('csv-uploads', $fileName, 'backups');
+		$fileName = time() . "_" . pathinfo($originalFileName, PATHINFO_FILENAME) . ".csv";
+		$filePath = $file->storeAs("csv-uploads", $fileName, "backups");
 
-        // Convert spreadsheet rows to CSV
-        $csvPath = Storage::disk('backups')->path($filePath);
-        $handle = fopen($csvPath, 'w');
-        fwrite($handle, "\xEF\xBB\xBF");
+		// Convert spreadsheet rows to CSV
+		$csvPath = Storage::disk("backups")->path($filePath);
+		$handle = fopen($csvPath, "w");
+		fwrite($handle, "\xEF\xBB\xBF");
 
-        foreach ($worksheet->getRowIterator() as $row) {
-            $rowData = [];
-            foreach ($row->getCellIterator() as $cell) {
-                $rowData[] = $cell->getValue();
-            }
-            // Skip completely empty rows
-            if (count(array_filter($rowData, fn ($v) => $v !== null && $v !== '')) === 0) {
-                continue;
-            }
-            fputcsv($handle, $rowData, escape: '\\');
-        }
+		foreach ($worksheet->getRowIterator() as $row) {
+			$rowData = [];
+			foreach ($row->getCellIterator() as $cell) {
+				$rowData[] = $cell->getValue();
+			}
+			// Skip completely empty rows
+			if (count(array_filter($rowData, fn($v) => $v !== null && $v !== "")) === 0) {
+				continue;
+			}
+			fputcsv($handle, $rowData, escape: "\\");
+		}
 
-        fclose($handle);
-        $spreadsheet->disconnectWorksheets();
-        unset($spreadsheet);
+		fclose($handle);
+		$spreadsheet->disconnectWorksheets();
+		unset($spreadsheet);
 
-        // Read CSV headers for mapping
-        $handle = fopen($csvPath, 'r');
-        $csvHeaders = fgetcsv($handle, 0, $delimiter, escape: '\\');
-        fclose($handle);
+		// Read CSV headers for mapping
+		$handle = fopen($csvPath, "r");
+		$csvHeaders = fgetcsv($handle, 0, $delimiter, escape: "\\");
+		fclose($handle);
 
-        if ($csvHeaders === false) {
-            throw new NotFoundHttpException('Empty or invalid file');
-        }
+		if ($csvHeaders === false) {
+			throw new NotFoundHttpException("Empty or invalid file");
+		}
 
-        // Delegate to ImportCsvAction for the mapping view
-        $importCsvAction = app(ImportCsvAction::class);
+		// Delegate to ImportCsvAction for the mapping view
+		$importCsvAction = app(ImportCsvAction::class);
 
-        $allTableColumns = $importCsvAction->getTableColumnsPublic($modelClass);
-        $hiddenFields = ['created_at', 'updated_at', 'token', 'token_expire', 'token_verified', 'email_verified_at', 'remember_token'];
-        $autoGeneratedFields = $importCsvAction->getAutoGeneratedFieldsPublic($modelClass);
-        $autoGeneratedColumnNames = array_keys($autoGeneratedFields);
+		$allTableColumns = $importCsvAction->getTableColumnsPublic($modelClass);
+		$hiddenFields = [
+			"created_at",
+			"updated_at",
+			"token",
+			"token_expire",
+			"token_verified",
+			"email_verified_at",
+			"remember_token",
+		];
+		$autoGeneratedFields = $importCsvAction->getAutoGeneratedFieldsPublic($modelClass);
+		$autoGeneratedColumnNames = array_keys($autoGeneratedFields);
 
-        $tableColumns = array_values(array_diff($allTableColumns, $hiddenFields, $autoGeneratedColumnNames));
-        $requiredColumns = $importCsvAction->getRequiredColumnsPublic($modelClass);
-        $databaseConstraints = $importCsvAction->getDatabaseConstraintsPublic($modelClass);
+		$tableColumns = array_values(array_diff($allTableColumns, $hiddenFields, $autoGeneratedColumnNames));
+		$requiredColumns = $importCsvAction->getRequiredColumnsPublic($modelClass);
+		$databaseConstraints = $importCsvAction->getDatabaseConstraintsPublic($modelClass);
 
-        // Auto-map columns by name
-        $columnMapping = [];
-        foreach ($csvHeaders as $index => $header) {
-            $normalizedHeader = Str::snake(strtolower(trim($header)));
-            if (in_array($normalizedHeader, $allTableColumns)) {
-                $columnMapping[$index] = $normalizedHeader;
-            } else {
-                $columnMapping[$index] = '';
-            }
-        }
+		// Auto-map columns by name
+		$columnMapping = [];
+		foreach ($csvHeaders as $index => $header) {
+			$normalizedHeader = Str::snake(strtolower(trim($header)));
+			if (in_array($normalizedHeader, $allTableColumns)) {
+				$columnMapping[$index] = $normalizedHeader;
+			} else {
+				$columnMapping[$index] = "";
+			}
+		}
 
-        $matchableColumns = array_values(array_diff($allTableColumns, $hiddenFields));
+		$matchableColumns = array_values(array_diff($allTableColumns, $hiddenFields));
 
-        return view('vendor.backpack.crud.import_mapping', [
-            'crud' => $crud,
-            'csvHeaders' => $csvHeaders,
-            'tableColumns' => $tableColumns,
-            'matchableColumns' => $matchableColumns,
-            'requiredColumns' => $requiredColumns,
-            'autoGeneratedFields' => $autoGeneratedFields,
-            'databaseConstraints' => $databaseConstraints,
-            'columnMapping' => $columnMapping,
-            'filePath' => $filePath,
-            'modelClass' => $modelClass,
-            'isUserModel' => $modelClass === 'App\\Models\\User',
-            'crud_route' => config('backpack.base.route_prefix', 'admin').'/'.$crud,
-            'delimiter' => $delimiter,
-            'originalFileName' => $originalFileName,
-            'originalFileLastModified' => $originalFileLastModified,
-        ]);
-    }
+		return view("vendor.backpack.crud.import_mapping", [
+			"crud" => $crud,
+			"csvHeaders" => $csvHeaders,
+			"tableColumns" => $tableColumns,
+			"matchableColumns" => $matchableColumns,
+			"requiredColumns" => $requiredColumns,
+			"autoGeneratedFields" => $autoGeneratedFields,
+			"databaseConstraints" => $databaseConstraints,
+			"columnMapping" => $columnMapping,
+			"filePath" => $filePath,
+			"modelClass" => $modelClass,
+			"isUserModel" => $modelClass === "App\\Models\\User",
+			"crud_route" => config("backpack.base.route_prefix", "admin") . "/" . $crud,
+			"delimiter" => $delimiter,
+			"originalFileName" => $originalFileName,
+			"originalFileLastModified" => $originalFileLastModified,
+		]);
+	}
 }

@@ -17,20 +17,20 @@ use Illuminate\Support\Facades\Http;
  */
 class SandboxContext
 {
-    public static function enter(string $connection): void
-    {
-        DB::setDefaultConnection($connection);
+	public static function enter(string $connection): void
+	{
+		DB::setDefaultConnection($connection);
 
-        config([
-            'cache.default' => 'array', // nothing shared with staging, nothing left after the request
-            'mail.default' => 'log',
-            'queue.default' => 'sync',
-            'app.debug' => false,
-        ]);
+		config([
+			"cache.default" => "array", // nothing shared with staging, nothing left after the request
+			"mail.default" => "log",
+			"queue.default" => "sync",
+			"app.debug" => false,
+		]);
 
-        app()->forgetInstance('cache.store');
+		app()->forgetInstance("cache.store");
 
-        // No outbound call ever leaves the sandbox: every one gets a fake 200.
-        Http::fake(['*' => Http::response(['access_token' => 'sandbox'], 200)]);
-    }
+		// No outbound call ever leaves the sandbox: every one gets a fake 200.
+		Http::fake(["*" => Http::response(["access_token" => "sandbox"], 200)]);
+	}
 }

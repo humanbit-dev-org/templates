@@ -167,7 +167,6 @@ class RelationSearchController extends Controller
 			"is_primary" => true,
 		];
 
-
 		return $keys;
 	}
 }

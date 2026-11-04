@@ -30,7 +30,7 @@ function extractLocaleFromPath(pathname) {
 }
 
 // Main middleware logic for locale handling
-export function middleware(request) {
+export function proxy(request) {
 	const { pathname, searchParams } = request.nextUrl;
 
 	// Determine the preferred locale
@@ -56,7 +56,11 @@ export function middleware(request) {
 
 	// Rewrite `/[locale]` as `/[locale]/home` for default entry point
 	if (pathLocale && pathname === `/${pathLocale}`) {
-		const response = NextResponse.rewrite(new URL(`/${pathLocale}/home`, request.url));
+		const rewriteUrl = new URL(`/${pathLocale}/home`, request.url);
+
+		// Forward all search params to the rewritten URL
+		searchParams.forEach((value, key) => rewriteUrl.searchParams.set(key, value));
+		const response = NextResponse.rewrite(rewriteUrl);
 
 		// Set custom header with rewritten pathname
 		response.headers.set("x-pathname", `/${pathLocale}/home`);
@@ -96,5 +100,5 @@ export function middleware(request) {
 
 // Apply middleware to all paths except static and special folders
 export const config = {
-	matcher: ["/((?!_next|api|favicon|fonts|images|js|videos).*)"],
+	matcher: ["/((?!_next|api|favicon|fonts|images|js|uploads|videos).*)"],
 };

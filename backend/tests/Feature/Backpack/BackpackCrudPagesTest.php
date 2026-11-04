@@ -139,16 +139,14 @@ class BackpackCrudPagesTest extends TestCase
 
     public function test_role_can_be_created_from_backpack(): void
     {
-        $this->post('/admin/role', ['name' => 'Editor', 'description' => 'Content editor'])
-            ->assertRedirect();
+        $this->post('/admin/role', ['name' => 'Editor', 'description' => 'Content editor'])->assertRedirect();
 
         $this->assertDatabaseHas('roles', ['name' => 'Editor', 'description' => 'Content editor']);
     }
 
     public function test_role_description_is_required_because_the_column_is_not_null(): void
     {
-        $this->post('/admin/role', ['name' => 'Editor'])
-            ->assertSessionHasErrors('description');
+        $this->post('/admin/role', ['name' => 'Editor'])->assertSessionHasErrors('description');
 
         $this->assertDatabaseMissing('roles', ['name' => 'Editor']);
     }

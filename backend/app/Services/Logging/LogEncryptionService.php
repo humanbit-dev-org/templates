@@ -50,14 +50,14 @@ class LogEncryptionService
 	public function isEncrypted(string $content): bool
 	{
 		$trimmed = trim($content);
-		if ($trimmed === '' || preg_match("/^\[(\d{4}-\d{2}-\d{2})/", $trimmed)) {
+		if ($trimmed === "" || preg_match("/^\[(\d{4}-\d{2}-\d{2})/", $trimmed)) {
 			return false; // Plaintext log format
 		}
 
 		// Laravel encrypted payloads usually start with a base64-encoded JSON:
 		// {"iv":"...","value":"...","mac":"..."}
 		// Prefix in base64 is typically "eyJpdiI6".
-		if (str_starts_with($trimmed, 'eyJpdiI6')) {
+		if (str_starts_with($trimmed, "eyJpdiI6")) {
 			return true;
 		}
 
@@ -68,7 +68,7 @@ class LogEncryptionService
 		}
 
 		$json = json_decode($decoded, true);
-		return is_array($json) && isset($json['iv'], $json['value'], $json['mac']);
+		return is_array($json) && isset($json["iv"], $json["value"], $json["mac"]);
 	}
 
 	/**
@@ -99,30 +99,30 @@ class LogEncryptionService
 	{
 		$content = File::get($filePath);
 
-		if ($content === '') {
-			return '';
+		if ($content === "") {
+			return "";
 		}
 
 		// Legacy format: entire file is one encrypted payload.
-		if ($this->isEncrypted($content) && ! str_contains($content, "\n")) {
+		if ($this->isEncrypted($content) && !str_contains($content, "\n")) {
 			return $this->decrypt($content);
 		}
 
-		$plaintext = '';
+		$plaintext = "";
 
 		foreach (preg_split("/\r\n|\n|\r/", $content) as $line) {
 			$line = trim($line);
-			if ($line === '') {
+			if ($line === "") {
 				continue;
 			}
 
 			if ($this->isEncrypted($line)) {
-				$plaintext .= $this->decrypt($line)."\n";
+				$plaintext .= $this->decrypt($line) . "\n";
 
 				continue;
 			}
 
-			$plaintext .= $line."\n";
+			$plaintext .= $line . "\n";
 		}
 
 		return $plaintext;

@@ -49,7 +49,9 @@ class RoutesIntegrityTest extends TestCase
 
     public function test_frontend_api_routes_are_registered(): void
     {
-        foreach (['seo.index', 'password.forgot', 'password.reset', 'portal.token', 'auth.sim.saml', 'api-docs.index'] as $name) {
+        foreach (
+            ['seo.index', 'password.forgot', 'password.reset', 'portal.token', 'auth.sim.saml', 'api-docs.index'] as $name
+        ) {
             $this->assertTrue(RouteFacade::has($name), "Route [{$name}] is not registered.");
         }
     }

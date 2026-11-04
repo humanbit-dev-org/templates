@@ -30,23 +30,23 @@ namespace App\Observers;
  */
 final class CacheInvalidationContext
 {
-    private static bool $suppressed = false;
+	private static bool $suppressed = false;
 
-    /** Suppress Observer cache invalidation for the current process */
-    public static function suppress(): void
-    {
-        self::$suppressed = true;
-    }
+	/** Suppress Observer cache invalidation for the current process */
+	public static function suppress(): void
+	{
+		self::$suppressed = true;
+	}
 
-    /** Restore normal Observer cache invalidation */
-    public static function restore(): void
-    {
-        self::$suppressed = false;
-    }
+	/** Restore normal Observer cache invalidation */
+	public static function restore(): void
+	{
+		self::$suppressed = false;
+	}
 
-    /** Returns true when Observers should skip cache invalidation */
-    public static function isSuppressed(): bool
-    {
-        return self::$suppressed;
-    }
+	/** Returns true when Observers should skip cache invalidation */
+	public static function isSuppressed(): bool
+	{
+		return self::$suppressed;
+	}
 }

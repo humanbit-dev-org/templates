@@ -4,7 +4,7 @@ use App\Http\Middleware\RestrictedAccessShield;
 use App\Jobs\CheckImportFiles;
 
 return [
-    /*
+	/*
     |--------------------------------------------------------------------------
     | Horizon Name
     |--------------------------------------------------------------------------
@@ -15,9 +15,9 @@ return [
     |
     */
 
-    'name' => env('APP_NAME'),
+	"name" => env("APP_NAME"),
 
-    /*
+	/*
     |--------------------------------------------------------------------------
     | Horizon Domain
     |--------------------------------------------------------------------------
@@ -28,9 +28,9 @@ return [
     |
     */
 
-    'domain' => null,
+	"domain" => null,
 
-    /*
+	/*
     |--------------------------------------------------------------------------
     | Horizon Path
     |--------------------------------------------------------------------------
@@ -41,9 +41,9 @@ return [
     |
     */
 
-    'path' => env('HORIZON_PATH', 'horizon'),
+	"path" => env("HORIZON_PATH", "horizon"),
 
-    /*
+	/*
     |--------------------------------------------------------------------------
     | Horizon Redis Connection
     |--------------------------------------------------------------------------
@@ -54,9 +54,9 @@ return [
     |
     */
 
-    'use' => env('HORIZON_REDIS_CONNECTION', 'queues'),
+	"use" => env("HORIZON_REDIS_CONNECTION", "queues"),
 
-    /*
+	/*
     |--------------------------------------------------------------------------
     | Horizon Redis Prefix
     |--------------------------------------------------------------------------
@@ -67,9 +67,9 @@ return [
     |
     */
 
-    'prefix' => env('HORIZON_PREFIX', '{horizon}:'.env('REDIS_NAMESPACE', env('APP_ENV', env('APP_NAME'))).':'),
+	"prefix" => env("HORIZON_PREFIX", "{horizon}:" . env("REDIS_NAMESPACE", env("APP_ENV", env("APP_NAME"))) . ":"),
 
-    /*
+	/*
     |--------------------------------------------------------------------------
     | Horizon Route Middleware
     |--------------------------------------------------------------------------
@@ -80,12 +80,9 @@ return [
     |
     */
 
-    'middleware' => [
-        'web',
-        RestrictedAccessShield::class.':horizon',
-    ],
+	"middleware" => ["web", RestrictedAccessShield::class . ":horizon"],
 
-    /*
+	/*
     |--------------------------------------------------------------------------
     | Queue Wait Time Thresholds
     |--------------------------------------------------------------------------
@@ -96,14 +93,14 @@ return [
     |
     */
 
-    'waits' => [
-        'queues:{default}' => 60,
-        'queues:{import}' => 120,
-        'queues:{scan}' => 10,
-        'queues:{export}' => 120,
-    ],
+	"waits" => [
+		"queues:{default}" => 60,
+		"queues:{import}" => 120,
+		"queues:{scan}" => 10,
+		"queues:{export}" => 120,
+	],
 
-    /*
+	/*
     |--------------------------------------------------------------------------
     | Job Trimming Times
     |--------------------------------------------------------------------------
@@ -114,16 +111,16 @@ return [
     |
     */
 
-    'trim' => [
-        'recent' => 60,
-        'pending' => 60,
-        'completed' => 60,
-        'recent_failed' => 10080,
-        'failed' => 10080,
-        'monitored' => 10080,
-    ],
+	"trim" => [
+		"recent" => 60,
+		"pending" => 60,
+		"completed" => 60,
+		"recent_failed" => 10080,
+		"failed" => 10080,
+		"monitored" => 10080,
+	],
 
-    /*
+	/*
     |--------------------------------------------------------------------------
     | Silenced Jobs
     |--------------------------------------------------------------------------
@@ -134,15 +131,13 @@ return [
     |
     */
 
-    'silenced' => [
-        CheckImportFiles::class,
-    ],
+	"silenced" => [CheckImportFiles::class],
 
-    'silenced_tags' => [
-        // 'notifications',
-    ],
+	"silenced_tags" => [
+		// 'notifications',
+	],
 
-    /*
+	/*
     |--------------------------------------------------------------------------
     | Metrics
     |--------------------------------------------------------------------------
@@ -153,14 +148,14 @@ return [
     |
     */
 
-    'metrics' => [
-        'trim_snapshots' => [
-            'job' => 24,
-            'queue' => 24,
-        ],
-    ],
+	"metrics" => [
+		"trim_snapshots" => [
+			"job" => 24,
+			"queue" => 24,
+		],
+	],
 
-    /*
+	/*
     |--------------------------------------------------------------------------
     | Fast Termination
     |--------------------------------------------------------------------------
@@ -173,9 +168,9 @@ return [
     |
     */
 
-    'fast_termination' => false,
+	"fast_termination" => false,
 
-    /*
+	/*
     |--------------------------------------------------------------------------
     | Memory Limit (MB)
     |--------------------------------------------------------------------------
@@ -186,9 +181,9 @@ return [
     |
     */
 
-    'memory_limit' => 64,
+	"memory_limit" => 64,
 
-    /*
+	/*
     |--------------------------------------------------------------------------
     | Queue Worker Configuration
     |--------------------------------------------------------------------------
@@ -199,53 +194,53 @@ return [
     |
     */
 
-    'defaults' => [
-        // 'memory' (MB) is checked only between jobs and must stay below PHP's
-        // memory_limit (128M): at 128 the worker hits the fatal error before
-        // Horizon can restart it. Supervisors without it default to 128.
+	"defaults" => [
+		// 'memory' (MB) is checked only between jobs and must stay below PHP's
+		// memory_limit (128M): at 128 the worker hits the fatal error before
+		// Horizon can restart it. Supervisors without it default to 128.
 
-        /*
+		/*
         |----------------------------------------------------------------------
         | Supervisor: Scan Queue
         |----------------------------------------------------------------------
         | Lightweight supervisor for scan jobs (e.g., CheckImportFiles).
         | Single process, restarts every 500 jobs or 1 hour.
         */
-        'supervisor-scan' => [
-            'connection' => 'redis',
-            'queue' => ['{scan}'],
-            'balance' => 'simple',
-            'maxProcesses' => 1,
-            'maxJobs' => 500,
-            'maxTime' => 3600,
-            'memory' => 64,
-            'tries' => 1,
-            'timeout' => 60,
-            'nice' => 0,
-        ],
+		"supervisor-scan" => [
+			"connection" => "redis",
+			"queue" => ["{scan}"],
+			"balance" => "simple",
+			"maxProcesses" => 1,
+			"maxJobs" => 500,
+			"maxTime" => 3600,
+			"memory" => 64,
+			"tries" => 1,
+			"timeout" => 60,
+			"nice" => 0,
+		],
 
-        /*
+		/*
         |----------------------------------------------------------------------
         | Supervisor: Default Queue
         |----------------------------------------------------------------------
         | For general application jobs. Separated from import to prevent
         | heavy import jobs from blocking lightweight tasks.
         */
-        'supervisor-default' => [
-            'connection' => 'redis',
-            'queue' => ['{default}'],
-            'balance' => 'auto',
-            'autoScalingStrategy' => 'time',
-            'maxProcesses' => 3,
-            'maxJobs' => 50,
-            'maxTime' => 1800,
-            'memory' => 100,
-            'tries' => 3,
-            'timeout' => 60,
-            'nice' => 0,
-        ],
+		"supervisor-default" => [
+			"connection" => "redis",
+			"queue" => ["{default}"],
+			"balance" => "auto",
+			"autoScalingStrategy" => "time",
+			"maxProcesses" => 3,
+			"maxJobs" => 50,
+			"maxTime" => 1800,
+			"memory" => 100,
+			"tries" => 3,
+			"timeout" => 60,
+			"nice" => 0,
+		],
 
-        /*
+		/*
         |----------------------------------------------------------------------
         | Supervisor: Import Queue
         |----------------------------------------------------------------------
@@ -255,37 +250,37 @@ return [
         | - memory=300: Watchdog triggers if process exceeds 300MB
         | - nice=5: Slightly lower CPU priority than web requests
         */
-        'supervisor-import' => [
-            'connection' => 'redis',
-            'queue' => ['{import}'],
-            'balance' => 'simple',
-            'maxProcesses' => 2,
-            'maxJobs' => 1,
-            'maxTime' => 0,
-            'memory' => 300,
-            'tries' => 3,
-            'timeout' => 600,
-            'nice' => 5,
-        ],
+		"supervisor-import" => [
+			"connection" => "redis",
+			"queue" => ["{import}"],
+			"balance" => "simple",
+			"maxProcesses" => 2,
+			"maxJobs" => 1,
+			"maxTime" => 0,
+			"memory" => 300,
+			"tries" => 3,
+			"timeout" => 600,
+			"nice" => 5,
+		],
 
-        'supervisor-rehash' => [
-            // Dedicated supervisor for the rehash queue.
-            // Isolating it avoids starving other queues during the operation.
-            'connection' => 'redis',
-            'queue' => ['{rehash}'],
-            'balance' => 'simple',
-            // Set this to the number of parallel workers you want.
-            // Rule of thumb: (CPU cores / argon2 threads), same logic dell'implementazione precedente.
-            'minProcesses' => 1,
-            'maxProcesses' => 8,
-            'maxJobs' => 100,
-            'maxTime' => 3600,
-            'memory' => 100,
-            'tries' => 3,
-            'timeout' => 300,
-        ],
+		"supervisor-rehash" => [
+			// Dedicated supervisor for the rehash queue.
+			// Isolating it avoids starving other queues during the operation.
+			"connection" => "redis",
+			"queue" => ["{rehash}"],
+			"balance" => "simple",
+			// Set this to the number of parallel workers you want.
+			// Rule of thumb: (CPU cores / argon2 threads), same logic dell'implementazione precedente.
+			"minProcesses" => 1,
+			"maxProcesses" => 8,
+			"maxJobs" => 100,
+			"maxTime" => 3600,
+			"memory" => 100,
+			"tries" => 3,
+			"timeout" => 300,
+		],
 
-        /*
+		/*
         |----------------------------------------------------------------------
         | Supervisor: Export Queue
         |----------------------------------------------------------------------
@@ -293,20 +288,20 @@ return [
         | Low concurrency, single try, generous timeout for large CSV runs.
         | maxJobs=1: worker restarts after each export (releases memory).
         */
-        'supervisor-export' => [
-            'connection' => 'redis',
-            'queue' => ['{export}'],
-            'balance' => 'simple',
-            'minProcesses' => 1,
-            'maxProcesses' => 2,
-            'maxJobs' => 1,
-            'memory' => 100,
-            'tries' => 1,
-            'timeout' => 600,
-        ],
-    ],
+		"supervisor-export" => [
+			"connection" => "redis",
+			"queue" => ["{export}"],
+			"balance" => "simple",
+			"minProcesses" => 1,
+			"maxProcesses" => 2,
+			"maxJobs" => 1,
+			"memory" => 100,
+			"tries" => 1,
+			"timeout" => 600,
+		],
+	],
 
-    /*
+	/*
     |--------------------------------------------------------------------------
     | Environment-Specific Configuration
     |--------------------------------------------------------------------------
@@ -316,88 +311,88 @@ return [
     |
     */
 
-    'environments' => [
-        'production' => [
-            'supervisor-scan' => [
-                'maxProcesses' => 1,
-            ],
-            'supervisor-default' => [
-                'maxProcesses' => 3,
-            ],
-            'supervisor-import' => [
-                'maxProcesses' => 2,
-            ],
-            'supervisor-rehash' => [
-                'maxProcesses' => 4,
-            ],
-            'supervisor-export' => [
-                'maxProcesses' => 2,
-            ],
-        ],
+	"environments" => [
+		"production" => [
+			"supervisor-scan" => [
+				"maxProcesses" => 1,
+			],
+			"supervisor-default" => [
+				"maxProcesses" => 3,
+			],
+			"supervisor-import" => [
+				"maxProcesses" => 2,
+			],
+			"supervisor-rehash" => [
+				"maxProcesses" => 4,
+			],
+			"supervisor-export" => [
+				"maxProcesses" => 2,
+			],
+		],
 
-        'local' => [
-            'supervisor-scan' => [
-                'maxProcesses' => 1,
-            ],
-            'supervisor-default' => [
-                'maxProcesses' => 2,
-            ],
-            'supervisor-import' => [
-                'maxProcesses' => 1,
-            ],
-            'supervisor-rehash' => [
-                'maxProcesses' => 2,
-            ],
-            'supervisor-export' => [
-                'maxProcesses' => 1,
-            ],
-        ],
+		"local" => [
+			"supervisor-scan" => [
+				"maxProcesses" => 1,
+			],
+			"supervisor-default" => [
+				"maxProcesses" => 2,
+			],
+			"supervisor-import" => [
+				"maxProcesses" => 1,
+			],
+			"supervisor-rehash" => [
+				"maxProcesses" => 2,
+			],
+			"supervisor-export" => [
+				"maxProcesses" => 1,
+			],
+		],
 
-        /*
+		/*
         |----------------------------------------------------------------------
         | integration / staging
         |----------------------------------------------------------------------
         | Horizon deploys supervisors only for APP_ENV keys listed here (see
         | `horizon` / `horizon env` and config('horizon.env') ?? config('app.env')).
         */
-        'integration' => [
-            'supervisor-scan' => [
-                'maxProcesses' => 1,
-            ],
-            'supervisor-default' => [
-                'maxProcesses' => 3,
-            ],
-            'supervisor-import' => [
-                'maxProcesses' => 2,
-            ],
-            'supervisor-rehash' => [
-                'maxProcesses' => 4,
-            ],
-            'supervisor-export' => [
-                'maxProcesses' => 2,
-            ],
-        ],
+		"integration" => [
+			"supervisor-scan" => [
+				"maxProcesses" => 1,
+			],
+			"supervisor-default" => [
+				"maxProcesses" => 3,
+			],
+			"supervisor-import" => [
+				"maxProcesses" => 2,
+			],
+			"supervisor-rehash" => [
+				"maxProcesses" => 4,
+			],
+			"supervisor-export" => [
+				"maxProcesses" => 2,
+			],
+		],
 
-        'staging' => [
-            'supervisor-scan' => [
-                'maxProcesses' => 1,
-            ],
-            'supervisor-default' => [
-                'maxProcesses' => 3,
-            ],
-            'supervisor-import' => [
-                'maxProcesses' => 2,
-            ],
-            'supervisor-rehash' => [
-                'maxProcesses' => 4,
-            ],
-            'supervisor-export' => [
-                'maxProcesses' => 2,
-            ],
-        ],
-    ],
+		"staging" => [
+			"supervisor-scan" => [
+				"maxProcesses" => 1,
+			],
+			"supervisor-default" => [
+				"maxProcesses" => 3,
+			],
+			"supervisor-import" => [
+				"maxProcesses" => 2,
+			],
+			"supervisor-rehash" => [
+				"maxProcesses" => 4,
+			],
+			"supervisor-export" => [
+				"maxProcesses" => 2,
+			],
+		],
+	],
 
-    /*
+	/*
     |--------------------------------------------------------------------------
     | File Watcher Configuration
     |--------------------------------------------------------------------------
@@ -408,16 +403,16 @@ return [
     |
     */
 
-    'watch' => [
-        'app',
-        'bootstrap',
-        'config/**/*.php',
-        'database/**/*.php',
-        'public/**/*.php',
-        'resources/**/*.php',
-        'routes',
-        'composer.lock',
-        'composer.json',
-        '.env',
-    ],
+	"watch" => [
+		"app",
+		"bootstrap",
+		"config/**/*.php",
+		"database/**/*.php",
+		"public/**/*.php",
+		"resources/**/*.php",
+		"routes",
+		"composer.lock",
+		"composer.json",
+		".env",
+	],
 ];

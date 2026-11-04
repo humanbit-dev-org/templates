@@ -12,37 +12,37 @@ use Illuminate\Support\Facades\Log;
  */
 class MetadataObserver
 {
-    public function created(Metadata $metadata): void
-    {
-        $this->invalidate($metadata);
-    }
+	public function created(Metadata $metadata): void
+	{
+		$this->invalidate($metadata);
+	}
 
-    public function updated(Metadata $metadata): void
-    {
-        $this->invalidate($metadata);
-    }
+	public function updated(Metadata $metadata): void
+	{
+		$this->invalidate($metadata);
+	}
 
-    public function deleted(Metadata $metadata): void
-    {
-        $this->invalidate($metadata);
-    }
+	public function deleted(Metadata $metadata): void
+	{
+		$this->invalidate($metadata);
+	}
 
-    private function invalidate(Metadata $metadata): void
-    {
-        $pageName = $metadata->relationLoaded('page')
-            ? $metadata->page?->name
-            : Page::query()->whereKey($metadata->page_id)->value('name');
+	private function invalidate(Metadata $metadata): void
+	{
+		$pageName = $metadata->relationLoaded("page")
+			? $metadata->page?->name
+			: Page::query()->whereKey($metadata->page_id)->value("name");
 
-        if ($pageName === null || $pageName === '') {
-            return;
-        }
+		if ($pageName === null || $pageName === "") {
+			return;
+		}
 
-        foreach (['en', 'it'] as $lang) {
-            Cache::forget("seo:{$lang}:{$pageName}");
-        }
+		foreach (["en", "it"] as $lang) {
+			Cache::forget("seo:{$lang}:{$pageName}");
+		}
 
-        Log::debug('MetadataObserver: invalidated SEO cache', [
-            'page' => $pageName,
-        ]);
-    }
+		Log::debug("MetadataObserver: invalidated SEO cache", [
+			"page" => $pageName,
+		]);
+	}
 }

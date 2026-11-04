@@ -4,58 +4,151 @@
 		"allowJs": true,
 		"skipLibCheck": true,
 		"strict": true,
-		"strictNullChecks": true,
 		"noEmit": true,
 		"esModuleInterop": true,
 		"module": "esnext",
 		"moduleResolution": "bundler", // or "node" if using Node.js
 		"resolveJsonModule": true,
 		"isolatedModules": true,
-		"jsx": "preserve",
+		"jsx": "react-jsx",
 		"incremental": true,
 		"plugins": [
 			{
 				"name": "next"
 			}
 		],
-		"baseUrl": ".",
+		// "baseUrl": ".",
 		"paths": {
+			// ─── Multi-tenant configuration ───────────────────────────────
+			"@/tenants/*": ["./tenants/*"],
 			// ─── Core structure ───────────────────────────────────────────
-			"@/app/*": ["src/app/[lang]/*"],
-			"@/layout/root": ["src/app/[lang]/layout"],
-			"@/layout/*": ["src/app/[lang]/*/layout", "src/app/[lang]/*/[id]/layout"],
-			"@/page/*": ["src/app/[lang]/*/page", "src/app/[lang]/*/[id]/page"],
-
+			"@/public/*": ["./public/*"],
+			"@/app/*": ["./src/app/[lang]/*"],
+			"@/layout/root": ["./src/app/[lang]/layout"],
+			// prettier-ignore
+			"@/layout/*": [
+				"./src/app/[lang]/*/layout",
+				"./src/app/[lang]/*/[id]/layout"
+			],
+			// prettier-ignore
+			"@/page/*": [
+				"./src/app/[lang]/*/page",
+				"./src/app/[lang]/*/[id]/page"
+			],
+			// prettier-ignore
+			"@/print/*": [
+				"./src/app/[lang]/*/print",
+				"./src/app/[lang]/*/[id]/print"
+			],
 			// ─── Modular components ───────────────────────────────────────
-			"@/components/*": ["src/components/*"],
-			"@/footers/*": ["src/components/footers/*"],
-			"@/navbars/*": ["src/components/navbars/*"],
-
+			// prettier-ignore
+			"@/components/*": [
+				"./src/components/*",
+				"./src/components/*/custom/"
+			],
+			// prettier-ignore
+			"@/alerts/*": [
+				"./src/components/alerts/*",
+				"./src/components/alerts/custom/*"
+			],
+			// prettier-ignore
+			"@/events/*": [
+				"./src/components/events/*",
+				"./src/components/events/custom/*"
+			],
+			// prettier-ignore
+			"@/registration/*": [
+				"./src/components/registration/*",
+				"./src/components/registration/custom/*"
+			],
+			// prettier-ignore
+			"@/blocks/*": [
+				"./src/components/blocks/*",
+				"./src/components/blocks/custom/*"
+			],
+			// prettier-ignore
+			"@/dialogs/*": [
+				"./src/components/dialogs/*",
+				"./src/components/dialogs/custom/*"
+			],
+			// prettier-ignore
+			"@/elements/*": [
+				"./src/components/elements/*",
+				"./src/components/elements/custom/*"
+			],
+			// prettier-ignore
+			"@/footers/*": [
+				"./src/components/footers/*",
+				"./src/components/footers/custom/*"
+			],
+			// prettier-ignore
+			"@/navbars/*": [
+				"./src/components/navbars/*",
+				"./src/components/navbars/custom/*",
+				"./src/assets/scss/partials/navbars/*",
+				"./src/assets/scss/partials/navbars/nav_grow/*",
+				"./src/assets/scss/partials/navbars/nav_slide/*"
+			],
 			// ─── Other blocks ─────────────────────────────────────────────
-			"@/config/*": ["src/config/*"],
-			"@/hooks/*": ["src/hooks/*"],
-			"@/lib/*": ["src/lib/*"],
-			"@/server/*": ["src/lib/server/*"],
-			"@/providers/*": ["src/providers/*"],
-			"@/utils/*": ["src/utils/*"],
-
+			"@/config/*": ["./src/config/*"],
+			// prettier-ignore
+			"@/hooks/*": [
+				"./src/hooks/*",
+				"./src/hooks/*/custom/",
+				"./src/hooks/custom/*"
+			],
+			// prettier-ignore
+			"@/lib/*": [
+				"./src/lib/*",
+				"./src/lib/*/custom/",
+				"./src/lib/custom/*"
+			],
+			// prettier-ignore
+			"@/providers/*": [
+				"./src/providers/*",
+				"./src/providers/*/custom/",
+				"./src/providers/custom/*"
+			],
+			"@/utils/*": ["./src/utils/*"],
 			// ─── Static assets ────────────────────────────────────────────
-			"@/assets/*": ["src/assets/*"],
-			"@/bessex/*": ["src/assets/bessex/*"],
-			"@/css/*": ["src/assets/css/*"],
-			"@/js/*": ["src/assets/js/*"],
-			"@/scss/*": ["src/assets/scss/*"],
-
+			"@/assets/*": ["./src/assets/*"],
+			"@/bessex/*": ["./src/assets/bessex/*"],
+			"@/css/*": ["./src/assets/css/*"],
+			"@/scss/*": ["./src/assets/scss/*"],
 			// ─── SCSS partials ────────────────────────────────────────────
-			// pretier-ignore
+			// prettier-ignore
 			"@/scss/navbars/*": [
-				"src/assets/scss/partials/navbars/*",
-				"src/assets/scss/partials/navbars/nav_grow/*",
-				"src/assets/scss/partials/navbars/nav_slide/*"
+				"./src/assets/scss/partials/navbars/*",
+				"./src/assets/scss/partials/navbars/nav_grow/*",
+				"./src/assets/scss/partials/navbars/nav_slide/*"
 			]
 		},
 		"target": "ES2017"
 	},
-	"include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "types/**/*.d.ts", ".next/types/**/*.ts"],
-	"exclude": ["node_modules"]
+	"include": [
+		// Core Next.js types (must be first)
+		"next-env.d.ts",
+		// Custom global types
+		"types/**/*.d.ts",
+		// Generated types (framework output)
+		".next/types/**/*.ts",
+		".next/dev/types/**/*.ts",
+		// Application source (typed first)
+		"**/*.ts",
+		"**/*.tsx",
+		// Then non-typed
+		"**/*.js",
+		"**/*.jsx"
+	],
+	"exclude": [
+		// Dependencies
+		"node_modules",
+		// Framework build output
+		".next",
+		// Common generic outputs
+		"build",
+		"dist",
+		// Static export (Next.js)
+		"out"
+	]
 }

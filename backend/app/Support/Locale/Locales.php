@@ -8,10 +8,10 @@ namespace App\Support\Locale;
  */
 class Locales
 {
-    public const SUPPORTED = ['it', 'en', 'de'];
+	public const SUPPORTED = ["it", "en", "de"];
 
-    public static function normalize(?string $locale, string $default = 'it'): string
-    {
-        return in_array($locale, self::SUPPORTED, true) ? $locale : $default;
-    }
+	public static function normalize(?string $locale, string $default = "it"): string
+	{
+		return in_array($locale, self::SUPPORTED, true) ? $locale : $default;
+	}
 }

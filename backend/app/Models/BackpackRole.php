@@ -8,23 +8,23 @@ use Illuminate\Database\Eloquent\Model;
 
 class BackpackRole extends Model
 {
-    use CrudTrait, HasDisplayAttributes;
+	use CrudTrait, HasDisplayAttributes;
 
-    protected $fillable = ['name', 'description'];
+	protected $fillable = ["name", "description"];
 
-    public function users()
-    {
-        return $this->hasMany(User::class);
-    }
+	public function users()
+	{
+		return $this->hasMany(User::class);
+	}
 
-    public function modelPermissions()
-    {
-        return $this->hasMany(ModelPermission::class);
-    }
+	public function modelPermissions()
+	{
+		return $this->hasMany(ModelPermission::class);
+	}
 
-    // see HasDisplayAttributes for full doc
-    public function getDisplayAttribute(): string
-    {
-        return $this->name;
-    }
+	// see HasDisplayAttributes for full doc
+	public function getDisplayAttribute(): string
+	{
+		return $this->name;
+	}
 }

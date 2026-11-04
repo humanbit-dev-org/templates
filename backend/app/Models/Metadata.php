@@ -8,18 +8,18 @@ use Illuminate\Database\Eloquent\Model;
 
 class Metadata extends Model
 {
-    use CrudTrait, HasDisplayAttributes;
+	use CrudTrait, HasDisplayAttributes;
 
-    protected $fillable = ['it', 'en', 'image_path', 'code', 'page_id'];
+	protected $fillable = ["it", "en", "image_path", "code", "page_id"];
 
-    public function page()
-    {
-        return $this->belongsTo(Page::class);
-    }
+	public function page()
+	{
+		return $this->belongsTo(Page::class);
+	}
 
-    // see HasDisplayAttributes for full doc
-    public function getDisplayAttribute(): string
-    {
-        return $this->code;
-    }
+	// see HasDisplayAttributes for full doc
+	public function getDisplayAttribute(): string
+	{
+		return $this->code;
+	}
 }

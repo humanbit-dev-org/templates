@@ -1,8 +1,7 @@
 <?php
 
 return [
-
-    /*
+	/*
     |--------------------------------------------------------------------------
     | Default Hash Driver
     |--------------------------------------------------------------------------
@@ -15,9 +14,9 @@ return [
     |
     */
 
-    'driver' => env('HASH_DRIVER', 'argon2id'),
+	"driver" => env("HASH_DRIVER", "argon2id"),
 
-    /*
+	/*
     |--------------------------------------------------------------------------
     | Bcrypt Options
     |--------------------------------------------------------------------------
@@ -28,13 +27,13 @@ return [
     |
     */
 
-    'bcrypt' => [
-        'rounds' => env('BCRYPT_ROUNDS', 12),
-        'verify' => env('HASH_VERIFY', true),
-        'limit' => env('BCRYPT_LIMIT', null),
-    ],
+	"bcrypt" => [
+		"rounds" => env("BCRYPT_ROUNDS", 12),
+		"verify" => env("HASH_VERIFY", true),
+		"limit" => env("BCRYPT_LIMIT", null),
+	],
 
-    /*
+	/*
     |--------------------------------------------------------------------------
     | Argon Options
     |--------------------------------------------------------------------------
@@ -45,14 +44,14 @@ return [
     |
     */
 
-    'argon' => [
-        'memory' => env('ARGON_MEMORY', 65536),  // 64MB
-        'threads' => env('ARGON_THREADS', 2),
-        'time' => env('ARGON_TIME', 4),
-        'verify' => env('HASH_VERIFY', true),
-    ],
+	"argon" => [
+		"memory" => env("ARGON_MEMORY", 65536), // 64MB
+		"threads" => env("ARGON_THREADS", 2),
+		"time" => env("ARGON_TIME", 4),
+		"verify" => env("HASH_VERIFY", true),
+	],
 
-    /*
+	/*
     |--------------------------------------------------------------------------
     | Rehash On Login
     |--------------------------------------------------------------------------
@@ -62,6 +61,5 @@ return [
     |
     */
 
-    'rehash_on_login' => false,
-
+	"rehash_on_login" => false,
 ];
