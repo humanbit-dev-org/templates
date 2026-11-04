@@ -6,6 +6,7 @@ use App\Models\BackpackRole;
 use App\Models\Role;
 use App\Models\User;
 use App\Services\Auth\SamlSignatureVerifier;
+use App\Services\Logging\SamlSimulationLogService;
 use App\Services\Restricted\SamlSimulationScenarioService;
 use Database\Seeders\BackpackRoleSeeder;
 use Database\Seeders\RoleSeeder;
@@ -27,6 +28,18 @@ class SamlSimulationTest extends TestCase
         parent::setUp();
 
         $this->seed([RoleSeeder::class, BackpackRoleSeeder::class]);
+
+        // Keep the audit log of these simulations out of the real storage folder.
+        $logPath = tempnam(sys_get_temp_dir(), 'saml-sim-log');
+        $this->app->instance(SamlSimulationLogService::class, new class($logPath) extends SamlSimulationLogService
+        {
+            public function __construct(private string $logPath) {}
+
+            public function path(): string
+            {
+                return $this->logPath;
+            }
+        });
 
         // The simulation pages sit behind shield:auth_sim (Backpack Developer/Admin).
         $operator = User::query()->create([
