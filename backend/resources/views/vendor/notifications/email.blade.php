@@ -56,7 +56,7 @@
         return implode("\n\n", $blocks);
     };
 @endphp
-<x-mail::message :bank-logo-url="$bankLogoUrl ?? null" :bank-name="$bankName ?? null">
+<x-mail::message :co-brand-logo-url="$coBrandLogoUrl ?? null" :co-brand-name="$coBrandName ?? null">
 {{-- Greeting --}}
 @if (! empty($greeting))
 **{{ $greeting }}**

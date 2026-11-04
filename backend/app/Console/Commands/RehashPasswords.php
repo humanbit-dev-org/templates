@@ -52,10 +52,19 @@ class RehashPasswords extends Command
 		$noWait = (bool) $this->option("no-wait");
 		$chunkSize = max(1, (int) $this->option("chunk"));
 
+<<<<<<< HEAD
 		// Build base query:
 		// - Always exclude Backpack admins (manually set passwords, not HKDF-derived).
 		// - Optionally restrict to users with no password set.
 		$query = User::whereNull("backpack_role_id")->orderBy("user_id")->select("user_id");
+=======
+        // Build base query:
+        // - Always exclude Backpack admins (manually set passwords, not HKDF-derived).
+        // - Optionally restrict to users with no password set.
+        $query = User::whereNull('backpack_role_id')
+            ->orderBy('username')
+            ->select('username');
+>>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 
 		if ($onlyEmpty) {
 			$query->where(function ($q) {
@@ -82,6 +91,7 @@ class RehashPasswords extends Command
 			$bar = $this->output->createProgressBar($total);
 			$bar->start();
 
+<<<<<<< HEAD
 			$query->chunk($chunkSize, function ($users) use ($bar, $derivation) {
 				foreach ($users as $user) {
 					// Derive only — no Hash::make(), no DB write.
@@ -89,6 +99,15 @@ class RehashPasswords extends Command
 					$bar->advance();
 				}
 			});
+=======
+            $query->chunk($chunkSize, function ($users) use ($bar, $derivation) {
+                foreach ($users as $user) {
+                    // Derive only — no Hash::make(), no DB write.
+                    $derivation->derive($user->username);
+                    $bar->advance();
+                }
+            });
+>>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 
 			$bar->finish();
 			$this->newLine(2);
@@ -116,9 +135,18 @@ class RehashPasswords extends Command
 				$jobs[] = new RehashPasswordsChunkJob($ids, $cacheKey);
 			});
 
+<<<<<<< HEAD
 			$totalJobs = count($jobs);
 			$this->info("Dispatching {$totalJobs} jobs (chunk size: {$chunkSize}) to the [rehash] queue...");
 			$this->newLine();
+=======
+            $jobs = [];
+            $query->chunk($chunkSize, function ($users) use (&$jobs, $cacheKey) {
+                // Extract plain username strings; no full model needed in the job payload.
+                $ids = $users->pluck('username')->all();
+                $jobs[] = new RehashPasswordsChunkJob($ids, $cacheKey);
+            });
+>>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 
 			// Do not cancel recent/in-flight runs from other imports. We only close
 			// "zombie" batches that never started any job and are stale enough.

@@ -30,6 +30,7 @@ class RehashPasswordsChunkJob implements ShouldQueue
 	 */
 	public int $timeout = 300;
 
+<<<<<<< HEAD
 	/**
 	 * @param  array<int, string>  $userIds  List of user_id values to process in this chunk.
 	 * @param  string  $cacheKey  Redis key used to track global progress.
@@ -49,6 +50,27 @@ class RehashPasswordsChunkJob implements ShouldQueue
 			"batch_id" => $this->batch()?->id,
 			"batch_cancelled" => $this->batch()?->cancelled(),
 		]);
+=======
+    /**
+     * @param  array<int, string>  $userIds  List of usernames (users primary key) to process in this chunk.
+     * @param  string  $cacheKey  Redis key used to track global progress.
+     * @param  bool  $dryRun  When true, derive+hash but do not persist.
+     */
+    public function __construct(
+        private readonly array $userIds,
+        private readonly string $cacheKey,
+        private readonly bool $dryRun = false,
+    ) {}
+
+    public function handle(): void
+    {
+        Log::channel('import')->info('RehashChunk: handle() called', [
+            'usernames_count' => count($this->userIds),
+            'cache_key' => $this->cacheKey,
+            'batch_id' => $this->batch()?->id,
+            'batch_cancelled' => $this->batch()?->cancelled(),
+        ]);
+>>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 
 		// Bail out early if the whole batch has been cancelled from the Command.
 		if ($this->batch()?->cancelled()) {
@@ -72,6 +94,7 @@ class RehashPasswordsChunkJob implements ShouldQueue
 
 				$lockedUserIds[] = $userId;
 
+<<<<<<< HEAD
 				try {
 					// The derivation-aware argon2id driver (DerivingArgon2IdHasher)
 					// applies the HKDF pepper inside Hash::make; the raw user_id is
@@ -89,6 +112,26 @@ class RehashPasswordsChunkJob implements ShouldQueue
 					$skipped++;
 				}
 			}
+=======
+                try {
+                    // The derivation-aware argon2id driver (DerivingArgon2IdHasher)
+                    // applies the HKDF pepper inside Hash::make; the raw username is
+                    // the password seed, deriving here would double-derive.
+                    $hashed = Hash::make($userId);
+
+                    $updates[] = 'WHEN '.$pdo->quote((string) $userId)
+                               .' THEN '.$pdo->quote($hashed);
+                    $ids[] = $userId;
+                } catch (\Throwable $e) {
+                    // Log and skip this user; do not abort the whole chunk.
+                    Log::channel('import')->error('RehashChunk: hashing failed', [
+                        'username' => $userId,
+                        'error' => $e->getMessage(),
+                    ]);
+                    $skipped++;
+                }
+            }
+>>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 
 			if (!$this->dryRun && count($updates) > 0) {
 				// Wrap the entire batch UPDATE in a transaction.
@@ -96,6 +139,7 @@ class RehashPasswordsChunkJob implements ShouldQueue
 				DB::transaction(function () use ($pdo, $updates, $ids) {
 					$idsQuoted = implode(",", array_map(fn(string $id) => $pdo->quote($id), $ids));
 
+<<<<<<< HEAD
 					$sql =
 						"UPDATE users" .
 						" SET password = CASE user_id " .
@@ -104,6 +148,13 @@ class RehashPasswordsChunkJob implements ShouldQueue
 						" WHERE user_id IN (" .
 						$idsQuoted .
 						")";
+=======
+                    $sql = 'UPDATE users'
+                         .' SET password = CASE username '
+                         .implode(' ', $updates)
+                         .' END'
+                         .' WHERE username IN ('.$idsQuoted.')';
+>>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 
 					DB::statement($sql);
 				});
@@ -127,6 +178,7 @@ class RehashPasswordsChunkJob implements ShouldQueue
 		}
 	}
 
+<<<<<<< HEAD
 	/**
 	 * Handle a permanent job failure (after all retries exhausted).
 	 * Log the failed user_ids so they can be replayed manually.
@@ -138,6 +190,19 @@ class RehashPasswordsChunkJob implements ShouldQueue
 			"error" => $e->getMessage(),
 		]);
 	}
+=======
+    /**
+     * Handle a permanent job failure (after all retries exhausted).
+     * Log the failed usernames so they can be replayed manually.
+     */
+    public function failed(\Throwable $e): void
+    {
+        Log::channel('import')->critical('RehashChunk: job failed permanently', [
+            'usernames' => $this->userIds,
+            'error' => $e->getMessage(),
+        ]);
+    }
+>>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 
 	public static function lockKeyForUserId(string $userId): string
 	{

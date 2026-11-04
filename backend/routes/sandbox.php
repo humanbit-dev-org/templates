@@ -16,9 +16,9 @@ use Illuminate\Support\Str;
 | Sandbox API routes
 |--------------------------------------------------------------------------
 |
-| Copies of the real Business Console endpoints under /api/sandbox/, running
-| against a separate database and always rolled back. Routes are cloned by
-| name from the real ones so the two can never diverge.
+| Copies of real API endpoints under /sandbox/, running against a separate
+| database and always rolled back. Routes are cloned by name from the real
+| ones (config('sandbox.routes')) so the two can never diverge.
 |
 | Loaded from bootstrap/app.php only when config('sandbox.enabled') is true.
 |
@@ -26,6 +26,7 @@ use Illuminate\Support\Str;
 
 Route::getRoutes()->refreshNameLookups();
 
+<<<<<<< HEAD
 $routes = [
 	"business.console.tiraggi.perfeziona",
 	"business.console.tiraggi.rifiuta",
@@ -60,6 +61,40 @@ foreach ($routes as $name) {
 	foreach ($real->defaults as $key => $value) {
 		$route->defaults($key, $value); // strict_prodotto=false on perfeziona
 	}
+=======
+// Optional role gate: RoleScope refuses everyone but Admin/Developer when it
+// gets no role at all, so it is only attached when roles are configured.
+$roleScope = config('sandbox.roles', []) === []
+    ? []
+    : ['role.scope:'.implode(',', config('sandbox.roles'))];
+
+foreach (config('sandbox.routes', []) as $name) {
+    $real = Route::getRoutes()->getByName($name)
+        ?? throw new RuntimeException("Sandbox: route [$name] not found");
+
+    // api/articles/... → sandbox/articles/...
+    $route = Route::match($real->methods(), 'sandbox/'.Str::after($real->uri(), 'api/'), $real->getAction('uses'))
+        ->name('sandbox.'.$name)
+        // EncryptCookies + StartSession: the api group is stateless, but
+        // EnterSandbox needs the Backpack session to apply its IP-or-login
+        // gate for try-it calls coming from the docs page.
+        ->middleware([
+            'api',
+            EncryptCookies::class,
+            StartSession::class,
+            EnterSandbox::class,
+            'auth:sanctum',
+            ...$roleScope,
+            ThrottleRequestsWithRedis::using('sandbox-calls'),
+            RollbackSandbox::class,
+        ])
+        ->withoutMiddleware(RollbackDocs::class);
+
+    // Route defaults (e.g. a flag a controller reads) travel with the clone.
+    foreach ($real->defaults as $key => $value) {
+        $route->defaults($key, $value);
+    }
+>>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 }
 
 // No RollbackSandbox: the token must persist.
@@ -74,8 +109,9 @@ Route::post("sandbox/token", SandboxTokenController::class)
 	->withoutMiddleware(RollbackDocs::class)
 	->name("sandbox.token");
 
-// Demo-call resolver for the /api-sandbox buttons: read-only, but the
+// Demo-call resolver for the API docs buttons: read-only, but the
 // rollback middleware keeps the no-write guarantee uniform.
+<<<<<<< HEAD
 Route::post("sandbox/sample", SandboxSampleController::class)
 	->middleware([
 		"api",
@@ -89,3 +125,18 @@ Route::post("sandbox/sample", SandboxSampleController::class)
 	])
 	->withoutMiddleware(RollbackDocs::class)
 	->name("sandbox.sample");
+=======
+Route::post('sandbox/sample', SandboxSampleController::class)
+    ->middleware([
+        'api',
+        EncryptCookies::class,
+        StartSession::class,
+        EnterSandbox::class,
+        'auth:sanctum',
+        ...$roleScope,
+        ThrottleRequestsWithRedis::using('sandbox-calls'),
+        RollbackSandbox::class,
+    ])
+    ->withoutMiddleware(RollbackDocs::class)
+    ->name('sandbox.sample');
+>>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb

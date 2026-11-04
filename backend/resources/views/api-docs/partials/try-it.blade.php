@@ -15,8 +15,7 @@
 
     <div class="api-sandbox-tryit-buttons">
         @foreach ($endpoint['operations'] ?? [] as $operation)
-            <button type="button" class="api-sandbox-tryit-btn" data-sample-op="{{ $operation['key'] }}"
-                @if ($operation['conguaglio_only'] ?? false) data-conguaglio-only @endif>
+            <button type="button" class="api-sandbox-tryit-btn" data-sample-op="{{ $operation['key'] }}">
                 {{ $operation['label'] }}
             </button>
         @endforeach

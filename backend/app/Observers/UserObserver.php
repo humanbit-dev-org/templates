@@ -3,34 +3,22 @@
 namespace App\Observers;
 
 use App\Models\User;
-use App\Services\Cache\BusinessConsoleListCache;
 use App\Services\Cache\CacheKeyService;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
 /**
- * Invalidates dashboard and filter cache on User Eloquent lifecycle events.
+ * Invalidates the user-dependent cache on User Eloquent lifecycle events.
  *
  * COVERAGE:
- * - Backpack admin: single-row create/update/delete (Eloquent active) —
- *   this includes daily fixes to user fields, filiale transfers, suspensions
- * - Business Console (product_owner): User create/update via frontend API —
- *   BancaController / UserController use Eloquent model operations
+ * - Backpack admin: single-row create/update/delete (Eloquent active)
+ * - Frontend API: User create/update through Eloquent model operations
  *
  * NOT COVERED (intentional):
- * - ImportJobService User import uses User::create() (Eloquent) but also
- *   User::where()->update() in CsvTransformer (bypass). The ImportCsvAction
- *   (Backpack UI import) uses Eloquent create/update — Observer fires correctly.
- *   For job imports, post-import flush handles it.
+ * - Bulk imports that bypass Eloquent or suppress Observers through
+ *   CacheInvalidationContext: CacheFlush::afterImport() runs once at the end.
  *
- * SPECIAL CASE — filiale transfer:
- * When a user moves to a different filiale, both the OLD and NEW filiale scope
- * must be invalidated. $user->getOriginal('filiale_id') captures the previous value
- * before Eloquent commits the change.
- *
- * BACKPACK ADMIN USERS:
- * Users with backpack_role_id set are admin users — they never appear in dashboard
- * charts. Skip invalidation for them to avoid unnecessary cache churn.
+ * Which keys are dropped is decided by CacheKeyService::forUser().
  */
 class UserObserver
 {
@@ -39,6 +27,7 @@ class UserObserver
 		$this->invalidate($user);
 	}
 
+<<<<<<< HEAD
 	public function updated(User $user): void
 	{
 		// Detect filiale transfer: invalidate old filiale scope BEFORE the new one
@@ -64,6 +53,12 @@ class UserObserver
 
 		$this->invalidate($user);
 	}
+=======
+    public function updated(User $user): void
+    {
+        $this->invalidate($user);
+    }
+>>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 
 	public function deleted(User $user): void
 	{
@@ -76,6 +71,7 @@ class UserObserver
 			return;
 		}
 
+<<<<<<< HEAD
 		// Admin users (backpack_role_id set) never appear in dashboard charts
 		if (!empty($user->backpack_role_id)) {
 			return;
@@ -86,11 +82,15 @@ class UserObserver
 		}
 
 		$keys = CacheKeyService::allDashboardKeysForBanca($user->banca_abi, $user->filiale_id);
+=======
+        $keys = CacheKeyService::forUser($user);
+>>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 
 		foreach ($keys as $key) {
 			Cache::forget($key);
 		}
 
+<<<<<<< HEAD
 		BusinessConsoleListCache::forgetForUserScope($user->banca_abi, $user->filiale_id);
 
 		Log::debug("UserObserver: invalidated", [
@@ -98,4 +98,13 @@ class UserObserver
 			"keys" => count($keys),
 		]);
 	}
+=======
+        if ($keys !== []) {
+            Log::debug('UserObserver: invalidated', [
+                'user' => $user->getKey(),
+                'keys' => count($keys),
+            ]);
+        }
+    }
+>>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 }

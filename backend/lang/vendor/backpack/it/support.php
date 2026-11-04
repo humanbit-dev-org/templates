@@ -8,7 +8,7 @@ return [
     'subject_placeholder' => 'Seleziona un argomento',
     'categories' => [
         'admin_panel' => 'Utilizzo del pannello admin',
-        'platform' => 'Assistenza sulla piattaforma RAYS',
+        'platform' => 'Assistenza sulla piattaforma',
         'bug' => 'Segnalazione di bug o malfunzionamento',
         'other' => 'Altro',
     ],
@@ -29,12 +29,12 @@ return [
     'error' => 'Impossibile inviare la richiesta. Riprova tra qualche minuto.',
     'duplicate' => 'Questa richiesta è già stata inviata. Attendi qualche istante prima di reinviarla.',
     'throttle' => 'Hai inviato troppe richieste di supporto. Riprova tra :minutes minuti.',
-    'mail_title' => 'Richiesta di supporto — RAYS Admin',
+    'mail_title' => 'Richiesta di supporto — Pannello admin',
     'mail_from' => 'Da',
     'mail_attachments' => 'Screenshot allegati (:count)',
     'mail_details' => 'Dettagli',
     'mail_role' => 'Ruolo',
-    'mail_bank' => 'Banca',
+    'mail_username' => 'Username',
     'mail_page' => 'Pagina',
     'mail_reply_hint' => 'Rispondi a questa email per scrivere direttamente all\'utente.',
     // Shared with mail/admin-message.blade.php.

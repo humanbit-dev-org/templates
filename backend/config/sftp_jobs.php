@@ -1,18 +1,15 @@
 <?php
 
-use App\Integrations\Banche\Sparkasse\PraticheCsv;
-use App\Jobs\Sftp\ElaboraPratiche;
-
 /*
 |--------------------------------------------------------------------------
-| Bank file jobs
+| Partner file jobs (SFTP / bucket drop)
 |--------------------------------------------------------------------------
-| The data team's Lambda drops each bank file in
-| {root}/{banca}/{operazione}/inbox/ of the production bucket, naming the bank
-| folder from the file name (SPKC… → sparkasse, CVBC… → civibank);
-| `sftp:processa` moves it to processing/ and queues the job registered here.
-| The job ends it in processed/ (with its summary) or failed/ (with the reason).
-| See analisi-sftp-jobs.md.
+| Partners drop their files in {root}/{partner}/{operation}/inbox/ of the
+| bucket below. A processing command moves each file to processing/ and
+| queues the job registered here for that partner and operation; the job
+| ends it in processed/ (with its summary) or failed/ (with the reason).
+|
+| The template registers no partner yet.
 */
 
 return [
@@ -24,8 +21,26 @@ return [
 	// As the import jobs: the standalone cache connection, no CROSSSLOT on the cluster.
 	"lock_store" => "redis",
 
+<<<<<<< HEAD
 	// Served by supervisor-import in config/horizon.php.
 	"queue" => "{import}",
+=======
+    // As the import jobs: the standalone cache connection, no CROSSSLOT on the cluster.
+    'lock_store' => 'redis',
+
+    // Served by supervisor-import in config/horizon.php.
+    'queue' => '{import}',
+
+    // folder => ['operations' => operation => ['job' => job class, ...options]].
+    // Example:
+    //
+    //     'acme' => [
+    //         'operations' => [
+    //             'orders' => ['job' => \App\Jobs\Sftp\ImportAcmeOrders::class],
+    //         ],
+    //     ],
+    'partners' => [],
+>>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 
 	// folder => ['abi' => ABI its clients are found by, 'operazioni' => operazione =>
 	// ['job' => SftpJob subclass, ...options]]. A bank with an empty ABI is

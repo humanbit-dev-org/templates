@@ -13,13 +13,13 @@ class MetadataSeeder extends Seeder
 	public function run(): void
 	{
 		Metadata::create([
-			"it" => "Cashberry templates",
-			"en" => "Cashberry templates",
+			"it" => "Templates",
+			"en" => "Templates",
 			"code" => "title",
 		]);
 		Metadata::create([
-			"it" => "Cashberry templates description",
-			"en" => "Cashberry templates description",
+			"it" => "Templates description",
+			"en" => "Templates description",
 			"code" => "description",
 		]);
 	}

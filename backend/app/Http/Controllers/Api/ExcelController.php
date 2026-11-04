@@ -2,18 +2,34 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Concerns\BancaListQueries;
-use App\Http\Concerns\DashboardListQueries;
-use App\Http\Concerns\PreparesListExportData;
 use App\Http\Concerns\WritesXlsxExport;
 use App\Http\Controllers\Controller;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Validator;
 
+/**
+ * XLSX exports of frontend lists, served to the authenticated frontend.
+ *
+ * Same shape as CsvController, plus one ExportColumn per header describing
+ * the cell format, locked values and validation (see WritesXlsxExport):
+ *
+ *     public function exportArticles(Request $request): JsonResponse
+ *     {
+ *         $rows = Article::query()->get(['id', 'title_italian', 'created_at'])
+ *             ->map(fn (Article $a) => [$a->id, $a->title_italian, $a->created_at?->toDateString()])
+ *             ->all();
+ *
+ *         return $this->exportXlsxResponse(
+ *             'articles',
+ *             ['ID', 'Titolo', 'Creato il'],
+ *             $rows,
+ *             [ExportColumn::lockedText(), ExportColumn::text(), ExportColumn::date()],
+ *         );
+ *     }
+ *
+ * and is routed in routes/api.php behind auth:sanctum.
+ */
 class ExcelController extends Controller
 {
+<<<<<<< HEAD
 	use BancaListQueries, DashboardListQueries, PreparesListExportData, WritesXlsxExport;
 
 	public function __construct()
@@ -98,4 +114,7 @@ class ExcelController extends Controller
 
 		return $this->exportXlsxResponse($sheet["filePrefix"], $sheet["headers"], $sheet["rows"], $sheet["columns"]);
 	}
+=======
+    use WritesXlsxExport;
+>>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 }

@@ -2,10 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Support\Backpack\SchemaCache;
 use App\Support\Backpack\BackpackHelper;
 use App\Http\Concerns\ChecksBackpackPermissions;
-use App\Models\Banca;
 use App\Models\Page;
 use App\Models\Translate;
 use App\Services\Translate\TranslateVariableService;
@@ -58,6 +56,7 @@ class TranslateCrudController extends CrudController
 		CRUD::setOperationSetting("archiveData", $this->buildArchiveData());
 	}
 
+<<<<<<< HEAD
 	/**
 	 * Build archive data for custom list view.
 	 *
@@ -66,12 +65,23 @@ class TranslateCrudController extends CrudController
 	private function buildArchiveData(): array
 	{
 		$query = Translate::query()->with(["page:id,name", "banca:banca_abi,nome"]);
+=======
+    /**
+     * Build archive data for custom list view.
+     *
+     * @return array<string, mixed>
+     */
+    private function buildArchiveData(): array
+    {
+        $query = Translate::query()->with(['page:id,name']);
+>>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 
 		$code = trim((string) request()->query("code", ""));
 		if ($code !== "") {
 			$query->where("code", "like", "%{$code}%");
 		}
 
+<<<<<<< HEAD
 		$bancaAbi = trim((string) request()->query("banca_abi", ""));
 		if ($bancaAbi !== "") {
 			if ($bancaAbi === "default") {
@@ -181,10 +191,51 @@ class TranslateCrudController extends CrudController
 				$modelCache
 			);
 		}
+=======
+        $pageId = request()->query('page_id');
+        if (is_numeric($pageId)) {
+            $query->where('page_id', (int) $pageId);
+        }
+
+        /** @var LengthAwarePaginator $translations */
+        $translations = $query
+            ->orderBy('code')
+            ->paginate(30)
+            ->withQueryString();
+
+        return [
+            'translations' => $translations,
+            'filters' => [
+                'code' => $code,
+                'page_id' => is_numeric($pageId) ? (int) $pageId : '',
+            ],
+            'pageOptions' => Page::query()->orderBy('name')->pluck('name', 'id')->toArray(),
+            'placeholderSamples' => $this->buildPlaceholderSamples(),
+            'totals' => [
+                'records' => $translations->total(),
+            ],
+        ];
+    }
+
+    /**
+     * Build readable sample values for dynamic placeholders.
+     *
+     * @return array<string, string>
+     */
+    private function buildPlaceholderSamples(): array
+    {
+        $samples = [];
+        $modelCache = [];
+
+        foreach (TranslateVariableService::getRegistry() as $key => $definition) {
+            $samples[(string) $key] = $this->sampleValueForPlaceholder((string) $key, $definition, $modelCache);
+        }
+>>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 
 		return $samples;
 	}
 
+<<<<<<< HEAD
 	/**
 	 * Resolve a sample value for a placeholder.
 	 *
@@ -251,10 +302,59 @@ class TranslateCrudController extends CrudController
 		if (Str::contains($key, ["data", "date"])) {
 			return now()->format("d/m/Y");
 		}
+=======
+    /**
+     * Resolve a sample value for a placeholder: the value of the first record
+     * of the placeholder's model when available, otherwise a plausible value
+     * guessed from the key.
+     *
+     * @param  array<string, mixed>  $definition
+     * @param  array<string, Model|null>  $modelCache
+     */
+    private function sampleValueForPlaceholder(string $key, array $definition, array &$modelCache): string
+    {
+        $modelKey = (string) ($definition['model'] ?? '');
+        $field = (string) ($definition['field'] ?? '');
+        $modelClass = config("translate_vars.models.{$modelKey}");
+
+        if (
+            $modelKey !== '' &&
+            $field !== '' &&
+            is_string($modelClass) &&
+            class_exists($modelClass) &&
+            is_subclass_of($modelClass, Model::class)
+        ) {
+            if (! array_key_exists($modelClass, $modelCache)) {
+                $modelCache[$modelClass] = (new $modelClass)->newQuery()->first();
+            }
+
+            $record = $modelCache[$modelClass];
+            if ($record && isset($record->{$field}) && $record->{$field} !== null && (string) $record->{$field} !== '') {
+                return (string) $record->{$field};
+            }
+        }
+
+        if (Str::contains($key, ['mesi', 'month'])) {
+            return '12';
+        }
+        if (Str::contains($key, ['importo', 'totale', 'max_', 'min_', 'prezzo', 'amount'])) {
+            return '1.000,00';
+        }
+        if (Str::contains($key, ['percentuale', 'perc', 'ratio'])) {
+            return '15';
+        }
+        if (Str::contains($key, ['nome', 'name'])) {
+            return 'Mario Rossi';
+        }
+        if (Str::contains($key, ['data', 'date'])) {
+            return now()->format('d/m/Y');
+        }
+>>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 
 		return '{$' . $key . "}";
 	}
 
+<<<<<<< HEAD
 	/**
 	 * Resolve one representative record for a model, tenant-aware if possible.
 	 */
@@ -280,4 +380,10 @@ class TranslateCrudController extends CrudController
 	{
 		BackpackHelper::setFieldsShow(new Translate());
 	}
+=======
+    protected function setupShowOperation()
+    {
+        BackpackHelper::setFieldsShow(new Translate);
+    }
+>>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 }

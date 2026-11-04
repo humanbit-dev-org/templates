@@ -59,6 +59,7 @@ class RelationSearchOperation extends Controller
 		);
 	}
 
+<<<<<<< HEAD
 	/**
 	 * Search in hasMany relations (INVERSE SEARCH)
 	 * This searches IN THE RELATED MODEL and returns options
@@ -72,6 +73,21 @@ class RelationSearchOperation extends Controller
 		$relationName = $request->input("relation"); // Relation name (e.g., tiraggi)
 		$searchTerm = $request->input("q", "");
 		$searchField = $request->input("search_field", null); // Field to search in related model
+=======
+    /**
+     * Search in hasMany relations (INVERSE SEARCH)
+     * This searches IN THE RELATED MODEL and returns options
+     * Example: search for media by ID/title to filter pages
+     *
+     * @return JsonResponse
+     */
+    public function searchRelation(Request $request)
+    {
+        $modelClass = $request->input('model'); // Parent model (e.g., User)
+        $relationName = $request->input('relation'); // Relation name (e.g., media)
+        $searchTerm = $request->input('q', '');
+        $searchField = $request->input('search_field', null); // Field to search in related model
+>>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 
 		if (!$modelClass || !$relationName) {
 			return response()->json(["results" => []]);
@@ -93,9 +109,15 @@ class RelationSearchOperation extends Controller
 		$relatedModel = $relation->getRelated();
 		$relatedClass = get_class($relatedModel);
 
+<<<<<<< HEAD
 		// Build query on RELATED model and preserve custom relation scopes
 		// (e.g. usersEleggibili => sospeso = 0), while removing parent-key binding.
 		$query = $this->buildScopedRelatedQuery($relation, $relatedClass);
+=======
+        // Build query on RELATED model and preserve custom relation scopes
+        // (e.g. verifiedUsers => email_verified_at not null), while removing parent-key binding.
+        $query = $this->buildScopedRelatedQuery($relation, $relatedClass);
+>>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 
 		// NO SEARCH = NO RESULTS (performance optimization)
 		if (empty($searchTerm)) {
@@ -127,6 +149,7 @@ class RelationSearchOperation extends Controller
 		// Get results (max 50)
 		$results = $query->limit(50)->get();
 
+<<<<<<< HEAD
 		// Format results
 		// IMPORTANT: If searching by custom field (e.g., numero_pratica), return that field as 'id'
 		// so it gets used in the filter, not the primary key
@@ -149,6 +172,30 @@ class RelationSearchOperation extends Controller
 				// Fallback
 				$text = $item->numero_pratica ?? ($item->name ?? ($item->ragione_sociale ?? $item->getKey()));
 			}
+=======
+        // Format results
+        // IMPORTANT: If searching by custom field (e.g., username), return that field as 'id'
+        // so it gets used in the filter, not the primary key
+        $formatted = $results->map(function ($item) use ($searchField, $relatedModel) {
+            // Determine which value to use as 'id' in the result
+            if ($searchField && $searchField !== $relatedModel->getKeyName()) {
+                // Custom field search: use the searched field value as 'id'
+                $valueToReturn = $item->$searchField;
+            } else {
+                // Primary key search: use actual primary key
+                $valueToReturn = $item->getKey();
+            }
+
+            // Get display value
+            if (method_exists($item, 'getRelationDisplayAttribute')) {
+                $text = $item->getRelationDisplayAttribute();
+            } elseif (method_exists($item, 'getDisplayAttribute')) {
+                $text = $item->getDisplayAttribute();
+            } else {
+                // Fallback
+                $text = $item->name ?? ($item->title ?? $item->getKey());
+            }
+>>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 
 			return [
 				"id" => $valueToReturn,
@@ -215,8 +262,13 @@ class RelationSearchOperation extends Controller
 		// Always include primary key
 		$fields[] = $model->getKeyName();
 
+<<<<<<< HEAD
 		// Add common searchable fields if they exist
 		$commonFields = ["numero_pratica", "name", "ragione_sociale", "email", "code", "codice"];
+=======
+        // Add common searchable fields if they exist
+        $commonFields = ['name', 'title', 'email', 'code', 'codice'];
+>>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 
 		foreach ($commonFields as $field) {
 			if (
@@ -270,6 +322,7 @@ class RelationSearchOperation extends Controller
 			];
 		}
 
+<<<<<<< HEAD
 		// Check for numero_pratica (common custom key)
 		if (in_array("numero_pratica", $model->getFillable())) {
 			$keys[] = [
@@ -278,6 +331,8 @@ class RelationSearchOperation extends Controller
 				"is_primary" => false,
 			];
 		}
+=======
+>>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 
 		// Deduplicate by field while preserving insertion order.
 		$unique = [];

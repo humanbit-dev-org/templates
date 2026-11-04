@@ -71,6 +71,7 @@ class ApiLabQuality
 		$hasSanctum = $middleware->contains(fn(string $m) => str_contains($m, "auth:sanctum") || $m === "auth:sanctum");
 		$hasSessionAuth = $middleware->contains(fn(string $m) => $m === "auth" || str_starts_with($m, "auth:"));
 
+<<<<<<< HEAD
 		if ($middleware->contains("tenant.token")) {
 			$items[] = [
 				"level" => "ok",
@@ -89,6 +90,16 @@ class ApiLabQuality
 			];
 			$score -= 25;
 		}
+=======
+        if ($hasSanctum) {
+            $items[] = ['level' => 'ok', 'text' => 'Sanctum bearer authentication required on this route.'];
+        } elseif ($hasSessionAuth) {
+            $items[] = ['level' => 'ok', 'text' => 'Session authentication middleware is present.'];
+        } elseif ($shields->isEmpty()) {
+            $items[] = ['level' => 'warn', 'text' => 'No shield:* or auth middleware — confirm this route is intentionally public.'];
+            $score -= 25;
+        }
+>>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 
 		if ($middleware->contains(fn(string $m) => str_contains($m, "throttle"))) {
 			$items[] = ["level" => "ok", "text" => "Rate limiting (throttle) is configured."];

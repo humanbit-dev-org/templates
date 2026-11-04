@@ -13,7 +13,8 @@ return new class extends Migration {
 		Schema::create("contatti", function (Blueprint $table) {
 			$table->id();
 			$table->string("email")->nullable();
-			$table->string("oggetto")->nullable()->accepted("richiesta", "conferma_richiesta", "gestione_credito", "altro");
+			// Label of the subject chosen in the contact form (see Contatto::OGGETTI).
+			$table->string("oggetto")->nullable();
 			$table->text("messaggio")->nullable();
 			$table->timestamps();
 		});

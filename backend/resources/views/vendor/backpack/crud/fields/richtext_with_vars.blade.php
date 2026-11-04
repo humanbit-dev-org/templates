@@ -4,10 +4,9 @@
     $variablesByModel = TranslateVariableService::getRegistryGroupedByModel();
     $currentLocale = app()->getLocale();
     $labelKey = 'label_' . $currentLocale;
+    // Group captions of the variable picker, keyed like config/translate_vars.php 'models'.
     $modelLabels = [
         'user'     => 'User',
-        'delibera' => 'Delibera',
-        'tiraggio' => 'Tiraggio',
         'frontend' => 'Frontend',
     ];
 
@@ -141,7 +140,7 @@
 
                     if (btn.dataset.custom === '1') {
                         // Custom vars always belong to the frontend model — only ask for the field name.
-                        const field = (window.prompt('Nome del campo frontend (es. tiraggio_percentuale_trattenuta):') || '').trim().replace(/[^a-zA-Z0-9_]/g, '_');
+                        const field = (window.prompt('Nome del campo frontend (es. giorni_rimanenti):') || '').trim().replace(/[^a-zA-Z0-9_]/g, '_');
                         if (!field) { return; }
                         varText = '{$frontend.' + field + '}';
                     }
@@ -214,7 +213,7 @@
                             class="btn btn-xs translate-var-btn"
                             data-custom="1"
                             data-target="{{ $field['name'] }}"
-                            title="Inserisci una variabile custom (es. {$frontend.tiraggio_percentuale_trattenuta})"
+                            title="Inserisci una variabile custom (es. {$frontend.giorni_rimanenti})"
                         >
                             <i class="la la-plus-circle"></i>
                             <span class="translate-var-name">Variabile custom…</span>

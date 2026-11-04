@@ -2,29 +2,26 @@
 
 namespace App\Support\ApiSandbox;
 
-use App\Models\Filiale;
-use App\Models\Prodotto;
-use App\Models\Proiezione;
-use App\Models\Tiraggio;
-use App\Models\User;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 
 /**
- * Builds ready-to-fire demo calls for the /api-sandbox buttons.
+ * Builds ready-to-fire demo calls for the API docs sandbox buttons.
  *
- * Each operation resolves a random valid target inside ONE sandbox bank —
- * it runs inside EnterSandbox, so Eloquent already points at sandbox_rays —
- * and returns the real /sandbox/* path plus a body that passes the
+ * Each operation resolves a random valid target for ONE sandbox profile —
+ * it runs inside EnterSandbox, so Eloquent already points at the sandbox
+ * schema — and returns the real /sandbox/* path plus a body that passes the
  * endpoint's validation. Null means no suitable row exists.
  *
- * Which operations exist depends on the bank's product shape:
- * estinzione-parziale only makes sense where the product is a conguaglio
- * one (the durata-parametrica bank — or nowhere, when its flag is toggled
- * off for the request).
+ * Adding an operation:
+ *   1. add its key to OPERATIONS (the same key used in the 'operations'
+ *      list of the EndpointsCatalog entry);
+ *   2. add a private static method named after the key in camelCase
+ *      (e.g. 'article-publish' → articlePublish(string $profile)) returning
+ *      ['method' => 'PATCH', 'path' => '/sandbox/...', 'body' => [...]] or null.
  */
 class SampleCallResolver
 {
+<<<<<<< HEAD
 	private const OPERATIONS = [
 		"perfeziona",
 		"rifiuta",
@@ -36,6 +33,10 @@ class SampleCallResolver
 		"eleggibili-sospendi",
 		"eleggibili-anagrafica",
 	];
+=======
+    /** @var list<string> Operation keys the docs page can request a sample for. */
+    private const OPERATIONS = [];
+>>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 
 	/** @return array<int, string> */
 	public static function operations(): array
@@ -43,6 +44,7 @@ class SampleCallResolver
 		return self::OPERATIONS;
 	}
 
+<<<<<<< HEAD
 	/**
 	 * The operations a bank's current product config can actually run.
 	 *
@@ -324,4 +326,27 @@ class SampleCallResolver
 
 		return $base()->where("user_id", "not like", "%\_ERR%")->first() ?? $base()->first();
 	}
+=======
+    /**
+     * The operations a profile can actually run. Every profile runs every
+     * operation by default; narrow it here when a profile lacks the data or
+     * the permission an operation needs.
+     *
+     * @return array<int, string>
+     */
+    public static function operationsForProfile(string $profile): array
+    {
+        return self::OPERATIONS;
+    }
+
+    /** @return array{method: string, path: string, body: array<string, mixed>|null}|null */
+    public static function resolve(string $operation, string $profile): ?array
+    {
+        if (! in_array($operation, self::OPERATIONS, true) || ! array_key_exists($profile, config('sandbox.profiles', []))) {
+            return null;
+        }
+
+        return self::{Str::camel($operation)}($profile);
+    }
+>>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 }

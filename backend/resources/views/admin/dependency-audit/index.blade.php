@@ -67,7 +67,7 @@
                                 {{ $report['ref'] ?? '—' }}
                                 {{-- A local report's commit may exist only on that machine: no link. --}}
                                 @if (! empty($report['commit']) && ! ($report['local'] ?? false))
-                                    · <a href="https://github.com/humanbit-dev-org/rays/commit/{{ $report['commit'] }}" target="_blank" rel="noopener" class="font-monospace">{{ substr($report['commit'], 0, 8) }}</a>
+                                    · <a href="https://github.com/humanbit-dev-org/templates/commit/{{ $report['commit'] }}" target="_blank" rel="noopener" class="font-monospace">{{ substr($report['commit'], 0, 8) }}</a>
                                 @elseif (! empty($report['commit']))
                                     · <span class="font-monospace">{{ substr($report['commit'], 0, 8) }}</span>
                                     <span class="badge bg-light text-muted border ms-1">generato in locale</span>

@@ -21,6 +21,7 @@ class BackpackRefreshCommand extends Command
 	 */
 	protected $description = "Refresh assets files from backend/public/static/* to backend/storage/app/public/basset/public/static/*";
 
+<<<<<<< HEAD
 	/**
 	 * Source and destination paths for asset files (CSS and JS)
 	 */
@@ -39,6 +40,25 @@ class BackpackRefreshCommand extends Command
 		// JS files
 		"public/static/js/humanbit_custom.js" => "storage/app/public/basset/public/static/js/",
 	];
+=======
+    /**
+     * Source and destination paths for asset files (CSS and JS)
+     */
+    protected array $assetsMappings = [
+        // CSS files
+        'public/static/css/humanbit_colors.css' => 'storage/app/public/basset/public/static/css/',
+        'public/static/css/humanbit_color_adjustments.css' => 'storage/app/public/basset/public/static/css/',
+        'public/static/css/humanbit_datatables.css' => 'storage/app/public/basset/public/static/css/',
+        'public/static/css/humanbit_csv.css' => 'storage/app/public/basset/public/static/css/',
+        'public/static/css/humanbit_custom.css' => 'storage/app/public/basset/public/static/css/',
+        'public/static/css/logs_index.css' => 'storage/app/public/basset/public/static/css/',
+        'public/static/css/logs_show.css' => 'storage/app/public/basset/public/static/css/',
+        'public/static/css/csv_rollback.css' => 'storage/app/public/basset/public/static/css/',
+        'public/static/css/humanbit_admin_ui.css' => 'storage/app/public/basset/public/static/css/',
+        // JS files
+        'public/static/js/humanbit_custom.js' => 'storage/app/public/basset/public/static/js/',
+    ];
+>>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 
 	/**
 	 * Execute the console command.

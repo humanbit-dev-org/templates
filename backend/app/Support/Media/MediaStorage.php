@@ -6,13 +6,15 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Str;
 
 /**
- * Single entry point for tenant media (bank logos and fonts).
+ * Single entry point for stored media (images, logos, fonts, attachments).
  *
  * Two channels, same layout:
  *
- *   uploads/{tipo}/{banca_abi}/{file}   public  — what we upload for a bank
- *   requests/{tipo}/{banca_abi}/{file}  private — what a bank submits from the
- *                                                 business console for approval
+ *   uploads/{tipo}/{owner}/{file}   public  — what we publish ourselves
+ *   requests/{tipo}/{owner}/{file}  private — what users submit, pending approval
+ *
+ * {owner} is an optional folder segment grouping the files of one owner
+ * (e.g. a tenant or a user); it is left out when null.
  *
  * The path stored in the database is always relative to the disk root and
  * carries its own prefix, so it is byte-identical on local and S3 and tells you
@@ -29,6 +31,7 @@ final class MediaStorage
 
 	public const PRIVATE_PREFIX = "requests";
 
+<<<<<<< HEAD
 	/**
 	 * Legacy prefixes from before the layout was unified. Read-only: nothing
 	 * writes there any more, but stored rows still point at them.
@@ -41,6 +44,19 @@ final class MediaStorage
 		"fonts/" => "public",
 		"media/" => "public",
 	];
+=======
+    /**
+     * Legacy prefixes from before the layout was unified. Read-only: nothing
+     * writes there any more, but stored rows still point at them.
+     *
+     * @var array<string, string> prefix => channel
+     */
+    private const LEGACY_PREFIXES = [
+        'logos/' => 'public',
+        'fonts/' => 'public',
+        'media/' => 'public',
+    ];
+>>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 
 	/**
 	 * Disk holding publicly served media (CloudFront on S3, the storage symlink
@@ -64,6 +80,7 @@ final class MediaStorage
 		return self::isPrivatePath($path) ? self::privateDisk() : self::publicDisk();
 	}
 
+<<<<<<< HEAD
 	/**
 	 * Store a bank-facing asset we publish ourselves.
 	 *
@@ -81,6 +98,28 @@ final class MediaStorage
 	{
 		return self::store($file, self::PRIVATE_PREFIX, $tipo, $bancaAbi, self::privateDisk(), "private");
 	}
+=======
+    /**
+     * Store a public asset we publish ourselves.
+     *
+     * @param  string  $tipo  logos, fonts, media, …
+     * @param  string|null  $owner  Optional owner folder segment
+     */
+    public static function storePublic(UploadedFile $file, string $tipo, ?string $owner = null): string
+    {
+        return self::store($file, self::PUBLIC_PREFIX, $tipo, $owner, self::publicDisk(), 'public');
+    }
+
+    /**
+     * Store an asset submitted by a user, pending our approval.
+     *
+     * @param  string|null  $owner  Optional owner folder segment
+     */
+    public static function storePrivate(UploadedFile $file, string $tipo, ?string $owner = null): string
+    {
+        return self::store($file, self::PRIVATE_PREFIX, $tipo, $owner, self::privateDisk(), 'private');
+    }
+>>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 
 	public static function isPrivatePath(string $path): bool
 	{
@@ -128,6 +167,7 @@ final class MediaStorage
 		);
 	}
 
+<<<<<<< HEAD
 	private static function store(
 		UploadedFile $file,
 		string $prefix,
@@ -137,6 +177,17 @@ final class MediaStorage
 		string $visibility
 	): string {
 		$directory = trim($prefix . "/" . $tipo . "/" . self::segment($bancaAbi), "/");
+=======
+    private static function store(
+        UploadedFile $file,
+        string $prefix,
+        string $tipo,
+        ?string $owner,
+        string $disk,
+        string $visibility,
+    ): string {
+        $directory = trim($prefix.'/'.$tipo.'/'.self::segment($owner), '/');
+>>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 
 		$options = [
 			"disk" => $disk,
@@ -159,6 +210,7 @@ final class MediaStorage
 		return (string) $file->storeAs($directory, self::filename($file), $options);
 	}
 
+<<<<<<< HEAD
 	/**
 	 * Prefix the sanitised original name with a uuid: two banks uploading
 	 * "logo.png" must not overwrite each other, and neither must two successive
@@ -167,6 +219,16 @@ final class MediaStorage
 	private static function filename(UploadedFile $file): string
 	{
 		$original = preg_replace("/[^A-Za-z0-9\-\_\.]/", "_", $file->getClientOriginalName());
+=======
+    /**
+     * Prefix the sanitised original name with a uuid: two owners uploading
+     * "logo.png" must not overwrite each other, and neither must two successive
+     * uploads from the same owner while one is pending review.
+     */
+    private static function filename(UploadedFile $file): string
+    {
+        $original = preg_replace('/[^A-Za-z0-9\-\_\.]/', '_', $file->getClientOriginalName());
+>>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 
 		return Str::uuid()->toString() . "_" . $original;
 	}

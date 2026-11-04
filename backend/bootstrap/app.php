@@ -10,7 +10,6 @@ use App\Http\Middleware\RoleScope;
 use App\Http\Middleware\RollbackDocs;
 use App\Http\Middleware\SecurityShield;
 use App\Http\Middleware\SetLocaleFromHeader;
-use App\Http\Middleware\TenantTokenMiddleware;
 use Illuminate\Contracts\Auth\Middleware\AuthenticatesRequests;
 use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Application;
@@ -31,9 +30,9 @@ return Application::configure(basePath: dirname(__DIR__))
             Route::middleware(['web', SecurityShield::class])
                 ->group(base_path('routes/restricted.php'));
 
-            // SSO Nexi: browser-facing, ma protetto da SecurityShield come tutto il resto
-            // (i suoi controlli sono generici e non vanno alleggeriti per il traffico browser).
-            // La guardia sul tenant vive dentro routes/sso.php, come per routes/integrations.php.
+            // SSO routes: browser-facing, but protected by SecurityShield like
+            // everything else (its checks are generic and must not be relaxed for
+            // browser traffic).
             Route::middleware(['web', SecurityShield::class])
                 ->group(base_path('routes/sso.php'));
 
@@ -82,11 +81,10 @@ return Application::configure(basePath: dirname(__DIR__))
             fn (Request $request) => $request->is('api/*', 'sandbox/*') ? null : route('backpack.auth.login')
         );
 
-        // apiToken è un Bearer token che il frontend legge dal cookie (httpOnly: false) e
-        // rigira come header Authorization: cifrarlo lo renderebbe inservibile.
-        // Finora il caso non si presentava perché lo emetteva solo POST /api/auth/saml, che
-        // sta nel gruppo "api" (senza EncryptCookies). Le route SSO OIDC stanno invece nel
-        // gruppo "web", dove il cookie usciva cifrato e il login falliva a valle, in silenzio.
+        // apiToken is a Bearer token the frontend reads from the cookie
+        // (httpOnly: false) and sends back as the Authorization header:
+        // encrypting it would make it unusable. SSO routes live in the "web"
+        // group, where EncryptCookies runs, so the exception is needed there.
         $middleware->encryptCookies(except: ['apiToken']);
 
         $middleware->group('b2b', [
@@ -131,17 +129,17 @@ return Application::configure(basePath: dirname(__DIR__))
             // Sanctum abilities gate for the portal's /api/v1/* clones.
             'abilities' => CheckAbilities::class,
             'role.scope' => RoleScope::class,
-            'tenant.token' => TenantTokenMiddleware::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        $isNexiB2bRoute = static fn (Request $request): bool => str_contains($request->path(), 'nexi/');
+        // B2B partner routes (routes/integrations.php) carry the "b2b" middleware group.
+        $isB2bRoute = static fn (Request $request): bool => in_array('b2b', $request->route()?->gatherMiddleware() ?? [], true);
 
         // B2B partner routes are machine-to-machine: always JSON (no redirect()->back()).
         // api/* is included so a browser navigation to an API URL (no Accept: json)
         // gets a JSON 401 instead of a redirect to the non-existent 'login' route.
         $exceptions->shouldRenderJsonWhen(
-            fn (Request $request, Throwable $e) => $isNexiB2bRoute($request)
+            fn (Request $request, Throwable $e) => $isB2bRoute($request)
                 || $request->is('api/*')
                 || $request->is('sandbox/*')
                 || $request->expectsJson()
@@ -150,8 +148,8 @@ return Application::configure(basePath: dirname(__DIR__))
         // Hide raw SQL details from API consumers; return a generic 422 for
         // integrity constraint violations (SQLSTATE 23000) and a generic 500
         // for any other database error.
-        $exceptions->render(function (QueryException $e, Request $request) use ($isNexiB2bRoute) {
-            if (! $isNexiB2bRoute($request) && ! $request->expectsJson()) {
+        $exceptions->render(function (QueryException $e, Request $request) use ($isB2bRoute) {
+            if (! $isB2bRoute($request) && ! $request->expectsJson()) {
                 return null; // let Laravel handle web responses normally
             }
 

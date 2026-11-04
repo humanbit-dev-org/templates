@@ -68,7 +68,7 @@
                     // storage/logs/laravel.log → storage/logs
                     $groupKey = 'storage/logs';
                 } elseif (strpos($relativePath, 'database/import/') === 0) {
-                    // database/import/tiraggio/file.log → database/import/tiraggio
+                    // database/import/user/file.log → database/import/user
                     $afterBase = substr($relativePath, strlen('database/import/'));
                     $firstFolder = explode('/', $afterBase)[0] ?? '';
                     $groupKey = 'database/import' . ($firstFolder ? '/' . $firstFolder : '');

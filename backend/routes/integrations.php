@@ -4,7 +4,7 @@
 |--------------------------------------------------------------------------
 | B2B partner integrations (machine-to-machine)
 |--------------------------------------------------------------------------
-| Loaded with middleware group "b2b" and URL prefix /b2b.
-| SecurityShield runs on every request; OAuth token is public (client_credentials).
-| Tenant-specific routes may require tenant.token Bearer middleware.
+| Loaded with middleware group "b2b" (URL prefix /b2b in the integration
+| environment). SecurityShield runs on every request; the OAuth token
+| endpoint, when added, is public (client_credentials grant).
 */

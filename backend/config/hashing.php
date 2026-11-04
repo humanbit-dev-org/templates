@@ -56,8 +56,8 @@ return [
     | Rehash On Login
     |--------------------------------------------------------------------------
     |
-    | Disabled: in banking context, rehash must be a planned and audited
-    | operation, not a silent side effect. Use auth:rehash-passwords command.
+    | Disabled: a rehash must be a planned and audited operation, not a
+    | silent side effect of a login. Use the auth:rehash-passwords command.
     |
     */
 

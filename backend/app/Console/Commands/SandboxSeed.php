@@ -2,11 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Models\Filiale;
-use App\Models\Prodotto;
-use App\Models\Proiezione;
 use App\Models\Role;
-use App\Models\Tiraggio;
 use App\Models\User;
 use App\Services\Sandbox\SandboxContext;
 use Illuminate\Database\QueryException;
@@ -16,27 +12,34 @@ use Illuminate\Support\Facades\DB;
  * The sandbox variant of app:init.
  *
  * Same seeding machinery, different target: the sandbox schema, reachable
- * only through the /sandbox/* routes. The dataset is the demo set the API
- * documentation exercises — one fake bank per product shape declared in
- * config('sandbox.banks'), with clients covering every tiraggio status so
- * each documented endpoint has something to act on.
+ * only through the /sandbox/* routes. On top of the reference data it creates
+ * the demo account of every profile declared in config('sandbox.profiles'),
+ * which is the account sandbox tokens are minted on.
  *
- * Always rebuilds: the data is fake, deterministic and date-relative, so a
- * fresh build is the only trustworthy state — and migrate:fresh keeps the
- * schema in step with the migrations for free.
+ * Always rebuilds: the data is fake and deterministic, so a fresh build is
+ * the only trustworthy state — and migrate:fresh keeps the schema in step
+ * with the migrations for free.
  *
  * Runs on the admin connection: migrate:fresh needs DDL, and the limited
  * app user exists to protect the per-request rollback, not the seeder.
  */
 class SandboxSeed extends AppInit
 {
+<<<<<<< HEAD
 	protected $signature = 'sandbox:seed
                             {--users=40    : Platform users generated for each sandbox bank}
+=======
+    protected $signature = 'sandbox:seed
+>>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
                             {--force       : Skip the confirmation prompt}
                             {--fresh-dump  : Reload the schema and reference data from the dump first}
                             {--keep-schema : Align the existing schema instead of rebuilding it from scratch}';
 
+<<<<<<< HEAD
 	protected $description = "Rebuild the sandbox demo dataset (fake banks) inside the sandbox schema";
+=======
+    protected $description = 'Rebuild the sandbox demo dataset inside the sandbox schema';
+>>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 
 	protected function guardEnvironment(): bool
 	{
@@ -67,6 +70,7 @@ class SandboxSeed extends AppInit
 		return parent::guardEnvironment();
 	}
 
+<<<<<<< HEAD
 	/**
 	 * The sandbox always rebuilds: the "complete existing customers" path is
 	 * for real data, and there is none here.
@@ -325,4 +329,62 @@ class SandboxSeed extends AppInit
 				" — mint tokens via POST /sandbox/token"
 		);
 	}
+=======
+    /**
+     * The sandbox always rebuilds: there is no real data to preserve here.
+     */
+    protected function ricostruisce(): bool
+    {
+        return true;
+    }
+
+    /**
+     * The sandbox is not a Backpack environment: no operator accounts.
+     */
+    protected function seedInternalBackpackUsers(): void {}
+
+    /**
+     * This command IS the sandbox sync: without the no-op, the inherited
+     * handle() would call sandbox:seed again from inside itself.
+     */
+    protected function syncSandbox(): void {}
+
+    /**
+     * One demo account per sandbox profile, with predictable credentials:
+     * the username doubles as the password, which is acceptable only because
+     * the sandbox holds fake data and is never enabled in production.
+     */
+    protected function postSeed(): void
+    {
+        $this->components->task('Sandbox demo accounts', function (): void {
+            $userRoleId = Role::query()->where('name', 'User')->value('id');
+
+            foreach (config('sandbox.profiles', []) as $key => $profile) {
+                User::query()->updateOrCreate(
+                    ['username' => $profile['user']],
+                    [
+                        'email' => sprintf('%s@sandbox.test', $profile['user']),
+                        'name' => 'Sandbox',
+                        'surname' => $profile['label'] ?? $key,
+                        'role_id' => $userRoleId,
+                        'password' => $profile['user'],
+                        'email_verified_at' => now(),
+                    ],
+                );
+            }
+        });
+    }
+
+    protected function summary(): void
+    {
+        foreach (config('sandbox.profiles', []) as $key => $profile) {
+            $this->components->twoColumnDetail('<fg=green>Profile</>', ($profile['label'] ?? $key).' ('.$profile['user'].')');
+        }
+
+        $this->components->twoColumnDetail('<fg=green>Users</>', (string) User::query()->count());
+
+        $this->newLine();
+        $this->components->info('Mint sandbox tokens via POST /sandbox/token');
+    }
+>>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Contatto;
 use Illuminate\Foundation\Http\FormRequest;
 
 class ContattoRequest extends FormRequest
@@ -14,6 +15,7 @@ class ContattoRequest extends FormRequest
 		return true; // Public form, no auth required
 	}
 
+<<<<<<< HEAD
 	/**
 	 * Get the validation rules that apply to the request.
 	 *
@@ -27,6 +29,21 @@ class ContattoRequest extends FormRequest
 			"messaggio" => "required|string|max:5000",
 		];
 	}
+=======
+    /**
+     * Get the validation rules that apply to the request.
+     *
+     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     */
+    public function rules(): array
+    {
+        return [
+            'email' => 'required|email|max:255',
+            'oggetto' => 'required|string|in:'.implode(',', array_keys(Contatto::OGGETTI)),
+            'messaggio' => 'required|string|max:5000',
+        ];
+    }
+>>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 
 	public function attributes(): array
 	{
@@ -37,6 +54,7 @@ class ContattoRequest extends FormRequest
 		];
 	}
 
+<<<<<<< HEAD
 	public function messages(): array
 	{
 		return [
@@ -48,4 +66,17 @@ class ContattoRequest extends FormRequest
 			"messaggio.max" => "Il messaggio non può superare :max caratteri.",
 		];
 	}
+=======
+    public function messages(): array
+    {
+        return [
+            'email.required' => 'L\'email è obbligatoria.',
+            'email.email' => 'Inserisci un indirizzo email valido.',
+            'oggetto.required' => 'L\'oggetto è obbligatorio.',
+            'oggetto.in' => 'L\'oggetto deve essere uno tra: '.implode(', ', Contatto::OGGETTI).'.',
+            'messaggio.required' => 'Il messaggio è obbligatorio.',
+            'messaggio.max' => 'Il messaggio non può superare :max caratteri.',
+        ];
+    }
+>>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 }

@@ -12,7 +12,7 @@ return new class extends Migration {
 	{
 		Schema::create("personal_access_tokens", function (Blueprint $table) {
 			$table->id();
-			// Use string for tokenable_id to support User model with ndg (string) as primary key
+			// Use string for tokenable_id to support User model with username (string) as primary key
 			$table->string("tokenable_type");
 			$table->string("tokenable_id");
 			$table->index(["tokenable_type", "tokenable_id"]);

@@ -7,7 +7,7 @@
 
 <x-slot:footer>
 @component('vendor.mail.html.admin-footer')
-© {{ date('Y') }} RAYS Admin. {{ __('backpack::support.mail_footer_notice') }}
+© {{ date('Y') }} {{ config('app.name') }} Admin. {{ __('backpack::support.mail_footer_notice') }}
 @endcomponent
 </x-slot:footer>
 </x-mail::layout>

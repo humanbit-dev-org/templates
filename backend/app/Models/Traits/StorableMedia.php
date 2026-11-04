@@ -11,9 +11,10 @@ use Illuminate\Support\Str;
  * saving the disk-relative path on the model.
  *
  * The upload is deferred to the saving event rather than done inside
- * setAttribute(): the destination folder includes banca_abi, which on a new
- * record is not guaranteed to be set yet when the file attribute is filled —
- * mass assignment applies attributes in payload order.
+ * setAttribute(): the destination folder may include an owner segment
+ * (mediaOwner()) read from another attribute, which on a new record is not
+ * guaranteed to be set yet when the file attribute is filled — mass
+ * assignment applies attributes in payload order.
  */
 trait StorableMedia
 {
@@ -45,6 +46,7 @@ trait StorableMedia
 		return parent::setAttribute($key, $value);
 	}
 
+<<<<<<< HEAD
 	/**
 	 * Write the pending uploads, now that every attribute is set.
 	 */
@@ -53,6 +55,20 @@ trait StorableMedia
 		foreach ($this->pendingMedia as $key => $file) {
 			$this->attributes[$key] = MediaStorage::storePublic($file, $this->mediaFolderFor($key), $this->mediaBancaAbi());
 		}
+=======
+    /**
+     * Write the pending uploads, now that every attribute is set.
+     */
+    protected function flushPendingMedia(): void
+    {
+        foreach ($this->pendingMedia as $key => $file) {
+            $this->attributes[$key] = MediaStorage::storePublic(
+                $file,
+                $this->mediaFolderFor($key),
+                $this->mediaOwner(),
+            );
+        }
+>>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 
 		$this->pendingMedia = [];
 	}
@@ -69,6 +85,7 @@ trait StorableMedia
 		};
 	}
 
+<<<<<<< HEAD
 	/**
 	 * Bank the asset belongs to, used as the folder segment.
 	 */
@@ -76,6 +93,17 @@ trait StorableMedia
 	{
 		return $this->banca_abi ?? null;
 	}
+=======
+    /**
+     * Owner the asset belongs to, used as an optional folder segment
+     * (see MediaStorage). Null keeps every file of the type in one folder;
+     * override it in a model to group files, e.g. by tenant.
+     */
+    protected function mediaOwner(): ?string
+    {
+        return null;
+    }
+>>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 
 	private function isFileAttribute($key, $value): bool
 	{

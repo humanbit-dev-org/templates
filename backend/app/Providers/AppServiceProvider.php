@@ -167,7 +167,11 @@ class AppServiceProvider extends ServiceProvider
 				return Limit::perMinute(PHP_INT_MAX)->by("local");
 			}
 
+<<<<<<< HEAD
 			$userId = $request->user()?->user_id ?? $request->ip();
+=======
+            $userId = $request->user()?->getKey() ?? $request->ip();
+>>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 
 			return Limit::perMinutes(15, 3)
 				->by("contatto:" . $userId)
@@ -219,16 +223,25 @@ class AppServiceProvider extends ServiceProvider
 			return Limit::perMinute(config("sandbox.limits.calls_per_minute", 60))->by($request->ip());
 		});
 
+<<<<<<< HEAD
 		// Portal rate limits — per IP, same model as the sandbox ones: they
 		// throttle abuse, not bank traffic, so the caps stay generous.
 		RateLimiter::for("portal-token", function (Request $request) {
 			return Limit::perHour(config("portal.limits.tokens_per_hour", 20))->by($request->ip());
 		});
+=======
+        // Portal rate limits — per IP, same model as the sandbox ones: they
+        // throttle abuse, not regular client traffic, so the caps stay generous.
+        RateLimiter::for('portal-token', function (Request $request) {
+            return Limit::perHour(config('portal.limits.tokens_per_hour', 20))->by($request->ip());
+        });
+>>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 
 		RateLimiter::for("portal-calls", function (Request $request) {
 			return Limit::perMinute(config("portal.limits.calls_per_minute", 60))->by($request->ip());
 		});
 
+<<<<<<< HEAD
 		// =====================================================
 		// Cache invalidation — Eloquent Observers
 		// -----------------------------------------------------
@@ -241,6 +254,20 @@ class AppServiceProvider extends ServiceProvider
 		// builder updates bypass Eloquent — those are covered by
 		// CacheFlush::forBanca() called post-import explicitly.
 		// =====================================================
+=======
+        // =====================================================
+        // Cache invalidation — Eloquent Observers
+        // -----------------------------------------------------
+        // These fire on single-row Eloquent operations:
+        //   - Backpack admin create/update/delete (daily edits)
+        //   - Frontend controller writes
+        //   - ImportCsvAction Eloquent paths (Backpack UI import)
+        //
+        // Bulk import paths that use raw DB::statement or query
+        // builder updates bypass Eloquent — those are covered by
+        // CacheFlush::afterImport() called post-import explicitly.
+        // =====================================================
+>>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 
 		User::observe(UserObserver::class);
 		Metadata::observe(MetadataObserver::class);

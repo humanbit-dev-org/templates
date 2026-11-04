@@ -69,6 +69,7 @@ class ApiLabController extends Controller
 		$trace = new ApiLabTrace();
 		app()->instance(ApiLabTrace::class, $trace);
 
+<<<<<<< HEAD
 		try {
 			$result = $this->lab->run(
 				$endpoint,
@@ -85,6 +86,24 @@ class ApiLabController extends Controller
 			return response()->json($this->labErrorPayload($endpoint, $e), 422);
 		} catch (Throwable $e) {
 			report($e);
+=======
+        try {
+            $result = $this->lab->run(
+                $endpoint,
+                $validated['method'],
+                $pathParams,
+                $validated['query'] ?? [],
+                $validated['body'] ?? null,
+                $validated['headers'] ?? [],
+                $validated['acting_as_user_id'] ?? backpack_auth()->user()?->getKey(),
+                $request,
+                $trace,
+            );
+        } catch (JsonException|InvalidArgumentException $e) {
+            return response()->json($this->labErrorPayload($endpoint, $e), 422);
+        } catch (Throwable $e) {
+            report($e);
+>>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 
 			return response()->json($this->labErrorPayload($endpoint, $e), 500);
 		} finally {

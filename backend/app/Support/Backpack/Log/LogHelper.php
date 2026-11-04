@@ -2,12 +2,16 @@
 
 namespace App\Support\Backpack\Log;
 
+use Illuminate\Support\Facades\Log;
+use Psr\Log\LoggerInterface;
+
 /**
  * Log Helper
  * Manages log directory creation and rotation for import logs
  */
 class LogHelper
 {
+<<<<<<< HEAD
 	/**
 	 * Ensure log directory exists for a specific import type
 	 * Creates directory if it doesn't exist
@@ -17,12 +21,24 @@ class LogHelper
 	public static function ensureLogDirectory(string $subfolder): void
 	{
 		$logDir = database_path("import/{$subfolder}");
+=======
+    /**
+     * Ensure log directory exists for a specific import type
+     * Creates directory if it doesn't exist
+     *
+     * @param  string  $subfolder  Subfolder name (one per imported model, e.g. user, article)
+     */
+    public static function ensureLogDirectory(string $subfolder): void
+    {
+        $logDir = database_path("import/{$subfolder}");
+>>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 
 		if (!file_exists($logDir)) {
 			mkdir($logDir, 0755, true);
 		}
 	}
 
+<<<<<<< HEAD
 	/**
 	 * Rotate log files keeping only the last N files
 	 * Deletes older log files based on modification time
@@ -34,6 +50,19 @@ class LogHelper
 	public static function rotateLogs(string $subfolder, int $keepLast = 3): int
 	{
 		$logDir = database_path("import/{$subfolder}");
+=======
+    /**
+     * Rotate log files keeping only the last N files
+     * Deletes older log files based on modification time
+     *
+     * @param  string  $subfolder  Subfolder name (one per imported model, e.g. user, article)
+     * @param  int  $keepLast  Number of log files to keep (default: 3)
+     * @return int Number of files deleted
+     */
+    public static function rotateLogs(string $subfolder, int $keepLast = 3): int
+    {
+        $logDir = database_path("import/{$subfolder}");
+>>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 
 		if (!is_dir($logDir)) {
 			return 0;
@@ -64,6 +93,7 @@ class LogHelper
 		return $deletedCount;
 	}
 
+<<<<<<< HEAD
 	/**
 	 * Prepare log for import: ensure directory exists and rotate old logs
 	 * Combines ensureLogDirectory and rotateLogs
@@ -76,4 +106,32 @@ class LogHelper
 		self::ensureLogDirectory($subfolder);
 		self::rotateLogs($subfolder, $keepLast);
 	}
+=======
+    /**
+     * Prepare log for import: ensure directory exists and rotate old logs
+     * Combines ensureLogDirectory and rotateLogs
+     *
+     * @param  string  $subfolder  Subfolder name (one per imported model, e.g. user, article)
+     * @param  int  $keepLast  Number of log files to keep (default: 3)
+     */
+    public static function prepareImportLog(string $subfolder, int $keepLast = 3): void
+    {
+        self::ensureLogDirectory($subfolder);
+        self::rotateLogs($subfolder, $keepLast);
+    }
+
+    /**
+     * Logger for an import folder.
+     *
+     * A folder gets its own file when config/logging.php declares a channel
+     * named after it (e.g. 'user' writing to database/import/user/import.log);
+     * every other folder writes to the shared 'import' channel.
+     *
+     * @param  string  $subfolder  Subfolder name (one per imported model, e.g. user, article)
+     */
+    public static function channel(string $subfolder): LoggerInterface
+    {
+        return Log::channel(config("logging.channels.{$subfolder}") !== null ? $subfolder : 'import');
+    }
+>>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 }

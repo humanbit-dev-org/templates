@@ -2,18 +2,32 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Concerns\BancaListQueries;
-use App\Http\Concerns\DashboardListQueries;
-use App\Http\Concerns\PreparesListExportData;
 use App\Http\Concerns\WritesCsvExport;
 use App\Http\Controllers\Controller;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Validator;
 
+/**
+ * CSV exports of frontend lists, served to the authenticated frontend.
+ *
+ * Each export validates the list filters, builds headers and rows, and lets
+ * WritesCsvExport write the file and answer with its download URL. The
+ * template exposes no list yet; a typical action looks like:
+ *
+ *     public function exportArticles(Request $request): JsonResponse
+ *     {
+ *         $rows = Article::query()
+ *             ->where('published', true)
+ *             ->get(['id', 'title_italian', 'created_at'])
+ *             ->map(fn (Article $a) => [$a->id, $a->title_italian, $a->created_at?->toDateString()])
+ *             ->all();
+ *
+ *         return $this->exportCsvResponse('articles', ['ID', 'Titolo', 'Creato il'], $rows);
+ *     }
+ *
+ * and is routed in routes/api.php behind auth:sanctum.
+ */
 class CsvController extends Controller
 {
+<<<<<<< HEAD
 	use BancaListQueries, DashboardListQueries, PreparesListExportData, WritesCsvExport;
 
 	public function __construct()
@@ -107,4 +121,7 @@ class CsvController extends Controller
 
 		return $this->exportCsvResponse($sheet["filePrefix"], $sheet["headers"], $sheet["rows"]);
 	}
+=======
+    use WritesCsvExport;
+>>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 }

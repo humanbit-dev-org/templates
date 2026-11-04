@@ -229,6 +229,7 @@ class EndpointsCatalog
 			->all();
 	}
 
+<<<<<<< HEAD
 	/**
 	 * Curated content, keyed by "METHOD /api/path". Params lists serve both as
 	 * description sources for the merge and as the full fallback when the spec
@@ -520,4 +521,43 @@ class EndpointsCatalog
 			],
 		];
 	}
+=======
+    /**
+     * Curated content, keyed by "METHOD /api/path". Params lists serve both as
+     * description sources for the merge and as the full fallback when the spec
+     * is unavailable.
+     *
+     * The template ships with no documented endpoint: add one entry per route
+     * exposed through the sandbox (routes/sandbox.php) or the portal
+     * (routes/portal.php). Shape of an entry:
+     *
+     *     'POST /api/articles/{article}/publish' => [
+     *         'id' => 'article-publish',             // anchor and try-it key
+     *         'title' => 'Publish an article',
+     *         'description' => 'Marks the article as published.',
+     *         'path_params' => [
+     *             ['name' => 'article', 'type' => 'integer', 'required' => true, 'description' => 'Article id.'],
+     *         ],
+     *         'body_params' => [
+     *             ['name' => 'published_at', 'type' => 'date', 'required' => false, 'description' => 'Defaults to now.'],
+     *         ],
+     *         'operations' => [
+     *             ['key' => 'article-publish', 'label' => 'Publish'],
+     *         ],
+     *         'responses' => [
+     *             ['status' => 200, 'description' => 'Article published.'],
+     *             ['status' => 404, 'description' => 'Article not found.'],
+     *         ],
+     *     ],
+     *
+     * Each operation key must have a matching sample in SampleCallResolver so
+     * the sandbox try-it panel can pre-fill a working call.
+     *
+     * @return array<string, array<string, mixed>>
+     */
+    private static function overrides(): array
+    {
+        return [];
+    }
+>>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 }

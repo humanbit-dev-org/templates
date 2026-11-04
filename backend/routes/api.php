@@ -1,14 +1,18 @@
 <?php
 
+use App\Http\Controllers\Api\MetadataController;
+use App\Http\Controllers\Auth\NewPasswordController;
+use App\Http\Controllers\Auth\PasswordResetLinkController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-// use App\Http\Controllers\ArticleController;
-// use App\Http\Controllers\HeroController;
-// use App\Http\Controllers\InstitutionalController;
-use App\Http\Controllers\MetadataController;
-// use App\Http\Controllers\TranslateController;
 
+<<<<<<< HEAD
 Route::get("/{lang}/{page}/seo", [MetadataController::class, "index"])->name("seo.index");
+=======
+// SEO metadata of a frontend page, in the requested language.
+Route::get('/{lang}/{page}/seo', [MetadataController::class, 'index'])
+    ->name('seo.index');
+>>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 
 // Send password reset link via email (unauthenticated)
 Route::post("/forgot-password", [PasswordResetLinkController::class, "store"])

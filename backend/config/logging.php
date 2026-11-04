@@ -160,6 +160,7 @@ $config = [
 			"handler" => NullHandler::class,
 		],
 
+<<<<<<< HEAD
 		"emergency" => [
 			"driver" => "monolog",
 			"handler" =>
@@ -364,6 +365,47 @@ $config = [
 			"replace_placeholders" => true,
 		],
 	],
+=======
+        'emergency' => [
+            'driver' => 'monolog',
+            'handler' => env('LOG_CHANNEL') === 'encrypted_daily' ? EncryptedRotatingFileHandler::class : RotatingFileHandler::class,
+            'handler_with' => [
+                'path' => storage_path('logs/laravel.log'),
+                'days' => (int) env('LOG_DAILY_DAYS', 30),
+                'level' => 'debug',
+            ],
+            'formatter' => LineFormatter::class,
+            'formatter_with' => [
+                // %context%/%extra% are REQUIRED: without them LineFormatter silently
+                // drops every context array passed to Log::info(...) & co.
+                // ignoreEmptyContextAndExtra keeps lines clean when there is none.
+                'format' => "[%datetime%] %channel%.%level_name%: %message% %context% %extra%\n",
+                'dateFormat' => 'Y-m-d H:i:s',
+                'ignoreEmptyContextAndExtra' => true,
+            ],
+            'replace_placeholders' => true,
+        ],
+        'import' => [
+            'driver' => 'monolog',
+            'handler' => env('LOG_CHANNEL') === 'encrypted_daily' ? EncryptedRotatingFileHandler::class : RotatingFileHandler::class,
+            'handler_with' => [
+                'path' => storage_path('logs/import.log'),
+                'days' => (int) env('LOG_DAILY_DAYS', 30),
+                'level' => env('LOG_LEVEL', 'debug'),
+            ],
+            'formatter' => LineFormatter::class,
+            'formatter_with' => [
+                // %context%/%extra% are REQUIRED: without them LineFormatter silently
+                // drops every context array passed to Log::info(...) & co.
+                // ignoreEmptyContextAndExtra keeps lines clean when there is none.
+                'format' => "[%datetime%] %channel%.%level_name%: %message% %context% %extra%\n",
+                'dateFormat' => 'Y-m-d H:i:s',
+                'ignoreEmptyContextAndExtra' => true,
+            ],
+            'replace_placeholders' => true,
+        ],
+    ],
+>>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 
 	/*
     |--------------------------------------------------------------------------
@@ -412,12 +454,18 @@ if (filled($config["cloudwatch"]["group"])) {
 	$config["channels"]["cloudwatch"] = $cloudwatch("laravel");
 	$config["default"] = "cloudwatch";
 
+<<<<<<< HEAD
 	foreach (
 		["import", "tiraggio", "trattenuta", "mensile", "filiale", "delibera", "anagrafica", "proiezioni", "assistant"]
 		as $channel
 	) {
 		$config["channels"][$channel] = $cloudwatch($channel);
 	}
+=======
+    foreach (['import'] as $channel) {
+        $config['channels'][$channel] = $cloudwatch($channel);
+    }
+>>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 }
 
 // Write every channel's timestamps in logging.timezone (Europe/Rome) instead of

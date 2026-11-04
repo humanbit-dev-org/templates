@@ -28,12 +28,32 @@ class UserTwoFactorRequest extends FormRequest
 		return true;
 	}
 
+<<<<<<< HEAD
 	/**
 	 * Get the validation rules that apply to the request.
 	 *
 	 * @return array
 	 */
 	public function rules() {}
+=======
+    /**
+     * Get the validation rules that apply to the request.
+     *
+     * @return array
+     */
+    public function rules()
+    {
+        // Columns of user_two_factors (one row per user and trusted device).
+        return [
+            'username' => ['required', 'string', 'exists:users,username'],
+            'device_id' => ['required', 'uuid'],
+            'token' => ['nullable', 'string', 'max:255'],
+            'token_expire' => ['nullable', 'date'],
+            'trusted_until' => ['nullable', 'date'],
+            'token_verified' => ['nullable', 'boolean'],
+        ];
+    }
+>>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 
 	public function withValidator($validator) {}
 

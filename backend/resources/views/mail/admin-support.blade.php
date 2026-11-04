@@ -81,12 +81,10 @@
                                 <td style="padding:6px 0;width:30%;color:#6b7280;">{{ __('backpack::support.mail_role') }}</td>
                                 <td style="padding:6px 0;color:#111827;">{{ $roleName }}</td>
                             </tr>
-                            @if (filled($bancaLabel))
                             <tr>
-                                <td style="padding:6px 0;color:#6b7280;">{{ __('backpack::support.mail_bank') }}</td>
-                                <td style="padding:6px 0;color:#111827;">{{ $bancaLabel }}</td>
+                                <td style="padding:6px 0;color:#6b7280;">{{ __('backpack::support.mail_username') }}</td>
+                                <td style="padding:6px 0;color:#111827;">{{ $user->username }}</td>
                             </tr>
-                            @endif
                             @if (filled($pageUrl))
                             <tr>
                                 <td style="padding:6px 0;color:#6b7280;vertical-align:top;">{{ __('backpack::support.mail_page') }}</td>

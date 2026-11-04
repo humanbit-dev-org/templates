@@ -4,7 +4,6 @@ namespace App\Services\Auth;
 
 use App\Models\User;
 use App\Models\UserTwoFactor;
-use App\Support\Url\TenantAssetUrl;
 use App\Support\TwoFactorDevice;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Mail;
@@ -13,6 +12,7 @@ use Illuminate\Support\Str;
 
 class TwoFactorAuthService
 {
+<<<<<<< HEAD
 	/**
 	 * Resolve or create the 2FA record for a specific user device.
 	 */
@@ -28,6 +28,23 @@ class TwoFactorAuthService
 			]
 		);
 	}
+=======
+    /**
+     * Resolve or create the 2FA record for a specific user device.
+     */
+    public function resolveDevice(User $user, string $deviceId): UserTwoFactor
+    {
+        return UserTwoFactor::firstOrCreate(
+            [
+                'username' => $user->getKey(),
+                'device_id' => $deviceId,
+            ],
+            [
+                'token_verified' => false,
+            ]
+        );
+    }
+>>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 
 	/**
 	 * Generate a new two-factor authentication token for the given device.
@@ -45,12 +62,24 @@ class TwoFactorAuthService
 		return $token;
 	}
 
+<<<<<<< HEAD
 	/**
 	 * Check if this device needs a new token.
 	 */
 	public function needsNewToken(User $user, string $deviceId): bool
 	{
 		$device = UserTwoFactor::query()->where("user_id", $user->getKey())->where("device_id", $deviceId)->first();
+=======
+    /**
+     * Check if this device needs a new token.
+     */
+    public function needsNewToken(User $user, string $deviceId): bool
+    {
+        $device = UserTwoFactor::query()
+            ->where('username', $user->getKey())
+            ->where('device_id', $deviceId)
+            ->first();
+>>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 
 		if ($device === null) {
 			return true;
@@ -59,12 +88,24 @@ class TwoFactorAuthService
 		return !$device->token || !$device->token_expire || $device->token_expire->isPast() || !$device->token_verified;
 	}
 
+<<<<<<< HEAD
 	/**
 	 * Validate the provided token for the given device.
 	 */
 	public function validateToken(User $user, string $deviceId, string $token): bool
 	{
 		$device = UserTwoFactor::query()->where("user_id", $user->getKey())->where("device_id", $deviceId)->first();
+=======
+    /**
+     * Validate the provided token for the given device.
+     */
+    public function validateToken(User $user, string $deviceId, string $token): bool
+    {
+        $device = UserTwoFactor::query()
+            ->where('username', $user->getKey())
+            ->where('device_id', $deviceId)
+            ->first();
+>>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 
 		if ($device === null) {
 			return false;
@@ -92,6 +133,7 @@ class TwoFactorAuthService
 
 		$token = $this->generateToken($user, $deviceId);
 
+<<<<<<< HEAD
 		$user->loadMissing("banca.interfaccia");
 
 		Mail::send(
@@ -108,6 +150,20 @@ class TwoFactorAuthService
 			}
 		);
 	}
+=======
+        Mail::send(
+            'emails.two-factor-token',
+            [
+                'token' => $token,
+                'user' => $user,
+                'trustDays' => TwoFactorDevice::trustDays(),
+            ],
+            function ($message) use ($user) {
+                $message->to($user->email)->subject('Codice di accesso - Autenticazione a due fattori');
+            }
+        );
+    }
+>>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 
 	/**
 	 * Check if user can send token (rate limiting).

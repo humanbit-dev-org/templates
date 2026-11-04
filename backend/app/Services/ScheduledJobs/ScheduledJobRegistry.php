@@ -2,7 +2,6 @@
 
 namespace App\Services\ScheduledJobs;
 
-use App\Jobs\CheckNewProiezioni;
 use App\Models\ScheduledJobRun;
 use Carbon\CarbonInterface;
 use Illuminate\Console\Scheduling\CallbackEvent;
@@ -25,6 +24,7 @@ use Illuminate\Support\Collection;
  */
 class ScheduledJobRegistry
 {
+<<<<<<< HEAD
 	/**
 	 * Jobs that can be launched from the page, keyed like the schedule rows
 	 * (Artisan command name, or job class for Schedule::job).
@@ -89,6 +89,35 @@ class ScheduledJobRegistry
 			],
 		];
 	}
+=======
+    /**
+     * Jobs that can be launched from the page, keyed like the schedule rows
+     * (Artisan command name, or job class for Schedule::job).
+     *
+     * @return array<string, array{title: string, description: string, icon: string, dry_run: bool, job?: class-string, arguments?: array<string, mixed>, parameters?: array<string, array{label: string, type: string, rule: string, default?: mixed}>}>
+     */
+    public function runnable(): array
+    {
+        return [
+            'auth:rehash-passwords' => [
+                'title' => 'Auth - Rehash password vuote',
+                'description' => 'Deriva e salva la password degli utenti che non ne hanno una, con un batch su Horizon.',
+                'icon' => 'la la-key',
+                'dry_run' => true,
+                'arguments' => ['--only-empty' => true, '--no-wait' => true],
+            ],
+            'auth:cancel-stuck-rehash-batches' => [
+                'title' => 'Auth - Annulla batch di rehash bloccati',
+                'description' => 'Annulla i batch di auth:rehash-passwords non terminati più vecchi della soglia.',
+                'icon' => 'la la-ban',
+                'dry_run' => true,
+                'parameters' => [
+                    '--hours' => ['label' => 'Età minima (ore)', 'type' => 'number', 'rule' => 'required|integer|min:1', 'default' => 24],
+                ],
+            ],
+        ];
+    }
+>>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 
 	/**
 	 * @return array{title: string, description: string, icon: string, dry_run: bool, job?: class-string, arguments?: array<string, mixed>, parameters?: array<string, array{label: string, type: string, rule: string, default?: mixed}>}|null
@@ -225,10 +254,17 @@ class ScheduledJobRegistry
 			return (string) $event->description;
 		}
 
+<<<<<<< HEAD
 		// '/usr/local/bin/php' 'artisan' sftp:processa --flag → sftp:processa
 		if (preg_match("/'?artisan'?\s+([^\s]+)/", (string) $event->command, $match) === 1) {
 			return $match[1];
 		}
+=======
+        // '/usr/local/bin/php' 'artisan' auth:rehash-passwords --flag → auth:rehash-passwords
+        if (preg_match("/'?artisan'?\s+([^\s]+)/", (string) $event->command, $match) === 1) {
+            return $match[1];
+        }
+>>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 
 		return (string) $event->command;
 	}

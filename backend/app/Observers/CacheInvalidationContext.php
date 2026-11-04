@@ -19,7 +19,7 @@ namespace App\Observers;
  *       CacheInvalidationContext::restore();
  *   }
  *   // Post-import flush here (explicit, once)
- *   CacheFlush::forBanca($bancaAbi, $filialeId);
+ *   CacheFlush::afterImport($modelClass);
  *
  * NOT needed for operations that bypass Eloquent (DB::statement, query builder
  * update()) — those never trigger Observers anyway.

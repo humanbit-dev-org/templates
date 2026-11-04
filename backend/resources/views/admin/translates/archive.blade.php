@@ -8,11 +8,8 @@ $defaultBreadcrumbs = [
 $breadcrumbs = $breadcrumbs ?? $defaultBreadcrumbs;
 $archiveData = $crud->getOperationSetting('archiveData') ?? [];
 $translations = $archiveData['translations'] ?? null;
-$filters = $archiveData['filters'] ?? ['code' => '', 'banca_abi' => '', 'page_id' => ''];
+$filters = $archiveData['filters'] ?? ['code' => '', 'page_id' => ''];
 $pageOptions = $archiveData['pageOptions'] ?? [];
-$tenantOptions = $archiveData['tenantOptions'] ?? [];
-$tenantTabs = $archiveData['tenantTabs'] ?? [];
-$activeTenant = (string) ($archiveData['activeTenant'] ?? '');
 $placeholderSamples = $archiveData['placeholderSamples'] ?? [];
 $totals = $archiveData['totals'] ?? ['records' => 0];
 
@@ -83,18 +80,6 @@ $renderResolvedValue = static function (?string $value) use ($placeholderSamples
         <span class="summary-pill"><strong>{{ number_format((int) $totals['records']) }}</strong> records</span>
     </div>
 
-    <div class="tenant-tabs mb-3">
-        @foreach($tenantTabs as $tab)
-            @php
-                $query = request()->query();
-                $query['banca_abi'] = $tab['abi'];
-                $tabUrl = url($crud->route).'?'.http_build_query($query);
-                $isActiveTab = (string) $tab['abi'] === $activeTenant;
-            @endphp
-            <a class="tenant-tab {{ $isActiveTab ? 'is-active' : '' }}" href="{{ $tabUrl }}">{{ $tab['label'] }}</a>
-        @endforeach
-    </div>
-
     <div class="view-mode-switch mb-3">
         <button type="button" class="btn btn-sm btn-primary js-mode-btn is-active" data-mode="raw">Raw JSON</button>
         <button type="button" class="btn btn-sm btn-outline-primary js-mode-btn" data-mode="resolved">Valore risolto</button>
@@ -105,9 +90,6 @@ $renderResolvedValue = static function (?string $value) use ($placeholderSamples
             @foreach($translations as $row)
                 @php
                     $pageName = $row->page?->name ?? 'all';
-                    $tenant = $row->banca_abi ?: 'default';
-                    $tenantName = $row->banca?->nome ? " - {$row->banca->nome}" : '';
-                    $tenantLabel = $tenant === 'default' ? 'default' : "{$tenant}{$tenantName}";
                     $itNode = ['it' => $row->it ?? '', 'text_it' => $row->text_it ?? ''];
                     $enNode = ['en' => $row->en ?? '', 'text_en' => $row->text_en ?? ''];
                     $hasItNode = collect($itNode)->contains(static fn ($value): bool => trim((string) $value) !== '');
@@ -121,7 +103,6 @@ $renderResolvedValue = static function (?string $value) use ($placeholderSamples
                             <h3 class="archive-code">{{ $row->code }}</h3>
                             <div class="archive-badges">
                                 <span class="badge-archive badge-page">{{ $pageName }}</span>
-                                <span class="badge-archive badge-tenant">{{ $tenantLabel }}</span>
                             </div>
                         </div>
                     </header>

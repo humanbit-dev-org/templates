@@ -285,7 +285,7 @@ return [
         | Supervisor: Export Queue
         |----------------------------------------------------------------------
         | Dedicated to scheduled export jobs (e.g. ExportSelectionFile).
-        | Low concurrency, single try, generous timeout for multi-bank CSV runs.
+        | Low concurrency, single try, generous timeout for large CSV runs.
         | maxJobs=1: worker restarts after each export (releases memory).
         */
 		"supervisor-export" => [

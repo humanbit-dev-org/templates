@@ -286,6 +286,7 @@ class ApiLabInspector
 		return null;
 	}
 
+<<<<<<< HEAD
 	/**
 	 * @param  list<array{name: string, required: bool, hint: string}>  $inputs
 	 * @return array<string, mixed>|null
@@ -300,6 +301,22 @@ class ApiLabInspector
 			$name = $input["name"];
 			$body[$name] = $name === "payload" ? ["…" => "Nexi Cashberry payload object"] : "";
 		}
+=======
+    /**
+     * @param  list<array{name: string, required: bool, hint: string}>  $inputs
+     * @return array<string, mixed>|null
+     */
+    protected function buildSampleBody(array $inputs): ?array
+    {
+        if ($inputs === []) {
+            return null;
+        }
+        $body = [];
+        foreach ($inputs as $input) {
+            $name = $input['name'];
+            $body[$name] = '';
+        }
+>>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 
 		return $body;
 	}

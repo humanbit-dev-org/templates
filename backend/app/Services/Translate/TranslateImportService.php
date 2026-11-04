@@ -70,6 +70,7 @@ class TranslateImportService
 				$itNode = $italianTranslations[$code] ?? null;
 				$enNode = $englishTranslations[$code] ?? null;
 
+<<<<<<< HEAD
 				// Backward compatibility:
 				// - Old shape: $node is an object with keys it/en/text_*
 				// - New shape: $node is a map of banca_abi => object, with "default" for global-per-code
@@ -106,6 +107,28 @@ class TranslateImportService
 				}
 			}
 		}
+=======
+                // Leaf shape: $node is an object with keys it/en/text_*. Files written
+                // with per-variant nodes ({"default": {...}, ...}) keep working: only the
+                // "default" variant is imported, the template has no other dimension.
+                $looksLikeLeaf =
+                    is_array($itNode) && (array_key_exists('it', $itNode) || array_key_exists('text_it', $itNode)) ||
+                    is_array($enNode) && (array_key_exists('en', $enNode) || array_key_exists('text_en', $enNode));
+
+                if (! $looksLikeLeaf) {
+                    $itNode = is_array($itNode) ? ($itNode['default'] ?? null) : null;
+                    $enNode = is_array($enNode) ? ($enNode['default'] ?? null) : null;
+
+                    if ($itNode === null && $enNode === null) {
+                        continue;
+                    }
+                }
+
+                self::upsertTranslation($pageId, $code, $itNode, $enNode);
+                $seenKeys[] = self::canonicalKey($pageId, $code);
+            }
+        }
+>>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 
 		self::deleteTranslationsNotInImport($seenKeys);
 	}
@@ -152,6 +175,7 @@ class TranslateImportService
 		return $page;
 	}
 
+<<<<<<< HEAD
 	/**
 	 * Create or update translation record
 	 */
@@ -163,6 +187,14 @@ class TranslateImportService
 		mixed $englishData
 	): void {
 		$query = Translate::where("code", $code);
+=======
+    /**
+     * Create or update translation record
+     */
+    private static function upsertTranslation(?int $pageId, string $code, mixed $italianData, mixed $englishData): void
+    {
+        $query = Translate::where('code', $code);
+>>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 
 		if ($pageId === null) {
 			$query->whereNull("page_id");
@@ -170,6 +202,7 @@ class TranslateImportService
 			$query->where("page_id", $pageId);
 		}
 
+<<<<<<< HEAD
 		if ($bancaAbi === null) {
 			$query->whereNull("banca_abi");
 		} else {
@@ -177,12 +210,16 @@ class TranslateImportService
 		}
 
 		$translation = $query->first();
+=======
+        $translation = $query->first();
+>>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 
 		$leaf = self::normalizeLeafData(
 			is_array($italianData) ? $italianData : null,
 			is_array($englishData) ? $englishData : null
 		);
 
+<<<<<<< HEAD
 		$data = [
 			"page_id" => $pageId,
 			"code" => $code,
@@ -192,6 +229,16 @@ class TranslateImportService
 			"en" => $leaf["en"],
 			"text_en" => $leaf["text_en"],
 		];
+=======
+        $data = [
+            'page_id' => $pageId,
+            'code' => $code,
+            'it' => $leaf['it'],
+            'text_it' => $leaf['text_it'],
+            'en' => $leaf['en'],
+            'text_en' => $leaf['text_en'],
+        ];
+>>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 
 		if ($translation) {
 			$translation->update($data);
@@ -246,6 +293,7 @@ class TranslateImportService
 	{
 		$seenLookup = array_fill_keys($seenKeys, true);
 
+<<<<<<< HEAD
 		Translate::query()
 			->select(["id", "page_id", "code", "banca_abi"])
 			->chunkById(500, function ($rows) use ($seenLookup): void {
@@ -261,6 +309,18 @@ class TranslateImportService
 						$idsToDelete[] = $row->id;
 					}
 				}
+=======
+        Translate::query()->select(['id', 'page_id', 'code'])
+            ->chunkById(500, function ($rows) use ($seenLookup): void {
+                $idsToDelete = [];
+
+                foreach ($rows as $row) {
+                    $key = self::canonicalKey($row->page_id, (string) $row->code);
+                    if (! isset($seenLookup[$key])) {
+                        $idsToDelete[] = $row->id;
+                    }
+                }
+>>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 
 				if ($idsToDelete !== []) {
 					Translate::whereIn("id", $idsToDelete)->delete();
@@ -268,6 +328,7 @@ class TranslateImportService
 			});
 	}
 
+<<<<<<< HEAD
 	/**
 	 * Build a canonical key to compare imported and persisted rows.
 	 */
@@ -275,4 +336,16 @@ class TranslateImportService
 	{
 		return implode("|", [$pageId === null ? "null" : (string) $pageId, $code, $bancaAbi ?? "null"]);
 	}
+=======
+    /**
+     * Build a canonical key to compare imported and persisted rows.
+     */
+    private static function canonicalKey(?int $pageId, string $code): string
+    {
+        return implode('|', [
+            $pageId === null ? 'null' : (string) $pageId,
+            $code,
+        ]);
+    }
+>>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 }

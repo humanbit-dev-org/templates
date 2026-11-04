@@ -4,10 +4,9 @@
     $variablesByModel = TranslateVariableService::getRegistryGroupedByModel();
     $currentLocale = app()->getLocale();
     $labelKey = 'label_' . $currentLocale;
+    // Group captions of the variable picker, keyed like config/translate_vars.php 'models'.
     $modelLabels = [
         'user' => 'User',
-        'delibera' => 'Delibera',
-        'tiraggio' => 'Tiraggio',
     ];
 @endphp
 

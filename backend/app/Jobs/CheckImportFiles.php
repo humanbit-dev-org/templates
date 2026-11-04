@@ -8,6 +8,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use App\Support\Backpack\Log\LogHelper;
 use Illuminate\Support\Facades\Log;
 
 /**
@@ -57,6 +58,7 @@ class CheckImportFiles implements ShouldBeUnique, ShouldQueue
 			return;
 		}
 
+<<<<<<< HEAD
 		$PRIORITY_ORDER = [
 			"filiale" => 1,
 			"anagrafica" => 2,
@@ -69,6 +71,11 @@ class CheckImportFiles implements ShouldBeUnique, ShouldQueue
 		$MODEL_OVERRIDES = [
 			"anagrafica" => "User",
 		];
+=======
+        // Folder order and folder → model mapping: see config/import.php.
+        $PRIORITY_ORDER = config('import.priority', []);
+        $MODEL_OVERRIDES = config('import.model_overrides', []);
+>>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 
 		$files = [];
 		$dirIterator = new \RecursiveDirectoryIterator($folder, \RecursiveDirectoryIterator::SKIP_DOTS);
@@ -105,6 +112,7 @@ class CheckImportFiles implements ShouldBeUnique, ShouldQueue
 					$reasonFile = $suspendedFolder . "/" . pathinfo($filename, PATHINFO_FILENAME) . ".reason.txt";
 					@file_put_contents($reasonFile, $reason . "\n" . now()->toIso8601String());
 
+<<<<<<< HEAD
 					$msg = "SECURITY: File {$subfolder}/{$filename} moved to suspended - duplicate filename detected";
 					Log::channel("import")->warning($msg);
 					Log::channel($subfolder)->warning($msg);
@@ -121,6 +129,24 @@ class CheckImportFiles implements ShouldBeUnique, ShouldQueue
 				];
 			}
 		}
+=======
+                    $msg = "SECURITY: File {$subfolder}/{$filename} moved to suspended - duplicate filename detected";
+                    Log::channel('import')->warning($msg);
+                    LogHelper::channel($subfolder)->warning($msg);
+                } else {
+                    $msg = "ERROR: Cannot move duplicate file {$subfolder}/{$filename} to suspended";
+                    Log::channel('import')->error($msg);
+                    LogHelper::channel($subfolder)->error($msg);
+                }
+            } else {
+                $files[] = [
+                    'path' => $file->getRealPath(),
+                    'subfolder' => $subfolder,
+                    'priority' => $PRIORITY_ORDER[$subfolder] ?? 999,
+                ];
+            }
+        }
+>>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 
 		if (empty($files)) {
 			return;

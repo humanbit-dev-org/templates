@@ -83,9 +83,18 @@ class Page extends Model
 		return $this->hasMany(Metadata::class);
 	}
 
+<<<<<<< HEAD
 	// see HasDisplayAttributes for full doc
 	public function getDisplayAttribute(): string
 	{
 		return $this->title;
 	}
+=======
+    // see HasDisplayAttributes for full doc
+    public function getDisplayAttribute(): string
+    {
+        // pages.title is nullable: fall back to the (NOT NULL) folder name.
+        return $this->title ?: $this->name;
+    }
+>>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 }

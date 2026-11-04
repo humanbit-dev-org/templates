@@ -30,6 +30,7 @@ return [
 	 */
 	"auth_layout" => "default", // default, illustration, cover
 
+<<<<<<< HEAD
 	/**
 	 * Here you can easily load your own extra css styles.
 	 * Note: if you want to customize the style to create your own custom skin colors:
@@ -50,6 +51,27 @@ return [
 		base_path("public/static/css/csv_rollback.css"),
 		base_path("public/static/css/humanbit_banking_ui.css"),
 	],
+=======
+    /**
+     * Here you can easily load your own extra css styles.
+     * Note: if you want to customize the style to create your own custom skin colors:
+     *   - make a copy of the file "vendor/backpack/theme-tabler/resources/assets/css/colors.css" into your project
+     *   - adjust colors variables as you wish
+     *   - replace "base_path('vendor/backpack/theme-tabler/resources/assets/css/colors.css')," with the path to the file created above
+     *   - boom!
+     */
+    'styles' => [
+        base_path('public/static/css/humanbit_colors.css'),
+        base_path('public/static/css/humanbit_color_adjustments.css'),
+        base_path('public/static/css/humanbit_datatables.css'),
+        base_path('public/static/css/humanbit_csv.css'),
+        base_path('public/static/css/humanbit_custom.css'),
+        base_path('public/static/css/logs_index.css'),
+        base_path('public/static/css/logs_show.css'),
+        base_path('public/static/css/csv_rollback.css'),
+        base_path('public/static/css/humanbit_admin_ui.css'),
+    ],
+>>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 
 	/**
 	 * 2nd Layer of customization

@@ -125,6 +125,7 @@ class AutocompleteOperation extends Controller
 		return $displayValue;
 	}
 
+<<<<<<< HEAD
 	/**
 	 * Get autocomplete values for relation filters
 	 * Uses contains search (LIKE) instead of exact match
@@ -138,6 +139,21 @@ class AutocompleteOperation extends Controller
 		$relation = $request->input("relation"); // Relation name (for hasMany)
 		$model = $request->input("model"); // Model class (for hasMany)
 		$searchableKeys = $request->input("searchable_keys"); // Searchable keys (for hasMany)
+=======
+    /**
+     * Get autocomplete values for relation filters
+     * Uses contains search (LIKE) instead of exact match
+     */
+    public function getRelationValues(Request $request)
+    {
+        $relationColumn = $request->input('relation_column'); // Foreign key column name (e.g., page_id)
+        $table = $request->input('table'); // Current table name
+        $term = $request->input('term'); // Search term
+        $isHasMany = $request->input('is_hasmany', false); // Is this a hasMany relation?
+        $relation = $request->input('relation'); // Relation name (for hasMany)
+        $model = $request->input('model'); // Model class (for hasMany)
+        $searchableKeys = $request->input('searchable_keys'); // Searchable keys (for hasMany)
+>>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 
 		if (empty($term)) {
 			return response()->json([]);
@@ -157,15 +173,24 @@ class AutocompleteOperation extends Controller
 					return response()->json([]);
 				}
 
+<<<<<<< HEAD
 				$relationQuery = $parentModel->$relation();
 				$relatedModel = $relationQuery->getRelated();
 				$relatedClass = get_class($relatedModel);
 				$relatedTable = $relatedModel->getTable();
 				$foreignKey = $relationQuery->getForeignKeyName(); // This is the FK in the related table (e.g., user_id in tiraggi)
+=======
+                $relationQuery = $parentModel->$relation();
+                $relatedModel = $relationQuery->getRelated();
+                $relatedClass = get_class($relatedModel);
+                $relatedTable = $relatedModel->getTable();
+                $foreignKey = $relationQuery->getForeignKeyName(); // This is the FK in the related table (e.g., page_id in media)
+>>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 
 				// Decode searchable keys
 				$keys = json_decode(base64_decode($searchableKeys), true) ?? [];
 
+<<<<<<< HEAD
 				// For hasMany, we need to find records in the related table that have relations with the current table
 				// The foreign key is in the related table (e.g., user_id in tiraggi table), pointing to the current table (users)
 				// So we query the related table directly and filter by foreign key values that exist in current table
@@ -180,6 +205,22 @@ class AutocompleteOperation extends Controller
 				if (!SchemaCache::hasColumn($relatedTable, $foreignKey)) {
 					return response()->json([]);
 				}
+=======
+                // For hasMany, we need to find records in the related table that have relations with the current table
+                // The foreign key is in the related table (e.g., page_id in media table), pointing to the current table (pages)
+                // So we query the related table directly and filter by foreign key values that exist in current table
+                $query = $relatedClass::query();
+
+                // Get parent key name (e.g., "id" for Page model)
+                $parentKey = $parentModel->getKeyName();
+                $parentTable = $parentModel->getTable();
+
+                // Get all parent IDs that have at least one related record
+                // The foreign key in the related table (e.g., page_id) points to parent key (e.g., id)
+                if (! SchemaCache::hasColumn($relatedTable, $foreignKey)) {
+                    return response()->json([]);
+                }
+>>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 
 				$parentIds = DB::table($relatedTable)
 					->select($foreignKey)

@@ -56,6 +56,7 @@ class CsvHelper
 		self::$skippedCount += $count;
 	}
 
+<<<<<<< HEAD
 	/**
 	 * Increment a custom counter by name
 	 * Use for operation-specific tracking (e.g., 'missing_user_ids', 'invalid_dates')
@@ -70,6 +71,22 @@ class CsvHelper
 		}
 		self::$customCounters[$name] += $count;
 	}
+=======
+    /**
+     * Increment a custom counter by name
+     * Use for operation-specific tracking (e.g., 'missing_users', 'invalid_dates')
+     *
+     * @param  string  $name  Counter name
+     * @param  int  $count  Amount to increment (default: 1)
+     */
+    public static function incrementCustom(string $name, int $count = 1): void
+    {
+        if (! isset(self::$customCounters[$name])) {
+            self::$customCounters[$name] = 0;
+        }
+        self::$customCounters[$name] += $count;
+    }
+>>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 
 	/**
 	 * Get current statistics without resetting
@@ -287,6 +304,7 @@ class CsvHelper
 		return false;
 	}
 
+<<<<<<< HEAD
 	/**
 	 * Alias for findHeaderIndex - drop-in replacement for array_search with case-insensitive matching
 	 * Usage: CsvHelper::headerIndex('USER_ID', $headers) instead of array_search('USER_ID', $headers)
@@ -299,6 +317,20 @@ class CsvHelper
 	{
 		return self::findHeaderIndex($headerName, $headers);
 	}
+=======
+    /**
+     * Alias for findHeaderIndex - drop-in replacement for array_search with case-insensitive matching
+     * Usage: CsvHelper::headerIndex('EMAIL', $headers) instead of array_search('EMAIL', $headers)
+     *
+     * @param  string|array  $headerName  Header name or array of candidate names
+     * @param  array  $headers  CSV headers array
+     * @return int|false Index of found header or false if not found
+     */
+    public static function headerIndex($headerName, array $headers)
+    {
+        return self::findHeaderIndex($headerName, $headers);
+    }
+>>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 
 	/**
 	 * Get value from CSV row by header name (case-insensitive)
@@ -319,6 +351,7 @@ class CsvHelper
 			return $default;
 		}
 
+<<<<<<< HEAD
 		return trim($row[$index]);
 	}
 
@@ -357,4 +390,8 @@ class CsvHelper
 
 		return null;
 	}
+=======
+        return trim($row[$index]);
+    }
+>>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 }

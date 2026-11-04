@@ -25,8 +25,12 @@ class MetadataRequest extends FormRequest
 	public function rules()
 	{
 		return [
-			"code" => "required|string|",
-			"image_path" => "image|mimes:jpeg,png,jpg,gif,webp|max:1500",
+			// metadata.it and metadata.code are NOT NULL; image_path keeps the stored
+			// file on update, so it is only validated when a new upload is sent.
+			"it" => "required|string|max:255",
+			"en" => "nullable|string|max:255",
+			"code" => "required|string|max:255",
+			"image_path" => "nullable|image|mimes:jpeg,png,jpg,gif,webp|max:1500",
 			"page_id" => "required|exists:pages,id",
 		];
 	}

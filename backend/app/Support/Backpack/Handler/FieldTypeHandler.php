@@ -172,6 +172,7 @@ class FieldTypeHandler
 		];
 	}
 
+<<<<<<< HEAD
 	/**
 	 * Whether a column name represents a monetary amount.
 	 */
@@ -186,6 +187,20 @@ class FieldTypeHandler
 			str_contains($column, "forecast") ||
 			str_contains($column, "baseline");
 	}
+=======
+    /**
+     * Whether a column name represents a monetary amount.
+     */
+    private static function isCurrencyColumn(string $column): bool
+    {
+        return str_contains($column, 'importo')
+            || str_contains($column, 'prezzo')
+            || str_contains($column, 'price')
+            || str_contains($column, 'amount')
+            || str_contains($column, 'interessi')
+            || str_contains($column, 'costo');
+    }
+>>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 
 	/**
 	 * Customizes field types based on column name patterns.

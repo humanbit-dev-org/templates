@@ -109,12 +109,16 @@ return [
     | Support Address (fallback)
     |--------------------------------------------------------------------------
     |
-    | Recipient used for support/contact emails when the user's bank does not
-    | have a dedicated "email_supporto" configured.
+    | Recipient used for support/contact emails when no dedicated address
+    | is configured.
     |
     */
 
+<<<<<<< HEAD
 	"support_address" => env("MAIL_SUPPORT_ADDRESS", "assistenza@cashberry.it"),
+=======
+    'support_address' => env('MAIL_SUPPORT_ADDRESS', env('MAIL_FROM_ADDRESS', 'info@templates.com')),
+>>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 
 	/*
     |--------------------------------------------------------------------------
@@ -126,17 +130,23 @@ return [
     |
     */
 
+<<<<<<< HEAD
 	"brand_name" => env("MAIL_BRAND_NAME", "Nexi"),
+=======
+    'brand_name' => env('MAIL_BRAND_NAME', env('APP_NAME', 'Templates')),
+>>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 
 	/*
     |--------------------------------------------------------------------------
-    | Mail Brand Assets & Colors
+    | Mail Brand Logo
     |--------------------------------------------------------------------------
     |
-    | Palette aligned with frontend Nexi theme (_variables.generated.scss).
+    | Absolute URL of the logo shown in the mail header. When empty the
+    | layouts show the brand name as text instead.
     |
     */
 
+<<<<<<< HEAD
 	"logo_url" => env("MAIL_LOGO_URL"),
 
 	"brand" => [
@@ -147,4 +157,7 @@ return [
 		"text" => "#1a1a2e",
 		"muted" => "#c8d0ef",
 	],
+=======
+    'logo_url' => env('MAIL_LOGO_URL'),
+>>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 ];

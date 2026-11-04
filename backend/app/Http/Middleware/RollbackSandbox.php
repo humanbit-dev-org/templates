@@ -2,7 +2,6 @@
 
 namespace App\Http\Middleware;
 
-use App\Models\Prodotto;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -24,6 +23,7 @@ class RollbackSandbox
 		$level = $db->transactionLevel();
 		$db->beginTransaction();
 
+<<<<<<< HEAD
 		try {
 			$this->applyConguaglioToggle($request);
 
@@ -66,4 +66,12 @@ class RollbackSandbox
 					: ["conguaglio_periodico" => false, "frequenza_mesi_conguaglio" => null, "metodo_conguaglio" => null]
 			);
 	}
+=======
+        try {
+            return $next($request);
+        } finally {
+            $db->rollBack($level);
+        }
+    }
+>>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 }

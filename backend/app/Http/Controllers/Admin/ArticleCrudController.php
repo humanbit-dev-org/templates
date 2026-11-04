@@ -2,25 +2,26 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Concerns\ChecksBackpackPermissions;
+use App\Support\Backpack\BackpackHelper;
 use App\Http\Requests\ArticleRequest;
-use App\Http\Controllers\Admin\Helper\HelperBackend;
+use App\Http\Concerns\ChecksBackpackPermissions;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 
 /**
  * Class ArticleCrudController
- * @package App\Http\Controllers\Admin
+ *
  * @property-read \Backpack\CRUD\app\Library\CrudPanel\CrudPanel $crud
  */
 class ArticleCrudController extends CrudController
 {
-	use \Backpack\CRUD\app\Http\Controllers\Operations\ListOperation;
 	use \Backpack\CRUD\app\Http\Controllers\Operations\CreateOperation;
-	use \Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
 	use \Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation;
+	use \Backpack\CRUD\app\Http\Controllers\Operations\ListOperation;
 	use \Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
+	use \Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
 	use ChecksBackpackPermissions;
+
 	/**
 	 * Configure the CrudPanel object. Apply settings to all operations.
 	 *
@@ -39,11 +40,12 @@ class ArticleCrudController extends CrudController
 	 * Define what happens when the List operation is loaded.
 	 *
 	 * @see  https://backpackforlaravel.com/docs/crud-operation-list-entries
+	 *
 	 * @return void
 	 */
 	protected function setupListOperation()
 	{
-		HelperBackend::setFieldsView(new \App\Models\Article());
+		BackpackHelper::setFieldsView(new \App\Models\Article());
 
 		/**
 		 * Columns can be defined using the fluent syntax:
@@ -55,12 +57,13 @@ class ArticleCrudController extends CrudController
 	 * Define what happens when the Create operation is loaded.
 	 *
 	 * @see https://backpackforlaravel.com/docs/crud-operation-create
+	 *
 	 * @return void
 	 */
 	protected function setupCreateOperation()
 	{
 		CRUD::setValidation(ArticleRequest::class);
-		HelperBackend::setFields(new \App\Models\Article());
+		BackpackHelper::setFields(new \App\Models\Article());
 
 		/**
 		 * Fields can be defined using the fluent syntax:
@@ -72,6 +75,7 @@ class ArticleCrudController extends CrudController
 	 * Define what happens when the Update operation is loaded.
 	 *
 	 * @see https://backpackforlaravel.com/docs/crud-operation-update
+	 *
 	 * @return void
 	 */
 	protected function setupUpdateOperation()
@@ -81,6 +85,6 @@ class ArticleCrudController extends CrudController
 
 	protected function setupShowOperation()
 	{
-		HelperBackend::setFieldsShow(new \App\Models\Article());
+		BackpackHelper::setFieldsShow(new \App\Models\Article());
 	}
 }

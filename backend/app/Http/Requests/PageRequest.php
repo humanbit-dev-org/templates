@@ -25,8 +25,14 @@ class PageRequest extends FormRequest
 	public function rules()
 	{
 		return [
-				// 'name' => 'required|min:5|max:255'
-			];
+			// pages.name and pages.order are NOT NULL; Sortable shifts the other
+			// rows around the chosen order.
+			"name" => "required|string|max:255",
+			"order" => "required|integer|min:0",
+			"title" => "nullable|string|max:255",
+			"description" => "nullable|string",
+			"visible" => "boolean",
+		];
 	}
 
 	/**

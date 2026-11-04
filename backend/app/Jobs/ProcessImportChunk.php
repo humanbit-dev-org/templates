@@ -191,10 +191,16 @@ class ProcessImportChunk implements ShouldQueue
 		return $mapping;
 	}
 
+<<<<<<< HEAD
 	private function mapRowData(array $row, array $columnMapping, string $modelClass): array
 	{
 		$rowData = [];
 		$nonDateColumns = ["max_atp_consigliato", "max_atp_effettivo"];
+=======
+    private function mapRowData(array $row, array $columnMapping, string $modelClass): array
+    {
+        $rowData = [];
+>>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 
 		foreach ($columnMapping as $csvIndex => $dbColumn) {
 			if (!isset($row[$csvIndex])) {
@@ -209,6 +215,7 @@ class ProcessImportChunk implements ShouldQueue
 				}
 			}
 
+<<<<<<< HEAD
 			if (str_contains($dbColumn, "_at") && !in_array($dbColumn, $nonDateColumns, true) && $value !== "") {
 				$parsedDate = CsvHelper::parseDate($value);
 				if ($parsedDate) {
@@ -241,6 +248,26 @@ class ProcessImportChunk implements ShouldQueue
 				$rowData[$dbColumn] = $value;
 			}
 		}
+=======
+            if (
+                str_contains($dbColumn, '_at') &&
+                ! in_array($dbColumn, ImportJobService::NON_DATE_AT_COLUMNS, true) &&
+                $value !== ''
+            ) {
+                $parsedDate = CsvHelper::parseDate($value);
+                if ($parsedDate) {
+                    $value = $parsedDate;
+                }
+            }
+
+            // Same empty-cell rule as ImportJobService::mapRowData().
+            if ($value === '' && in_array($dbColumn, ImportJobService::ZERO_WHEN_EMPTY_COLUMNS, true)) {
+                $rowData[$dbColumn] = 0;
+            } elseif ($value !== '') {
+                $rowData[$dbColumn] = $value;
+            }
+        }
+>>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 
 		return $rowData;
 	}

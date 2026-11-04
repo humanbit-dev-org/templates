@@ -2,11 +2,9 @@
 
 namespace App\Support\Backpack\Handler;
 
-use App\Models\Prodotto;
-use App\Models\Tiraggio;
-
 class FieldConfigHandler
 {
+<<<<<<< HEAD
 	/**
 	 * Get field configuration for select_from_array fields
 	 * This is a centralized configuration used by both FieldTypeHandler and FilterHelper
@@ -70,6 +68,23 @@ class FieldConfigHandler
 				"options" => $options,
 			];
 		}
+=======
+    /**
+     * Get field configuration for select_from_array fields
+     * This is a centralized configuration used by both FieldTypeHandler and FilterHelper
+     *
+     * @param  string  $column  Column name
+     * @param  string  $table  Table name
+     * @return array|null Returns ['type' => 'select_from_array', 'options' => [...]] or null
+     */
+    public static function getSelectFieldConfig($column, $table)
+    {
+        // Add per-table select fields here, e.g. a status enum:
+        //
+        //     if ($column === 'status' && $table === 'orders') {
+        //         return ['type' => 'select_from_array', 'options' => ['open' => 'Open', 'paid' => 'Paid'], 'default' => 'open'];
+        //     }
+>>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 
 		// SEO metadata code field
 		if ($table == "metadata" && str_contains($column, "code")) {

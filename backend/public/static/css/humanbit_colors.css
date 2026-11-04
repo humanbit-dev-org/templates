@@ -9,7 +9,7 @@
 [data-bs-theme=light],
 [data-menu-theme=light] {
 
-    /* overwrite — refined banking palette (navy + coral family) */
+    /* overwrite — refined admin palette (navy + coral family) */
     --tblr-tabler: #0a1d5c;
     --tblr-primary: #0a1d5c;
     --tblr-link-color: rgb(10, 29, 92);

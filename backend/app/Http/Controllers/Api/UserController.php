@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
@@ -30,11 +31,8 @@ class UserController extends Controller
 
 		$user = User::where("email", $request->email)->first();
 
-		$isFiliale = $user->role_id === 4;
-		$isBackpackAdmin = $user->backpackRole?->name === "Admin";
-		$isDeveloper = $user->backpackRole?->name === "Developer";
-
-		if ($isFiliale || $isBackpackAdmin || $isDeveloper) {
+		// The dashboard is reserved to the Backpack Admin and Developer roles.
+		if ($user->isBackpackAdmin()) {
 			$apiToken = explode("|", $user->createToken("api-token")->plainTextToken, 2)[1];
 			$domain = config("session.domain");
 
@@ -71,7 +69,7 @@ class UserController extends Controller
 	/**
 	 * Anagrafica dell'utente
 	 *
-	 * Restituisce l'anagrafica dell'utente con la filiale
+	 * Restituisce l'anagrafica dell'utente autenticato con il suo ruolo
 	 *
 	 * @return array{user: UserResource}
 	 */

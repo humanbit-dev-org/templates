@@ -48,6 +48,7 @@ class AdminSupportRequestNotification extends Notification
 	{
 		$categoryLabel = $this->categoryLabel();
 
+<<<<<<< HEAD
 		$mail = (new MailMessage())
 			->subject("[RAYS Admin] " . $categoryLabel . " — " . $this->user->email)
 			->view("mail.admin-support", [
@@ -63,6 +64,22 @@ class AdminSupportRequestNotification extends Notification
 				// other admin screens do (logs, dashboard).
 				"sentAt" => now("Europe/Rome"),
 			]);
+=======
+        $mail = (new MailMessage)
+            ->subject('['.config('app.name').' Admin] '.$categoryLabel.' — '.$this->user->email)
+            ->view('mail.admin-support', [
+                'user' => $this->user,
+                'roleName' => $this->user->backpackRole?->name ?? '—',
+                'categoryKey' => $this->category,
+                'categoryLabel' => $categoryLabel,
+                'messageBody' => $this->message,
+                'pageUrl' => $this->pageUrl,
+                'screenshotNames' => array_column($this->screenshots, 'name'),
+                // The app runs in UTC: show the time in Italian local time, as the
+                // other admin screens do (logs, dashboard).
+                'sentAt' => now('Europe/Rome'),
+            ]);
+>>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 
 		if (filled($this->user->email)) {
 			$mail->replyTo($this->user->email);
@@ -75,6 +92,7 @@ class AdminSupportRequestNotification extends Notification
 		return $mail;
 	}
 
+<<<<<<< HEAD
 	/**
 	 * Bank the admin user belongs to, as "Name (ABI)", or null when the user
 	 * has no bank.
@@ -98,6 +116,16 @@ class AdminSupportRequestNotification extends Notification
 	{
 		$key = "backpack::support.categories." . $this->category;
 		$label = __($key);
+=======
+    /**
+     * Translated label of the category, falling back to the raw key when the
+     * translation is missing.
+     */
+    public function categoryLabel(): string
+    {
+        $key = 'backpack::support.categories.'.$this->category;
+        $label = __($key);
+>>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 
 		return $label === $key ? $this->category : (string) $label;
 	}

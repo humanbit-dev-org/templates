@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Hash;
  * Set an Argon2id password on Backpack admin accounts.
  *
  * auth:rehash-passwords skips admins on purpose: their passwords are set by
- * hand, not HKDF-derived from user_id. After a legacy migration the migrated
+ * hand, not HKDF-derived from the username. After a legacy migration the migrated
  * admins therefore land with an empty password and need one from here.
  *
  * The plain password is never a command default: pass --password only for
@@ -41,7 +41,11 @@ class SetAdminPassword extends Command
 			});
 		}
 
+<<<<<<< HEAD
 		$users = $query->orderBy("user_id")->get(["user_id", "email"]);
+=======
+        $users = $query->orderBy('username')->get(['username', 'email']);
+>>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 
 		if ($users->isEmpty()) {
 			$this->info("No matching admin accounts.");
@@ -49,7 +53,14 @@ class SetAdminPassword extends Command
 			return self::SUCCESS;
 		}
 
+<<<<<<< HEAD
 		$this->table(["user_id", "email"], $users->map(fn(User $u) => [$u->user_id, $u->email])->all());
+=======
+        $this->table(
+            ['username', 'email'],
+            $users->map(fn (User $u) => [$u->username, $u->email])->all()
+        );
+>>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 
 		if ($this->option("dry-run")) {
 			$this->info("[DRY RUN] " . $users->count() . " admin(s) would be updated.");
@@ -68,6 +79,7 @@ class SetAdminPassword extends Command
 		$bar = $this->output->createProgressBar($users->count());
 		$bar->start();
 
+<<<<<<< HEAD
 		// One Hash::make per user: the plain password is shared by design, but
 		// reusing a single hash would also leak that fact to anyone reading the
 		// table. A per-row Argon2id salt costs a few seconds on this many rows.
@@ -79,6 +91,19 @@ class SetAdminPassword extends Command
 				->update(["password" => Hash::make($plain)]);
 			$bar->advance();
 		}
+=======
+        // One Hash::make per user: the plain password is shared by design, but
+        // reusing a single hash would also leak that fact to anyone reading the
+        // table. A per-row Argon2id salt costs a few seconds on this many rows.
+        // Query-builder update bypasses the model's "hashed" cast, so the value
+        // written here must already be hashed.
+        foreach ($users as $user) {
+            User::query()
+                ->where('username', $user->username)
+                ->update(['password' => Hash::make($plain)]);
+            $bar->advance();
+        }
+>>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 
 		$bar->finish();
 		$this->newLine(2);

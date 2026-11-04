@@ -7,8 +7,11 @@
  * when a specific environment requires different cache lifetimes
  * (e.g., shorter TTLs in staging to observe invalidation behaviour).
  *
- * Access via: config('cache_ttl.dashboard_chart')
+ * Access via: config('cache_ttl.seo')
  * Never use env() directly in application code — always go through config().
+ *
+ * Add one entry per cached dataset, next to the keys listed in
+ * App\Services\Cache\CacheKeyService.
  *
  * Registered automatically by Laravel's config loader (no ServiceProvider needed).
  */
@@ -23,6 +26,7 @@ return [
 	// balance between freshness and DB query reduction.
 	// =========================================================
 
+<<<<<<< HEAD
 	"dashboard_chart" => (int) env("CACHE_TTL_DASHBOARD_CHART", 900),
 
 	// =========================================================
@@ -108,6 +112,14 @@ return [
 	// =========================================================
 
 	"seo" => (int) env("CACHE_TTL_SEO", 86400),
+=======
+    // =========================================================
+    // SEO metadata
+    // ---------------------------------------------------------
+    // Page title, description, image. Changes only via Backpack
+    // admin (MetadataObserver drops the cached entry). 24 hours.
+    // =========================================================
+>>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 
 	// =========================================================
 	// Role ID lookup
@@ -116,6 +128,7 @@ return [
 	// 24 hours; effectively permanent within a deploy lifecycle.
 	// =========================================================
 
+<<<<<<< HEAD
 	"role" => (int) env("CACHE_TTL_ROLE", 86400),
 
 	// =========================================================
@@ -134,4 +147,6 @@ return [
 	// =========================================================
 
 	"assistant_availability" => (int) env("CACHE_TTL_ASSISTANT_AVAILABILITY", 60),
+=======
+>>>>>>> 100810b09b622bfe1cda570c0a4e4e2dcbd814cb
 ];
