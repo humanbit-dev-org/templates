@@ -14,97 +14,97 @@ use Illuminate\Support\Facades\Validator;
 
 class CsvController extends Controller
 {
-    use BancaListQueries, DashboardListQueries, PreparesListExportData, WritesCsvExport;
+	use BancaListQueries, DashboardListQueries, PreparesListExportData, WritesCsvExport;
 
-    public function __construct()
-    {
-        $this->raiseExportLimits();
-    }
+	public function __construct()
+	{
+		$this->raiseExportLimits();
+	}
 
-    public function exportStoricoErogazioni(Request $request): JsonResponse
-    {
-        $values = Validator::make($this->exportRequestPayload($request), $this->exportRules(__FUNCTION__))->validate();
+	public function exportStoricoErogazioni(Request $request): JsonResponse
+	{
+		$values = Validator::make($this->exportRequestPayload($request), $this->exportRules(__FUNCTION__))->validate();
 
-        $sheet = $this->prepareStoricoErogazioniExport($values);
+		$sheet = $this->prepareStoricoErogazioniExport($values);
 
-        return $this->exportCsvResponse($sheet['filePrefix'], $sheet['headers'], $sheet['rows']);
-    }
+		return $this->exportCsvResponse($sheet["filePrefix"], $sheet["headers"], $sheet["rows"]);
+	}
 
-    public function exportRichiesteAtp(Request $request): JsonResponse
-    {
-        $values = Validator::make($this->exportRequestPayload($request), $this->exportRules(__FUNCTION__))->validate();
+	public function exportRichiesteAtp(Request $request): JsonResponse
+	{
+		$values = Validator::make($this->exportRequestPayload($request), $this->exportRules(__FUNCTION__))->validate();
 
-        $sheet = $this->prepareRichiesteAtpExport($values);
+		$sheet = $this->prepareRichiesteAtpExport($values);
 
-        return $this->exportCsvResponse($sheet['filePrefix'], $sheet['headers'], $sheet['rows']);
-    }
+		return $this->exportCsvResponse($sheet["filePrefix"], $sheet["headers"], $sheet["rows"]);
+	}
 
-    public function exportBancaEleggibili(Request $request): JsonResponse
-    {
-        $values = Validator::make($this->exportRequestPayload($request), $this->exportRules(__FUNCTION__))->validate();
+	public function exportBancaEleggibili(Request $request): JsonResponse
+	{
+		$values = Validator::make($this->exportRequestPayload($request), $this->exportRules(__FUNCTION__))->validate();
 
-        abort_if(Auth::user()->banca === null, 403);
+		abort_if(Auth::user()->banca === null, 403);
 
-        $sheet = $this->prepareBancaEleggibiliExport($values);
+		$sheet = $this->prepareBancaEleggibiliExport($values);
 
-        return $this->exportCsvResponse(
-            $sheet['filePrefix'],
-            $sheet['headers'],
-            $this->applyCsvRateColumns($sheet['rows'], [6, 7]),
-        );
-    }
+		return $this->exportCsvResponse(
+			$sheet["filePrefix"],
+			$sheet["headers"],
+			$this->applyCsvRateColumns($sheet["rows"], [6, 7])
+		);
+	}
 
-    public function exportClientiEleggibili(Request $request): JsonResponse
-    {
-        $values = Validator::make($this->exportRequestPayload($request), $this->exportRules(__FUNCTION__))->validate();
+	public function exportClientiEleggibili(Request $request): JsonResponse
+	{
+		$values = Validator::make($this->exportRequestPayload($request), $this->exportRules(__FUNCTION__))->validate();
 
-        $sheet = $this->prepareDashboardEleggibiliExport($values);
+		$sheet = $this->prepareDashboardEleggibiliExport($values);
 
-        return $this->exportCsvResponse($sheet['filePrefix'], $sheet['headers'], $sheet['rows']);
-    }
+		return $this->exportCsvResponse($sheet["filePrefix"], $sheet["headers"], $sheet["rows"]);
+	}
 
-    public function exportCreditiAttivi(Request $request): JsonResponse
-    {
-        $values = Validator::make($this->exportRequestPayload($request), $this->exportRules(__FUNCTION__))->validate();
+	public function exportCreditiAttivi(Request $request): JsonResponse
+	{
+		$values = Validator::make($this->exportRequestPayload($request), $this->exportRules(__FUNCTION__))->validate();
 
-        $sheet = $this->prepareDashboardCreditiAttiviExport($values);
+		$sheet = $this->prepareDashboardCreditiAttiviExport($values);
 
-        return $this->exportCsvResponse($sheet['filePrefix'], $sheet['headers'], $sheet['rows']);
-    }
+		return $this->exportCsvResponse($sheet["filePrefix"], $sheet["headers"], $sheet["rows"]);
+	}
 
-    public function exportBancaTiraggi(Request $request): JsonResponse
-    {
-        $values = Validator::make($this->exportRequestPayload($request), $this->exportRules(__FUNCTION__))->validate();
+	public function exportBancaTiraggi(Request $request): JsonResponse
+	{
+		$values = Validator::make($this->exportRequestPayload($request), $this->exportRules(__FUNCTION__))->validate();
 
-        abort_if(Auth::user()->banca === null, 403);
+		abort_if(Auth::user()->banca === null, 403);
 
-        $sheet = $this->prepareBancaTiraggiExport($values);
-        $rateColumnIndexes = $values['status'] === 'accepted' ? [5, 6] : [6, 7];
+		$sheet = $this->prepareBancaTiraggiExport($values);
+		$rateColumnIndexes = $values["status"] === "accepted" ? [5, 6] : [6, 7];
 
-        return $this->exportCsvResponse(
-            $sheet['filePrefix'],
-            $sheet['headers'],
-            $this->applyCsvRateColumns($sheet['rows'], $rateColumnIndexes),
-        );
-    }
+		return $this->exportCsvResponse(
+			$sheet["filePrefix"],
+			$sheet["headers"],
+			$this->applyCsvRateColumns($sheet["rows"], $rateColumnIndexes)
+		);
+	}
 
-    public function exportBancaFiliali(Request $request): JsonResponse
-    {
-        $values = Validator::make($this->exportRequestPayload($request), $this->exportRules(__FUNCTION__))->validate();
+	public function exportBancaFiliali(Request $request): JsonResponse
+	{
+		$values = Validator::make($this->exportRequestPayload($request), $this->exportRules(__FUNCTION__))->validate();
 
-        $sheet = $this->prepareBancaFilialiExport($values);
+		$sheet = $this->prepareBancaFilialiExport($values);
 
-        return $this->exportCsvResponse($sheet['filePrefix'], $sheet['headers'], $sheet['rows']);
-    }
+		return $this->exportCsvResponse($sheet["filePrefix"], $sheet["headers"], $sheet["rows"]);
+	}
 
-    public function exportBancaAccessi(Request $request): JsonResponse
-    {
-        $values = Validator::make($this->exportRequestPayload($request), $this->exportRules(__FUNCTION__))->validate();
+	public function exportBancaAccessi(Request $request): JsonResponse
+	{
+		$values = Validator::make($this->exportRequestPayload($request), $this->exportRules(__FUNCTION__))->validate();
 
-        abort_if(Auth::user()->banca === null, 403);
+		abort_if(Auth::user()->banca === null, 403);
 
-        $sheet = $this->prepareBancaAccessiExport($values);
+		$sheet = $this->prepareBancaAccessiExport($values);
 
-        return $this->exportCsvResponse($sheet['filePrefix'], $sheet['headers'], $sheet['rows']);
-    }
+		return $this->exportCsvResponse($sheet["filePrefix"], $sheet["headers"], $sheet["rows"]);
+	}
 }

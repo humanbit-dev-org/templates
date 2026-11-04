@@ -18,22 +18,26 @@ use Illuminate\Validation\Rule;
  */
 class SandboxTokenController extends Controller
 {
-    public function __invoke(Request $request): JsonResponse
-    {
-        $validated = $request->validate([
-            'bank' => ['sometimes', 'string', Rule::in(array_keys(config('sandbox.banks')))],
-        ]);
+	public function __invoke(Request $request): JsonResponse
+	{
+		$validated = $request->validate([
+			"bank" => ["sometimes", "string", Rule::in(array_keys(config("sandbox.banks")))],
+		]);
 
-        $abi = $validated['bank'] ?? config('sandbox.default_bank');
-        $po = config("sandbox.banks.{$abi}.po");
+		$abi = $validated["bank"] ?? config("sandbox.default_bank");
+		$po = config("sandbox.banks.{$abi}.po");
 
-        $token = User::where('user_id', $po)->firstOrFail()
-            ->createToken('sandbox', ['*'], now()->addMinutes(config('sandbox.token_minutes')));
+		$token = User::where("user_id", $po)
+			->firstOrFail()
+			->createToken("sandbox", ["*"], now()->addMinutes(config("sandbox.token_minutes")));
 
-        return response()->json([
-            'token' => $token->plainTextToken,
-            'bank' => $abi,
-            'expires_at' => $token->accessToken->expires_at,
-        ], 201);
-    }
+		return response()->json(
+			[
+				"token" => $token->plainTextToken,
+				"bank" => $abi,
+				"expires_at" => $token->accessToken->expires_at,
+			],
+			201
+		);
+	}
 }

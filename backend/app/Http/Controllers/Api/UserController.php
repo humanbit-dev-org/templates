@@ -14,7 +14,7 @@ class UserController extends Controller
 {
 	public function authDashboard(Request $request)
 	{
-		$frontendUrl = rtrim(config('app.frontend_url'), "/") . "/dashboard";
+		$frontendUrl = rtrim(config("app.frontend_url"), "/") . "/dashboard";
 
 		// Validate input
 		$request->validate([
@@ -36,7 +36,7 @@ class UserController extends Controller
 
 		if ($isFiliale || $isBackpackAdmin || $isDeveloper) {
 			$apiToken = explode("|", $user->createToken("api-token")->plainTextToken, 2)[1];
-			$domain = config('session.domain');
+			$domain = config("session.domain");
 
 			$cookie = cookie(
 				name: "apiToken",

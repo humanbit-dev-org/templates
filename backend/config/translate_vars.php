@@ -1,34 +1,34 @@
 <?php
 
 return [
-    /*
+	/*
     |--------------------------------------------------------------------------
     | Models used to auto-generate placeholder registry from $fillable
     |--------------------------------------------------------------------------
     */
-    'models' => [
-        'user' => \App\Models\User::class,
-    ],
+	"models" => [
+		"user" => \App\Models\User::class,
+	],
 
-    /*
+	/*
     |--------------------------------------------------------------------------
     | Global blacklist (fields excluded from placeholders)
     |--------------------------------------------------------------------------
     */
-    'blacklist' => [
-        'id',
-        'created_at',
-        'updated_at',
-        'deleted_at',
-        'password',
-        'remember_token',
-        'token',
-        'token_expire',
-        'token_verified',
-        'email_verified_at',
-    ],
+	"blacklist" => [
+		"id",
+		"created_at",
+		"updated_at",
+		"deleted_at",
+		"password",
+		"remember_token",
+		"token",
+		"token_expire",
+		"token_verified",
+		"email_verified_at",
+	],
 
-    /*
+	/*
     |--------------------------------------------------------------------------
     | Optional per-field overrides
     |--------------------------------------------------------------------------
@@ -38,9 +38,9 @@ return [
     |   'ragione_sociale' => ['label_it' => 'Ragione Sociale', 'label_en' => 'Company Name'],
     | ],
     */
-    'overrides' => [],
+	"overrides" => [],
 
-    /*
+	/*
     |--------------------------------------------------------------------------
     | Frontend-only variables (calculated in Next.js, not from DB models)
     |--------------------------------------------------------------------------
@@ -55,7 +55,5 @@ return [
     |       'description' => 'Percentuale di avanzamento del tiraggio calcolato lato frontend',
     |   ],
     */
-    'frontend_vars' => [
-
-    ],
+	"frontend_vars" => [],
 ];

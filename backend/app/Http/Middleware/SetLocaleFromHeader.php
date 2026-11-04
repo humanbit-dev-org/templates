@@ -16,14 +16,14 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class SetLocaleFromHeader
 {
-    public function handle(Request $request, Closure $next): Response
-    {
-        $locale = $request->header('X-Locale');
+	public function handle(Request $request, Closure $next): Response
+	{
+		$locale = $request->header("X-Locale");
 
-        if (in_array($locale, Locales::SUPPORTED, true)) {
-            App::setLocale($locale);
-        }
+		if (in_array($locale, Locales::SUPPORTED, true)) {
+			App::setLocale($locale);
+		}
 
-        return $next($request);
-    }
+		return $next($request);
+	}
 }

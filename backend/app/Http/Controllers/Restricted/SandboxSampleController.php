@@ -15,21 +15,24 @@ use Illuminate\Validation\Rule;
  */
 class SandboxSampleController extends Controller
 {
-    public function __invoke(Request $request): JsonResponse
-    {
-        $validated = $request->validate([
-            'operation' => ['required', 'string', Rule::in(SampleCallResolver::operations())],
-            'bank' => ['required', 'string', Rule::in(array_keys(config('sandbox.banks')))],
-        ]);
+	public function __invoke(Request $request): JsonResponse
+	{
+		$validated = $request->validate([
+			"operation" => ["required", "string", Rule::in(SampleCallResolver::operations())],
+			"bank" => ["required", "string", Rule::in(array_keys(config("sandbox.banks")))],
+		]);
 
-        $call = SampleCallResolver::resolve($validated['operation'], $validated['bank']);
+		$call = SampleCallResolver::resolve($validated["operation"], $validated["bank"]);
 
-        if ($call === null) {
-            return response()->json([
-                'message' => 'Nessun dato idoneo nel sandbox per questa operazione.',
-            ], 404);
-        }
+		if ($call === null) {
+			return response()->json(
+				[
+					"message" => "Nessun dato idoneo nel sandbox per questa operazione.",
+				],
+				404
+			);
+		}
 
-        return response()->json($call);
-    }
+		return response()->json($call);
+	}
 }

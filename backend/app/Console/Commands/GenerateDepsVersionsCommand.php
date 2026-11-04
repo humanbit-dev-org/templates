@@ -11,9 +11,9 @@ use Illuminate\Support\Facades\File;
  */
 class GenerateDepsVersionsCommand extends Command
 {
-	protected $signature = 'deps:versions';
+	protected $signature = "deps:versions";
 
-	protected $description = 'Generate .cursor/deps-versions.md and .devin/deps-versions.md from composer.lock and pnpm-lock.yaml';
+	protected $description = "Generate .cursor/deps-versions.md and .devin/deps-versions.md from composer.lock and pnpm-lock.yaml";
 
 	/** @var string Project root (parent of backend) */
 	private string $root;
@@ -27,29 +27,26 @@ class GenerateDepsVersionsCommand extends Command
 	public function handle(): int
 	{
 		$lines = [
-			'# Dependency versions (auto-generated)',
-			'',
-			'> Run `php artisan deps:versions` after composer/pnpm updates.',
-			'',
-			'## Backend (composer.lock)',
-			'',
+			"# Dependency versions (auto-generated)",
+			"",
+			"> Run `php artisan deps:versions` after composer/pnpm updates.",
+			"",
+			"## Backend (composer.lock)",
+			"",
 			...$this->extractComposerVersions(),
-			'',
-			'## Frontend (pnpm-lock.yaml)',
-			'',
+			"",
+			"## Frontend (pnpm-lock.yaml)",
+			"",
 			...$this->extractPnpmVersions(),
 		];
 
-		$outputPaths = [
-			$this->root . '/.cursor/deps-versions.md',
-			$this->root . '/.devin/deps-versions.md',
-		];
+		$outputPaths = [$this->root . "/.cursor/deps-versions.md", $this->root . "/.devin/deps-versions.md"];
 		$content = implode("\n", $lines);
 
 		foreach ($outputPaths as $outputPath) {
 			$dir = dirname($outputPath);
 
-			if (! File::isDirectory($dir)) {
+			if (!File::isDirectory($dir)) {
 				File::makeDirectory($dir, 0755, true);
 			}
 
@@ -63,55 +60,49 @@ class GenerateDepsVersionsCommand extends Command
 
 	private function extractComposerVersions(): array
 	{
-		$lockPath = base_path('composer.lock');
-		if (! File::exists($lockPath)) {
-			return ['(composer.lock not found)'];
+		$lockPath = base_path("composer.lock");
+		if (!File::exists($lockPath)) {
+			return ["(composer.lock not found)"];
 		}
 
 		$lock = json_decode(File::get($lockPath), true);
-		if (! isset($lock['packages'])) {
-			return ['(invalid composer.lock)'];
+		if (!isset($lock["packages"])) {
+			return ["(invalid composer.lock)"];
 		}
 
-		$composerJson = json_decode(File::get(base_path('composer.json')), true);
-		$wanted = array_merge(
-			array_keys($composerJson['require'] ?? []),
-			array_keys($composerJson['require-dev'] ?? [])
-		);
+		$composerJson = json_decode(File::get(base_path("composer.json")), true);
+		$wanted = array_merge(array_keys($composerJson["require"] ?? []), array_keys($composerJson["require-dev"] ?? []));
 
 		$versions = [];
-		foreach ($lock['packages'] as $pkg) {
-			$name = $pkg['name'] ?? null;
+		foreach ($lock["packages"] as $pkg) {
+			$name = $pkg["name"] ?? null;
 			if ($name && in_array($name, $wanted, true)) {
-				$versions[] = '- ' . $name . ' - ' . ($pkg['version'] ?? '?');
+				$versions[] = "- " . $name . " - " . ($pkg["version"] ?? "?");
 			}
 		}
 
 		// Add php version from platform if present
-		$platform = $lock['platform'] ?? $lock['platform-overrides'] ?? [];
-		$phpVer = $platform['php'] ?? null;
+		$platform = $lock["platform"] ?? ($lock["platform-overrides"] ?? []);
+		$phpVer = $platform["php"] ?? null;
 		if ($phpVer) {
-			array_unshift($versions, '- php - ' . $phpVer);
+			array_unshift($versions, "- php - " . $phpVer);
 		}
 
-		return $versions ?: ['(no matching packages)'];
+		return $versions ?: ["(no matching packages)"];
 	}
 
 	private function extractPnpmVersions(): array
 	{
-		$lockPath = $this->root . '/frontend/pnpm-lock.yaml';
-		$pkgPath = $this->root . '/frontend/package.json';
-		if (! File::exists($lockPath)) {
-			return ['(pnpm-lock.yaml not found)'];
+		$lockPath = $this->root . "/frontend/pnpm-lock.yaml";
+		$pkgPath = $this->root . "/frontend/package.json";
+		if (!File::exists($lockPath)) {
+			return ["(pnpm-lock.yaml not found)"];
 		}
 
 		$wanted = [];
 		if (File::exists($pkgPath)) {
 			$pkg = json_decode(File::get($pkgPath), true);
-			$wanted = array_merge(
-				array_keys($pkg['dependencies'] ?? []),
-				array_keys($pkg['devDependencies'] ?? [])
-			);
+			$wanted = array_merge(array_keys($pkg["dependencies"] ?? []), array_keys($pkg["devDependencies"] ?? []));
 		}
 
 		$content = File::get($lockPath);
@@ -134,15 +125,15 @@ class GenerateDepsVersionsCommand extends Command
 				continue;
 			}
 			// version: X.Y.Z (strip parenthetical suffix)
-			if ($currentPkg !== null && preg_match('#^\s+version:\s+([\d.]+)#', $line, $m)) {
+			if ($currentPkg !== null && preg_match("#^\s+version:\s+([\d.]+)#", $line, $m)) {
 				$ver = $m[1];
 				if (empty($wanted) || in_array($currentPkg, $wanted, true)) {
-					$versions[] = '- ' . $currentPkg . ' - v' . $ver;
+					$versions[] = "- " . $currentPkg . " - v" . $ver;
 				}
 				$currentPkg = null;
 			}
 		}
 
-		return $versions ?: ['(no matching packages)'];
+		return $versions ?: ["(no matching packages)"];
 	}
 }

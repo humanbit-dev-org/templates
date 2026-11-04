@@ -12,33 +12,33 @@ namespace App\Services\Auth;
  */
 class SamlUserAllowlist
 {
-    public function sign(array $userIds): string
-    {
-        $userIds = array_values(array_unique(array_map('strval', $userIds)));
-        sort($userIds);
+	public function sign(array $userIds): string
+	{
+		$userIds = array_values(array_unique(array_map("strval", $userIds)));
+		sort($userIds);
 
-        $payload = base64_encode(json_encode($userIds, JSON_THROW_ON_ERROR));
-        $sig = hash_hmac('sha256', $payload, (string) config('app.key'));
+		$payload = base64_encode(json_encode($userIds, JSON_THROW_ON_ERROR));
+		$sig = hash_hmac("sha256", $payload, (string) config("app.key"));
 
-        return $payload.'.'.$sig;
-    }
+		return $payload . "." . $sig;
+	}
 
-    /** True se il token è integro (HMAC valido) e contiene $userId. */
-    public function contains(string $token, string $userId): bool
-    {
-        $parts = explode('.', $token, 2);
-        if (count($parts) !== 2) {
-            return false;
-        }
+	/** True se il token è integro (HMAC valido) e contiene $userId. */
+	public function contains(string $token, string $userId): bool
+	{
+		$parts = explode(".", $token, 2);
+		if (count($parts) !== 2) {
+			return false;
+		}
 
-        [$payload, $sig] = $parts;
-        $expected = hash_hmac('sha256', $payload, (string) config('app.key'));
-        if (! hash_equals($expected, $sig)) {
-            return false;
-        }
+		[$payload, $sig] = $parts;
+		$expected = hash_hmac("sha256", $payload, (string) config("app.key"));
+		if (!hash_equals($expected, $sig)) {
+			return false;
+		}
 
-        $list = json_decode((string) base64_decode($payload, true), true);
+		$list = json_decode((string) base64_decode($payload, true), true);
 
-        return is_array($list) && in_array($userId, $list, true);
-    }
+		return is_array($list) && in_array($userId, $list, true);
+	}
 }

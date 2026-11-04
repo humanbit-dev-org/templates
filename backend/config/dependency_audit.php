@@ -1,7 +1,7 @@
 <?php
 
 return [
-    /*
+	/*
     |--------------------------------------------------------------------------
     | Dependency audit
     |--------------------------------------------------------------------------
@@ -21,5 +21,5 @@ return [
     | Set here on purpose, not from env: switching it is a code change.
     |
     */
-    'enabled' => true,
+	"enabled" => true,
 ];

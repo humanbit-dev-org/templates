@@ -16,14 +16,13 @@ use Illuminate\Notifications\Messages\MailMessage;
  */
 class ResetPasswordNotification extends ResetPassword
 {
-    /**
-     * Build the reset email and set the branded sender.
-     *
-     * @param  string  $url
-     */
-    protected function buildMailMessage($url): MailMessage
-    {
-        return parent::buildMailMessage($url)
-            ->from(config('mail.from.address'), config('mail.brand_name'));
-    }
+	/**
+	 * Build the reset email and set the branded sender.
+	 *
+	 * @param  string  $url
+	 */
+	protected function buildMailMessage($url): MailMessage
+	{
+		return parent::buildMailMessage($url)->from(config("mail.from.address"), config("mail.brand_name"));
+	}
 }

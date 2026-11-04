@@ -1,7 +1,7 @@
 <?php
 
 return [
-    /*
+	/*
     |--------------------------------------------------------------------------
     | Scheduler monitor
     |--------------------------------------------------------------------------
@@ -18,5 +18,5 @@ return [
     | Set here on purpose, not from env: switching it is a code change.
     |
     */
-    'enabled' => false,
+	"enabled" => false,
 ];

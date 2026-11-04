@@ -81,7 +81,7 @@ class User extends Authenticatable implements MustVerifyEmail
 	 *
 	 * @var array<int, string>
 	 */
-	protected $hidden = ['password', 'remember_token', 'token'];
+	protected $hidden = ["password", "remember_token", "token"];
 
 	/**
 	 * Get the attributes that should be cast.
@@ -105,57 +105,56 @@ class User extends Authenticatable implements MustVerifyEmail
 	public function backpackRole()
 	{
 		return $this->belongsTo(BackpackRole::class, "backpack_role_id");
-		
 	}
 
 	public function twoFactor()
-    {
-        return $this->hasMany(UserTwoFactor::class, 'user_id', 'user_id');
-    }
+	{
+		return $this->hasMany(UserTwoFactor::class, "user_id", "user_id");
+	}
 
 	public function isAdmin(): bool
-    {
-        return $this->backpackRole?->name === 'Admin';
-    }
+	{
+		return $this->backpackRole?->name === "Admin";
+	}
 
-    public function isDeveloper(): bool
-    {
-        return $this->backpackRole?->name === 'Developer';
-    }
+	public function isDeveloper(): bool
+	{
+		return $this->backpackRole?->name === "Developer";
+	}
 
 	public function isBackpackAdmin(): bool
-    {
-        return $this->isAdmin() || $this->isDeveloper();
-    }
+	{
+		return $this->isAdmin() || $this->isDeveloper();
+	}
 	public function sendEmailVerificationNotification()
-    {
-        $this->notify(new VerifyEmail);
-    }
+	{
+		$this->notify(new VerifyEmail());
+	}
 
 	/**
-     * Send the password reset email with the branded sender name
-     * (see ResetPasswordNotification) instead of Laravel's default one.
-     *
-     * @param  string  $token
-     */
-    public function sendPasswordResetNotification($token)
-    {
-        $this->notify(new ResetPasswordNotification($token));
-    }
+	 * Send the password reset email with the branded sender name
+	 * (see ResetPasswordNotification) instead of Laravel's default one.
+	 *
+	 * @param  string  $token
+	 */
+	public function sendPasswordResetNotification($token)
+	{
+		$this->notify(new ResetPasswordNotification($token));
+	}
 	public function hasVerifiedEmail()
 	{
 		return $this->email_verified_at != null;
 	}
 
 	// see HasDisplayAttributes for full doc
-    public function getDisplayAttribute(): string
-    {
-        return $this->username;
-    }
+	public function getDisplayAttribute(): string
+	{
+		return $this->username;
+	}
 
 	// see HasDisplayAttributes for full doc
-    public function getRelationDisplayAttribute(): string
-    {
-        return $this->user_id.' - '.$this->ragione_sociale;
-    }
+	public function getRelationDisplayAttribute(): string
+	{
+		return $this->user_id . " - " . $this->ragione_sociale;
+	}
 }

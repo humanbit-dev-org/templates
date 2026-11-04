@@ -14,19 +14,19 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class BackpackSessionLifetime
 {
-    /**
-     * Handle an incoming request.
-     *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
-     */
-    public function handle(Request $request, Closure $next): Response
-    {
-        $prefix = config('backpack.base.route_prefix', 'admin');
-        $prefix = trim($prefix, '/');
-        if ($prefix !== '' && ($request->is($prefix) || $request->is($prefix.'/*'))) {
-            Config::set('session.lifetime', config('session.lifetime_backpack', 1440));
-        }
+	/**
+	 * Handle an incoming request.
+	 *
+	 * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
+	 */
+	public function handle(Request $request, Closure $next): Response
+	{
+		$prefix = config("backpack.base.route_prefix", "admin");
+		$prefix = trim($prefix, "/");
+		if ($prefix !== "" && ($request->is($prefix) || $request->is($prefix . "/*"))) {
+			Config::set("session.lifetime", config("session.lifetime_backpack", 1440));
+		}
 
-        return $next($request);
-    }
+		return $next($request);
+	}
 }

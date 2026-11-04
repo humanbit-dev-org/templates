@@ -7,8 +7,8 @@ namespace App\Support\Url;
  */
 class FrontendLang
 {
-    public static function jsonPath(string $locale): string
-    {
-        return dirname(base_path()).'/frontend/lang/'.$locale.'.json';
-    }
+	public static function jsonPath(string $locale): string
+	{
+		return dirname(base_path()) . "/frontend/lang/" . $locale . ".json";
+	}
 }

@@ -8,15 +8,15 @@ use Illuminate\Database\Eloquent\Model;
 
 class Contatto extends Model
 {
-    use CrudTrait, HasDisplayAttributes;
+	use CrudTrait, HasDisplayAttributes;
 
-    protected $fillable = ['email', 'oggetto', 'messaggio'];
+	protected $fillable = ["email", "oggetto", "messaggio"];
 
-    protected $table = 'contatti';
+	protected $table = "contatti";
 
-    // see HasDisplayAttributes for full doc
-    public function getDisplayAttribute(): string
-    {
-        return $this->email;
-    }
+	// see HasDisplayAttributes for full doc
+	public function getDisplayAttribute(): string
+	{
+		return $this->email;
+	}
 }

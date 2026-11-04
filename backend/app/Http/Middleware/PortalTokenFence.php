@@ -25,20 +25,20 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class PortalTokenFence
 {
-    public function handle(Request $request, Closure $next): Response
-    {
-        $name = $request->user('sanctum')?->currentAccessToken()?->name;
+	public function handle(Request $request, Closure $next): Response
+	{
+		$name = $request->user("sanctum")?->currentAccessToken()?->name;
 
-        if (is_string($name) && $name !== '') {
-            $allowed = match (true) {
-                $name === config('portal.api_token_name') => $request->is('api/v1/*'),
-                Str::startsWith($name, config('portal.refresh_token_prefix').':') => $request->is('api/v1/token'),
-                default => true,
-            };
+		if (is_string($name) && $name !== "") {
+			$allowed = match (true) {
+				$name === config("portal.api_token_name") => $request->is("api/v1/*"),
+				Str::startsWith($name, config("portal.refresh_token_prefix") . ":") => $request->is("api/v1/token"),
+				default => true,
+			};
 
-            abort_unless($allowed, 403);
-        }
+			abort_unless($allowed, 403);
+		}
 
-        return $next($request);
-    }
+		return $next($request);
+	}
 }

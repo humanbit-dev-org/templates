@@ -27,245 +27,258 @@ use Illuminate\View\View;
  */
 class SamlController extends Controller
 {
-    private const PROTOCOL_SAML = 'saml';
+	private const PROTOCOL_SAML = "saml";
 
-    private const PROTOCOL_OIDC = 'oidc';
+	private const PROTOCOL_OIDC = "oidc";
 
-    public function __construct(
-        protected SamlSimulationScenarioService $scenarios,
-        protected SamlSimulationLogService $simulationLog,
-    ) {}
+	public function __construct(
+		protected SamlSimulationScenarioService $scenarios,
+		protected SamlSimulationLogService $simulationLog
+	) {}
 
-    #[ExcludeRouteFromDocs]
-    public function form(Request $request): View
-    {
-        $banks = $this->scenarios->banksForSelect();
-        $selectedBancaAbi = $this->resolveSelectedBancaAbi($request->query('banca_abi'));
-        $availableBancaAbis = array_column($banks, 'banca_abi');
+	#[ExcludeRouteFromDocs]
+	public function form(Request $request): View
+	{
+		$banks = $this->scenarios->banksForSelect();
+		$selectedBancaAbi = $this->resolveSelectedBancaAbi($request->query("banca_abi"));
+		$availableBancaAbis = array_column($banks, "banca_abi");
 
-        if ($selectedBancaAbi !== null && ! in_array($selectedBancaAbi, $availableBancaAbis, true)) {
-            $selectedBancaAbi = null;
-        }
+		if ($selectedBancaAbi !== null && !in_array($selectedBancaAbi, $availableBancaAbis, true)) {
+			$selectedBancaAbi = null;
+		}
 
-        $catalog = $this->scenarios->catalog($selectedBancaAbi);
+		$catalog = $this->scenarios->catalog($selectedBancaAbi);
 
-        $baseScenarios = [];
-        $productScenarios = [];
-        foreach ($catalog as $key => $item) {
-            if ($this->scenarios->isProductScenario($key)) {
-                $productScenarios[] = $item;
-            } else {
-                $baseScenarios[] = $item;
-            }
-        }
+		$baseScenarios = [];
+		$productScenarios = [];
+		foreach ($catalog as $key => $item) {
+			if ($this->scenarios->isProductScenario($key)) {
+				$productScenarios[] = $item;
+			} else {
+				$baseScenarios[] = $item;
+			}
+		}
 
-        // Merge base + product scenarios into a single list.
-        $scenarios = [...$baseScenarios, ...$productScenarios];
+		// Merge base + product scenarios into a single list.
+		$scenarios = [...$baseScenarios, ...$productScenarios];
 
-        $selectedBank = $selectedBancaAbi !== null
-            ? collect($banks)->firstWhere('banca_abi', $selectedBancaAbi)
-            : null;
+		$selectedBank = $selectedBancaAbi !== null ? collect($banks)->firstWhere("banca_abi", $selectedBancaAbi) : null;
 
-        // Determine which product groups are visible based on the selected bank.
-        // When "all banks" is selected, show all groups.
-        $visibleProductGroups = $this->visibleProductGroups($selectedBank);
+		// Determine which product groups are visible based on the selected bank.
+		// When "all banks" is selected, show all groups.
+		$visibleProductGroups = $this->visibleProductGroups($selectedBank);
 
-        // Group banks by product configuration for optgroup labels.
-        $bankGroups = $this->groupBanksForSelect($banks);
+		// Group banks by product configuration for optgroup labels.
+		$bankGroups = $this->groupBanksForSelect($banks);
 
-        return view('auth-simulation.index', [
-            'postAction' => route('auth.sim.post'),
-            'relay' => (string) $request->query('relay', ''),
-            'banks' => $banks,
-            'bankGroups' => $bankGroups,
-            'selectedBancaAbi' => $selectedBancaAbi,
-            'selectedBank' => $selectedBank,
-            'scenarios' => array_values($scenarios),
-            'productScenarioKeys' => array_keys(SamlSimulationScenarioService::PRODUCT_SCENARIOS),
-            'visibleProductGroups' => $visibleProductGroups,
-            'errorScenarios' => array_values($this->scenarios->errorCatalog($selectedBancaAbi)),
-            'logs' => $this->simulationLog->paginate($request),
-            'operator' => $this->scenarios->operatorContext(),
-            'protocol' => $this->resolveProtocol($request->query('protocol')),
-            'oidcAvailable' => config('app.tenant') === 'nexi-multi',
-        ]);
-    }
+		return view("auth-simulation.index", [
+			"postAction" => route("auth.sim.post"),
+			"relay" => (string) $request->query("relay", ""),
+			"banks" => $banks,
+			"bankGroups" => $bankGroups,
+			"selectedBancaAbi" => $selectedBancaAbi,
+			"selectedBank" => $selectedBank,
+			"scenarios" => array_values($scenarios),
+			"productScenarioKeys" => array_keys(SamlSimulationScenarioService::PRODUCT_SCENARIOS),
+			"visibleProductGroups" => $visibleProductGroups,
+			"errorScenarios" => array_values($this->scenarios->errorCatalog($selectedBancaAbi)),
+			"logs" => $this->simulationLog->paginate($request),
+			"operator" => $this->scenarios->operatorContext(),
+			"protocol" => $this->resolveProtocol($request->query("protocol")),
+			"oidcAvailable" => config("app.tenant") === "nexi-multi",
+		]);
+	}
 
-    /**
-     * Determine which product scenario groups are visible based on the selected bank.
-     * Returns all groups when no specific bank is selected ("all banks").
-     *
-     * @param  array{banca_abi: string, nome: string, multi_tiraggio: bool, conguaglio_periodico: bool, metodo_conguaglio: ?string, durata_parametrica: bool}|null  $bank
-     * @return list<string>
-     */
-    private function visibleProductGroups(?array $bank): array
-    {
-        if ($bank === null) {
-            return ['multi', 'durata_parametrica', 'multi_durata_parametrica'];
-        }
+	/**
+	 * Determine which product scenario groups are visible based on the selected bank.
+	 * Returns all groups when no specific bank is selected ("all banks").
+	 *
+	 * @param  array{banca_abi: string, nome: string, multi_tiraggio: bool, conguaglio_periodico: bool, metodo_conguaglio: ?string, durata_parametrica: bool}|null  $bank
+	 * @return list<string>
+	 */
+	private function visibleProductGroups(?array $bank): array
+	{
+		if ($bank === null) {
+			return ["multi", "durata_parametrica", "multi_durata_parametrica"];
+		}
 
-        if ($bank['multi_tiraggio'] && $bank['durata_parametrica']) {
-            return ['multi_durata_parametrica'];
-        }
+		if ($bank["multi_tiraggio"] && $bank["durata_parametrica"]) {
+			return ["multi_durata_parametrica"];
+		}
 
-        if ($bank['multi_tiraggio']) {
-            return ['multi'];
-        }
+		if ($bank["multi_tiraggio"]) {
+			return ["multi"];
+		}
 
-        if ($bank['durata_parametrica']) {
-            return ['durata_parametrica'];
-        }
+		if ($bank["durata_parametrica"]) {
+			return ["durata_parametrica"];
+		}
 
-        return [];
-    }
+		return [];
+	}
 
-    /**
-     * Group banks by product configuration for optgroup labels in the select.
-     *
-     * @param  list<array{banca_abi: string, nome: string, multi_tiraggio: bool, conguaglio_periodico: bool, metodo_conguaglio: ?string, durata_parametrica: bool}>  $banks
-     * @return array<string, list<array{banca_abi: string, nome: string}>>
-     */
-    private function groupBanksForSelect(array $banks): array
-    {
-        $groups = [];
+	/**
+	 * Group banks by product configuration for optgroup labels in the select.
+	 *
+	 * @param  list<array{banca_abi: string, nome: string, multi_tiraggio: bool, conguaglio_periodico: bool, metodo_conguaglio: ?string, durata_parametrica: bool}>  $banks
+	 * @return array<string, list<array{banca_abi: string, nome: string}>>
+	 */
+	private function groupBanksForSelect(array $banks): array
+	{
+		$groups = [];
 
-        foreach ($banks as $bank) {
-            if ($bank['multi_tiraggio'] && $bank['durata_parametrica']) {
-                $key = 'multi_durata_parametrica';
-            } elseif ($bank['multi_tiraggio']) {
-                $key = 'multi_tiraggio';
-            } elseif ($bank['durata_parametrica'] && $bank['conguaglio_periodico'] && $bank['metodo_conguaglio'] === 'previsionale') {
-                $key = 'durata_parametrica_previsionale';
-            } elseif ($bank['durata_parametrica'] && $bank['conguaglio_periodico'] && $bank['metodo_conguaglio'] === 'plafond') {
-                $key = 'durata_parametrica_plafond';
-            } elseif ($bank['durata_parametrica']) {
-                $key = 'durata_parametrica_senza_conguaglio';
-            } else {
-                $key = 'standard';
-            }
+		foreach ($banks as $bank) {
+			if ($bank["multi_tiraggio"] && $bank["durata_parametrica"]) {
+				$key = "multi_durata_parametrica";
+			} elseif ($bank["multi_tiraggio"]) {
+				$key = "multi_tiraggio";
+			} elseif (
+				$bank["durata_parametrica"] &&
+				$bank["conguaglio_periodico"] &&
+				$bank["metodo_conguaglio"] === "previsionale"
+			) {
+				$key = "durata_parametrica_previsionale";
+			} elseif (
+				$bank["durata_parametrica"] &&
+				$bank["conguaglio_periodico"] &&
+				$bank["metodo_conguaglio"] === "plafond"
+			) {
+				$key = "durata_parametrica_plafond";
+			} elseif ($bank["durata_parametrica"]) {
+				$key = "durata_parametrica_senza_conguaglio";
+			} else {
+				$key = "standard";
+			}
 
-            $groups[$key][] = [
-                'banca_abi' => $bank['banca_abi'],
-                'nome' => $bank['nome'],
-            ];
-        }
+			$groups[$key][] = [
+				"banca_abi" => $bank["banca_abi"],
+				"nome" => $bank["nome"],
+			];
+		}
 
-        $labels = [
-            'standard' => 'Standard',
-            'multi_tiraggio' => 'Multi-Tiraggio',
-            'durata_parametrica_previsionale' => 'Durata parametrica · Conguaglio previsionale',
-            'durata_parametrica_plafond' => 'Durata parametrica · Conguaglio plafond',
-            'durata_parametrica_senza_conguaglio' => 'Durata parametrica · Senza conguaglio',
-            'multi_durata_parametrica' => 'Multi-Tiraggio + Durata parametrica',
-        ];
+		$labels = [
+			"standard" => "Standard",
+			"multi_tiraggio" => "Multi-Tiraggio",
+			"durata_parametrica_previsionale" => "Durata parametrica · Conguaglio previsionale",
+			"durata_parametrica_plafond" => "Durata parametrica · Conguaglio plafond",
+			"durata_parametrica_senza_conguaglio" => "Durata parametrica · Senza conguaglio",
+			"multi_durata_parametrica" => "Multi-Tiraggio + Durata parametrica",
+		];
 
-        $ordered = [];
-        foreach ($labels as $key => $label) {
-            if (isset($groups[$key])) {
-                $ordered[$label] = $groups[$key];
-            }
-        }
+		$ordered = [];
+		foreach ($labels as $key => $label) {
+			if (isset($groups[$key])) {
+				$ordered[$label] = $groups[$key];
+			}
+		}
 
-        return $ordered;
-    }
+		return $ordered;
+	}
 
-    #[ExcludeRouteFromDocs]
-    public function autoPost(Request $request): View|RedirectResponse
-    {
-        $validated = $request->validate([
-            'access_token' => ['nullable', 'string'],
-            'idfisico' => ['nullable', 'string'],
-            'idgiuridico' => ['nullable', 'string'],
-            'filiale_madre' => ['nullable', 'string'],
-            'name_id' => ['nullable', 'string'],
-            'RelayState' => ['nullable', 'string'],
-            'scenario' => ['nullable', 'string'],
-            'banca_abi' => ['nullable', 'string'],
-            'protocol' => ['nullable', 'string'],
-        ]);
+	#[ExcludeRouteFromDocs]
+	public function autoPost(Request $request): View|RedirectResponse
+	{
+		$validated = $request->validate([
+			"access_token" => ["nullable", "string"],
+			"idfisico" => ["nullable", "string"],
+			"idgiuridico" => ["nullable", "string"],
+			"filiale_madre" => ["nullable", "string"],
+			"name_id" => ["nullable", "string"],
+			"RelayState" => ["nullable", "string"],
+			"scenario" => ["nullable", "string"],
+			"banca_abi" => ["nullable", "string"],
+			"protocol" => ["nullable", "string"],
+		]);
 
-        $protocol = $this->resolveProtocol($validated['protocol'] ?? null);
+		$protocol = $this->resolveProtocol($validated["protocol"] ?? null);
 
-        $scenario = (string) ($validated['scenario'] ?? SamlSimulationScenarioService::SCENARIO_MANUAL);
-        if (! $this->scenarios->isKnownScenario($scenario)) {
-            $scenario = SamlSimulationScenarioService::SCENARIO_MANUAL;
-        }
+		$scenario = (string) ($validated["scenario"] ?? SamlSimulationScenarioService::SCENARIO_MANUAL);
+		if (!$this->scenarios->isKnownScenario($scenario)) {
+			$scenario = SamlSimulationScenarioService::SCENARIO_MANUAL;
+		}
 
-        $accessToken = trim((string) ($validated['access_token'] ?? ''));
-        $idfisico = trim((string) ($validated['idfisico'] ?? ''));
-        $idgiuridico = trim((string) ($validated['idgiuridico'] ?? ''));
-        $filialeMadre = trim((string) ($validated['filiale_madre'] ?? ''));
-        $nameId = trim((string) ($validated['name_id'] ?? 'e65547ec-286c-433c-b65d-b2ca596e2db2'));
-        $relayState = $validated['RelayState'] ?? null;
-        $selectedBancaAbi = $this->resolveSelectedBancaAbi($validated['banca_abi'] ?? null);
+		$accessToken = trim((string) ($validated["access_token"] ?? ""));
+		$idfisico = trim((string) ($validated["idfisico"] ?? ""));
+		$idgiuridico = trim((string) ($validated["idgiuridico"] ?? ""));
+		$filialeMadre = trim((string) ($validated["filiale_madre"] ?? ""));
+		$nameId = trim((string) ($validated["name_id"] ?? "e65547ec-286c-433c-b65d-b2ca596e2db2"));
+		$relayState = $validated["RelayState"] ?? null;
+		$selectedBancaAbi = $this->resolveSelectedBancaAbi($validated["banca_abi"] ?? null);
 
-        if ($selectedBancaAbi !== null && ! $this->scenarios->isKnownBancaAbi($selectedBancaAbi)) {
-            return redirect()
-                ->route('auth.sim.form', array_filter([
-                    'relay' => $relayState,
-                    'banca_abi' => $selectedBancaAbi,
-                ]))
-                ->withErrors([
-                    'banca_abi' => 'Banca selezionata non valida.',
-                ]);
-        }
+		if ($selectedBancaAbi !== null && !$this->scenarios->isKnownBancaAbi($selectedBancaAbi)) {
+			return redirect()
+				->route(
+					"auth.sim.form",
+					array_filter([
+						"relay" => $relayState,
+						"banca_abi" => $selectedBancaAbi,
+					])
+				)
+				->withErrors([
+					"banca_abi" => "Banca selezionata non valida.",
+				]);
+		}
 
-        if ($scenario !== SamlSimulationScenarioService::SCENARIO_MANUAL) {
-            $randomUserId = $this->scenarios->randomUserIdForScenario($scenario, $selectedBancaAbi);
-            if ($randomUserId === null) {
-                $meseMancante = $this->scenarios->meseStoricoMancante($scenario, $selectedBancaAbi);
+		if ($scenario !== SamlSimulationScenarioService::SCENARIO_MANUAL) {
+			$randomUserId = $this->scenarios->randomUserIdForScenario($scenario, $selectedBancaAbi);
+			if ($randomUserId === null) {
+				$meseMancante = $this->scenarios->meseStoricoMancante($scenario, $selectedBancaAbi);
 
-                return redirect()
-                    ->route('auth.sim.form', array_filter([
-                        'relay' => $relayState,
-                        'banca_abi' => $selectedBancaAbi,
-                    ]))
-                    ->withErrors([
-                        'scenario' => $meseMancante !== null
-                            ? "Nessun utente disponibile: lo storico dei clienti non arriva a {$meseMancante}, richiesto dalla piattaforma. Rilancia app:init per riallinearlo."
-                            : 'Nessun utente disponibile per lo scenario e la banca selezionati.',
-                    ]);
-            }
+				return redirect()
+					->route(
+						"auth.sim.form",
+						array_filter([
+							"relay" => $relayState,
+							"banca_abi" => $selectedBancaAbi,
+						])
+					)
+					->withErrors([
+						"scenario" =>
+							$meseMancante !== null
+								? "Nessun utente disponibile: lo storico dei clienti non arriva a {$meseMancante}, richiesto dalla piattaforma. Rilancia app:init per riallinearlo."
+								: "Nessun utente disponibile per lo scenario e la banca selezionati.",
+					]);
+			}
 
-            $idgiuridico = $randomUserId;
-        }
+			$idgiuridico = $randomUserId;
+		}
 
-        if ($idgiuridico === '') {
-            return redirect()
-                ->route('auth.sim.form', array_filter(['relay' => $relayState]))
-                ->withInput()
-                ->withErrors([
-                    'idgiuridico' => 'Inserisci un User ID.',
-                ]);
-        }
+		if ($idgiuridico === "") {
+			return redirect()
+				->route("auth.sim.form", array_filter(["relay" => $relayState]))
+				->withInput()
+				->withErrors([
+					"idgiuridico" => "Inserisci un User ID.",
+				]);
+		}
 
-        $operator = $this->scenarios->operatorContext();
-        $this->simulationLog->append([
-            'simulated_user_id' => $idgiuridico,
-            'scenario' => $scenario,
-            'scenario_label' => $this->scenarios->labelFor($scenario),
-            'operator_user_id' => $operator['user_id'] ?? null,
-            'operator_email' => $operator['email'] ?? null,
-            'operator_role' => $operator['role'] ?? null,
-        ]);
+		$operator = $this->scenarios->operatorContext();
+		$this->simulationLog->append([
+			"simulated_user_id" => $idgiuridico,
+			"scenario" => $scenario,
+			"scenario_label" => $this->scenarios->labelFor($scenario),
+			"operator_user_id" => $operator["user_id"] ?? null,
+			"operator_email" => $operator["email"] ?? null,
+			"operator_role" => $operator["role"] ?? null,
+		]);
 
-        Log::info('Auth simulation started', [
-            'protocol' => $protocol,
-            'scenario' => $scenario,
-            'simulated_user_id' => $idgiuridico,
-            'operator_email' => $operator['email'] ?? null,
-        ]);
+		Log::info("Auth simulation started", [
+			"protocol" => $protocol,
+			"scenario" => $scenario,
+			"simulated_user_id" => $idgiuridico,
+			"operator_email" => $operator["email"] ?? null,
+		]);
 
-        // OIDC: l'utenza è scelta, il resto lo fa il flusso reale. Il valore in sessione dice
-        // solo *quale* utenza ha scelto l'operatore — non è un marcatore di fiducia: a decidere
-        // che il Provider siamo noi resta la route (`oidc.sim.*`), raggiungibile solo da qui.
-        if ($protocol === self::PROTOCOL_OIDC) {
-            session(['oidc_sim_user_id' => $idgiuridico]);
+		// OIDC: l'utenza è scelta, il resto lo fa il flusso reale. Il valore in sessione dice
+		// solo *quale* utenza ha scelto l'operatore — non è un marcatore di fiducia: a decidere
+		// che il Provider siamo noi resta la route (`oidc.sim.*`), raggiungibile solo da qui.
+		if ($protocol === self::PROTOCOL_OIDC) {
+			session(["oidc_sim_user_id" => $idgiuridico]);
 
-            return redirect()->route('oidc.sim.request', ['external_id' => $idgiuridico]);
-        }
+			return redirect()->route("oidc.sim.request", ["external_id" => $idgiuridico]);
+		}
 
-        $xml = <<<'XML'
+		$xml = <<<'XML'
 <samlp:Response xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" ID="_8f88d41d-b242-482e-a871-cb34c89fdab2" Version="2.0" IssueInstant="2024-07-03T09:31:27.817Z" Destination="https://anticipotransatopos.bancodesio.it/" InResponseTo="_29931b89-b513-422d-ad14-51a3dc52f18b">
 <saml:Issuer>https://psd.bancodesio.it/identificationapi/IdpSaml/sso</saml:Issuer>
 <Signature xmlns="http://www.w3.org/2000/09/xmldsig#">
@@ -330,455 +343,466 @@ class SamlController extends Controller
 </samlp:Response>
 XML;
 
-        $xml = str_replace(
-            ['{{ACCESS_TOKEN}}', '{{USER_ID_FISICO}}', '{{USER_ID_GIURIDICO}}', '{{FILIALE_MADRE}}', '{{NAME_ID}}'],
-            [
-                htmlspecialchars($accessToken, ENT_XML1),
-                htmlspecialchars($idfisico, ENT_XML1),
-                htmlspecialchars($idgiuridico, ENT_XML1),
-                htmlspecialchars($filialeMadre, ENT_XML1),
-                htmlspecialchars($nameId, ENT_XML1),
-            ],
-            $xml
-        );
+		$xml = str_replace(
+			["{{ACCESS_TOKEN}}", "{{USER_ID_FISICO}}", "{{USER_ID_GIURIDICO}}", "{{FILIALE_MADRE}}", "{{NAME_ID}}"],
+			[
+				htmlspecialchars($accessToken, ENT_XML1),
+				htmlspecialchars($idfisico, ENT_XML1),
+				htmlspecialchars($idgiuridico, ENT_XML1),
+				htmlspecialchars($filialeMadre, ENT_XML1),
+				htmlspecialchars($nameId, ENT_XML1),
+			],
+			$xml
+		);
 
-        $b64 = base64_encode($xml);
-        // Il simulatore posta alla route GEMELLA (dietro shield operatore), non all'endpoint
-        // reale: quello ora pretende una firma valida, che il simulatore non può produrre.
-        $acs = route('auth.sim.saml');
+		$b64 = base64_encode($xml);
+		// Il simulatore posta alla route GEMELLA (dietro shield operatore), non all'endpoint
+		// reale: quello ora pretende una firma valida, che il simulatore non può produrre.
+		$acs = route("auth.sim.saml");
 
-        return view('auth-simulation.posting', [
-            'acs' => $acs,
-            'samlResponse' => $b64,
-            'relayState' => $relayState,
-            'simulatedUserId' => $idgiuridico,
-        ]);
-    }
+		return view("auth-simulation.posting", [
+			"acs" => $acs,
+			"samlResponse" => $b64,
+			"relayState" => $relayState,
+			"simulatedUserId" => $idgiuridico,
+		]);
+	}
 
-    #[ExcludeRouteFromDocs]
-    public function authSaml(Request $request): RedirectResponse|Response
-    {
-        $frontendUrl = rtrim(config('app.frontend_url'), '/');
-        $domain = config('session.domain');
-        $appUrl = config('app.url');
-        $scheme = parse_url($appUrl, PHP_URL_SCHEME);
+	#[ExcludeRouteFromDocs]
+	public function authSaml(Request $request): RedirectResponse|Response
+	{
+		$frontendUrl = rtrim(config("app.frontend_url"), "/");
+		$domain = config("session.domain");
+		$appUrl = config("app.url");
+		$scheme = parse_url($appUrl, PHP_URL_SCHEME);
 
-        $b64 = $request->input('SAMLResponse');
-        if (! $b64) {
-            Log::info('Missing SAMLResponse');
-            Log::info($b64);
-            $xmlError = '<?xml version="1.0" encoding="UTF-8"?>
+		$b64 = $request->input("SAMLResponse");
+		if (!$b64) {
+			Log::info("Missing SAMLResponse");
+			Log::info($b64);
+			$xmlError = '<?xml version="1.0" encoding="UTF-8"?>
 			<error>
 				<code>400</code>
 				<message>SAMLResponse mancante</message>
 			</error>';
 
-            return response($xmlError, 400)->header('Content-Type', 'application/xml');
-        }
+			return response($xmlError, 400)->header("Content-Type", "application/xml");
+		}
 
-        $xml = base64_decode($b64, true);
-        if ($xml === false || stripos($xml, '<!DOCTYPE') !== false) {
-            Log::info('Invalid base64 SAMLResponse');
+		$xml = base64_decode($b64, true);
+		if ($xml === false || stripos($xml, "<!DOCTYPE") !== false) {
+			Log::info("Invalid base64 SAMLResponse");
 
-            return response($this->samlError(400, 'SAMLResponse non valida'), 400)
-                ->header('Content-Type', 'application/xml');
-        }
+			return response($this->samlError(400, "SAMLResponse non valida"), 400)->header(
+				"Content-Type",
+				"application/xml"
+			);
+		}
 
-        // Da dove viene la fiducia:
-        // - route sim (auth.sim.saml, dietro shield:auth_sim): operatore gia' autenticato -> niente firma;
-        // - route reale (auth.saml, pubblica): dalla FIRMA dell'IdP, verificata contro il cert pinnato.
-        // La discriminante e' QUALE route ha fatto match, non un dato della request -> fail-closed.
-        $isSimulation = $request->route()?->named('auth.sim.saml') ?? false;
+		// Da dove viene la fiducia:
+		// - route sim (auth.sim.saml, dietro shield:auth_sim): operatore gia' autenticato -> niente firma;
+		// - route reale (auth.saml, pubblica): dalla FIRMA dell'IdP, verificata contro il cert pinnato.
+		// La discriminante e' QUALE route ha fatto match, non un dato della request -> fail-closed.
+		$isSimulation = $request->route()?->named("auth.sim.saml") ?? false;
 
-        if ($isSimulation) {
-            libxml_use_internal_errors(true);
-            $doc = new \DOMDocument;
-            if (! $doc->loadXML($xml, LIBXML_NONET | LIBXML_NOERROR | LIBXML_NOWARNING)) {
-                return response($this->samlError(400, 'SAMLResponse non valida'), 400)
-                    ->header('Content-Type', 'application/xml');
-            }
-            $signedNodes = [$doc->documentElement];
-        } else {
-            try {
-                $signedNodes = app(SamlSignatureVerifier::class)->verifiedNodes($xml);
-            } catch (\Throwable $e) {
-                Log::warning('SAML signature verification failed', [
-                    'message' => $e->getMessage(),
-                    'ip' => $request->ip(),
-                ]);
+		if ($isSimulation) {
+			libxml_use_internal_errors(true);
+			$doc = new \DOMDocument();
+			if (!$doc->loadXML($xml, LIBXML_NONET | LIBXML_NOERROR | LIBXML_NOWARNING)) {
+				return response($this->samlError(400, "SAMLResponse non valida"), 400)->header(
+					"Content-Type",
+					"application/xml"
+				);
+			}
+			$signedNodes = [$doc->documentElement];
+		} else {
+			try {
+				$signedNodes = app(SamlSignatureVerifier::class)->verifiedNodes($xml);
+			} catch (\Throwable $e) {
+				Log::warning("SAML signature verification failed", [
+					"message" => $e->getMessage(),
+					"ip" => $request->ip(),
+				]);
 
-                return response($this->samlError(401, 'Firma SAMLResponse non valida'), 401)
-                    ->header('Content-Type', 'application/xml');
-            }
-        }
+				return response($this->samlError(401, "Firma SAMLResponse non valida"), 401)->header(
+					"Content-Type",
+					"application/xml"
+				);
+			}
+		}
 
-        // Attributi letti SOLO dai nodi coperti dalla firma (anti-XSW), mai con XPath globale.
-        $attrs = $this->extractSamlAttributes($signedNodes);
+		// Attributi letti SOLO dai nodi coperti dalla firma (anti-XSW), mai con XPath globale.
+		$attrs = $this->extractSamlAttributes($signedNodes);
 
-        $jwt = $attrs['access-token'] ?? null;
-        $idfisico = $attrs['user_id-persona-fisica'] ?? null;
-        $idgiuridico = $attrs['user_ids-aziende'] ?? null;
-        $nomegiuridico = $attrs['ragione-sociale-persona-giuridica'] ?? null;
+		$jwt = $attrs["access-token"] ?? null;
+		$idfisico = $attrs["user_id-persona-fisica"] ?? null;
+		$idgiuridico = $attrs["user_ids-aziende"] ?? null;
+		$nomegiuridico = $attrs["ragione-sociale-persona-giuridica"] ?? null;
 
-        if (! $jwt) {
-            Log::info('JWT not found');
-            Log::info($jwt);
-            $xmlError = '<?xml version="1.0" encoding="UTF-8"?>
+		if (!$jwt) {
+			Log::info("JWT not found");
+			Log::info($jwt);
+			$xmlError = '<?xml version="1.0" encoding="UTF-8"?>
 			<error>
 				<code>401</code>
 				<message>JWT non trovato</message>
 			</error>';
 
-            return response($xmlError, 401)->header('Content-Type', 'application/xml');
-        }
+			return response($xmlError, 401)->header("Content-Type", "application/xml");
+		}
 
-        if (! $idfisico && ! $idgiuridico) {
-            Log::info('No IDFISICO or IDGIURIDICO found');
-            $xmlError = '<?xml version="1.0" encoding="UTF-8"?>
+		if (!$idfisico && !$idgiuridico) {
+			Log::info("No IDFISICO or IDGIURIDICO found");
+			$xmlError = '<?xml version="1.0" encoding="UTF-8"?>
 			<error>
 				<code>401</code>
 				<message>No IDFISICO or IDGIURIDICO found</message>
 			</error>';
 
-            return response($xmlError, 401)->header('Content-Type', 'application/xml');
-        }
+			return response($xmlError, 401)->header("Content-Type", "application/xml");
+		}
 
-        Log::info("JWT: {$jwt}");
-        Log::info("IDFISICO: {$idfisico}");
-        Log::info("IDGIURIDICO: {$idgiuridico}");
-        Log::info("RAGIONE SOCIALE: {$nomegiuridico}");
+		Log::info("JWT: {$jwt}");
+		Log::info("IDFISICO: {$idfisico}");
+		Log::info("IDGIURIDICO: {$idgiuridico}");
+		Log::info("RAGIONE SOCIALE: {$nomegiuridico}");
 
-        // Resolve user from identifier(s). Expected format: banca_abi-ndg (e.g. 73801-2755069).
-        $user = null;
-        if ($idgiuridico && strpos($idgiuridico, ',') !== false) {
-            $identifiers = array_filter(array_map('trim', explode(',', $idgiuridico)));
-            $userIdList = [];
-            $ragioneSocialeList = [];
-            foreach ($identifiers as $userId) {
-                $found = User::where('user_id', $userId)->where('sospeso', false)->first();
-                if ($found) {
-                    $userIdList[] = $found->user_id;
-                    $ragioneSocialeList[] = $found->ragione_sociale ?? 'N/A';
-                }
-            }
-            if (count($userIdList) > 1) {
-                return response()->view('saml.select_user_id', [
-                    'userIdList' => $userIdList,
-                    'ragioneSocialeList' => $ragioneSocialeList,
-                    // Allowlist firmata: la scelta successiva è accettata solo se in questa lista.
-                    'allowlist' => app(SamlUserAllowlist::class)->sign($userIdList),
-                ]);
-            }
-            if (count($userIdList) === 1) {
-                $user = User::where('user_id', $userIdList[0])->where('sospeso', false)->first();
-            }
-        } else {
-            $userId = ($idgiuridico !== '' && $idgiuridico !== null) ? $idgiuridico : $idfisico;
-            if ($userId !== '' && $userId !== null) {
-                $user = User::where('user_id', $userId)->where('sospeso', false)->first();
-            }
-        }
+		// Resolve user from identifier(s). Expected format: banca_abi-ndg (e.g. 73801-2755069).
+		$user = null;
+		if ($idgiuridico && strpos($idgiuridico, ",") !== false) {
+			$identifiers = array_filter(array_map("trim", explode(",", $idgiuridico)));
+			$userIdList = [];
+			$ragioneSocialeList = [];
+			foreach ($identifiers as $userId) {
+				$found = User::where("user_id", $userId)->where("sospeso", false)->first();
+				if ($found) {
+					$userIdList[] = $found->user_id;
+					$ragioneSocialeList[] = $found->ragione_sociale ?? "N/A";
+				}
+			}
+			if (count($userIdList) > 1) {
+				return response()->view("saml.select_user_id", [
+					"userIdList" => $userIdList,
+					"ragioneSocialeList" => $ragioneSocialeList,
+					// Allowlist firmata: la scelta successiva è accettata solo se in questa lista.
+					"allowlist" => app(SamlUserAllowlist::class)->sign($userIdList),
+				]);
+			}
+			if (count($userIdList) === 1) {
+				$user = User::where("user_id", $userIdList[0])->where("sospeso", false)->first();
+			}
+		} else {
+			$userId = $idgiuridico !== "" && $idgiuridico !== null ? $idgiuridico : $idfisico;
+			if ($userId !== "" && $userId !== null) {
+				$user = User::where("user_id", $userId)->where("sospeso", false)->first();
+			}
+		}
 
-        if (! $user) {
-            Log::warning('Auth failed: user not found or suspended', [
-                'idgiuridico' => $idgiuridico,
-                'idfisico' => $idfisico,
-                'ip' => $request->ip(),
-            ]);
+		if (!$user) {
+			Log::warning("Auth failed: user not found or suspended", [
+				"idgiuridico" => $idgiuridico,
+				"idfisico" => $idfisico,
+				"ip" => $request->ip(),
+			]);
 
-            $cookie = cookie(
-                name: 'apiToken',
-                value: '',
-                minutes: 0,
-                path: '/',
-                domain: $domain,
-                secure: $scheme === 'https',
-                httpOnly: false,
-                raw: false,
-                sameSite: 'lax'
-            );
+			$cookie = cookie(
+				name: "apiToken",
+				value: "",
+				minutes: 0,
+				path: "/",
+				domain: $domain,
+				secure: $scheme === "https",
+				httpOnly: false,
+				raw: false,
+				sameSite: "lax"
+			);
 
-            return redirect()
-                ->away("{$frontendUrl}")
-                ->withCookie($cookie);
-        }
+			return redirect()
+				->away("{$frontendUrl}")
+				->withCookie($cookie);
+		}
 
-        // The user's password is the HKDF-derived user_id; the argon2id driver
-        // (DerivingArgon2IdHasher) applies the derivation internally, so both the
-        // auto-heal and the check below work on the raw user_id.
-        if (empty($user->password)) {
-            $user->password = Hash::make($user->user_id);
-            $user->save();
-            Log::info('Password auto-generated during SAML auth', ['user_id' => $user->user_id]);
-        }
+		// The user's password is the HKDF-derived user_id; the argon2id driver
+		// (DerivingArgon2IdHasher) applies the derivation internally, so both the
+		// auto-heal and the check below work on the raw user_id.
+		if (empty($user->password)) {
+			$user->password = Hash::make($user->user_id);
+			$user->save();
+			Log::info("Password auto-generated during SAML auth", ["user_id" => $user->user_id]);
+		}
 
-        if (! Hash::check($user->user_id, $user->password)) {
-            Log::critical('SAML/password mismatch — possible security anomaly', [
-                'user_id' => $user->user_id,
-                'ip' => $request->ip(),
-                'user_agent' => $request->userAgent(),
-                'timestamp' => now()->toIso8601String(),
-            ]);
+		if (!Hash::check($user->user_id, $user->password)) {
+			Log::critical("SAML/password mismatch — possible security anomaly", [
+				"user_id" => $user->user_id,
+				"ip" => $request->ip(),
+				"user_agent" => $request->userAgent(),
+				"timestamp" => now()->toIso8601String(),
+			]);
 
-            $cookie = cookie(
-                name: 'apiToken',
-                value: '',
-                minutes: 0,
-                path: '/',
-                domain: $domain,
-                secure: $scheme === 'https',
-                httpOnly: false,
-                raw: false,
-                sameSite: 'lax'
-            );
+			$cookie = cookie(
+				name: "apiToken",
+				value: "",
+				minutes: 0,
+				path: "/",
+				domain: $domain,
+				secure: $scheme === "https",
+				httpOnly: false,
+				raw: false,
+				sameSite: "lax"
+			);
 
-            return redirect()
-                ->away("{$frontendUrl}")
-                ->withCookie($cookie);
-        }
+			return redirect()
+				->away("{$frontendUrl}")
+				->withCookie($cookie);
+		}
 
-        Auth::login($user);
-        Log::info('Auth successful', [
-            'user_id' => $user->user_id,
-            ...$this->situazionePiattaforma($user),
-        ]);
+		Auth::login($user);
+		Log::info("Auth successful", [
+			"user_id" => $user->user_id,
+			...$this->situazionePiattaforma($user),
+		]);
 
-        // Token expires after session lifetime; cookie is always session cookie (cleared when browser closes)
-        $sessionLifetime = (int) config('session.lifetime', 20);
-        $expiresAt = $sessionLifetime > 0 ? now()->addMinutes($sessionLifetime) : null;
+		// Token expires after session lifetime; cookie is always session cookie (cleared when browser closes)
+		$sessionLifetime = (int) config("session.lifetime", 20);
+		$expiresAt = $sessionLifetime > 0 ? now()->addMinutes($sessionLifetime) : null;
 
-        $plainText = $user->createToken('api-token', ['*'], $expiresAt)->plainTextToken;
-        $apiToken = explode('|', $plainText, 2)[1];
+		$plainText = $user->createToken("api-token", ["*"], $expiresAt)->plainTextToken;
+		$apiToken = explode("|", $plainText, 2)[1];
 
-        $cookie = cookie(
-            name: 'apiToken',
-            value: $apiToken,
-            minutes: 0,
-            path: '/',
-            domain: $domain,
-            secure: $scheme === 'https',
-            httpOnly: false,
-            raw: false,
-            sameSite: 'lax'
-        );
+		$cookie = cookie(
+			name: "apiToken",
+			value: $apiToken,
+			minutes: 0,
+			path: "/",
+			domain: $domain,
+			secure: $scheme === "https",
+			httpOnly: false,
+			raw: false,
+			sameSite: "lax"
+		);
 
-        return redirect()
-            ->away("{$frontendUrl}")
-            ->withCookie($cookie);
-    }
+		return redirect()
+			->away("{$frontendUrl}")
+			->withCookie($cookie);
+	}
 
-    #[ExcludeRouteFromDocs]
-    public function authSamlSelectUserId(Request $request): RedirectResponse|Response
-    {
-        $frontendUrl = rtrim(config('app.frontend_url'), '/');
-        $domain = config('session.domain');
-        $appUrl = config('app.url');
-        $scheme = parse_url($appUrl, PHP_URL_SCHEME);
+	#[ExcludeRouteFromDocs]
+	public function authSamlSelectUserId(Request $request): RedirectResponse|Response
+	{
+		$frontendUrl = rtrim(config("app.frontend_url"), "/");
+		$domain = config("session.domain");
+		$appUrl = config("app.url");
+		$scheme = parse_url($appUrl, PHP_URL_SCHEME);
 
-        $userId = trim((string) $request->input('idgiuridico', ''));
+		$userId = trim((string) $request->input("idgiuridico", ""));
 
-        // La scelta è accettata solo se compresa nell'allowlist firmata emessa da authSaml
-        // (che a monte ha verificato la firma dell'IdP). Senza, questo endpoint sarebbe un
-        // bypass: chiunque potrebbe postare un idgiuridico e loggarsi.
-        $allowlist = (string) $request->input('allowlist', '');
-        if (! app(SamlUserAllowlist::class)->contains($allowlist, $userId)) {
-            Log::warning('SAML select-user-id: allowlist verification failed', [
-                'idgiuridico' => $userId,
-                'ip' => $request->ip(),
-            ]);
+		// La scelta è accettata solo se compresa nell'allowlist firmata emessa da authSaml
+		// (che a monte ha verificato la firma dell'IdP). Senza, questo endpoint sarebbe un
+		// bypass: chiunque potrebbe postare un idgiuridico e loggarsi.
+		$allowlist = (string) $request->input("allowlist", "");
+		if (!app(SamlUserAllowlist::class)->contains($allowlist, $userId)) {
+			Log::warning("SAML select-user-id: allowlist verification failed", [
+				"idgiuridico" => $userId,
+				"ip" => $request->ip(),
+			]);
 
-            return response($this->samlError(403, 'Selezione non autorizzata'), 403)
-                ->header('Content-Type', 'application/xml');
-        }
+			return response($this->samlError(403, "Selezione non autorizzata"), 403)->header(
+				"Content-Type",
+				"application/xml"
+			);
+		}
 
-        Log::info("SELECTED IDGIURIDICO: {$userId}");
+		Log::info("SELECTED IDGIURIDICO: {$userId}");
 
-        $user = User::where('user_id', $userId)->where('sospeso', false)->first();
+		$user = User::where("user_id", $userId)->where("sospeso", false)->first();
 
-        if (! $user) {
-            Log::warning('Auth failed: user not found or suspended', [
-                'idgiuridico' => $userId,
-                'ip' => $request->ip(),
-            ]);
+		if (!$user) {
+			Log::warning("Auth failed: user not found or suspended", [
+				"idgiuridico" => $userId,
+				"ip" => $request->ip(),
+			]);
 
-            $cookie = cookie(
-                name: 'apiToken',
-                value: '',
-                minutes: 0,
-                path: '/',
-                domain: $domain,
-                secure: $scheme === 'https',
-                httpOnly: false,
-                raw: false,
-                sameSite: 'lax'
-            );
+			$cookie = cookie(
+				name: "apiToken",
+				value: "",
+				minutes: 0,
+				path: "/",
+				domain: $domain,
+				secure: $scheme === "https",
+				httpOnly: false,
+				raw: false,
+				sameSite: "lax"
+			);
 
-            return redirect()
-                ->away("{$frontendUrl}")
-                ->withCookie($cookie);
-        }
+			return redirect()
+				->away("{$frontendUrl}")
+				->withCookie($cookie);
+		}
 
-        // See authSaml: the derivation-aware hasher works on the raw user_id.
-        if (empty($user->password)) {
-            $user->password = Hash::make($user->user_id);
-            $user->save();
-            Log::info('Password auto-generated during SAML auth (select user)', ['user_id' => $user->user_id]);
-        }
+		// See authSaml: the derivation-aware hasher works on the raw user_id.
+		if (empty($user->password)) {
+			$user->password = Hash::make($user->user_id);
+			$user->save();
+			Log::info("Password auto-generated during SAML auth (select user)", ["user_id" => $user->user_id]);
+		}
 
-        if (! Hash::check($user->user_id, $user->password)) {
-            Log::critical('SAML/password mismatch — possible security anomaly', [
-                'user_id' => $user->user_id,
-                'ip' => $request->ip(),
-                'user_agent' => $request->userAgent(),
-                'timestamp' => now()->toIso8601String(),
-            ]);
+		if (!Hash::check($user->user_id, $user->password)) {
+			Log::critical("SAML/password mismatch — possible security anomaly", [
+				"user_id" => $user->user_id,
+				"ip" => $request->ip(),
+				"user_agent" => $request->userAgent(),
+				"timestamp" => now()->toIso8601String(),
+			]);
 
-            $cookie = cookie(
-                name: 'apiToken',
-                value: '',
-                minutes: 0,
-                path: '/',
-                domain: $domain,
-                secure: $scheme === 'https',
-                httpOnly: false,
-                raw: false,
-                sameSite: 'lax'
-            );
+			$cookie = cookie(
+				name: "apiToken",
+				value: "",
+				minutes: 0,
+				path: "/",
+				domain: $domain,
+				secure: $scheme === "https",
+				httpOnly: false,
+				raw: false,
+				sameSite: "lax"
+			);
 
-            return redirect()
-                ->away("{$frontendUrl}")
-                ->withCookie($cookie);
-        }
+			return redirect()
+				->away("{$frontendUrl}")
+				->withCookie($cookie);
+		}
 
-        Auth::login($user);
-        Log::info('Auth successful', [
-            'user_id' => $user->user_id,
-            ...$this->situazionePiattaforma($user),
-        ]);
+		Auth::login($user);
+		Log::info("Auth successful", [
+			"user_id" => $user->user_id,
+			...$this->situazionePiattaforma($user),
+		]);
 
-        // Token expires after session lifetime; cookie is always session cookie (cleared when browser closes)
-        $sessionLifetime = (int) config('session.lifetime', 20);
-        $expiresAt = $sessionLifetime > 0 ? now()->addMinutes($sessionLifetime) : null;
+		// Token expires after session lifetime; cookie is always session cookie (cleared when browser closes)
+		$sessionLifetime = (int) config("session.lifetime", 20);
+		$expiresAt = $sessionLifetime > 0 ? now()->addMinutes($sessionLifetime) : null;
 
-        $plainText = $user->createToken('api-token', ['*'], $expiresAt)->plainTextToken;
-        $apiToken = explode('|', $plainText, 2)[1];
+		$plainText = $user->createToken("api-token", ["*"], $expiresAt)->plainTextToken;
+		$apiToken = explode("|", $plainText, 2)[1];
 
-        $cookie = cookie(
-            name: 'apiToken',
-            value: $apiToken,
-            minutes: 0,
-            path: '/',
-            domain: $domain,
-            secure: $scheme === 'https',
-            httpOnly: false,
-            raw: false,
-            sameSite: 'lax'
-        );
+		$cookie = cookie(
+			name: "apiToken",
+			value: $apiToken,
+			minutes: 0,
+			path: "/",
+			domain: $domain,
+			secure: $scheme === "https",
+			httpOnly: false,
+			raw: false,
+			sameSite: "lax"
+		);
 
-        return redirect()
-            ->away("{$frontendUrl}")
-            ->withCookie($cookie);
-    }
+		return redirect()
+			->away("{$frontendUrl}")
+			->withCookie($cookie);
+	}
 
-    /**
-     * Fail-closed: qualsiasi valore non riconosciuto → SAML. OIDC solo dove il tenant ce l'ha,
-     * altrimenti le route `oidc.sim.*` non esistono nemmeno e il redirect esploderebbe.
-     */
-    private function resolveProtocol(mixed $protocol): string
-    {
-        if ((string) $protocol === self::PROTOCOL_OIDC && config('app.tenant') === 'nexi-multi') {
-            return self::PROTOCOL_OIDC;
-        }
+	/**
+	 * Fail-closed: qualsiasi valore non riconosciuto → SAML. OIDC solo dove il tenant ce l'ha,
+	 * altrimenti le route `oidc.sim.*` non esistono nemmeno e il redirect esploderebbe.
+	 */
+	private function resolveProtocol(mixed $protocol): string
+	{
+		if ((string) $protocol === self::PROTOCOL_OIDC && config("app.tenant") === "nexi-multi") {
+			return self::PROTOCOL_OIDC;
+		}
 
-        return self::PROTOCOL_SAML;
-    }
+		return self::PROTOCOL_SAML;
+	}
 
-    /** Risposta d'errore XML coerente per l'endpoint SAML. */
-    private function samlError(int $code, string $message): string
-    {
-        return '<?xml version="1.0" encoding="UTF-8"?>'."\n"
-            .'<error><code>'.$code.'</code><message>'.htmlspecialchars($message, ENT_XML1).'</message></error>';
-    }
+	/** Risposta d'errore XML coerente per l'endpoint SAML. */
+	private function samlError(int $code, string $message): string
+	{
+		return '<?xml version="1.0" encoding="UTF-8"?>' .
+			"\n" .
+			"<error><code>" .
+			$code .
+			"</code><message>" .
+			htmlspecialchars($message, ENT_XML1) .
+			"</message></error>";
+	}
 
-    /**
-     * Legge gli attributi SAML SOLO dai nodi coperti dalla firma (anti-XSW): mai con XPath globale.
-     *
-     * @param  list<\DOMNode>  $signedNodes
-     * @return array<string, string>
-     */
-    private function extractSamlAttributes(array $signedNodes): array
-    {
-        $attrs = [];
-        foreach ($signedNodes as $node) {
-            $doc = $node instanceof \DOMDocument ? $node : $node->ownerDocument;
-            $xp = new \DOMXPath($doc);
-            $xp->registerNamespace('saml', 'urn:oasis:names:tc:SAML:2.0:assertion');
+	/**
+	 * Legge gli attributi SAML SOLO dai nodi coperti dalla firma (anti-XSW): mai con XPath globale.
+	 *
+	 * @param  list<\DOMNode>  $signedNodes
+	 * @return array<string, string>
+	 */
+	private function extractSamlAttributes(array $signedNodes): array
+	{
+		$attrs = [];
+		foreach ($signedNodes as $node) {
+			$doc = $node instanceof \DOMDocument ? $node : $node->ownerDocument;
+			$xp = new \DOMXPath($doc);
+			$xp->registerNamespace("saml", "urn:oasis:names:tc:SAML:2.0:assertion");
 
-            foreach ($xp->query('.//saml:AttributeStatement/saml:Attribute', $node) as $attr) {
-                $name = $attr->getAttribute('Name');
-                $valNode = $xp->query('./saml:AttributeValue', $attr)->item(0);
-                $val = $valNode ? trim($valNode->textContent) : null;
-                if ($name !== '' && $val !== null) {
-                    $attrs[$name] = $val;
-                }
-            }
-        }
+			foreach ($xp->query(".//saml:AttributeStatement/saml:Attribute", $node) as $attr) {
+				$name = $attr->getAttribute("Name");
+				$valNode = $xp->query("./saml:AttributeValue", $attr)->item(0);
+				$val = $valNode ? trim($valNode->textContent) : null;
+				if ($name !== "" && $val !== null) {
+					$attrs[$name] = $val;
+				}
+			}
+		}
 
-        return $attrs;
-    }
+		return $attrs;
+	}
 
-    private function resolveSelectedBancaAbi(mixed $bancaAbi): ?string
-    {
-        $bancaAbi = trim((string) $bancaAbi);
+	private function resolveSelectedBancaAbi(mixed $bancaAbi): ?string
+	{
+		$bancaAbi = trim((string) $bancaAbi);
 
-        if ($bancaAbi === '') {
-            return null;
-        }
+		if ($bancaAbi === "") {
+			return null;
+		}
 
-        return str_pad($bancaAbi, 5, '0', STR_PAD_LEFT);
-    }
+		return str_pad($bancaAbi, 5, "0", STR_PAD_LEFT);
+	}
 
-    /**
-     * The platform situation the user is about to land on, for the log line.
-     *
-     * Read straight off UserResource, which is what the frontend is handed
-     * after login: the log then says what the operator should actually see,
-     * instead of a second opinion that can drift away from it.
-     *
-     * @return array<string, mixed>
-     */
-    private function situazionePiattaforma(?User $user): array
-    {
-        if ($user === null) {
-            return ['situazione' => 'utente non trovato'];
-        }
+	/**
+	 * The platform situation the user is about to land on, for the log line.
+	 *
+	 * Read straight off UserResource, which is what the frontend is handed
+	 * after login: the log then says what the operator should actually see,
+	 * instead of a second opinion that can drift away from it.
+	 *
+	 * @return array<string, mixed>
+	 */
+	private function situazionePiattaforma(?User $user): array
+	{
+		if ($user === null) {
+			return ["situazione" => "utente non trovato"];
+		}
 
-        $payload = UserResource::make($user)->resolve(request());
-        $credito = $payload['platform_credito'] ?? [];
-        $tiraggio = $credito['tiraggio'] ?? null;
-        // Multi-tiraggio hands back a list of accepted tiraggi, not one object.
-        $tiraggioCorrente = is_array($tiraggio) && array_is_list($tiraggio)
-            ? ($tiraggio[0] ?? null)
-            : $tiraggio;
-        $prodotto = $user->prodottoBanca();
+		$payload = UserResource::make($user)->resolve(request());
+		$credito = $payload["platform_credito"] ?? [];
+		$tiraggio = $credito["tiraggio"] ?? null;
+		// Multi-tiraggio hands back a list of accepted tiraggi, not one object.
+		$tiraggioCorrente = is_array($tiraggio) && array_is_list($tiraggio) ? $tiraggio[0] ?? null : $tiraggio;
+		$prodotto = $user->prodottoBanca();
 
-        return [
-            'banca_abi' => $user->banca_abi,
-            'eleggibile' => $payload['eleggibile'] ?? null,
-            'eleggibilita_errors' => $payload['eleggibilita_errors'] ?? [],
-            'is_in_target' => $payload['is_in_target'] ?? null,
-            'target_errors' => $payload['target_errors'] ?? [],
-            // What the home page will render. null there means no warning at
-            // all, i.e. the user lands on the tiraggio block itself.
-            'schermata_attesa' => $payload['platform_home_translate_code'] ?? 'blocco_tiraggio',
-            'tiraggio_status' => $tiraggioCorrente['status'] ?? null,
-            'tiraggi_in_payload' => is_array($tiraggio) && array_is_list($tiraggio) ? count($tiraggio) : ($tiraggio ? 1 : 0),
-            'delibera_status' => $credito['delibera']['status'] ?? null,
-            'tiraggi_accepted' => $credito['accepted_tiraggi_count'] ?? null,
-            'multi_tiraggio' => (bool) $prodotto?->multi_tiraggio,
-            'durata_parametrica' => (bool) $user->banca?->tiraggio_durata_parametrica,
-            'conguaglio_periodico' => (bool) $prodotto?->conguaglio_periodico,
-            'metodo_conguaglio' => $prodotto?->metodo_conguaglio,
-        ];
-    }
+		return [
+			"banca_abi" => $user->banca_abi,
+			"eleggibile" => $payload["eleggibile"] ?? null,
+			"eleggibilita_errors" => $payload["eleggibilita_errors"] ?? [],
+			"is_in_target" => $payload["is_in_target"] ?? null,
+			"target_errors" => $payload["target_errors"] ?? [],
+			// What the home page will render. null there means no warning at
+			// all, i.e. the user lands on the tiraggio block itself.
+			"schermata_attesa" => $payload["platform_home_translate_code"] ?? "blocco_tiraggio",
+			"tiraggio_status" => $tiraggioCorrente["status"] ?? null,
+			"tiraggi_in_payload" => is_array($tiraggio) && array_is_list($tiraggio) ? count($tiraggio) : ($tiraggio ? 1 : 0),
+			"delibera_status" => $credito["delibera"]["status"] ?? null,
+			"tiraggi_accepted" => $credito["accepted_tiraggi_count"] ?? null,
+			"multi_tiraggio" => (bool) $prodotto?->multi_tiraggio,
+			"durata_parametrica" => (bool) $user->banca?->tiraggio_durata_parametrica,
+			"conguaglio_periodico" => (bool) $prodotto?->conguaglio_periodico,
+			"metodo_conguaglio" => $prodotto?->metodo_conguaglio,
+		];
+	}
 }

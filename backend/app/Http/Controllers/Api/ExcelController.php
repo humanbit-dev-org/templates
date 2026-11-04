@@ -14,128 +14,88 @@ use Illuminate\Support\Facades\Validator;
 
 class ExcelController extends Controller
 {
-    use BancaListQueries, DashboardListQueries, PreparesListExportData, WritesXlsxExport;
+	use BancaListQueries, DashboardListQueries, PreparesListExportData, WritesXlsxExport;
 
-    public function __construct()
-    {
-        $this->raiseExportLimits();
-    }
+	public function __construct()
+	{
+		$this->raiseExportLimits();
+	}
 
-    public function exportStoricoErogazioni(Request $request): JsonResponse
-    {
-        $values = Validator::make($this->exportRequestPayload($request), $this->exportRules(__FUNCTION__))->validate();
+	public function exportStoricoErogazioni(Request $request): JsonResponse
+	{
+		$values = Validator::make($this->exportRequestPayload($request), $this->exportRules(__FUNCTION__))->validate();
 
-        $sheet = $this->prepareStoricoErogazioniExport($values);
+		$sheet = $this->prepareStoricoErogazioniExport($values);
 
-        return $this->exportXlsxResponse(
-            $sheet['filePrefix'],
-            $sheet['headers'],
-            $sheet['rows'],
-            $sheet['columns'],
-        );
-    }
+		return $this->exportXlsxResponse($sheet["filePrefix"], $sheet["headers"], $sheet["rows"], $sheet["columns"]);
+	}
 
-    public function exportRichiesteAtp(Request $request): JsonResponse
-    {
-        $values = Validator::make($this->exportRequestPayload($request), $this->exportRules(__FUNCTION__))->validate();
+	public function exportRichiesteAtp(Request $request): JsonResponse
+	{
+		$values = Validator::make($this->exportRequestPayload($request), $this->exportRules(__FUNCTION__))->validate();
 
-        $sheet = $this->prepareRichiesteAtpExport($values);
+		$sheet = $this->prepareRichiesteAtpExport($values);
 
-        return $this->exportXlsxResponse(
-            $sheet['filePrefix'],
-            $sheet['headers'],
-            $sheet['rows'],
-            $sheet['columns'],
-        );
-    }
+		return $this->exportXlsxResponse($sheet["filePrefix"], $sheet["headers"], $sheet["rows"], $sheet["columns"]);
+	}
 
-    public function exportBancaEleggibili(Request $request): JsonResponse
-    {
-        $values = Validator::make($this->exportRequestPayload($request), $this->exportRules(__FUNCTION__))->validate();
+	public function exportBancaEleggibili(Request $request): JsonResponse
+	{
+		$values = Validator::make($this->exportRequestPayload($request), $this->exportRules(__FUNCTION__))->validate();
 
-        abort_if(Auth::user()->banca === null, 403);
+		abort_if(Auth::user()->banca === null, 403);
 
-        $sheet = $this->prepareBancaEleggibiliExport($values);
+		$sheet = $this->prepareBancaEleggibiliExport($values);
 
-        return $this->exportXlsxResponse(
-            $sheet['filePrefix'],
-            $sheet['headers'],
-            $sheet['rows'],
-            $sheet['columns'],
-        );
-    }
+		return $this->exportXlsxResponse($sheet["filePrefix"], $sheet["headers"], $sheet["rows"], $sheet["columns"]);
+	}
 
-    public function exportClientiEleggibili(Request $request): JsonResponse
-    {
-        $values = Validator::make($this->exportRequestPayload($request), $this->exportRules(__FUNCTION__))->validate();
+	public function exportClientiEleggibili(Request $request): JsonResponse
+	{
+		$values = Validator::make($this->exportRequestPayload($request), $this->exportRules(__FUNCTION__))->validate();
 
-        $sheet = $this->prepareDashboardEleggibiliExport($values);
+		$sheet = $this->prepareDashboardEleggibiliExport($values);
 
-        return $this->exportXlsxResponse(
-            $sheet['filePrefix'],
-            $sheet['headers'],
-            $sheet['rows'],
-            $sheet['columns'],
-        );
-    }
+		return $this->exportXlsxResponse($sheet["filePrefix"], $sheet["headers"], $sheet["rows"], $sheet["columns"]);
+	}
 
-    public function exportCreditiAttivi(Request $request): JsonResponse
-    {
-        $values = Validator::make($this->exportRequestPayload($request), $this->exportRules(__FUNCTION__))->validate();
+	public function exportCreditiAttivi(Request $request): JsonResponse
+	{
+		$values = Validator::make($this->exportRequestPayload($request), $this->exportRules(__FUNCTION__))->validate();
 
-        $sheet = $this->prepareDashboardCreditiAttiviExport($values);
+		$sheet = $this->prepareDashboardCreditiAttiviExport($values);
 
-        return $this->exportXlsxResponse(
-            $sheet['filePrefix'],
-            $sheet['headers'],
-            $sheet['rows'],
-            $sheet['columns'],
-        );
-    }
+		return $this->exportXlsxResponse($sheet["filePrefix"], $sheet["headers"], $sheet["rows"], $sheet["columns"]);
+	}
 
-    public function exportBancaTiraggi(Request $request): JsonResponse
-    {
-        $values = Validator::make($this->exportRequestPayload($request), $this->exportRules(__FUNCTION__))->validate();
+	public function exportBancaTiraggi(Request $request): JsonResponse
+	{
+		$values = Validator::make($this->exportRequestPayload($request), $this->exportRules(__FUNCTION__))->validate();
 
-        abort_if(Auth::user()->banca === null, 403);
+		abort_if(Auth::user()->banca === null, 403);
 
-        $sheet = $this->prepareBancaTiraggiExport($values);
+		$sheet = $this->prepareBancaTiraggiExport($values);
 
-        return $this->exportXlsxResponse(
-            $sheet['filePrefix'],
-            $sheet['headers'],
-            $sheet['rows'],
-            $sheet['columns'],
-        );
-    }
+		return $this->exportXlsxResponse($sheet["filePrefix"], $sheet["headers"], $sheet["rows"], $sheet["columns"]);
+	}
 
-    public function exportBancaFiliali(Request $request): JsonResponse
-    {
-        $values = Validator::make($this->exportRequestPayload($request), $this->exportRules(__FUNCTION__))->validate();
+	public function exportBancaFiliali(Request $request): JsonResponse
+	{
+		$values = Validator::make($this->exportRequestPayload($request), $this->exportRules(__FUNCTION__))->validate();
 
-        $sheet = $this->prepareBancaFilialiExport($values);
+		$sheet = $this->prepareBancaFilialiExport($values);
 
-        return $this->exportXlsxResponse(
-            $sheet['filePrefix'],
-            $sheet['headers'],
-            $sheet['rows'],
-            $sheet['columns'],
-        );
-    }
+		return $this->exportXlsxResponse($sheet["filePrefix"], $sheet["headers"], $sheet["rows"], $sheet["columns"]);
+	}
 
-    public function exportBancaAccessi(Request $request): JsonResponse
-    {
-        $values = Validator::make($this->exportRequestPayload($request), $this->exportRules(__FUNCTION__))->validate();
+	public function exportBancaAccessi(Request $request): JsonResponse
+	{
+		$values = Validator::make($this->exportRequestPayload($request), $this->exportRules(__FUNCTION__))->validate();
 
-        abort_if(Auth::user()->banca === null, 403);
+		abort_if(Auth::user()->banca === null, 403);
 
-        $sheet = $this->prepareBancaAccessiExport($values);
+		$sheet = $this->prepareBancaAccessiExport($values);
 
-        return $this->exportXlsxResponse(
-            $sheet['filePrefix'],
-            $sheet['headers'],
-            $sheet['rows'],
-            $sheet['columns'],
-        );
-    }
+		return $this->exportXlsxResponse($sheet["filePrefix"], $sheet["headers"], $sheet["rows"], $sheet["columns"]);
+	}
 }

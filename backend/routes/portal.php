@@ -66,12 +66,7 @@ Route::getRoutes()->refreshNameLookups();
 // Token exchange: the bank presents its refresh token as a Bearer
 // credential; the controller verifies it is a 'portal-refresh:*' PAT on a
 // Product Owner and returns a fresh 'portal-access' token.
-Route::post('api/v1/token', PortalTokenController::class)
-    ->middleware([
-        'api',
-        'auth:sanctum',
-        StripAuthorizationHeader::class,
-        ThrottleRequestsWithRedis::using('portal-token'),
-    ])
-    ->withoutMiddleware(RollbackDocs::class)
-    ->name('portal.token');
+Route::post("api/v1/token", PortalTokenController::class)
+	->middleware(["api", "auth:sanctum", StripAuthorizationHeader::class, ThrottleRequestsWithRedis::using("portal-token")])
+	->withoutMiddleware(RollbackDocs::class)
+	->name("portal.token");

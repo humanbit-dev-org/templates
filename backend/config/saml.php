@@ -1,7 +1,7 @@
 <?php
 
 return [
-    /*
+	/*
     |--------------------------------------------------------------------------
     | SAML IdP — trust anchor
     |--------------------------------------------------------------------------
@@ -11,7 +11,9 @@ return [
     | letto dall'<X509Certificate> del documento — quello e' controllato dall'attaccante.
     | Overridabile per ambiente con SAML_IDP_CERTIFICATE (PEM o base64).
     */
-    'idp_certificate' => env('SAML_IDP_CERTIFICATE', <<<'PEM'
+	"idp_certificate" => env(
+		"SAML_IDP_CERTIFICATE",
+		<<<'PEM'
 -----BEGIN CERTIFICATE-----
 MIIFqDCCA5CgAwIBAgIJAI0QzRUi6L7fMA0GCSqGSIb3DQEBCwUAMGkxFjAUBgNV
 BAMMDWJhbmNvZGVzaW8uaXQxDDAKBgNVBAsMA1NTTzEkMCIGA1UECgwbQmFuY28g
@@ -45,5 +47,6 @@ V7c/9PWwcuOUiimvfKK6PzXqM3OhlTx7ovSCR+3m7OmnmGU0rOqID13tZhoC6Tka
 abneOliAgN5w3XPY+8ySu394ajiPva2KNYTnxizVW6X+4yiJo5ePs6CBeCaaurXT
 3/L0Umz4FWwo4WUd
 -----END CERTIFICATE-----
-PEM),
+PEM
+	),
 ];
