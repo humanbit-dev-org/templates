@@ -2,6 +2,7 @@
 
 // Handle page transition animation on link clicks and history navigation
 export function fxLoad() {
+	// Skip running when tab is closing or download triggers hidden state
 	const debounceDelay = 300;
 	let isTransitioning = false;
 	let lastTransitionTime = 0;
@@ -21,6 +22,9 @@ export function fxLoad() {
 
 			const href = link.getAttribute("href");
 			if (!href || href === "#") return;
+
+			// Skip download links (files like CSV, PDF, etc.)
+			if (link.hasAttribute("download")) return;
 
 			// Check if link is internal
 			const linkURL = new URL(href, window.location.href);
