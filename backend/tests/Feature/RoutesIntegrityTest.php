@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Routing\Route;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route as RouteFacade;
@@ -16,8 +16,9 @@ use Tests\TestCase;
 class RoutesIntegrityTest extends TestCase
 {
     // route:list instantiates the controllers, and Backpack's auth controllers
-    // inspect the users table in their constructor.
-    use RefreshDatabase;
+    // inspect the users table in their constructor: the real schema is used,
+    // inside a rolled-back transaction.
+    use DatabaseTransactions;
 
     public function test_every_route_points_at_an_existing_controller_action(): void
     {

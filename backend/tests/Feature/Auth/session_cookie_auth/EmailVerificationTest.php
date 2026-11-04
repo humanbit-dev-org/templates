@@ -6,7 +6,7 @@ use App\Models\BackpackRole;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Auth\Events\Verified;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Route;
@@ -14,7 +14,7 @@ use Tests\TestCase;
 
 class EmailVerificationTest extends TestCase
 {
-    use RefreshDatabase;
+    use DatabaseTransactions;
 
     protected function setUp(): void
     {

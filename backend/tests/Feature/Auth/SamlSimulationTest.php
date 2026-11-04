@@ -10,7 +10,7 @@ use App\Services\Logging\SamlSimulationLogService;
 use App\Services\Restricted\SamlSimulationScenarioService;
 use Database\Seeders\BackpackRoleSeeder;
 use Database\Seeders\RoleSeeder;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use RuntimeException;
 use Tests\TestCase;
 
@@ -21,7 +21,7 @@ use Tests\TestCase;
  */
 class SamlSimulationTest extends TestCase
 {
-    use RefreshDatabase;
+    use DatabaseTransactions;
 
     protected function setUp(): void
     {
@@ -43,8 +43,8 @@ class SamlSimulationTest extends TestCase
 
         // The simulation pages sit behind shield:auth_sim (Backpack Developer/Admin).
         $operator = User::query()->create([
-            'username' => 'operator',
-            'email' => 'operator@example.com',
+            'username' => 'saml-test-operator',
+            'email' => 'saml-test-operator@example.test',
             'name' => 'Op',
             'surname' => 'Erator',
             'role_id' => Role::query()->where('name', 'User')->value('id'),
@@ -69,40 +69,43 @@ class SamlSimulationTest extends TestCase
         // An SSO user: its password is the username itself, HKDF-derived by the
         // argon2id driver (what auth:rehash-passwords writes).
         User::query()->create([
-            'username' => 'mrossi',
-            'email' => 'mrossi@example.com',
+            'username' => 'saml-test-user',
+            'email' => 'saml-test-user@example.test',
             'name' => 'Mario',
             'surname' => 'Rossi',
             'role_id' => Role::query()->where('name', 'User')->value('id'),
-            'password' => 'mrossi',
+            'password' => 'saml-test-user',
             'email_verified_at' => now(),
         ]);
 
-        $samlResponse = $this->buildSamlResponseFor('mrossi');
+        $samlResponse = $this->buildSamlResponseFor('saml-test-user');
 
-        $this->assertStringContainsString('<saml:AttributeValue>mrossi</saml:AttributeValue>', base64_decode($samlResponse));
+        $this->assertStringContainsString('<saml:AttributeValue>saml-test-user</saml:AttributeValue>', base64_decode($samlResponse));
 
         $response = $this->post(route('auth.sim.saml'), ['SAMLResponse' => $samlResponse]);
 
         $response->assertRedirect(rtrim(config('app.frontend_url'), '/'));
         $this->assertNotEmpty($response->getCookie('apiToken', false)?->getValue());
-        $this->assertDatabaseHas('personal_access_tokens', ['tokenable_id' => 'mrossi', 'name' => 'api-token']);
+        $this->assertDatabaseHas('personal_access_tokens', ['tokenable_id' => 'saml-test-user', 'name' => 'api-token']);
     }
 
     public function test_unknown_username_clears_the_token_cookie(): void
     {
         $response = $this->post(route('auth.sim.saml'), [
-            'SAMLResponse' => $this->buildSamlResponseFor('nobody'),
+            'SAMLResponse' => $this->buildSamlResponseFor('saml-test-nobody'),
         ]);
 
         $response->assertRedirect(rtrim(config('app.frontend_url'), '/'));
         $this->assertSame('', (string) $response->getCookie('apiToken', false)?->getValue());
-        $this->assertDatabaseCount('personal_access_tokens', 0);
+        $this->assertDatabaseMissing('personal_access_tokens', ['tokenable_id' => 'saml-test-nobody']);
     }
 
     public function test_scenario_without_candidates_returns_to_the_form_with_an_error(): void
     {
-        // The only frontend-eligible users would be non-Backpack ones: there are none.
+        // Leave no candidate for the scenario: every frontend user unverified
+        // (inside the rolled-back transaction of the test).
+        User::query()->whereNull('backpack_role_id')->update(['email_verified_at' => null]);
+
         $this->post(route('auth.sim.post'), ['scenario' => 'verified'])
             ->assertRedirect(route('auth.sim.form'))
             ->assertSessionHasErrors('scenario');
@@ -119,7 +122,7 @@ class SamlSimulationTest extends TestCase
 
         $this->expectException(RuntimeException::class);
 
-        app(SamlSignatureVerifier::class)->verifiedNodes(base64_decode($this->buildSamlResponseFor('mrossi')));
+        app(SamlSignatureVerifier::class)->verifiedNodes(base64_decode($this->buildSamlResponseFor('saml-test-user')));
     }
 
     /**

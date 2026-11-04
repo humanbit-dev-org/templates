@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
-         bootstrap="vendor/autoload.php"
+         bootstrap="tests/bootstrap.php"
          colors="true"
 >
     <testsuites>
@@ -12,30 +12,53 @@
             <directory>tests/Feature</directory>
         </testsuite>
     </testsuites>
-    <source>
+    <!--
+        restrict*: report only what our own code triggers. Without this every
+        test carried a warning from vendor/vlucas/phpdotenv, which probes for a
+        .env that does not exist here — configuration comes from the container
+        environment. That noise hid the warnings that actually matter.
+    -->
+    <source restrictNotices="true"
+            restrictWarnings="true"
+            ignoreSuppressionOfWarnings="false"
+            ignoreSuppressionOfPhpWarnings="false"
+            identifyIssueTrigger="true">
         <include>
             <directory>app</directory>
         </include>
     </source>
-    <!--
-        Values are set as forced $_SERVER entries: the Docker containers export
-        DB_CONNECTION, CACHE_STORE, SESSION_DRIVER, ... as real environment
-        variables, and Laravel reads $_SERVER before $_ENV. Plain <env> entries
-        would be ignored and the suite would run RefreshDatabase against the
-        shared development MySQL database, wiping it.
-    -->
     <php>
+        <!--
+            <server>, not just <env>. The container exports APP_ENV, CACHE_STORE,
+            QUEUE_CONNECTION and friends, and Apache puts them in $_SERVER —
+            which is where Laravel's Env reads from first. <env> only writes
+            $_ENV and putenv(), so every override below was silently ignored and
+            the suite ran against the real Redis cache, the real queue (with a
+            worker container listening) and the real SMTP mailer.
+
+            force="true" because the container has already set these.
+        -->
+        <!-- Scramble's reflection parsing pushes the suite past the default 128M. -->
+        <ini name="memory_limit" value="1G"/>
         <server name="APP_ENV" value="testing" force="true"/>
         <server name="APP_MAINTENANCE_DRIVER" value="file" force="true"/>
         <server name="BCRYPT_ROUNDS" value="4" force="true"/>
         <server name="CACHE_STORE" value="array" force="true"/>
-        <server name="CACHE_DRIVER" value="array" force="true"/>
-        <server name="DB_CONNECTION" value="sqlite" force="true"/>
-        <server name="DB_DATABASE" value=":memory:" force="true"/>
         <server name="MAIL_MAILER" value="array" force="true"/>
         <server name="PULSE_ENABLED" value="false" force="true"/>
         <server name="QUEUE_CONNECTION" value="sync" force="true"/>
         <server name="SESSION_DRIVER" value="array" force="true"/>
         <server name="TELESCOPE_ENABLED" value="false" force="true"/>
+
+        <!-- Kept in step for anything that reads $_ENV/getenv() directly. -->
+        <env name="APP_ENV" value="testing" force="true"/>
+        <env name="APP_MAINTENANCE_DRIVER" value="file" force="true"/>
+        <env name="BCRYPT_ROUNDS" value="4" force="true"/>
+        <env name="CACHE_STORE" value="array" force="true"/>
+        <env name="MAIL_MAILER" value="array" force="true"/>
+        <env name="PULSE_ENABLED" value="false" force="true"/>
+        <env name="QUEUE_CONNECTION" value="sync" force="true"/>
+        <env name="SESSION_DRIVER" value="array" force="true"/>
+        <env name="TELESCOPE_ENABLED" value="false" force="true"/>
     </php>
 </phpunit>

@@ -20,7 +20,7 @@ use Database\Seeders\BackpackRoleSeeder;
 use Database\Seeders\ModelPermissionSeeder;
 use Database\Seeders\RoleSeeder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Str;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
@@ -36,7 +36,7 @@ use Tests\TestCase;
  */
 class BackpackCrudPagesTest extends TestCase
 {
-    use RefreshDatabase;
+    use DatabaseTransactions;
 
     private User $developer;
 
@@ -45,12 +45,13 @@ class BackpackCrudPagesTest extends TestCase
         parent::setUp();
 
         // Same reference data as DatabaseSeeder: roles, Backpack roles and the
-        // model permissions that open every CRUD to the Developer role.
+        // model permissions that open every CRUD to the Developer role. The
+        // database is the real one: everything is rolled back after the test.
         $this->seed([RoleSeeder::class, BackpackRoleSeeder::class, ModelPermissionSeeder::class]);
 
         $this->developer = User::query()->create([
-            'username' => 'developer',
-            'email' => 'developer@example.com',
+            'username' => 'crud-test-developer',
+            'email' => 'crud-test-developer@example.test',
             'name' => 'Dev',
             'surname' => 'Eloper',
             'role_id' => Role::query()->where('name', 'User')->value('id'),
@@ -74,7 +75,7 @@ class BackpackCrudPagesTest extends TestCase
         return [
             'user' => ['user', null],
             'user-two-factor' => ['user-two-factor', fn () => UserTwoFactor::query()->create([
-                'username' => 'developer',
+                'username' => 'crud-test-developer',
                 'device_id' => (string) Str::uuid(),
                 'token_verified' => false,
             ])],
@@ -99,8 +100,8 @@ class BackpackCrudPagesTest extends TestCase
             'notification' => ['notification', fn () => Notification::query()->create([
                 'type' => 'App\\Notifications\\PasswordUpdatedNotification',
                 'notifiable_type' => User::class,
-                'notifiable_id' => 'developer',
-                'data' => ['email' => 'developer@example.com'],
+                'notifiable_id' => 'crud-test-developer',
+                'data' => ['email' => 'crud-test-developer@example.test'],
             ])],
         ];
     }
@@ -130,7 +131,7 @@ class BackpackCrudPagesTest extends TestCase
     {
         $translate = Translate::query()->create(['code' => 'main_title', 'it' => 'Ciao', 'en' => 'Hello']);
 
-        $this->get('/admin/translate')->assertOk()->assertSee('main_title');
+        $this->get('/admin/translate?code=main_title')->assertOk()->assertSee('main_title');
         $this->post('/admin/translate/search', ['draw' => 1, 'start' => 0, 'length' => 10])->assertOk();
         $this->get("/admin/translate/{$translate->id}/show")->assertOk();
         $this->get('/admin/translate/create')->assertNotFound();
@@ -154,17 +155,17 @@ class BackpackCrudPagesTest extends TestCase
 
     public function test_user_creation_requires_the_not_null_columns(): void
     {
-        $this->post('/admin/user', ['username' => 'mrossi'])
+        $this->post('/admin/user', ['username' => 'crud-test-user'])
             ->assertSessionHasErrors(['email', 'name', 'surname', 'password', 'role_id']);
 
-        $this->assertDatabaseMissing('users', ['username' => 'mrossi']);
+        $this->assertDatabaseMissing('users', ['username' => 'crud-test-user']);
     }
 
     public function test_user_can_be_updated_keeping_the_password_when_left_blank(): void
     {
         $user = User::query()->create([
-            'username' => 'mrossi',
-            'email' => 'mrossi@example.com',
+            'username' => 'crud-test-user',
+            'email' => 'crud-test-user@example.test',
             'name' => 'Mario',
             'surname' => 'Rossi',
             'role_id' => Role::query()->where('name', 'User')->value('id'),
@@ -172,10 +173,10 @@ class BackpackCrudPagesTest extends TestCase
         ]);
         $originalHash = $user->password;
 
-        $this->put('/admin/user/mrossi', [
-            'id' => 'mrossi',
-            'username' => 'mrossi',
-            'email' => 'mrossi@example.com',
+        $this->put('/admin/user/crud-test-user', [
+            'id' => 'crud-test-user',
+            'username' => 'crud-test-user',
+            'email' => 'crud-test-user@example.test',
             'name' => 'Marco',
             'surname' => 'Rossi',
             'role_id' => $user->role_id,
@@ -190,8 +191,8 @@ class BackpackCrudPagesTest extends TestCase
     public function test_users_list_quick_filter_narrows_to_backpack_users(): void
     {
         User::query()->create([
-            'username' => 'frontend',
-            'email' => 'frontend@example.com',
+            'username' => 'crud-test-frontend',
+            'email' => 'crud-test-frontend@example.test',
             'name' => 'Front',
             'surname' => 'End',
             'role_id' => Role::query()->where('name', 'User')->value('id'),
@@ -200,11 +201,13 @@ class BackpackCrudPagesTest extends TestCase
 
         $this->get('/admin/user?preset=backpack')->assertOk()->assertSee('Filtri rapidi');
 
-        $rows = $this->post('/admin/user/search?preset=backpack', ['draw' => 1, 'start' => 0, 'length' => 10])
+        $rows = $this->post('/admin/user/search?preset=backpack', ['draw' => 1, 'start' => 0, 'length' => 100])
             ->assertOk()
             ->json('data');
 
-        $this->assertCount(1, $rows);
+        // The database is the real one (rolled back): compare with what it holds.
+        $this->assertCount(min(100, User::query()->whereNotNull('backpack_role_id')->count()), $rows);
+        $this->assertStringNotContainsString('crud-test-frontend', json_encode($rows));
     }
 
     /**

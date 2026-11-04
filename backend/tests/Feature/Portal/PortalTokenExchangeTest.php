@@ -5,7 +5,7 @@ namespace Tests\Feature\Portal;
 use App\Models\Role;
 use App\Models\User;
 use Database\Seeders\RoleSeeder;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Tests\TestCase;
 
 /**
@@ -15,7 +15,7 @@ use Tests\TestCase;
  */
 class PortalTokenExchangeTest extends TestCase
 {
-    use RefreshDatabase;
+    use DatabaseTransactions;
 
     private User $client;
 
@@ -26,8 +26,8 @@ class PortalTokenExchangeTest extends TestCase
         $this->seed(RoleSeeder::class);
 
         $this->client = User::query()->create([
-            'username' => 'acme',
-            'email' => 'api@acme.test',
+            'username' => 'portal-test-client',
+            'email' => 'portal-test-client@example.test',
             'name' => 'Acme',
             'surname' => 'Client',
             'role_id' => Role::query()->where('name', 'User')->value('id'),
@@ -43,7 +43,7 @@ class PortalTokenExchangeTest extends TestCase
 
         $response->assertCreated()->assertJsonStructure(['token', 'expires_at']);
         $this->assertDatabaseHas('personal_access_tokens', [
-            'tokenable_id' => 'acme',
+            'tokenable_id' => 'portal-test-client',
             'name' => config('portal.api_token_name'),
         ]);
     }
