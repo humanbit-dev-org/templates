@@ -12,7 +12,7 @@ export async function getPathInfo() {
 	// Extract the pathname from custom request headers
 	const pathname = headersList.get("x-pathname");
 
-	const queryParams = headersList.get("x-query-params");
+	let queryParams = headersList.get("x-query-params");
 	if (queryParams) {
 		queryParams = Object.fromEntries(new URLSearchParams(queryParams));
 	}

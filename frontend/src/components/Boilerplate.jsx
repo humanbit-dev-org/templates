@@ -1,6 +1,6 @@
 // "use client"; // marks module for full browser execution
 //
-// import { BoilerplateComponent } from "@/components/<filename>"; // File import statement
+// import { <Filename><Suffix> } from "@/<alias>/<Filename>"; // File import statement
 
 // 1. Core imports (React & Next.js)
 // import Link from "next/link"; // Client-side routing with automatic pre-fetching {CSR}
@@ -28,22 +28,21 @@
 // import { HoverCard, Modal, Tabs } from "aceternity-ui"; // Prebuilt animated UI components (built on Framer Motion) {CSR}
 // import { signIn, signOut, useSession } from "next-auth/react"; // Client-side user auth helpers {CSR}
 
-// 3. Absolute internal (`@/` alias)
+// 3. Absolute internal (`@/` alias, non-config modules)
 // IMPORT SYNTAX:
 // import DefaultExportModule from "@/<path>/DefaultExport"; // {CSR|SSR}
 // import { NamedExportModule } from "@/<path>/NamedExport"; // {CSR|SSR}
-//
-// UTILITY IMPORTS:
-// import { getServer } from "@/lib/server"; // Provide server-only values to the current component {SSR}
-// import { useClient } from "@/providers/Client"; // Provide client-only values to the current component {CSR}
-// import { useTranslate } from "@/providers/Translate"; // Provides translation context and hook access for `lang` and `translates`
 //
 // FUTURE REFERENCE IMPORTS:
 // import { Alert, Dialog, Input } from "@/components/ui"; // Accessible component primitives (Radix-based, styled with Tailwind) {CSR}
 // import { ChartContainer, ChartTooltipContent } from "@/components/ui/chart"; // Styled chart wrapper and tooltip content (ShadCN + Recharts) {CSR}
 
-// 4. Relative internal (same directory)
-import "./Boilerplate.scss";
+// 4. Absolute internal config + local relative internal (same directory)
+// UTILITY IMPORTS:
+// import { getServer } from "@/lib/server"; // Provide server-only values to the current component {SSR}
+// import { useClient } from "@/providers/Client"; // Provide client-only values to the current component {CSR}
+// import { useTranslate } from "@/providers/Translate"; // Provides translation context and hook access for `lang` and `dict`
+import "./Boilerplate.scss"; // Local SCSS styles scoped to this component
 
 // ===============================================
 // ## ############################################
@@ -53,7 +52,7 @@ export async function BoilerplateComponent({ props }) {
 	// const ssr = await getServer();
 	// const csr = useClient();
 	// const lang = useTranslate()["lang"];
-	// const translates = useTranslate()["translates"]; // E.g., {translates?.[csr.page]?.["<code>"]?.[lang] ?? "Translate fallback"}
+	// const dict = useTranslate()["dict"]?.[csr.page]?.["<code>"]?.[lang] ?? "Translate fallback"}
 
 	return (
 		<>

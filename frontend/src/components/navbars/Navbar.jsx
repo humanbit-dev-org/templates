@@ -27,6 +27,7 @@ export const NavbarComponent = function ({ ...props }) {
 	const user = csr.user;
 	const isLoggedIn = csr.isLoggedIn;
 	const lang = useTranslate()["lang"];
+	const dict = useTranslate()["dict"];
 	const changeLang = lang === "it" ? "en" : "it";
 	const translates = useTranslate()["translates"];
 
@@ -42,21 +43,21 @@ export const NavbarComponent = function ({ ...props }) {
 	}, [pathName]);
 
 	// Add the effect to detect scrolling
-	// useEffect(() => {
-	// 	const handleScroll = () => {
-	// 		if (window.scrollY > 50) {
-	// 			setIsScrolled(true);
-	// 		} else {
-	// 			setIsScrolled(false);
-	// 		}
-	// 	};
+	useEffect(() => {
+		const handleScroll = () => {
+			if (window.scrollY > 50) {
+				setIsScrolled(true);
+			} else {
+				setIsScrolled(false);
+			}
+		};
 
-	// 	window.addEventListener("scroll", handleScroll);
+		window.addEventListener("scroll", handleScroll);
 
-	// 	return () => {
-	// 		window.removeEventListener("scroll", handleScroll);
-	// 	};
-	// }, []);
+		return () => {
+			window.removeEventListener("scroll", handleScroll);
+		};
+	}, []);
 
 	const handleToggle = () => {
 		setIsOpen(!isOpen);
@@ -110,7 +111,9 @@ export const NavbarComponent = function ({ ...props }) {
 			<nav className={`nav_slide_top rounded-3 navbar ${isScrolled ? "scrolled" : ""}`}>
 				<div className="navbar_container_full cont_space_1 color_white container-fluid row justify-content-between align-items-center py-0">
 					<div className="menu_navbar cont_mw_1 row justify-content-between align-items-center">
-						<nav className="skiplinks" aria-label="Scorciatoie di navigazione">
+						<nav
+							className="skiplinks"
+							aria-label="Scorciatoie di navigazione">
 							<ul>
 								<li className="visually-hidden-focusable">
 									<a
@@ -124,13 +127,18 @@ export const NavbarComponent = function ({ ...props }) {
 								</li>
 
 								<li className="visually-hidden-focusable">
-									<a className="color_black" href="#main" data-focus-mouse="false">
+									<a
+										className="color_black"
+										href="#main"
+										data-focus-mouse="false">
 										Vai al contenuto
 									</a>
 								</li>
 
 								<li className="visually-hidden-focusable">
-									<a className="color_black" href="#footer">
+									<a
+										className="color_black"
+										href="#footer">
 										Vai al footer
 									</a>
 								</li>
@@ -271,7 +279,10 @@ export const NavbarComponent = function ({ ...props }) {
 											</Link>
 
 											<div className="d-flex col-6 pt-5">
-												<img src="/images/other/logo_orange.png" alt="Logo" />
+												<img
+													src="/images/other/logo_orange.png"
+													alt="Logo"
+												/>
 											</div>
 										</div>
 

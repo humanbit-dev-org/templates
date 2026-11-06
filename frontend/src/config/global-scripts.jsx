@@ -172,7 +172,7 @@ export function GlobalScripts() {
 				id="bundleGlobals"
 				strategy="lazyOnload"
 				onReady={() => {
-					window.fxLoad?.(); // TODO: probably causes double click on links
+					window.fxLoad?.(); // TODO: probably caused double click on links
 					window.fxMove?.(".fx");
 
 					window.addEventListener(

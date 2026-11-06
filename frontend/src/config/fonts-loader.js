@@ -23,7 +23,7 @@ export const lora = Lora({
 
 // Template for loading local fonts
 // export const font_example_1 = localFont({
-// 	src: [{ path: "../../public/fonts/Font-Example-1.otf" }], // Points to source files stored in `/public/fonts` (path must be relative to this file and extension lowercase)
+// 	src: [{ path: "@/public/fonts/Font-Example-1.otf" }], // Points to source files stored in `/public/fonts` (path must be relative to this file and extension lowercase)
 // 	variable: "--font-example-1", // Creates global CSS variable to reference font in stylesheets
 // 	weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"], // Declares the full range of `font-weight` values
 // 	style: ["normal", "italic"], // Specifies `font-style`; valid values are "normal" and "italic"

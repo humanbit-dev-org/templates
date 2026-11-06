@@ -1,9 +1,12 @@
-"use client";
+"use client"; // marks module for full browser execution
+//
+// import { <Filename><Suffix> } from "@/<alias>/<Filename>"; // File import statement
 
-import logo from "/public/images/logos/logo_humanbit_white.png";
-import { FooterSimple } from "@/footers/FooterSimple";
-import { NavSlideTop } from "@/navbars/NavSlideTop";
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext } from "react";
+
+// ===============================================
+// ## ############################################
+// ===============================================
 
 // Creiamo il contesto UserContext
 const UserContext = createContext(null);
@@ -14,24 +17,7 @@ export const AuthProvider = function ({ children, lang, dict, user }) {
 		<>
 			<LocaleContext.Provider value={{ lang, dict }}>
 				<UserContext.Provider value={{ user }}>
-					{/* <NavSlideTop logo={logo} /> */}
-
-					<div className="cont_structure container-fluid">
-						{children}
-
-						{/* Modals */}
-						{/* <xsl:call-template name="login_modal" />
-                        <xsl:call-template name="forgot_pw" />
-                        <xsl:call-template name="register_modal" />
-                        <xsl:call-template name="change_pw_modal" />
-                        <xsl:call-template name="positiveMessagebBefAct" />
-                        <xsl:call-template name="service_messages" />
-                        <xsl:call-template name="newsletter_b2c_modal" /> */}
-					</div>
-
-					{/* Footer template */}
-					{/* <FooterComponent /> */}
-					{/* <FooterSimple logo={logo} /> */}
+					<div className="cont_structure container-fluid">{children}</div>
 				</UserContext.Provider>
 			</LocaleContext.Provider>
 		</>

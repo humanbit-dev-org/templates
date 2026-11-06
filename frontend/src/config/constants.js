@@ -11,7 +11,13 @@ export const BACKEND_URL_SERVER = process.env.NEXT_BACKEND_URL_SERVER; // API ba
 export const MEDIA_PATH = `${BACKEND_URL_CLIENT}/storage`; // Full path for uploaded media assets
 // export const KEY_STRIPE = process.env.NEXT_PUBLIC_KEY_STRIPE; // Stripe API publishable key
 export const DEFAULT_LOCALE = "it"; // Default language code (routing, translation, and locale matching)
-export const SUPPORTED_LOCALES = [`${DEFAULT_LOCALE}`, "it"]; // Supported language codes (routing, translation, and locale matching)
+export const SUPPORTED_LOCALES = [`${DEFAULT_LOCALE}`, "en", "de"]; // Supported language codes (routing, translation, and locale matching)
+
+// Display labels for the language switcher (short code shown in UI, native name for assistive tech)
+// Keep in sync with SUPPORTED_LOCALES and backend `config('app.supported_locales')`
+export const LOCALE_LABELS = {
+	it: { short: "IT", name: "Italiano" },
+};
 
 // Export the public version when used in browser contexts
 // export const PUBLIC_<VARIABLE_NAME> = process.env.NEXT_PUBLIC_<VARIABLE_NAME>;
