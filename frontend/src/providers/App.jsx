@@ -6,7 +6,6 @@ import { createContext } from "react";
 
 import { ApiProvider } from "@/providers/Api";
 import { ClientProvider } from "@/providers/Client";
-import { TenantProvider } from "@/providers/Tenant";
 import { TranslateProvider } from "@/providers/Translate";
 
 // ===============================================
@@ -21,17 +20,18 @@ export function AppProvider({ children, lang, translates, initialUser = null }) 
 	return (
 		// Provide optional global app context (currently unused)
 		<AppContext.Provider value={null}>
-			{/* Tenant configuration (feature flags, tenant-specific settings) */}
-			<TenantProvider>
-				{/* Client-side state (device info, path info, authenticated user) */}
-				<ClientProvider lang={lang} initialUser={initialUser}>
-					{/* Translation context (current language and dictionary) */}
-					<TranslateProvider lang={lang} translates={translates}>
-						{/* Centralized API layer (SWR integration, mutations, cache control) */}
-						<ApiProvider lang={lang}>{children}</ApiProvider>
-					</TranslateProvider>
-				</ClientProvider>
-			</TenantProvider>
+			{/* Client-side state (device info, path info, authenticated user) */}
+			<ClientProvider
+				lang={lang}
+				initialUser={initialUser}>
+				{/* Translation context (current language and dictionary) */}
+				<TranslateProvider
+					lang={lang}
+					translates={translates}>
+					{/* Centralized API layer (SWR integration, mutations, cache control) */}
+					<ApiProvider lang={lang}>{children}</ApiProvider>
+				</TranslateProvider>
+			</ClientProvider>
 		</AppContext.Provider>
 	);
 }

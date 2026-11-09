@@ -6,12 +6,13 @@
 
 @mixin filling_effect($text-before, $text-after, $bar-empty, $bar-full) {
 	// Reset style
+	padding-bottom: 0.125rem;
 	color: $text-before;
 	text-decoration: none;
 
 	// Filling effect
 	background-image: linear-gradient(to right, $bar-full 50%, $bar-empty 50%);
-	background-size: 205% 3px;
+	background-size: 205% 2px;
 	background-repeat: no-repeat;
 	background-position: 100% 100%;
 	transition:

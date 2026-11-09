@@ -1,6 +1,6 @@
-// import { usePathInfo } from "@/hooks/pathInfo"; // File import statement
-//
 "use client"; // marks module for full browser execution
+//
+// import { <Filename><Suffix> } from "@/<alias>/<Filename>"; // File import statement
 
 import { usePathname, useSearchParams } from "next/navigation";
 

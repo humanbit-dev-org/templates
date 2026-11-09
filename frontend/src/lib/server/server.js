@@ -7,7 +7,6 @@ import * as constants from "@/config/constants"; // Global constants shared acro
 import { getDeviceInfo } from "@/lib/server/device-info"; // Parse `user-agent` to detect device type
 import { getPathInfo } from "@/lib/server/path-info"; // Get structured path info from the current request
 import { getDictionary } from "@/app/dictionaries";
-import { buildTranslateBase, resolveTranslateString } from "@/lib/translate/resolveTranslate";
 
 // ===============================================
 // ## ############################################
@@ -157,10 +156,10 @@ function getServerErrorMessage(status, base = null) {
  * @param {string} locale
  * @returns {Promise<object>}
  */
-async function buildServerErrorBase(locale) {
-	const dict = await getDictionary(locale);
-	return buildTranslateBase(null, { dict, lang: locale });
-}
+// async function buildServerErrorBase(locale) {
+// 	const dict = await getDictionary(locale);
+// 	return buildTranslateBase(null, { dict, lang: locale });
+// }
 
 /**
  * Resolve @font-face format and preload type from a font file path.

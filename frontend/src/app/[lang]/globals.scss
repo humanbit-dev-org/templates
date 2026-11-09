@@ -595,54 +595,34 @@ input {
 }
 
 // Color values should be input in hexadecimal notation (e.g., #RRGGBB).
-@include form_mixin(
-	// form customization
+// prettier-ignore
+@include form_mixin( // form customization
 	// >>>>> BOX MODEL <<<<<
-	$height-default: 3rem,
-	// bEssEx default: 3.5rem
-	$body-padding-default: 0.7rem 1.25rem 0.45rem,
-	// bEssEx default: 1rem 1.25rem 0.625rem (top left/right bottom) - keep vertical padding proportions upon change
-	$label-padding-transformed: 0.15em 1.75em,
-	// bEssEx default: 0.1rem 1.75rem (top/bottom [max. 0.5rem with 2.5rem height] left/right)
-	$label-font-size-transformed: 0.8rem,
-	// transformed `<label>` text w/ `.form-floating` (bEssEx default: 0.75rem)
+	$height-default: $forms-height-default, // bEssEx default: 3.5rem
+	$body-padding-default: $forms-body-padding-default, // bEssEx default: 1rem 1.25rem 0.625rem (top left/right bottom) - keep vertical padding proportions upon change
+	$label-padding-transformed: $forms-label-padding-transformed, // bEssEx default: 0.1rem 1.75rem (top/bottom [max. 0.5rem with 2.5rem height] left/right)
+	$label-font-size-transformed: $forms-label-font-size-transformed, // transformed `<label>` text w/ `.form-floating` (bEssEx default: 0.75rem)
 	// >>>>> DEFAULT COLOR <<<<<
-	$body-color-default: #0e4c95,
-	// placeholder
-	$label-color-default: #edf1f7,
-	// transformed `<label>` text w/ `.form-floating`
+	$body-color-default: $forms-body-color-default, // placeholder
+	$label-color-default: $forms-label-color-default, // transformed `<label>` text w/ `.form-floating`
 	// >>>>> DEFAULT BACKGROUND <<<<<
-	$body-bg-color-default: #edf1f7,
-	// element `background-color`
-	$label-bg-color-default: #0e4c95,
-	// `<label>` `background-color`
+	$body-bg-default: $forms-body-bg-default, // element `background-color`
+	$label-bg-default: $forms-label-bg-default, // `<label>` `background-color`
 	// >>>>> TRANSFORMED COLOR <<<<<
-	$body-color-transformed: #edf1f7,
-	// active element body text
-	$label-color-transformed: #0e4c95,
-	// `<label>` text during transformation w/ `.form-floating`
+	$body-color-transformed: $forms-body-color-transformed, // active element body text
+	$label-color-transformed: $forms-label-color-transformed, // `<label>` text during transformation w/ `.form-floating`
 	// >>>>> TRANSFORMED BACKGROUND <<<<<
-	$body-bg-color-transformed: #6e94bf,
-	// active element `background-color`
-	$label-bg-color-transformed: #edf1f7,
-	// transformed `<label>` `background-color`
+	$body-bg-transformed: $forms-body-bg-transformed, // active element `background-color`
+	$label-bg-transformed: $forms-label-bg-transformed, // transformed `<label>` `background-color`
 	// >>>>> VISUAL PROPERTIES <<<<<
-	$border: 1px solid #edf1f7,
-	// basic border
-	// $border: 4px solid black, // basic border
-	$border-focus-color: red,
-	// active `border-color`
-	$check-radius-default: 0,
-	// checkbox initial `border-radius`
-	$radius-default: 0,
-	// elements initial `border-radius`
-	$radius-transformed: 20px,
-	// transformed `<label>` `border-radius`
-	// $radius-transformed: 0, // transformed `<label>` `border-radius`
-	$box-shadow-focus: (inset 0 1px 2px rgba(0, 0, 0, 0.08), 5px 5px 0 #0e4c95),
-	// active `box-shadow`
+	$border: $forms-border, // basic border
+	$border-focus-color: $forms-border-focus-color, // active `border-color`
+	$check-radius-default: $forms-check-radius-default, // checkbox initial `border-radius`
+	$radius-default: $forms-radius-default, // elements initial `border-radius`
+	$radius-transformed: $forms-radius-transformed, // transformed `<label>` `border-radius`
+	$box-shadow-focus: $forms-box-shadow-focus, // active `box-shadow`
 	// $label-transform: 0px, // uncomment to align transformed `<label>` to the left of the element
-	$transition: all 0.15s ease-in-out // general `<form>` transition
+	$transition: $forms-transition // general `<form>` transition
 );
 
 // Used on `registration.xsl`
@@ -1013,7 +993,7 @@ input {
 	}
 
 	&:active {
-		opacity: 0.75;
+		opacity: 0.8;
 	}
 
 	&:hover,
@@ -1024,7 +1004,7 @@ input {
 
 	&:disabled {
 		pointer-events: none;
-		filter: brightness(0.65) contrast(0.65);
+		filter: contrast(0.5);
 		opacity: 0.65;
 	}
 
@@ -1474,6 +1454,10 @@ ul {
 	// margin-left: auto;
 }
 
+.flex-fill {
+	flex: 1 1 auto !important;
+}
+
 /////
 ////
 /*/ ==================== @media ==================== /*/
@@ -1488,7 +1472,7 @@ ul {
 
 @media (max-width: 1199.98px) {
 	.full_height {
-		min-height: calc(100vh - $max_height_md); // `_variables.scss`
+		min-height: calc(100vh - $height_md); // `_variables.scss`
 	}
 }
 
@@ -1528,13 +1512,13 @@ ul {
 
 @media (max-width: 575.98px) {
 	.cont_space_1 {
-		padding-right: 1.5rem;
-		padding-left: 1.5rem;
+		padding-right: 1rem;
+		padding-left: 1rem;
 	}
 
 	.cont_space_2 {
-		padding-right: 2rem;
-		padding-left: 2rem;
+		padding-right: 1.5rem;
+		padding-left: 1.5rem;
 	}
 }
 

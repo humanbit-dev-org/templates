@@ -1,6 +1,11 @@
 /* Framework layer precedence setup */
 
+@layer theme, base, components, utilities;
 @layer bessex;
 
 @import "../bessex/css/bessex_humanbit.min.css" layer(bessex);
-@import "tailwindcss";
+/* @import "tailwindcss"; */
+@import "tailwindcss/theme.css" layer(theme);
+/* @import "tailwindcss/preflight.css" layer(base); */ /* TODO: implement Tailwind's CSS reset */
+@import "tailwindcss/theme.css" layer(components);
+@import "tailwindcss/utilities.css" layer(utilities);

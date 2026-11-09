@@ -9,10 +9,10 @@ import "intl-tel-input/styles"; // Import styles for the `intl-tel-input` compon
 import { useState, useEffect } from "react"; // Import necessary modules from React
 
 // Dynamically import `intl-tel-input` with SSR disabled
-const IntlTelInput = dynamic(() => import("intl-tel-input/reactWithUtils"), {
-	ssr: false, // Disable Server-Side Rendering
-	loading: () => <span>Loading...</span>, // Display loading message while component is being loaded
-});
+// const IntlTelInput = dynamic(() => import("intl-tel-input/reactWithUtils"), {
+// 	ssr: false, // Disable Server-Side Rendering
+// 	loading: () => <span>Loading...</span>, // Display loading message while component is being loaded
+// });
 
 // Error messages for invalid phone number input
 const errorMap = ["Invalid number", "Invalid country code", "Too short", "Too long", "Invalid number"];
@@ -62,7 +62,10 @@ export const IntlTelInputComponent = function () {
 					}}
 				/>
 				{/* </div> */}
-				<button className="button" type="button" onClick={handleSubmit}>
+				<button
+					className="button"
+					type="button"
+					onClick={handleSubmit}>
 					Validate
 				</button>
 				{notice && <div className="notice">{notice}</div>} {/* Display notice message if exists */}

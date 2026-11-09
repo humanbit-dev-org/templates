@@ -74,6 +74,27 @@ $color_email: #7d7d7d;
 $color_whatsapp: #25d366;
 // SOCIAL <<OUT>> //
 
+// Forms
+$forms-height-default:              3rem !default;
+$forms-body-padding-default:        0.7rem 1.25rem 0.45rem !default;
+$forms-label-padding-transformed:   0.15em 1.75em !default;
+$forms-label-font-size-transformed: 0.8rem !default;
+$forms-body-color-default:          $color_black !default;
+$forms-label-color-default:         $color_second !default;
+$forms-body-bg-default:             $color_gray_light !default;
+$forms-label-bg-default:            $color_gray_light !default;
+$forms-body-color-transformed:      $color_gray_dark !default;
+$forms-label-color-transformed:     $color_second !default;
+$forms-body-bg-transformed:         $color_white !default;
+$forms-label-bg-transformed:        $color_white !default;
+$forms-border:                      2px solid $color_gray_dark !default;
+$forms-border-focus-color:          $color_second !default;
+$forms-check-radius-default:        0 !default;
+$forms-radius-default:              5px !default;
+$forms-radius-transformed:          50rem !default;
+$forms-box-shadow-focus:            (0 0 0.15rem rgba($color_second, 0.6)) !default;
+$forms-transition:                  all 0.15s ease-in-out !default;
+
 // >>> Navbar background — START
 // :root {
 // 	--nav_bg_color_primary: #{$color_first};
@@ -106,7 +127,6 @@ $color_whatsapp: #25d366;
 //
 // Height (values must be input in rem unit — even if it's zero).
 //
-
 // <nav>'s `height` and content's `margin-top`/`top`. <<IN>> //
 $height_scroll: 4rem; // Changed height after scroll.
 $height_md: 6rem; // Desktop.

@@ -1,7 +1,8 @@
 "use client";
 
-import AuthSessionStatusComponent from "@/components/elements/AuthSessionStatus";
+import { AuthSessionStatusComponent } from "@/components/elements/AuthSessionStatus";
 import { useState } from "react";
+import * as constants from "@/config/constants";
 
 async function fetchCsrf() {
 	try {
@@ -84,9 +85,13 @@ export function ForgotPasswordComponent({ lang }) {
 				aria-labelledby="forgotPasswordModalLabel"
 				aria-hidden="true">
 				<div className="modal-dialog modal-dialog-centered">
-					<form className="modal-content color_white border border_color_third p-3 p-md-5" onSubmit={submitForm}>
+					<form
+						className="modal-content color_white border border_color_third p-3 p-md-5"
+						onSubmit={submitForm}>
 						<div className="modal-header mb-5">
-							<h5 className="modal-title big" id="forgotPasswordModalLabel">
+							<h5
+								className="modal-title big"
+								id="forgotPasswordModalLabel">
 								Forgot your password?
 							</h5>
 
@@ -100,7 +105,10 @@ export function ForgotPasswordComponent({ lang }) {
 						</div>
 
 						{/* Session status */}
-						<AuthSessionStatusComponent className="mb-4" status={status} />
+						<AuthSessionStatusComponent
+							className="mb-4"
+							status={status}
+						/>
 
 						<fieldset className="modal-body mx-n2 mb-5">
 							<div className="px-2">
@@ -127,7 +135,9 @@ export function ForgotPasswordComponent({ lang }) {
 										placeholder="Enter email for password reset link"
 									/>
 
-									<label className="label" htmlFor="ForgotPasswordEmail">
+									<label
+										className="label"
+										htmlFor="ForgotPasswordEmail">
 										Email
 									</label>
 

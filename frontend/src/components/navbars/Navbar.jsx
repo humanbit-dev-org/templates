@@ -1,6 +1,6 @@
 "use client"; // marks module for full browser execution
 //
-// import { NavbarComponent } from "@/components/<filename>"; // File import statement
+// import { <Filename><Suffix> } from "@/<alias>/<Filename>"; // File import statement
 
 import Image from "next/image";
 import Link from "next/link";

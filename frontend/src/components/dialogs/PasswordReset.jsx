@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import AuthSessionStatusComponent from "@/components/elements/AuthSessionStatus";
+import { AuthSessionStatusComponent } from "@/components/elements/AuthSessionStatus";
 import * as constants from "@/config/constants";
 import { useTranslate } from "@/providers/Translate"; // Provides translation context and hook access for `lang` and `translates`
 
@@ -145,14 +145,21 @@ export function PasswordResetComponent() {
 				data-bs-keyboard="false"
 				aria-hidden="true">
 				<div className="modal-dialog modal-dialog-centered">
-					<form className="modal-content color_first border border_color_third p-3 p-md-5" onSubmit={submitForm}>
+					<form
+						className="modal-content color_first border border_color_third p-3 p-md-5"
+						onSubmit={submitForm}>
 						<div className="modal-header mb-5">
-							<h5 className="modal-title big" id="passwordResetModalLabel">
+							<h5
+								className="modal-title big"
+								id="passwordResetModalLabel">
 								{translates?.["all"]?.["password_reset"]?.[lang] ?? "Translate fallback"}
 							</h5>
 						</div>
 
-						<AuthSessionStatusComponent className="mb-4" status={status} />
+						<AuthSessionStatusComponent
+							className="mb-4"
+							status={status}
+						/>
 
 						<fieldset className="modal-body row mx-n2 mb-5">
 							{/* Email Address */}
@@ -183,7 +190,9 @@ export function PasswordResetComponent() {
 										required
 									/>
 
-									<label className="label" htmlFor="resetPassword">
+									<label
+										className="label"
+										htmlFor="resetPassword">
 										{translates?.["all"]?.["password"]?.[lang] ?? "Translate fallback"}
 									</label>
 
@@ -213,7 +222,9 @@ export function PasswordResetComponent() {
 										required
 									/>
 
-									<label className="label" htmlFor="resetPasswordConfirmation">
+									<label
+										className="label"
+										htmlFor="resetPasswordConfirmation">
 										{translates?.["all"]?.["confirm_password"]?.[lang] ?? "Translate fallback"}
 									</label>
 

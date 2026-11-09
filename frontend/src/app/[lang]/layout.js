@@ -11,13 +11,9 @@
 // PROJECT UTILITIES (metadata | context | translates | cookies)
 import * as constants from "@/config/constants";
 import MetadataSetup, { FontsLoader, GlobalScripts } from "@/config/metadata-setup";
-import { ClientProvider } from "@/providers/Client";
+import { AppProvider } from "@/providers/App"; // Composes all top-level application providers
 import { getDictionary } from "@/app/dictionaries"; // TODO: Keep this here?
 import { getServer } from "@/lib/server";
-import { klaroConfig } from "@/config/klaro-config"; // cookie configuration
-import { KlaroCookieConsent } from "@/config/klaro-cookie-consent"; // cookie handling
-import { TranslateProvider } from "@/providers/Translate"; // Provides translation context and hook access for `lang` and `translates`
-import { ApiProvider } from "@/providers/API"; // Provides API context and hook access for `api`
 
 // USER PROMPTS (modals | toasts)
 import { ForgotPasswordComponent } from "@/components/dialogs/ForgotPassword";
@@ -114,38 +110,38 @@ export default async function RootLayout({ children, params }) {
 	const translates = await getDictionary(lang);
 
 	return (
-		<html lang={lang} className={fontClasses} data-scroll-behavior="smooth">
+		<html
+			lang={lang}
+			className={fontClasses}
+			data-scroll-behavior="smooth">
 			{/* <body className="bg_color_white fx_load"> */}
-			<body className="bg_color_white">
+			<body className="bg_color">
 				{/* USER AND LOCALE CONTEXT (navbar | footer) */}
-				<ClientProvider lang={lang} dict={translates}>
-					<TranslateProvider lang={lang} translates={translates}>
-						<ApiProvider lang={lang}>
-							<div className="root_layout container_structure container-fluid row flex-column mx-auto w-100 min-vh-100 position-relative">
-								<div className="grid_cont navbar row justify-content-center position-sticky top-0 start-0">
-									{/* <NavSideBurgerComponent menu={menuResponseJson} /> */}
-									{/* <NavSlideTopComponent /> */}
-								</div>
+				<AppProvider
+					lang={lang}
+					dict={translates}>
+					<div className="root_layout container_structure container-fluid row flex-column mx-auto w-100 min-vh-100 position-relative">
+						<div className="grid_cont navbar row justify-content-center position-sticky top-0 start-0">
+							{/* <NavSideBurgerComponent menu={menuResponseJson} /> */}
+							{/* <NavSlideTopComponent /> */}
+						</div>
 
-								<div className="grid_cont content">{children}</div>
+						<div className="grid_cont content">{children}</div>
 
-								{/* <div className="grid_cont footer">
-									<FooterComponent />
-								</div> */}
-							</div>
+						{/* <div className="grid_cont footer">
+							<FooterComponent />
+						</div> */}
+					</div>
 
-							{/* PROJECT UTILITIES (scripts | cookies) */}
-							<GlobalScripts />
-							<KlaroCookieConsent config={klaroConfig} />
+					{/* PROJECT UTILITIES (scripts | cookies) */}
+					<GlobalScripts />
 
-							{/* USER PROMPTS (modals | toasts) */}
-							<ForgotPasswordComponent lang={lang} />
-							<PasswordResetComponent lang={lang} />
-							<RegisterComponent lang={lang} />
-							<SignInComponent lang={lang} />
-						</ApiProvider>
-					</TranslateProvider>
-				</ClientProvider>
+					{/* USER PROMPTS (modals | toasts) */}
+					<ForgotPasswordComponent lang={lang} />
+					<PasswordResetComponent lang={lang} />
+					<RegisterComponent lang={lang} />
+					<SignInComponent lang={lang} />
+				</AppProvider>
 			</body>
 
 			{/* <GoogleAnalytics gaId="G-**********" /> */}

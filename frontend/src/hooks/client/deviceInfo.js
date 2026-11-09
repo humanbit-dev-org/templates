@@ -1,6 +1,6 @@
-// import { useDeviceInfo } from "@/hooks/deviceInfo"; // File import statement
-//
 "use client"; // marks module for full browser execution
+//
+// import { <Filename><Suffix> } from "@/<alias>/<Filename>"; // File import statement
 
 import { useEffect, useState } from "react";
 

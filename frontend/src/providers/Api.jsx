@@ -9,12 +9,9 @@ import useSWRMutation from "swr/mutation";
 
 import { useClient } from "@/providers/Client";
 import { useTranslate } from "@/providers/Translate";
-import { buildTranslateBase, resolveTranslateString } from "@/lib/translate/resolveTranslate";
 
 import { ROUTES_META } from "@/config/api-routes"; // Auto-generated at build time — do not edit manually
 import * as constants from "@/config/constants";
-import { clearConsoleListPersistence } from "@/hooks/consoleFilterPersistence";
-import { clearDashboardListPersistence } from "@/hooks/dashboardFilterPersistence";
 import { clearApiTokenCookie } from "@/utils/apiTokenCookie";
 
 // ===============================================
@@ -288,10 +285,10 @@ export function ApiProvider({ children, lang }) {
 	const [pendingRequests, setPendingRequests] = useState(0);
 
 	// Translate base scoped to `all` (no page context at provider level)
-	const base = useMemo(
-		() => buildTranslateBase(null, { dict, lang, bancaAbi: user?.banca?.banca_abi }),
-		[dict, lang, user]
-	);
+	// const base = useMemo(
+	// 	() => buildTranslateBase(null, { dict, lang, bancaAbi: user?.banca?.banca_abi }),
+	// 	[dict, lang, user]
+	// );
 
 	/**
 	 * Build the standard request headers for all CSR API calls.
@@ -342,33 +339,33 @@ export function ApiProvider({ children, lang }) {
 	 * SWR fetcher — used exclusively by the get() hook.
 	 * Handles 401 → redirect, other errors → ApiError.
 	 */
-	const fetcher = useCallback(
-		async (url) => {
-			const endpointWithQuery = url.startsWith(constants.BACKEND_URL_CLIENT)
-				? url.slice(constants.BACKEND_URL_CLIENT.length)
-				: new URL(url).pathname;
-			const endpoint = endpointWithQuery.split("?")[0].split("#")[0];
-			const response = await trackRequest(
-				fetchWithTimeout(
-					url,
-					{
-						method: "GET",
-						headers: buildHeaders(endpoint),
-					},
-					DEFAULT_TIMEOUT,
-					base
-				)
-			);
+	// const fetcher = useCallback(
+	// 	async (url) => {
+	// 		const endpointWithQuery = url.startsWith(constants.BACKEND_URL_CLIENT)
+	// 			? url.slice(constants.BACKEND_URL_CLIENT.length)
+	// 			: new URL(url).pathname;
+	// 		const endpoint = endpointWithQuery.split("?")[0].split("#")[0];
+	// 		const response = await trackRequest(
+	// 			fetchWithTimeout(
+	// 				url,
+	// 				{
+	// 					method: "GET",
+	// 					headers: buildHeaders(endpoint),
+	// 				},
+	// 				DEFAULT_TIMEOUT,
+	// 				base
+	// 			)
+	// 		);
 
-			if (response.status === 401) {
-				handleUnauthorized();
-				throw new ApiError(getErrorMessage(401, base), 401, url);
-			}
+	// 		if (response.status === 401) {
+	// 			handleUnauthorized();
+	// 			throw new ApiError(getErrorMessage(401, base), 401, url);
+	// 		}
 
-			return handleApiResponse(response, url, base);
-		},
-		[buildHeaders, trackRequest, handleUnauthorized, base]
-	);
+	// 		return handleApiResponse(response, url, base);
+	// 	},
+	// 	[buildHeaders, trackRequest, handleUnauthorized, base]
+	// );
 
 	/**
 	 * Internal mutation handler — used by post(), put(), patch(), del().
@@ -378,40 +375,40 @@ export function ApiProvider({ children, lang }) {
 	 * @param {string} method    - HTTP method
 	 * @returns {Promise<any>}
 	 */
-	const mutate = useCallback(
-		async (endpoint, data = null, method = "POST", options = {}) => {
-			const url = `${constants.BACKEND_URL_CLIENT}${endpoint}`;
-			const isFormData = typeof FormData !== "undefined" && data instanceof FormData;
-			const response = await trackRequest(
-				fetchWithTimeout(
-					url,
-					{
-						method,
-						headers: buildHeaders(endpoint, { omitContentType: isFormData }),
-						body: isFormData ? data : data ? JSON.stringify(data) : undefined,
-					},
-					options.timeout,
-					base
-				)
-			);
+	// const mutate = useCallback(
+	// 	async (endpoint, data = null, method = "POST", options = {}) => {
+	// 		const url = `${constants.BACKEND_URL_CLIENT}${endpoint}`;
+	// 		const isFormData = typeof FormData !== "undefined" && data instanceof FormData;
+	// 		const response = await trackRequest(
+	// 			fetchWithTimeout(
+	// 				url,
+	// 				{
+	// 					method,
+	// 					headers: buildHeaders(endpoint, { omitContentType: isFormData }),
+	// 					body: isFormData ? data : data ? JSON.stringify(data) : undefined,
+	// 				},
+	// 				options.timeout,
+	// 				base
+	// 			)
+	// 		);
 
-			if (response.status === 401) {
-				handleUnauthorized();
-				throw new ApiError(getErrorMessage(401, base), 401, url);
-			}
+	// 		if (response.status === 401) {
+	// 			handleUnauthorized();
+	// 			throw new ApiError(getErrorMessage(401, base), 401, url);
+	// 		}
 
-			const result = await handleApiResponse(response, url, base);
-			const shouldInvalidateCache =
-				!options.skipCacheInvalidation && !endpoint.endsWith("/export") && !endpoint.endsWith("/export-xlsx");
+	// 		const result = await handleApiResponse(response, url, base);
+	// 		const shouldInvalidateCache =
+	// 			!options.skipCacheInvalidation && !endpoint.endsWith("/export") && !endpoint.endsWith("/export-xlsx");
 
-			if (shouldInvalidateCache) {
-				await invalidateCache(endpoint);
-			}
+	// 		if (shouldInvalidateCache) {
+	// 			await invalidateCache(endpoint);
+	// 		}
 
-			return result;
-		},
-		[buildHeaders, trackRequest, handleUnauthorized, base]
-	);
+	// 		return result;
+	// 	},
+	// 	[buildHeaders, trackRequest, handleUnauthorized, base]
+	// );
 
 	/**
 	 * Open a file from an authenticated endpoint in a new browser tab.
@@ -427,76 +424,80 @@ export function ApiProvider({ children, lang }) {
 	 * @param {string} endpoint - API route URI (e.g. "/api/documenti/1")
 	 * @returns {Promise<void>}
 	 */
-	const download = useCallback(
-		async (endpoint) => {
-			const newTab = window.open("", "_blank");
+	// const download = useCallback(
+	// 	async (endpoint) => {
+	// 		const newTab = window.open("", "_blank");
 
-			try {
-				const url = `${constants.BACKEND_URL_CLIENT}${endpoint}`;
-				const response = await trackRequest(
-					fetchWithTimeout(
-						url,
-						{
-							method: "GET",
-							headers: buildHeaders(endpoint, { omitContentType: true }),
-						},
-						60000,
-						base
-					)
-				);
+	// 		try {
+	// 			const url = `${constants.BACKEND_URL_CLIENT}${endpoint}`;
+	// 			const response = await trackRequest(
+	// 				fetchWithTimeout(
+	// 					url,
+	// 					{
+	// 						method: "GET",
+	// 						headers: buildHeaders(endpoint, { omitContentType: true }),
+	// 					},
+	// 					60000,
+	// 					base
+	// 				)
+	// 			);
 
-				if (response.status === 401) {
-					handleUnauthorized();
-					throw new ApiError(getErrorMessage(401, base), 401, url);
-				}
+	// 			if (response.status === 401) {
+	// 				handleUnauthorized();
+	// 				throw new ApiError(getErrorMessage(401, base), 401, url);
+	// 			}
 
-				if (!response.ok) {
-					// Delegate error parsing/throwing to the shared handler
-					await handleApiResponse(response, url, base);
-					return;
-				}
+	// 			if (!response.ok) {
+	// 				// Delegate error parsing/throwing to the shared handler
+	// 				await handleApiResponse(response, url, base);
+	// 				return;
+	// 			}
 
-				const blob = await response.blob();
-				const objectUrl = window.URL.createObjectURL(blob);
+	// 			const blob = await response.blob();
+	// 			const objectUrl = window.URL.createObjectURL(blob);
 
-				if (newTab) {
-					newTab.location = objectUrl;
-				} else {
-					// Popup blocked: fall back to navigating the current tab
-					window.location.assign(objectUrl);
-				}
+	// 			if (newTab) {
+	// 				newTab.location = objectUrl;
+	// 			} else {
+	// 				// Popup blocked: fall back to navigating the current tab
+	// 				window.location.assign(objectUrl);
+	// 			}
 
-				// Revoke later: the new tab needs the object URL to load the PDF
-				setTimeout(() => window.URL.revokeObjectURL(objectUrl), 60000);
-			} catch (error) {
-				newTab?.close();
-				throw error;
-			}
-		},
-		[buildHeaders, trackRequest, handleUnauthorized, base]
-	);
+	// 			// Revoke later: the new tab needs the object URL to load the PDF
+	// 			setTimeout(() => window.URL.revokeObjectURL(objectUrl), 60000);
+	// 		} catch (error) {
+	// 			newTab?.close();
+	// 			throw error;
+	// 		}
+	// 	},
+	// 	[buildHeaders, trackRequest, handleUnauthorized, base]
+	// );
 
 	// Convenience wrappers — mirror REST semantics
-	const post = useCallback((endpoint, data, options) => mutate(endpoint, data, "POST", options), [mutate]);
-	const put = useCallback((endpoint, data, options) => mutate(endpoint, data, "PUT", options), [mutate]);
-	const patch = useCallback((endpoint, data, options) => mutate(endpoint, data, "PATCH", options), [mutate]);
-	const del = useCallback((endpoint, options) => mutate(endpoint, null, "DELETE", options), [mutate]);
+	// const post = useCallback((endpoint, data, options) => mutate(endpoint, data, "POST", options), [mutate]);
+	// const put = useCallback((endpoint, data, options) => mutate(endpoint, data, "PUT", options), [mutate]);
+	// const patch = useCallback((endpoint, data, options) => mutate(endpoint, data, "PATCH", options), [mutate]);
+	// const del = useCallback((endpoint, options) => mutate(endpoint, null, "DELETE", options), [mutate]);
 
-	const value = {
-		fetcher,
-		baseUrl: constants.BACKEND_URL_CLIENT,
-		getCacheConfig,
-		mutate,
-		post,
-		put,
-		patch,
-		del,
-		download,
-		isLoading: pendingRequests > 0,
-		pendingRequests,
-	};
+	// const value = {
+	// 	fetcher,
+	// 	baseUrl: constants.BACKEND_URL_CLIENT,
+	// 	getCacheConfig,
+	// 	mutate,
+	// 	post,
+	// 	put,
+	// 	patch,
+	// 	del,
+	// 	download,
+	// 	isLoading: pendingRequests > 0,
+	// 	pendingRequests,
+	// };
 
-	return <ApiContext.Provider value={value}>{children}</ApiContext.Provider>;
+	// API data layer is temporarily disabled: no consumer calls useApi yet,
+	// and the Backpack translate source is not wired up. Render children
+	// directly until the provider is re-enabled.
+	// return <ApiContext.Provider value={value}>{children}</ApiContext.Provider>;
+	return <>{children}</>;
 }
 
 // -----------------------------------------------

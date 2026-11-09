@@ -1,8 +1,12 @@
-// import { TranslateProvider } from "@/providers/Translate"; // File import statement
+"use client"; // marks module for full browser execution
 //
-"use client";
+// import { <Filename><Suffix> } from "@/<alias>/<Filename>"; // File import statement
 
 import { createContext, useContext } from "react";
+
+// ===============================================
+// ## ############################################
+// ===============================================
 
 const TranslateContext = createContext();
 

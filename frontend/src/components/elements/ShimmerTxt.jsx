@@ -1,39 +1,34 @@
-// Client-Side Rendering
-// "use client"; // marks module for full browser rendering
+"use client"; // marks module for full browser execution
+//
+// import { ShimmerTxtComponent } from "@/components/elements/ShimmerTxt"; // File import statement
 
-// File import statements:
-// import { ShimmerTxtComponent } from "@/components/elements/ShimmerTxt";
-
-// 1. Core imports (React & Next.js)
-// import React, { createContext, useCallback, useContext, useEffect, useMemo, useReducer, useRef, useState } from "react";
-
-// 2. External imports (third-party libraries)
-// import axios from "axios";
-// import clsx from "clsx";
-// import useSWR from "swr";
-// import { AnimatePresence, motion } from "framer-motion";
-// import { signIn, signOut, useSession } from "next-auth/react";
-
-// 3. Absolute internal (`@/` alias)
-// import DefaultExportModule from "@/<path>/DefaultExports";
-// import { NamedExportModule } from "@/<path>/NamedExports";
-
-// 4. Relative internal (same directory)
-// import "./ShimmerTxt.scss";
+import { useClient } from "@/providers/Client";
+import { useTranslate } from "@/providers/Translate";
 
 // ===============================================
 // ## ############################################
 // ===============================================
 
 export function ShimmerTxtComponent() {
+	const { dict, lang } = useTranslate();
+	const csr = useClient();
+	// const base = buildTranslateBase(csr, {
+	// 	dict,
+	// 	lang,
+	// 	bancaAbi: csr.user?.banca?.banca_abi,
+	// });
+	// const uiLoading = resolveTranslateString({ ...base, code: "ui_loading" });
+
 	return (
-		<div role="status" className="shimmer_txt_component tw:max-w-sm tw:animate-pulse">
-			<div className="tw:h-2 tw:bg-gray-200 tw:rounded-full dark:tw:bg-gray-700 tw:max-w-[360px] tw:mb-2.5"></div>
-			<div className="tw:h-2 tw:bg-gray-200 tw:rounded-full dark:tw:bg-gray-700 tw:mb-2.5"></div>
-			<div className="tw:h-2 tw:bg-gray-200 tw:rounded-full dark:tw:bg-gray-700 tw:max-w-[330px] tw:mb-2.5"></div>
-			<div className="tw:h-2 tw:bg-gray-200 tw:rounded-full dark:tw:bg-gray-700 tw:max-w-[300px] tw:mb-2.5"></div>
-			<div className="tw:h-2 tw:bg-gray-200 tw:rounded-full dark:tw:bg-gray-700 tw:max-w-[360px]"></div>
-			<span className="tw:sr-only">Loading...</span>
+		<div
+			role="status"
+			className="shimmer_txt_component max-w-sm animate-pulse">
+			<div className="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[360px] mb-2.5"></div>
+			<div className="h-2 bg-gray-200 rounded-full dark:bg-gray-700 mb-2.5"></div>
+			<div className="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[330px] mb-2.5"></div>
+			<div className="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[300px] mb-2.5"></div>
+			<div className="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[360px]"></div>
+			<span className="sr-only">{uiLoading.title}</span>
 		</div>
 	);
 }
