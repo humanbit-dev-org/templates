@@ -1,9 +1,16 @@
-"use client";
+"use client"; // marks module for full browser execution
+//
+// import { <Filename><Suffix> } from "@/<alias>/<Filename>"; // File import statement
 
 import { useState } from "react";
-import * as constants from "@/config/constants";
 import { useTranslate } from "@/providers/Translate"; // Provides translation context and hook access for `lang` and `translates`
 import { fetchCsrf } from "@/hooks/fetchCsrf"; // Fetch CSRF Token
+import * as constants from "@/config/constants";
+import "./SignIn.scss";
+
+// ===============================================
+// ## ############################################
+// ===============================================
 
 export function SignInComponent({ preventClose = false }) {
 	const [errors, setErrors] = useState([]);
@@ -71,9 +78,13 @@ export function SignInComponent({ preventClose = false }) {
 					"data-bs-keyboard": "false",
 				})}>
 				<div className="modal-dialog modal-dialog-centered">
-					<form className="modal-content color_first p-3 p-md-5" onSubmit={submitForm}>
+					<form
+						className="modal-content color_first p-3 p-md-5"
+						onSubmit={submitForm}>
 						<div className="modal-header mb-5">
-							<h5 className="modal-title big" id="signInModalLabel">
+							<h5
+								className="modal-title big"
+								id="signInModalLabel">
 								{translates?.["all"]?.["sign_in"]?.[lang] ?? "Translate fallback"}
 							</h5>
 
@@ -103,7 +114,9 @@ export function SignInComponent({ preventClose = false }) {
 										}
 									/>
 
-									<label className="label" htmlFor="signInEmail">
+									<label
+										className="label"
+										htmlFor="signInEmail">
 										{translates?.["all"]?.["email"]?.[lang] ?? "Translate fallback"}
 									</label>
 
@@ -129,7 +142,9 @@ export function SignInComponent({ preventClose = false }) {
 										}
 									/>
 
-									<label className="label" htmlFor="signInPassword">
+									<label
+										className="label"
+										htmlFor="signInPassword">
 										{translates?.["all"]?.["password"]?.[lang] ?? "Translate fallback"}
 									</label>
 

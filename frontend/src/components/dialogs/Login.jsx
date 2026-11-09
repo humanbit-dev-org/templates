@@ -1,9 +1,16 @@
-"use client";
+"use client"; // marks module for full browser execution
+//
+// import { <Filename><Suffix> } from "@/<alias>/<Filename>"; // File import statement
 
 import { useEffect } from "react";
-import { SignInComponent } from "./SignIn";
 
-export default function LoginModal({ isLoggedIn, lang }) {
+import { SignInComponent } from "@/components/dialogs/SignIn";
+
+// ===============================================
+// ## ############################################
+// ===============================================
+
+export function LoginModal({ isLoggedIn, lang }) {
 	useEffect(() => {
 		if (!isLoggedIn) {
 			const modalElement = document.getElementById("signInModal");
@@ -14,5 +21,10 @@ export default function LoginModal({ isLoggedIn, lang }) {
 		}
 	}, [isLoggedIn]);
 
-	return <SignInComponent lang={lang} preventClose={true} />;
+	return (
+		<SignInComponent
+			lang={lang}
+			preventClose={true}
+		/>
+	);
 }

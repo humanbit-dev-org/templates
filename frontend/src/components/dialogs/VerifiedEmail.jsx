@@ -1,7 +1,13 @@
-"use client";
+"use client"; // marks module for full browser execution
+//
+// import { <Filename><Suffix> } from "@/<alias>/<Filename>"; // File import statement
 
-import { useClient } from "@/providers/Client"; // Provide client-only values to the current component {CSR}
-import { useTranslate } from "@/providers/Translate"; // Provides translation context and hook access for `lang` and `translates`
+import { useClient } from "@/providers/Client";
+import { useTranslate } from "@/providers/Translate";
+
+// ===============================================
+// ## ############################################
+// ===============================================
 
 export function VerifiedEmailComponent() {
 	const lang = useTranslate()["lang"];

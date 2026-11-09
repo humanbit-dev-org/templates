@@ -1,15 +1,23 @@
-"use client";
+"use client"; // marks module for full browser execution
+//
+// import { <Filename><Suffix> } from "@/<alias>/<Filename>"; // File import statement
 
-import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+
+import { fetchCsrf } from "@/lib/fetchCsrf";
+import { useClient } from "@/providers/Client";
+import { useTranslate } from "@/providers/Translate";
+
 import * as constants from "@/config/constants";
-import { fetchCsrf } from "@/hooks/fetchCsrf";
-import { useClient } from "@/providers/Client"; // Provide client-only values to the current component {CSR}
-import { useTranslate } from "@/providers/Translate"; // Provides translation context and hook access for `lang` and `translates`
+
+// ===============================================
+// ## ############################################
+// ===============================================
 
 export function EmailVerificationComponent() {
 	const lang = useTranslate()["lang"];
-	const translates = useTranslate()["translates"];
+	const translates = useTranslate()["dict"];
 	const [status, setStatus] = useState(null);
 	const [message, setMessage] = useState(null);
 

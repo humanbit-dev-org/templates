@@ -1,4 +1,6 @@
-"use client";
+"use client"; // marks module for full browser execution
+//
+// import { <Filename><Suffix> } from "@/<alias>/<Filename>"; // File import statement
 
 import { AuthSessionStatusComponent } from "@/components/elements/AuthSessionStatus";
 import { useState } from "react";

@@ -1,13 +1,20 @@
-"use client";
+"use client"; // marks module for full browser execution
+//
+// import { <Filename><Suffix> } from "@/<alias>/<Filename>"; // File import statement
 
-import { useRouter, useSearchParams } from "next/navigation";
-import { useState, useEffect } from "react";
-import * as constants from "@/config/constants"; // Global constants shared across the app
-import { useClient } from "@/providers/Client"; // Provide client-only values to the current component {CSR}
-import { useTranslate } from "@/providers/Translate"; // Provides translation context and hook access for `lang` and `translates`
-import { fetchCsrf } from "@/hooks/fetchCsrf";
+import { useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 
-export function RegisterComponent({}) {
+import { fetchCsrf } from "@/lib/fetchCsrf";
+import { useTranslate } from "@/providers/Translate";
+
+import * as constants from "@/config/constants";
+
+// ===============================================
+// ## ############################################
+// ===============================================
+
+export function RegisterComponent() {
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [username, setUsername] = useState("");
 	const [name, setName] = useState("");
@@ -96,11 +103,15 @@ export function RegisterComponent({}) {
 				aria-labelledby="registerModalLabel"
 				aria-hidden="true">
 				<div className="modal-dialog modal-dialog-centered">
-					<form className="modal-content color_first border border_color_third p-3 p-md-5" onSubmit={submitForm}>
+					<form
+						className="modal-content color_first border border_color_third p-3 p-md-5"
+						onSubmit={submitForm}>
 						{warning && <div className="mb-4 text-red-600">{warning}</div>}
 
 						<div className="modal-header mb-5">
-							<h5 className="modal-title big" id="registerModalLabel">
+							<h5
+								className="modal-title big"
+								id="registerModalLabel">
 								{translates?.["all"]?.["sign_up"]?.[lang] ?? "Translate fallback"}
 							</h5>
 
@@ -128,7 +139,9 @@ export function RegisterComponent({}) {
 										placeholder={translates?.["all"]?.["name"]?.[`text_${lang}`] ?? "Translate fallback"}
 									/>
 
-									<label className="label" htmlFor="registerName">
+									<label
+										className="label"
+										htmlFor="registerName">
 										{translates?.["all"]?.["name"]?.[lang] ?? "Translate fallback"}
 									</label>
 
@@ -154,7 +167,9 @@ export function RegisterComponent({}) {
 										}
 									/>
 
-									<label className="label" htmlFor="registerSurname">
+									<label
+										className="label"
+										htmlFor="registerSurname">
 										{translates?.["all"]?.["surname"]?.[lang] ?? "Translate fallback"}
 									</label>
 
@@ -180,7 +195,9 @@ export function RegisterComponent({}) {
 										}
 									/>
 
-									<label className="label" htmlFor="registerUsername">
+									<label
+										className="label"
+										htmlFor="registerUsername">
 										{translates?.["all"]?.["username"]?.[lang] ?? "Translate fallback"}
 									</label>
 
@@ -208,7 +225,9 @@ export function RegisterComponent({}) {
 										}
 									/>
 
-									<label className="label" htmlFor="registerEmail">
+									<label
+										className="label"
+										htmlFor="registerEmail">
 										{translates?.[`all`]?.["email"]?.[lang] ?? "Translate fallback"}
 									</label>
 
@@ -234,7 +253,9 @@ export function RegisterComponent({}) {
 										}
 									/>
 
-									<label className="label" htmlFor="registerAddress">
+									<label
+										className="label"
+										htmlFor="registerAddress">
 										{translates?.["all"]?.["address"]?.[lang] ?? "Translate fallback"}
 									</label>
 
@@ -260,7 +281,9 @@ export function RegisterComponent({}) {
 										}
 									/>
 
-									<label className="label" htmlFor="registerPhone">
+									<label
+										className="label"
+										htmlFor="registerPhone">
 										{translates?.["all"]?.["phone"]?.[lang] ?? "Translate fallback"}
 									</label>
 
@@ -286,7 +309,9 @@ export function RegisterComponent({}) {
 										}
 									/>
 
-									<label className="label" htmlFor="registerPassword">
+									<label
+										className="label"
+										htmlFor="registerPassword">
 										{translates?.["all"]?.["password"]?.[lang] ?? "Translate fallback"}
 									</label>
 
@@ -312,7 +337,9 @@ export function RegisterComponent({}) {
 										}
 									/>
 
-									<label className="label" htmlFor="registerPasswordConfirmation">
+									<label
+										className="label"
+										htmlFor="registerPasswordConfirmation">
 										{translates?.["all"]?.["confirm_password"]?.[lang] ?? "Translate fallback"}
 									</label>
 
