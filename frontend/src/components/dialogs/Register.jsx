@@ -5,7 +5,7 @@
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
-import { fetchCsrf } from "@/lib/fetchCsrf";
+// import { fetchCsrf } from "@/lib/fetchCsrf";
 import { useTranslate } from "@/providers/Translate";
 
 import * as constants from "@/config/constants";

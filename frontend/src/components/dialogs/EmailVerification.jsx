@@ -5,7 +5,7 @@
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 
-import { fetchCsrf } from "@/lib/fetchCsrf";
+// import { fetchCsrf } from "@/lib/fetchCsrf";
 import { useClient } from "@/providers/Client";
 import { useTranslate } from "@/providers/Translate";
 

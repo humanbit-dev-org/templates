@@ -1,0 +1,151 @@
+// @use "@/components/<subfolder>/<filename>" as *; // File import statement
+
+// >>> Controllers — START
+@use "@/scss/controllers/dynamics" as *; // controllers for mixins and variables
+// <<<<< Controllers — END
+
+.signin_component {
+	// .fx_fill {
+	// 	@include filling_effect($body-color, $body-color, $body-color, $color_second);
+	// }
+}
+
+/////
+////
+/*/ ==================== @media ==================== /*/
+/////////////
+////////////
+////////////////////////
+/* @media (max-width) */
+////////////////////////
+
+@media (max-width: 1399.98px) {
+	.signin_component {
+	}
+}
+
+@media (max-width: 1199.98px) {
+	.signin_component {
+	}
+}
+
+@media (max-width: 991.98px) {
+	.signin_component {
+	}
+}
+
+@media (max-width: 767.98px) {
+	.signin_component {
+	}
+}
+
+@media (max-width: 575.98px) {
+	.signin_component {
+	}
+}
+
+// -------------- //
+
+////////////////////
+/* @media between */
+////////////////////
+
+@media (min-width: 576px) and (max-width: 767.98px) {
+	.signin_component {
+	}
+}
+
+@media (min-width: 576px) and (max-width: 991.98px) {
+	.signin_component {
+	}
+}
+
+@media (min-width: 768px) and (max-width: 991.98px) {
+	.signin_component {
+	}
+}
+
+@media (min-width: 992px) and (max-width: 1199.98px) {
+	.signin_component {
+	}
+}
+
+@media (min-width: 1200px) and (max-width: 1399.98px) {
+	.signin_component {
+	}
+}
+
+// ------------------ //
+
+////////////////////////
+/* @media (min-width) */
+////////////////////////
+
+@media (min-width: 576px) {
+	.signin_component {
+	}
+}
+
+@media (min-width: 768px) {
+	.signin_component {
+	}
+}
+
+@media (min-width: 992px) {
+	.signin_component {
+	}
+}
+
+@media (min-width: 1200px) {
+	.signin_component {
+	}
+}
+
+@media (min-width: 1400px) {
+	.signin_component {
+	}
+}
+
+// ---------------- //
+
+//////////////////////
+/* mobile landscape */
+//////////////////////
+
+@media (max-height: 400px) and (orientation: landscape) {
+	.signin_component {
+	}
+}
+
+// ----------------- //
+
+///////////////////////
+/* iPad Pro portrait */
+///////////////////////
+
+@media (width: 1024px) and (height: 1366px) {
+	.signin_component {
+	}
+}
+
+// ----------------------- //
+
+/////////////////////////////
+/* all browsers (iOS only) */
+/////////////////////////////
+
+@supports (-webkit-touch-callout: none) and (hover: none) and (pointer: coarse) {
+	.signin_component {
+	}
+}
+
+// ------------------- //
+
+/////////////////////////
+/* Safari (MacOS only) */
+/////////////////////////
+
+@supports (-webkit-touch-callout: default) and (hover: hover) and (pointer: fine) {
+	.signin_component {
+	}
+}
