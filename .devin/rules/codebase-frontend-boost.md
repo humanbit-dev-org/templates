@@ -1,5 +1,6 @@
 ---
-globs: frontend/**
+globs:
+  - "frontend/**"
 description: "Next.js/React frontend. Apply when the request involves frontend/, Next, React, components, or UI under frontend/."
 trigger: glob
 ---

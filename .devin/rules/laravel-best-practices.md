@@ -1,5 +1,6 @@
 ---
-globs: backend/**
+globs:
+  - "backend/**"
 description: "Laravel backend. Apply when the request involves backend, Laravel, PHP, API, or files under backend/."
 trigger: glob
 ---
@@ -370,6 +371,12 @@ Each class that contains logic should have a test.
 - Code logic (actions, support classes, jobs)
 - Livewire components / Controllers
 - Routes
+
+## What to keep in the repository?
+
+- During development, write or run tests to verify the change.
+- **Remove** tests that pass when they only confirmed a one-off fix and do not guard lasting behaviour (no placeholder or example tests in the tree) — deleted after they pass, no approval needed.
+- **Keep** tests that must catch regressions (auth, permissions, critical flows). Do NOT delete any other test without approval.
 
 ## How to write tests?
 

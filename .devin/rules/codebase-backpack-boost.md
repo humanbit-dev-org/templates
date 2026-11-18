@@ -1,5 +1,6 @@
 ---
-globs: backend/**
+globs:
+  - "backend/**"
 description: "How Backpack is integrated with the codebase. Apply when the request involves admin/CRUD, Backpack config, routes/backpack, or Backpack UI/translations."
 trigger: glob
 ---

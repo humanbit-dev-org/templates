@@ -1,5 +1,6 @@
 ---
-globs: backend/**
+globs:
+  - "backend/**"
 description: "Backpack 7 official documentation."
 trigger: glob
 ---

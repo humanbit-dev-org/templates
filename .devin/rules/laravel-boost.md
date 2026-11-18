@@ -1,5 +1,6 @@
 ---
-globs: backend/**
+globs:
+  - "backend/**"
 description: "Laravel backend. Apply when the request involves backend, Laravel, PHP, API, or files under backend/."
 trigger: glob
 ---
@@ -127,6 +128,8 @@ protected function isAccessible(User $user, ?string $path = null): bool
 # Test Enforcement
 
 - Every change must be programmatically tested. Write a new test or update an existing test, then run the affected tests to make sure they pass.
+- **Remove tests that pass** when they were only written to confirm a one-off change and do not protect against future regressions — one-off tests are deleted after they pass, no approval needed.
+- **Keep** long-lived tests for auth, permissions, and critical business flows. Do NOT delete any other test without approval.
 - Run the minimum number of tests needed to ensure code quality and speed. Use `php artisan test --compact` with a specific filename or filter.
 
 === laravel/core rules ===
@@ -226,7 +229,7 @@ protected function isAccessible(User $user, ?string $path = null): bool
 
 - This project uses Pest for testing. Create tests: `php artisan make:test --pest {name}`.
 - Run tests: `php artisan test --compact` or filter: `php artisan test --compact --filter=testName`.
-- Do NOT delete tests without approval.
+- One-off verification tests are removed after they pass; every other test requires approval to delete. See `pest-testing` skill for lifecycle details.
 - CRITICAL: ALWAYS use `search-docs` tool for version-specific Pest documentation and updated code examples.
 - IMPORTANT: Activate `pest-testing` every time you're working with a Pest or testing-related task.
 </laravel-boost-guidelines>
